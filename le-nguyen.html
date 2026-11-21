@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Hậu Lê - Nguyễn | Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main: #8B0000;
+            --gold: #d4af37;
+            --dark: #2c1b12;
+            --bg-light: #f8f4ea;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: #333; }
+
+        .navbar-sv{
+          position:sticky;top:0;left:0;width:100%;z-index:1000;
+          display:flex;align-items:center;gap:28px;
+          padding:10px 28px;
+          background:linear-gradient(#2c1b12,#241610);
+          border-top:3px solid #c8a96e;
+          border-bottom:3px solid #c8a96e;
+        }
+        .corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+        .corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+        .corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+        .corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+        .corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+        .navbar-sv .logo{
+          display:flex;align-items:center;gap:12px;
+          color:#c8a96e;font-size:28px;font-weight:700;
+          font-family:'Libre Baskerville',serif;letter-spacing:1px;
+          text-decoration:none;flex-shrink:0;
+        }
+        .navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+        .nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+        .nav-menu-sv>li{position:relative;}
+        .nav-menu-sv .nav-item{
+          display:flex;flex-direction:column;align-items:center;gap:4px;
+          text-decoration:none;color:rgba(255,255,255,.85);
+          font-size:14px;font-weight:700;
+          padding:8px 18px;border-radius:10px;transition:.2s;
+          position:relative;min-width:96px;justify-content:center;
+          border:none;background:none;
+        }
+        .nav-ic{font-size:18px;line-height:1;}
+        .nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+        .nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+        .nav-menu-sv .nav-item.active::after{
+          content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+          width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+          border-bottom:6px solid #f4c542;
+        }
+        .caret{font-size:10px;opacity:.8;}
+        .has-dropdown .dropdown-menu{
+          position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);
+          background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;
+          min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+          opacity:0;visibility:hidden;transition:.25s;z-index:999;
+        }
+        .has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+        .dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+        .dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+        .dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+        .nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+        .nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+        .nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+        .nav-search-sv input::placeholder{color:#999;}
+        .nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+        .nav-user-item{position:relative;}
+        .nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;}
+        .nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:500;}
+        .nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;}
+        .nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-user-dropdown{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border-radius:12px;min-width:220px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:999;}
+        .nav-user-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+        .nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+        .nav-dropdown-avatar{width:44px;height:44px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;}
+        .nav-dropdown-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-dropdown-divider{height:1px;background:#eee;margin:8px 0;}
+        .nav-dropdown-logout{display:block;color:#8B0000;text-decoration:none;font-weight:600;font-size:13px;}
+        .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+        .nav-toggle span{width:24px;height:2px;background:#c8a96e;display:block;}
+        @media(max-width:1000px){
+          .nav-menu-sv{display:none !important;}
+          .nav-menu-sv.open{
+            display:flex !important;flex-direction:column;
+            position:fixed;top:78px;left:0;right:0;margin:0;padding:16px;
+            background:#2c1b12;border-bottom:3px solid #c8a96e;z-index:998;gap:6px;
+          }
+          .nav-menu-sv.open .nav-item{min-width:0;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;}
+          .nav-menu-sv.open .has-dropdown .dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;display:none;box-shadow:none;margin-top:4px;}
+          .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+          .nav-search-sv{display:none !important;}
+          .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+          .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+          .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+          .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+          .nav-user-email-text{display:none !important;}
+          .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;}
+          .navbar-sv .logo{font-size:20px;gap:8px;}
+          .navbar-sv .logo img{width:38px;height:38px;}
+          .nav-right-sv{gap:8px;flex-shrink:0;}
+          .nav-toggle{display:flex !important;flex-shrink:0;}
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.52), rgba(0,0,0,0.52)), url('images/le-nguyen-hero.PNG') center/cover no-repeat;
+            min-height: 340px; display: flex; padding: 0 50px; color: white; border-bottom: 3px solid var(--gold);
+        }
+        .hero-left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; }
+        .hero h1 { font-size: 54px; font-weight: 800; line-height: 1.05; margin-bottom: 14px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        .hero p { font-size: 15px; font-weight: 300; line-height: 1.7; max-width: 560px; color: rgba(255,255,255,0.88); margin-bottom: 20px; }
+        .hero-meta { display: flex; gap: 20px; font-size: 13px; opacity: 0.85; }
+        .hero-meta span { display: flex; align-items: center; gap: 5px; }
+
+        .video-lightbox { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
+        .video-lightbox.open { display: flex; }
+        .video-lightbox-inner { position: relative; width: 82vw; max-width: 960px; background: #000; border-radius: 14px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+        .video-lightbox-inner video { width: 100%; display: block; max-height: 80vh; }
+        .video-lightbox-close { position: absolute; top: 10px; right: 12px; background: rgba(255,255,255,0.18); border: none; color: white; font-size: 20px; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 10; }
+        .video-lightbox-close:hover { background: rgba(255,255,255,0.35); }
+
+        .mindmap-lightbox { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.88); align-items: center; justify-content: center; }
+        .mindmap-lightbox.open { display: flex; }
+        .mindmap-lightbox-inner { position: relative; max-width: 92vw; max-height: 90vh; background: #fff; border-radius: 14px; overflow: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; }
+        .mindmap-lightbox-inner img { max-width: 100%; max-height: 90vh; display: block; object-fit: contain; }
+
+        .page-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; padding: 28px 50px; max-width: 1400px; margin: 0 auto; }
+
+        .content-box { background: white; border-radius: 16px; padding: 26px 28px; margin-bottom: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .content-box h2 { color: var(--main); font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        .intro-wrap { display: flex; gap: 28px; align-items: flex-start; }
+        .intro-text { flex: 1; font-size: 14px; line-height: 1.85; color: #444; }
+        .infobox { width: 300px; flex-shrink: 0; background: #fffdf5; border: 1px solid #ede7d3; border-radius: 12px; overflow: hidden; }
+        .infobox-title { background: #fdf8ec; border-bottom: 1px solid #ede7d3; text-align: center; padding: 11px 16px; font-weight: 700; font-size: 13px; color: var(--main); }
+        .infobox table { width: 100%; border-collapse: collapse; }
+        .infobox tr { border-bottom: 1px solid #f2ede0; }
+        .infobox tr:last-child { border-bottom: none; }
+        .infobox td { padding: 10px 16px; font-size: 13px; vertical-align: middle; }
+        .infobox td:first-child { color: #666; white-space: nowrap; width: 42%; }
+        .infobox td:last-child { font-weight: 600; color: #222; }
+
+        .event-scroll { overflow-x: auto; padding-bottom: 8px; cursor: grab; }
+        .event-scroll:active { cursor: grabbing; }
+        .event-scroll::-webkit-scrollbar { height: 5px; }
+        .event-scroll::-webkit-scrollbar-track { background: #f0ece0; border-radius: 10px; }
+        .event-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        .event-grid { display: flex; gap: 16px; width: max-content; }
+        .event-card { width: 230px; flex-shrink: 0; background: #fff; border-radius: 14px; border: 1px solid #eee; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: block; }
+        .event-card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px rgba(0,0,0,0.1); }
+        .event-card img { width: 100%; height: 140px; object-fit: cover; }
+        .event-card-body { padding: 12px 14px 14px; }
+        .event-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+        .event-card p { font-size: 12px; color: #666; line-height: 1.55; }
+
+        .section-label { font-size: 16px; font-weight: 700; color: var(--main); display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .char-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .char-card { background: white; border-radius: 14px; overflow: hidden; border: 1px solid #eee; transition: transform 0.2s, box-shadow 0.2s; }
+        .char-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.09); }
+        .char-card img { width: 100%; height: 150px; object-fit: cover; }
+        .char-card-body { padding: 11px 13px 13px; }
+        .char-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .char-card p { font-size: 11px; color: #666; line-height: 1.5; margin-bottom: 9px; }
+        .btn-detail { display: inline-block; padding: 5px 13px; background: var(--main); color: white; border-radius: 7px; font-size: 11px; font-weight: 500; text-decoration: none; transition: background 0.2s; }
+        .btn-detail:hover { background: var(--gold); color: #1e1206; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { background: white; border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .sidebar-box h2 { font-size: 15px; font-weight: 700; color: var(--main); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+
+        .vid-scroll-wrap { max-height: 420px; overflow-y: scroll; padding-right: 4px; }
+        .vid-scroll-wrap::-webkit-scrollbar { width: 5px; }
+        .vid-scroll-wrap::-webkit-scrollbar-track { background: #f0ece0; border-radius: 10px; }
+        .vid-scroll-wrap::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        .vid-item { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; cursor: pointer; border-radius: 12px; padding: 8px; transition: background 0.2s; }
+        .vid-item:hover { background: #f5f0e8; }
+        .vid-item:last-of-type { margin-bottom: 0; }
+        .vid-thumb { width: 100%; height: 150px; border-radius: 10px; background: #111; position: relative; overflow: hidden; }
+        .vid-thumb video { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; pointer-events: none; }
+        .vid-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.35); transition: background 0.2s; border-radius: 10px; }
+        .vid-item:hover .vid-play { background: rgba(0,0,0,0.5); }
+        .vid-play span { width: 44px; height: 44px; background: rgba(255,255,255,0.92); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #222; padding-left: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .vid-info { padding: 0 4px; }
+        .vid-info h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; line-height: 1.35; color: #222; }
+        .vid-info p { font-size: 11px; color: #777; line-height: 1.45; }
+
+        .vid-source {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 2px; padding: 7px 8px;
+    background: #fbf7ee; border: 1px solid #f0e8d5; border-radius: 8px;
+    font-size: 11px;
+}
+.vid-source-left { display: flex; align-items: center; gap: 6px; color: #777; }
+.vid-source-left .yt-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 12px; background: #ff0000; border-radius: 3px; flex-shrink: 0;
+}
+.vid-source-left .yt-badge::after {
+    content: ''; border-style: solid; border-width: 3px 0 3px 5px;
+    border-color: transparent transparent transparent #fff; margin-left: 1px;
+}
+.vid-source-left strong { color: #444; font-weight: 600; }
+.vid-source-link {
+    display: inline-flex; align-items: center; gap: 3px;
+    color: var(--main); font-weight: 600; text-decoration: none;
+    white-space: nowrap;
+}
+.vid-source-link:hover { text-decoration: underline; }
+
+        .quiz-sidebar p { font-size: 12px; color: #666; margin-bottom: 12px; line-height: 1.6; }
+        .btn-quiz { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; background: var(--main); color: white; border: none; border-radius: 11px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-quiz:hover { background: #6b0000; }
+
+        .mindmap-sidebar p { font-size: 12px; color: #666; margin-bottom: 12px; line-height: 1.6; }
+        .btn-mindmap { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: #2d7a52; color: white; border: none; border-radius: 11px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+        .btn-mindmap:hover { background: #1f5c3c; }
+
+        footer { background: #2c1a0e; color: #bbb; padding: 48px 50px 0; margin-top: 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1.4fr; gap: 50px; padding-bottom: 36px; }
+        .footer-brand-name { font-size: 28px; font-weight: 800; color: var(--gold); letter-spacing: 0.5px; margin-bottom: 14px; font-style: italic; }
+        .footer-brand-desc { font-size: 13px; color: #9a8878; line-height: 1.7; max-width: 260px; }
+        .footer-col h4 { color: var(--gold); font-size: 15px; font-weight: 700; margin-bottom: 16px; letter-spacing: 0.3px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col ul li a { color: #b0a090; font-size: 14px; text-decoration: none; transition: color 0.2s; }
+        .footer-col ul li a:hover { color: var(--gold); }
+        .footer-info-list { list-style: none; }
+        .footer-info-list li { font-size: 13px; color: #b0a090; margin-bottom: 11px; display: flex; align-items: flex-start; gap: 9px; line-height: 1.55; }
+        .footer-info-list li strong { color: #e0d0b8; font-weight: 600; }
+        .footer-bottom { border-top: 1px solid #3e2a1a; padding: 18px 0; display: flex; justify-content: center; align-items: center; font-size: 13px; color: #7a6858; gap: 6px; }
+        .footer-bottom span { color: #9a8878; }
+        .footer-bottom .vn-tag { font-size: 11px; color: #6a5848; background: #3a2510; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+<div class="video-lightbox" id="videoLightbox" onclick="closeLightboxOnBg(event)">
+    <div class="video-lightbox-inner">
+        <button class="video-lightbox-close" onclick="closeVideo()">✕</button>
+        <video id="lightboxVideo" controls></video>
+    </div>
+</div>
+
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Sử Việt">
+      SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+      <li class="mobile-search-item" style="display:none;">
+        <div class="nav-search-mobile">
+          <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+          <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+        </div>
+      </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item active" aria-current="page"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm" autocomplete="off">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng" onkeydown="if(event.key==='Enter'||event.key===' '){this.click();}">
+          <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+          <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+          <span style="color:#c8a96e; font-size:10px;" aria-hidden="true">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+          <div class="nav-dropdown-info">
+            <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+            <div>
+              <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+              <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+            </div>
+          </div>
+          <div class="nav-dropdown-divider"></div>
+          <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-left">
+        <h1>THỜI LÊ – NGUYỄN</h1>
+        <p>Từ nền hoàng kim thịnh trị, qua thời kỳ phân tranh chia cắt cho đến buổi bình định thống nhất giang sơn trọn vẹn.</p>
+        <div class="hero-meta">
+            <span>📅 1428 – 1945</span>
+            <span>📍 Thăng Long – Phú Xuân (Huế)</span>
+        </div>
+    </div>
+</section>
+
+<div class="page-layout">
+    <div class="main-col">
+
+        <div class="content-box">
+            <h2>📖 GIỚI THIỆU</h2>
+            <div class="intro-wrap">
+                <p class="intro-text">
+                    Thời kỳ này khởi đầu rực rỡ sau khi Bình Định Vương Lê Lợi quét sạch bóng quân Minh xâm lược, lập nên vương triều Lê sơ vàng son. Tiến trình lịch sử tiếp tục trải qua những khúc quanh của cuộc phân tranh Lê – Trịnh, chúa Nguyễn mở cõi về phương Nam, rồi bùng lên bão táp hào hùng cùng phong trào Tây Sơn.<br><br>
+                    Cuối cùng, dòng chảy lịch sử khép lại bằng triều đại nhà Nguyễn – vương triều phong kiến cuối cùng chính thức xác lập chủ quyền lãnh thổ trọn vẹn từ Nam Quan đến Cà Mau, để lại khối di sản văn hóa đồ sộ cho hậu thế.
+                </p>
+                <div class="infobox">
+                    <div class="infobox-title">THÔNG TIN CƠ BẢN</div>
+                    <table>
+                        <tr><td>📅 Thời kỳ:</td><td>Quốc gia tự chủ</td></tr>
+                        <tr><td>🏛️ Trung tâm:</td><td>Thăng Long – Phú Xuân</td></tr>
+                        <tr><td>👑 Triều đại:</td><td>Lê, Tây Sơn, Nguyễn</td></tr>
+                        <tr><td>🕐 Thời gian:</td><td>1428 – 1945</td></tr>
+                        <tr><td>⚔️ Đặc điểm:</td><td>Hưng thịnh & phân tranh</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-box">
+            <h2>⭐ SỰ KIỆN NỔI BẬT</h2>
+            <div class="event-scroll" id="eventScroll">
+                <div class="event-grid">
+                    <a href="khoi-nghia-lam-son.html" class="event-card">
+                        <img src="images/khoinghialamson.PNG" onerror="this.style.background='#7a5a30';this.removeAttribute('src')">
+                        <div class="event-card-body">
+                            <h3>Khởi nghĩa Lam Sơn</h3>
+                            <p>Cuộc trường kỳ kháng chiến 10 năm đánh tan giặc Minh, giành lại độc lập.</p>
+                        </div>
+                    </a>
+                    <a href="dai-pha-quan-thanh.html" class="event-card">
+                        <img src="images/daiphaquanthanh.PNG" onerror="this.style.background='#5a3a6a';this.removeAttribute('src')">
+                        <div class="event-card-body">
+                            <h3>Đại phá quân Thanh</h3>
+                            <p>Chiến thắng Ngọc Hồi – Đống Đa thần tốc mùa xuân 1789 của vua Quang Trung.</p>
+                        </div>
+                    </a>
+                    <a href="thong-nhat-giang-son.html" class="event-card">
+                        <img src="images/thongnhatgianson.PNG" onerror="this.style.background='#4a6a4a';this.removeAttribute('src')">
+                        <div class="event-card-body">
+                            <h3>Thống nhất giang sơn</h3>
+                            <p>Nhà Nguyễn hoàn chỉnh bản đồ cương vực đất nước từ Nam Quan đến Cà Mau.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-label">👑 NHÂN VẬT TIÊU BIỂU</div>
+        <div class="char-grid">
+            <div class="char-card">
+                <img src="images/leloi.jpg" onerror="this.style.background='#8a6a40';this.style.height='150px';this.removeAttribute('src')">
+                <div class="char-card-body">
+                    <h3>Lê Lợi</h3>
+                    <p>Bình Định Vương đánh đuổi quân Minh, lập nên vương triều Lê sơ lừng lẫy.</p>
+                    <a href="chi-tiet-le-loi.html" class="btn-detail">Xem chi tiết</a>
+                </div>
+            </div>
+            <div class="char-card">
+                <img src="images/lethanhtong.PNG" onerror="this.style.background='#6a5040';this.style.height='150px';this.removeAttribute('src')">
+                <div class="char-card-body">
+                    <h3>Lê Thánh Tông</h3>
+                    <p>Vị minh quân đưa Đại Việt lên đỉnh cao thịnh trị về kinh tế, văn hóa và luật pháp.</p>
+                    <a href="le-thanh-tong.html" class="btn-detail">Xem chi tiết</a>
+                </div>
+            </div>
+            <div class="char-card">
+                <img src="images/quangtrung.jfif" onerror="this.style.background='#5a4a6a';this.style.height='150px';this.removeAttribute('src')">
+                <div class="char-card-body">
+                    <h3>Nguyễn Huệ</h3>
+                    <p>Anh hùng áo vải Tây Sơn, nhà quân sự kiệt xuất với những chiến công hiển hách.</p>
+                    <a href="nguyen-hue.html" class="btn-detail">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-box">
+            <h2>🎬 VIDEO BÀI GIẢNG</h2>
+            <div class="vid-scroll-wrap">
+
+    <div class="vid-item">
+        <div onclick="openVideo('videos/lenguyen2.mp4')">
+            <div class="vid-thumb">
+                <video src="videos/lenguyen2.mp4" preload="metadata"></video>
+                <div class="vid-play"><span>▶</span></div>
+            </div>
+            <div class="vid-info">
+                <h4>1. Khởi nghĩa Lam Sơn</h4>
+                <p>10 năm kháng chiến trường kỳ đánh đuổi quân Minh.</p>
+            </div>
+        </div>
+        <div class="vid-source">
+            <div class="vid-source-left">
+                <span class="yt-badge"></span>
+                <span>Nguồn: <strong>YouTube – EZ Sử</strong></span>
+            </div>
+            <a href="https://youtu.be/7hYLCHS-WHU?si=BOfKAOI35gNI37M7" class="vid-source-link" onclick="event.stopPropagation()" target="_blank" rel="noopener">Xem nguồn ↗</a>
+        </div>
+    </div>
+
+    <div class="vid-item">
+        <div onclick="openVideo('videos/lenguyen1.mp4')">
+            <div class="vid-thumb">
+                <video src="videos/lenguyen1.mp4" preload="metadata"></video>
+                <div class="vid-play"><span>▶</span></div>
+            </div>
+            <div class="vid-info">
+                <h4>2. Phong trào Tây Sơn</h4>
+                <p>Nguyễn Huệ và chiến thắng Ngọc Hồi – Đống Đa.</p>
+            </div>
+        </div>
+        <div class="vid-source">
+            <div class="vid-source-left">
+                <span class="yt-badge"></span>
+                <span>Nguồn: <strong>YouTube – EZ Sử</strong></span>
+            </div>
+            <a href="https://youtu.be/HD89UaWkVQk?si=EN_DXn8iTF4AqLpK" class="vid-source-link" onclick="event.stopPropagation()" target="_blank" rel="noopener">Xem nguồn ↗</a>
+        </div>
+    </div>
+
+    <div class="vid-item">
+        <div onclick="openVideo('videos/lenguyen4.mp4')">
+            <div class="vid-thumb">
+                <video src="videos/lenguyen4.mp4" preload="metadata"></video>
+                <div class="vid-play"><span>▶</span></div>
+            </div>
+            <div class="vid-info">
+                <h4>3. Triều Nguyễn & thống nhất</h4>
+                <p>Gia Long thống nhất giang sơn, lập triều đại phong kiến cuối cùng.</p>
+            </div>
+        </div>
+        <div class="vid-source">
+            <div class="vid-source-left">
+                <span class="yt-badge"></span>
+                <span>Nguồn: <strong>YouTube – Sử Lược</strong></span>
+            </div>
+            <a href="https://youtu.be/96SVntYMrPk?si=vwKOkgBAIEQz4Zb3" class="vid-source-link" onclick="event.stopPropagation()" target="_blank" rel="noopener">Xem nguồn ↗</a>
+        </div>
+    </div>
+            </div>
+        </div>
+
+        <div class="sidebar-box quiz-sidebar">
+            <h2>🏆 KIỂM TRA KIẾN THỨC</h2>
+            <p>Trả lời câu hỏi trắc nghiệm để ôn tập và kiểm tra kiến thức của bạn!</p>
+            <button class="btn-quiz" onclick="location.href='quiz.html?topic=le-nguyen'">🎮 Chơi Quiz ngay!</button>
+        </div>
+
+        <div class="sidebar-box mindmap-sidebar">
+            <h2>🧠 BIỂU ĐỒ THÔNG TIN</h2>
+            <p>Tổng hợp toàn bộ kiến thức thời Lê – Nguyễn bằng sơ đồ tư duy trực quan, dễ hiểu.</p>
+            <button class="btn-mindmap" onclick="openMindmap()">Xem biểu đồ →</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand-name">Sử Việt</div>
+            <p class="footer-brand-desc">Website học lịch sử Việt Nam tương tác — khám phá hàng nghìn năm văn hiến dân tộc.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Khám phá</h4>
+            <ul>
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="index">Học qua câu chuyện</a></li>
+                <li><a href="quiz.html">Quiz thử thách</a></li>
+                <li><a href="trochoi.html">Trò chơi lịch sử</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Thông tin</h4>
+            <ul class="footer-info-list">
+                <li>🏫 <span>Trường: <strong>Trường Đại học Công nghệ Thông tin và Truyền thông Việt Hàn</strong></span></li>
+                <li>👥 <span>Nhóm: <strong>CMW</strong></span></li>
+                <li>🏆 <span>Cuộc thi: <strong>Best Web Design</strong></span></li>
+                <li>📅 <span>Năm: <strong>2026</strong></span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Sử Việt — Tự hào lịch sử Việt Nam</span>
+        <span class="vn-tag">VN</span>
+    </div>
+</footer>
+
+<!-- Mindmap Lightbox -->
+<div class="mindmap-lightbox" id="mindmapLightbox" onclick="closeMindmapOnBg(event)">
+    <div class="mindmap-lightbox-inner">
+        <button class="video-lightbox-close" onclick="closeMindmap()">✕</button>
+        <img id="mindmapImg" src="images/sodohaulenguyen.png" alt="Biểu đồ thông tin thời Lê – Nguyễn">
+    </div>
+</div>
+
+<script>
+    function makeDraggable(el) {
+        let isDown = false, startX, scrollLeft;
+        el.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft; });
+        el.addEventListener('mouseleave', () => isDown = false);
+        el.addEventListener('mouseup', () => isDown = false);
+        el.addEventListener('mousemove', e => {
+            if (!isDown) return;
+            e.preventDefault();
+            el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX);
+        });
+    }
+    makeDraggable(document.getElementById('eventScroll'));
+
+    function openVideo(src) {
+        const lb = document.getElementById('videoLightbox');
+        const vid = document.getElementById('lightboxVideo');
+        vid.src = src; lb.classList.add('open'); vid.play();
+    }
+    function closeVideo() {
+        const lb = document.getElementById('videoLightbox');
+        const vid = document.getElementById('lightboxVideo');
+        vid.pause(); vid.src = ''; lb.classList.remove('open');
+    }
+    function closeLightboxOnBg(e) {
+        if (e.target === document.getElementById('videoLightbox')) closeVideo();
+    }
+
+    function openMindmap() {
+        document.getElementById('mindmapLightbox').classList.add('open');
+    }
+    function closeMindmap() {
+        document.getElementById('mindmapLightbox').classList.remove('open');
+    }
+    function closeMindmapOnBg(e) {
+        if (e.target === document.getElementById('mindmapLightbox')) closeMindmap();
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeVideo(); closeMindmap(); } });
+
+    (function() {
+        const raw = localStorage.getItem('suVietUser');
+        if (!raw) return;
+        const u = JSON.parse(raw);
+        const email   = u.email || '';
+        const name    = u.name  || email.split('@')[0] || 'Người dùng';
+        const initial = name[0]?.toUpperCase() || 'U';
+        document.getElementById('navEmailText').textContent  = email;
+        document.getElementById('navDropEmail').textContent  = email;
+        document.getElementById('navDropName').textContent   = name;
+        function setAvatar(el, avatarUrl, fallbackText) {
+            if (avatarUrl) {
+                el.innerHTML = `<img src="${avatarUrl}" alt="" onerror="this.parentElement.textContent='${fallbackText}'">`;
+            } else {
+                el.textContent = fallbackText;
+            }
+        }
+        setAvatar(document.getElementById('navAvatarCircle'), u.avatar, initial);
+        setAvatar(document.getElementById('navDropAvatar'),   u.avatar, initial);
+    })();
+
+    function toggleUserMenu(trigger) {
+        const dropdown = document.getElementById('navUserDropdown');
+        dropdown.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', dropdown.classList.contains('open') ? 'true' : 'false');
+    }
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-user-item'))
+            document.getElementById('navUserDropdown')?.classList.remove('open');
+    });
+    function doLogout() {
+        localStorage.removeItem('suVietUser');
+    }
+    function toggleMobileNav() {
+        const menu = document.querySelector('.nav-menu-sv');
+        const btn = document.getElementById('navToggle');
+        if (!menu || !btn) return;
+        menu.classList.toggle('open');
+        btn.classList.toggle('open');
+        btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false');
+    }
+    function doNavSearch() {
+        const q = document.getElementById('navSearchInput')?.value?.trim();
+        if (q) window.location.href = 'index.html?search=' + encodeURIComponent(q);
+    }
+    function doNavSearchMobile() {
+        const mobileInput = document.getElementById('navSearchInputMobile');
+        const desktopInput = document.getElementById('navSearchInput');
+        if (mobileInput && desktopInput) desktopInput.value = mobileInput.value;
+        doNavSearch();
+    }
+    document.getElementById('navSearchInputMobile')?.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') doNavSearchMobile();
+    });
+</script>
+</body>
+</html>

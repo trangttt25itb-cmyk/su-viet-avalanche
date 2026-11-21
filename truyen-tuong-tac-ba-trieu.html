@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bà Triệu — Nữ Tướng Cưỡi Voi Đánh Giặc | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --gold:#c9a84c;--gold-l:#f0cc72;--gold-dim:#8a6a1a;
+  --crimson:#7a1a5c;--crimson-l:#a8347f;--red-glow:#c94a8a;
+  --ink:#04060a;--silk:#f0ece0;--silk-dim:rgba(240,236,224,0.75);--silk-faint:rgba(240,236,224,0.4);
+  --bg:#050408;--bg2:#0a0710;--panel:rgba(5,4,8,0.97);--teal:#19a2a2;
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--silk);min-height:100vh;overflow-x:hidden;}
+
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#cursorCanvas{position:fixed;inset:0;z-index:250;pointer-events:none;}
+.cosmos{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.cosmos::before{content:'';position:absolute;inset:0;background:
+  radial-gradient(ellipse 70% 50% at 20% 15%,rgba(122,26,92,0.08) 0%,transparent 60%),
+  radial-gradient(ellipse 50% 60% at 80% 70%,rgba(201,168,76,0.05) 0%,transparent 55%),
+  radial-gradient(ellipse 90% 80% at 50% 50%,rgba(10,7,16,0.3) 0%,transparent 80%);}
+
+.deco-frame{position:fixed;inset:10px;pointer-events:none;z-index:1;border:1px solid rgba(201,168,76,0.08);border-radius:2px;}
+.deco-corner{position:fixed;pointer-events:none;z-index:2;}
+.deco-corner.tl{top:14px;left:14px;}.deco-corner.tr{top:14px;right:14px;transform:scaleX(-1);}
+.deco-corner.bl{bottom:14px;left:14px;transform:scaleY(-1);}.deco-corner.br{bottom:14px;right:14px;transform:scale(-1,-1);}
+
+.banner-stripe{position:fixed;top:0;left:0;right:0;height:3px;z-index:300;background:linear-gradient(90deg,#7a1a5c,#c9a84c,#f0cc72,#7a1a5c);opacity:0.65;}
+
+nav{position:fixed;top:3px;left:0;right:0;z-index:200;background:rgba(4,3,7,0.98);border-bottom:1px solid rgba(201,168,76,0.18);padding:13px 40px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(16px);}
+.nav-left{display:flex;align-items:center;gap:14px;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold-l);text-decoration:none;letter-spacing:3px;display:flex;align-items:center;gap:9px;}
+.nav-back{font-size:13px;color:var(--silk-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;border:1px solid rgba(201,168,76,.28);border-radius:20px;padding:5px 13px;}
+.nav-back:hover{color:var(--gold-l);border-color:var(--gold-l);}
+.nav-map-btn{background:transparent;border:1px solid rgba(201,168,76,.32);border-radius:50%;width:34px;height:34px;color:var(--gold-l);cursor:pointer;font-size:15px;}
+
+.prog-bar{position:fixed;top:59px;left:0;right:0;z-index:199;height:3px;background:rgba(255,255,255,0.03);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--crimson),var(--gold),var(--gold-l));transition:width 1s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(201,168,76,0.4);}
+
+.hud-right{position:fixed;top:70px;right:20px;z-index:198;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.hud-badge{background:rgba(4,3,7,0.94);border:1px solid rgba(201,168,76,0.28);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--silk-dim);backdrop-filter:blur(12px);box-shadow:0 4px 18px rgba(0,0,0,0.5);}
+.hud-num{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);font-weight:700;min-width:28px;text-align:center;transition:transform .25s;}
+.hud-num.bump{transform:scale(1.45);}
+.hud-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);}
+.hud-left{position:fixed;top:70px;left:20px;z-index:198;display:flex;flex-direction:column;gap:8px;}
+.streak-badge{background:rgba(4,3,7,0.94);border:1px solid rgba(201,168,76,0.28);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--silk-dim);backdrop-filter:blur(12px);opacity:0;transform:translateX(-12px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.hot{border-color:rgba(255,120,30,0.7);box-shadow:0 0 18px rgba(255,100,0,0.3);}
+.streak-num{font-family:'Playfair Display',serif;font-size:19px;color:#ffa060;font-weight:700;}
+
+.cover-scene{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(122,26,92,.4),rgba(5,4,8,.9));border:2px solid rgba(201,168,76,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(122,26,92,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(122,26,92,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(201,168,76,.5),0 0 130px rgba(122,26,92,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,58px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(122,26,92,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:520px;font-size:15.5px;line-height:1.85;color:var(--silk-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--crimson-l),var(--crimson));border:1px solid rgba(201,168,76,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(122,26,92,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(122,26,92,.5),0 0 40px rgba(201,168,76,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--silk-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:820px;margin:0 auto;padding:84px 24px 90px;position:relative;z-index:2;perspective:1400px;}
+.scene{display:none;}
+.scene.active{display:block;animation:pageFlip .75s cubic-bezier(.22,1,.36,1);transform-origin:top center;}
+@keyframes pageFlip{0%{opacity:0;transform:rotateX(-8deg) translateY(26px) scale(.98);}60%{opacity:1;}100%{opacity:1;transform:rotateX(0) translateY(0) scale(1);}}
+
+.chap-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(122,26,92,0.14);border:1px solid rgba(122,26,92,0.4);border-radius:30px;padding:6px 18px;font-size:12px;color:#e79cc7;letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;font-family:'Space Mono',monospace;}
+
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:10px;margin-left:8px;cursor:pointer;vertical-align:middle;transition:.2s;}
+.src-tag.v{background:rgba(201,168,76,.14);color:var(--gold-l);border:1px solid rgba(201,168,76,.35);}
+.src-tag.d{background:rgba(25,162,162,.12);color:var(--teal);border:1px solid rgba(25,162,162,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.src-popup-overlay{position:fixed;inset:0;background:rgba(2,1,6,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--panel);border:1px solid rgba(201,168,76,.4);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;font-family:'Space Mono',monospace;display:inline-block;margin-bottom:12px;}
+.src-popup-badge.v{background:rgba(201,168,76,.18);color:var(--gold-l);border:1px solid rgba(201,168,76,.4);}
+.src-popup-badge.d{background:rgba(25,162,162,.15);color:var(--teal);border:1px solid rgba(25,162,162,.4);}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:10px;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--silk-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(240,236,224,.04);border-left:2px solid rgba(201,168,76,.4);padding:9px 13px;font-size:13px;color:var(--silk-faint);font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);color:var(--gold-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;transition:.2s;}
+.src-popup-close:hover{background:rgba(201,168,76,.28);}
+
+.timeline{display:flex;align-items:flex-start;gap:0;margin:20px 0 28px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}
+.timeline::-webkit-scrollbar{display:none;}
+.tl-item{flex:1;min-width:80px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;top:12px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(201,168,76,.25),rgba(201,168,76,.05));z-index:0;}
+.tl-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.tl-dot.done{background:var(--gold-dim);border:2px solid var(--gold);color:var(--ink);}
+.tl-dot.cur{background:var(--crimson);border:2px solid var(--gold-l);color:#fff;box-shadow:0 0 18px rgba(122,26,92,.85);animation:pulseCrimson 2s infinite;}
+@keyframes pulseCrimson{0%,100%{box-shadow:0 0 18px rgba(122,26,92,.85);}50%{box-shadow:0 0 30px rgba(168,52,127,1),0 0 50px rgba(122,26,92,.4);}}
+.tl-dot.todo{background:rgba(240,236,224,.05);border:2px solid rgba(240,236,224,.12);color:var(--silk-faint);}
+.tl-year{font-size:10px;color:var(--gold-l);margin-top:5px;text-align:center;letter-spacing:.5px;}
+.tl-event{font-size:9px;color:var(--silk-faint);margin-top:3px;text-align:center;line-height:1.3;padding:0 3px;}
+
+.hero-slot{width:100%;border-radius:16px;margin-bottom:28px;position:relative;overflow:hidden;border:1px solid rgba(201,168,76,0.2);background:linear-gradient(135deg,rgba(122,26,92,0.14) 0%,rgba(201,168,76,0.08) 50%,rgba(10,7,16,0.9) 100%);display:flex;align-items:center;justify-content:center;}
+.hero-slot img{width:100%;height:auto;display:block;}
+.hero-slot .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(5,4,8,0.2) 0%,rgba(5,4,8,0.7) 100%);}
+.hero-slot .hero-caption{position:absolute;bottom:18px;left:0;right:0;text-align:center;}
+.hero-caption-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);letter-spacing:3px;}
+.hero-caption-sub{font-size:11px;color:rgba(240,236,224,0.45);letter-spacing:2px;margin-top:4px;}
+.img-placeholder{position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,rgba(122,26,92,0.12),rgba(201,168,76,0.06),rgba(10,7,16,0.5));}
+.img-placeholder-icon{font-size:64px;opacity:0.5;}
+.img-placeholder-path{font-size:12px;color:rgba(201,168,76,0.5);font-family:monospace;letter-spacing:1px;background:rgba(201,168,76,0.06);border:1px dashed rgba(201,168,76,0.2);border-radius:6px;padding:6px 14px;}
+.img-placeholder-hint{font-size:11px;color:rgba(240,236,224,0.3);letter-spacing:1px;text-align:center;padding:0 20px;}
+
+.edu-pill{float:right;width:210px;margin:0 0 18px 22px;background:rgba(122,26,92,0.08);border:1px solid rgba(122,26,92,0.28);border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.7;color:var(--silk-dim);}
+.edu-pill .pill-tag{font-size:11px;color:#e79cc7;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.story{font-size:18.5px;line-height:1.95;color:rgba(240,236,224,.9);margin-bottom:16px;}
+.story em{color:#f0cc72;font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+.dlg{background:rgba(122,26,92,0.08);border-left:3px solid rgba(201,168,76,0.55);border-radius:0 12px 12px 0;padding:15px 20px;margin:20px 0;font-style:italic;font-size:17.5px;line-height:1.75;color:var(--silk);position:relative;}
+.dlg::before{content:'"';position:absolute;top:-8px;left:12px;font-size:56px;color:rgba(201,168,76,.12);font-family:'Playfair Display',serif;line-height:1;}
+.dlg-who{font-size:10px;font-style:normal;color:#f0cc72;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
+.fact{background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:17px 20px;margin:20px 0;font-size:14.5px;line-height:1.85;color:var(--silk-dim);}
+.fact-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;}
+.outcome{border-radius:14px;padding:20px;margin:20px 0;font-size:16.5px;line-height:1.8;}
+.outcome.bad{background:rgba(100,0,0,0.16);border:1px solid rgba(120,0,0,0.32);}
+.outcome.good{background:rgba(30,80,20,0.12);border:1px solid rgba(50,120,30,0.28);}
+.outcome.neutral{background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.22);}
+.outcome-icon{font-size:30px;display:block;margin-bottom:9px;}
+.legend-moment{text-align:center;padding:28px;background:rgba(122,26,92,0.08);border:1px solid rgba(201,168,76,0.22);border-radius:16px;margin:26px 0;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);line-height:1.7;font-style:italic;}
+.legend-icon{font-size:46px;display:block;margin-bottom:12px;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.22);border-radius:20px;padding:3px 11px;font-size:11.5px;color:var(--gold-l);margin:3px 3px 3px 0;}
+
+.reflect{background:rgba(25,162,162,0.06);border:1px dashed rgba(25,162,162,0.35);border-radius:14px;padding:18px 22px;margin:22px 0;}
+.reflect-tag{font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.reflect-q{font-size:16.5px;font-style:italic;color:var(--silk);line-height:1.7;margin-bottom:8px;}
+.reflect-note{font-size:12px;color:var(--silk-faint);}
+
+.counterf{margin-top:14px;}
+.counterf-btn{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:10px;padding:10px 18px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px;}
+.counterf-btn:hover{background:rgba(201,168,76,.16);}
+.counterf-body{display:none;margin-top:12px;background:rgba(122,26,92,0.07);border-left:3px solid rgba(122,26,92,.45);border-radius:0 12px 12px 0;padding:15px 20px;font-size:14.5px;line-height:1.8;color:var(--silk-dim);font-style:italic;}
+.counterf-body.show{display:block;animation:reflectIn .4s ease;}
+@keyframes reflectIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.choices-label{font-size:11px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin:30px 0 13px;display:flex;align-items:center;gap:10px;}
+.choices-label::before,.choices-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.25),transparent);}
+.choices{display:flex;flex-direction:column;gap:11px;}
+.c-btn{background:rgba(240,236,224,.03);border:1px solid rgba(240,236,224,.1);border-radius:12px;padding:17px 20px;color:var(--silk);font-family:'Crimson Pro',serif;font-size:17px;text-align:left;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:flex-start;gap:13px;line-height:1.55;position:relative;overflow:hidden;}
+.c-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(122,26,92,.09),transparent);opacity:0;transition:opacity .3s;}
+.c-btn:hover{background:rgba(122,26,92,0.12);border-color:rgba(201,168,76,.45);transform:translateX(7px);box-shadow:0 4px 18px rgba(0,0,0,.35),-3px 0 0 rgba(201,168,76,.4);}
+.c-btn:hover::before{opacity:1;}
+.c-letter{width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);color:var(--gold-l);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;transition:all .3s;}
+.c-btn:hover .c-letter{background:rgba(201,168,76,.22);border-color:var(--gold-l);}
+.c-sub{font-size:13px;color:var(--silk-faint);font-style:italic;margin-top:4px;}
+
+.kc{background:rgba(10,7,16,0.5);border:1px solid rgba(201,168,76,.2);border-radius:14px;padding:20px 22px;margin:22px 0;position:relative;}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent);border-radius:14px 14px 0 0;}
+.kc-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.kc-q{font-size:17px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.kc-pts{font-size:12px;color:var(--gold-dim);float:right;margin-top:-2px;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(240,236,224,.04);border:1px solid rgba(240,236,224,.1);border-radius:8px;padding:11px 15px;font-family:'Crimson Pro',serif;font-size:16px;color:var(--silk);cursor:pointer;text-align:left;transition:all .25s;}
+.kc-opt:hover:not(:disabled){background:rgba(122,26,92,.14);border-color:rgba(201,168,76,.28);transform:translateX(4px);}
+.kc-opt.correct{background:rgba(30,90,20,.22)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(120,0,0,.22)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:11px;font-size:14.5px;line-height:1.7;display:none;padding:10px 13px;border-radius:8px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(30,90,20,.14);color:#a5d6a7;}
+.kc-fb.no{background:rgba(120,0,0,.14);color:#ef9a9a;}
+
+.challenge-block{background:rgba(122,26,92,0.09);border:1px solid rgba(122,26,92,0.32);border-radius:14px;padding:22px;margin:24px 0;}
+.challenge-tag{font-size:11px;color:#e79cc7;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;display:block;}
+.challenge-title{font-size:18px;font-weight:600;color:#fff;margin-bottom:10px;line-height:1.45;}
+.challenge-desc{font-size:15px;line-height:1.75;color:var(--silk-dim);margin-bottom:16px;}
+.arrange-items{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.arrange-item{background:rgba(240,236,224,.04);border:1px solid rgba(240,236,224,.12);border-radius:8px;padding:10px 14px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--silk);cursor:grab;transition:all .25s;display:flex;align-items:center;gap:10px;user-select:none;}
+.arrange-item:active{cursor:grabbing;opacity:0.7;}
+.arrange-item.dragging{opacity:0.4;border-color:var(--gold);}
+.arrange-item.drag-over{border-color:var(--gold-l);background:rgba(201,168,76,0.08);}
+.arrange-handle{font-size:18px;opacity:0.4;}
+.fill-blank-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+.fill-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.fill-row label{font-size:15px;color:var(--silk-dim);}
+.fill-inp{background:rgba(240,236,224,.06);border:1px solid rgba(201,168,76,.3);border-radius:6px;padding:6px 12px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--silk);outline:none;min-width:140px;transition:border-color .25s;}
+.fill-inp:focus{border-color:var(--gold-l);}
+.fill-inp.correct-inp{border-color:#4caf50;background:rgba(30,90,20,.12);color:#a5d6a7;}
+.fill-inp.wrong-inp{border-color:#e53935;background:rgba(120,0,0,.12);color:#ef9a9a;}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.match-col{display:flex;flex-direction:column;gap:7px;}
+.match-item{background:rgba(240,236,224,.04);border:1px solid rgba(240,236,224,.1);border-radius:8px;padding:9px 14px;font-family:'Crimson Pro',serif;font-size:14.5px;color:var(--silk);cursor:pointer;transition:all .25s;}
+.match-item:hover:not(.used):not(.matched){background:rgba(122,26,92,.14);border-color:rgba(201,168,76,.3);}
+.match-item.selected{border-color:var(--gold-l);background:rgba(201,168,76,.14);}
+.match-item.matched{border-color:#4caf50;background:rgba(30,90,20,.16);color:#a5d6a7;cursor:default;}
+.match-item.wrong-flash{border-color:#e53935;background:rgba(120,0,0,.16);animation:wrongShake .3s;}
+.match-item.used{opacity:0.35;cursor:default;}
+@keyframes wrongShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.challenge-btn{padding:10px 22px;background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.35);border-radius:8px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:all .25s;}
+.challenge-btn:hover{background:rgba(201,168,76,.25);}
+.challenge-result{margin-top:12px;font-size:15px;line-height:1.7;display:none;padding:10px 14px;border-radius:8px;}
+.challenge-result.show{display:block;}
+.challenge-result.ok{background:rgba(30,90,20,.14);color:#a5d6a7;}
+.challenge-result.no{background:rgba(120,0,0,.14);color:#ef9a9a;}
+
+.gate{background:rgba(122,26,92,0.12);border:2px solid rgba(201,168,76,0.3);border-radius:16px;padding:26px 28px;margin:28px 0;text-align:center;}
+.gate-icon{font-size:40px;display:block;margin-bottom:12px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);margin-bottom:10px;}
+.gate-desc{font-size:15px;color:var(--silk-dim);line-height:1.75;margin-bottom:18px;}
+.gate-req{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:30px;padding:6px 18px;font-size:13px;color:var(--gold-l);margin-bottom:18px;}
+.gate-unlock{padding:11px 24px;background:rgba(122,26,92,0.5);border:1px solid rgba(201,168,76,.4);border-radius:8px;color:var(--silk);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:all .3s;}
+.gate-unlock:hover{background:var(--crimson);box-shadow:0 6px 20px rgba(122,26,92,.4);}
+
+.power-meter{background:rgba(10,7,16,0.4);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:13px 17px;margin:18px 0;display:flex;align-items:center;gap:13px;}
+.pm-label{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;min-width:65px;}
+.pm-track{flex:1;height:7px;background:rgba(240,236,224,.05);border-radius:4px;overflow:hidden;}
+.pm-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--crimson),var(--gold-l));transition:width .9s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(201,168,76,.3);}
+.pm-icon{font-size:19px;}
+
+.pts-pop{position:fixed;top:76px;right:80px;z-index:999;font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 18px rgba(201,168,76,.6);}
+.pts-pop.show{animation:ptsBounce .9s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes ptsBounce{0%{opacity:0;transform:translateY(0) scale(.8);}30%{opacity:1;transform:translateY(-18px) scale(1.2);}70%{opacity:1;transform:translateY(-32px) scale(1);}100%{opacity:0;transform:translateY(-48px) scale(.9);}}
+.combo-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .85s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.08);}}
+.cbi{background:radial-gradient(ellipse at center,rgba(122,26,92,0.92),rgba(5,4,8,0.97));border:2px solid var(--gold-l);border-radius:18px;padding:18px 34px;box-shadow:0 0 50px rgba(122,26,92,.5),0 0 100px rgba(201,168,76,.15);}
+.cbi-title{font-size:12px;color:#e79cc7;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.cbi-label{font-size:30px;color:var(--gold-l);}
+.cbi-pts{font-size:13px;color:rgba(240,236,224,0.55);margin-top:4px;}
+
+.ripple-el{position:absolute;border-radius:50%;background:rgba(240,204,114,0.45);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(2.6);opacity:0;}}
+.gold-burst{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--gold-l);pointer-events:none;z-index:9999;box-shadow:0 0 8px rgba(201,168,76,.9);}
+
+.map-overlay{position:fixed;inset:0;background:rgba(2,1,6,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.map-overlay.show{display:flex;}
+.map-modal{background:radial-gradient(ellipse at 12% 88%,rgba(201,168,76,.09),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(122,26,92,.11),transparent 55%),var(--panel);border:1px solid rgba(201,168,76,.4);border-radius:16px;padding:24px 26px;max-width:780px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:14px;}
+.map-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);}
+.map-modal-close{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.jmap-note{font-size:11.5px;color:var(--silk-faint);margin-bottom:14px;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink);stroke-width:2;filter:drop-shadow(0 0 7px rgba(201,168,76,.75));transition:opacity .7s ease,r .3s ease;}
+.jmap-pt.locked{opacity:1;fill:rgba(240,236,224,.08);stroke:rgba(240,236,224,.35);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl{fill:#f0ece0;font-size:12.5px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-yr{fill:#ffb74d;font-size:10.5px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-path{fill:none;stroke:rgba(201,168,76,0.55);stroke-width:2.5;stroke-dasharray:5 5;}
+.jmap-lbl.locked,.jmap-yr.locked{opacity:0.4;fill:var(--silk-faint);font-weight:400;}
+
+.journal{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.25);border-radius:16px;padding:24px 26px;margin:0 0 30px;text-align:left;}
+.journal-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(240,236,224,.06);font-size:14.5px;color:var(--silk-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11.5px;padding:2px 10px;border-radius:10px;font-family:'Space Mono',monospace;white-space:nowrap;}
+.journal-status.ok{background:rgba(30,90,20,.2);color:#a5d6a7;}
+.journal-status.no{background:rgba(120,0,0,.2);color:#ef9a9a;}
+.journal-copy{margin-top:16px;background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.35);border-radius:10px;padding:10px 20px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.2s;}
+.journal-copy:hover{background:rgba(201,168,76,.24);}
+
+.final{text-align:center;padding:36px 0;}
+.final-seal{width:120px;height:120px;border-radius:50%;background:rgba(122,26,92,0.12);border:2px solid rgba(201,168,76,.45);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:50px;animation:sealPulse 3s ease-in-out infinite;}
+@keyframes sealPulse{0%,100%{box-shadow:0 0 35px rgba(122,26,92,.2);}50%{box-shadow:0 0 60px rgba(122,26,92,.5),0 0 90px rgba(201,168,76,.1);}}
+.final-h{font-family:'Playfair Display',serif;font-size:30px;color:var(--gold-l);margin-bottom:10px;line-height:1.3;}
+.final-pts{font-size:50px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:10px 0;text-shadow:0 0 28px rgba(201,168,76,.45);}
+.final-rank-badge{display:inline-block;background:rgba(122,26,92,0.14);border:1px solid rgba(201,168,76,.32);border-radius:30px;padding:6px 22px;font-size:13px;color:var(--gold-l);margin-bottom:22px;letter-spacing:1px;}
+.final-desc{font-size:16.5px;color:var(--silk-dim);line-height:1.9;max-width:540px;margin:0 auto 28px;}
+.final-lesson{background:rgba(122,26,92,0.07);border:1px solid rgba(122,26,92,.2);border-radius:14px;padding:20px 24px;text-align:left;margin:0 0 32px;font-size:15.5px;line-height:1.9;color:var(--silk-dim);}
+.fl-tag{font-size:10px;color:#e79cc7;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.achievements{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px;}
+.ach{background:rgba(122,26,92,0.09);border:1px solid rgba(122,26,92,.28);border-radius:11px;padding:11px 14px;text-align:center;min-width:90px;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+.ach-icon{font-size:26px;display:block;margin-bottom:5px;}
+.ach-name{font-size:10px;color:#e79cc7;letter-spacing:.8px;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:6px;}
+.btn-restart{padding:12px 26px;background:transparent;border:1px solid rgba(201,168,76,.38);border-radius:10px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.3s;}
+.btn-restart:hover{background:rgba(201,168,76,.12);}
+.btn-home{padding:12px 26px;background:rgba(122,26,92,0.5);border:1px solid rgba(122,26,92,.45);border-radius:10px;color:var(--silk);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:7px;}
+.btn-home:hover{background:var(--crimson);}
+
+.lb-modal{display:none;position:fixed;inset:0;background:rgba(4,3,10,0.75);z-index:9997;align-items:center;justify-content:center;}
+.lb-modal.show{display:flex;}
+.lb-box{background:#0c0916;border:1px solid rgba(201,168,76,0.3);border-radius:16px;width:90%;max-width:420px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.lb-header{background:var(--crimson);color:var(--silk);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+.lb-header h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);}
+.lb-close{cursor:pointer;font-size:18px;opacity:0.8;color:var(--silk);}
+.lb-close:hover{opacity:1;}
+.lb-content{padding:16px 20px;overflow-y:auto;}
+.lb-loading,.lb-empty{text-align:center;color:var(--silk-faint);padding:24px 0;font-size:14px;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.15);}
+.lb-rank{width:28px;text-align:center;font-weight:700;color:var(--gold-l);}
+.lb-name{flex:1;font-weight:600;color:var(--silk);font-size:14px;}
+.lb-exp{font-size:13px;color:var(--gold-dim);font-weight:600;}
+.lb-myrank{margin-top:14px;padding:12px;background:rgba(201,168,76,0.08);border:1px solid var(--gold);border-radius:10px;text-align:center;font-size:14px;color:var(--silk);}
+
+.chap-intro{text-align:center;padding:20px 0 28px;border-bottom:1px solid rgba(201,168,76,.1);margin-bottom:26px;}
+.chap-num{font-size:11px;color:var(--gold-dim);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+.chap-title{font-family:'Playfair Display',serif;font-size:28px;color:var(--gold-l);margin-bottom:8px;line-height:1.25;}
+.chap-sub{font-size:14px;color:var(--silk-faint);letter-spacing:1px;}
+
+.ref-overlay{position:fixed;inset:0;background:rgba(2,1,6,.86);z-index:9980;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;backdrop-filter:blur(5px);overflow-y:auto;}
+.ref-overlay.show{display:flex;}
+.ref-panel{background:radial-gradient(ellipse at 10% 0%,rgba(122,26,92,.1),transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(201,168,76,.08),transparent 55%),var(--panel);border:1px solid rgba(201,168,76,.35);border-radius:20px;max-width:760px;width:100%;padding:34px 38px 40px;box-shadow:0 40px 100px rgba(0,0,0,.7);animation:srcPopIn .35s cubic-bezier(.34,1.56,.64,1);margin-bottom:40px;}
+.ref-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px;}
+.ref-panel-title{font-family:'Playfair Display',serif;font-size:24px;color:var(--gold-l);display:flex;align-items:center;gap:10px;}
+.ref-panel-close{background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.35);color:var(--gold-l);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;flex-shrink:0;}
+.ref-panel-intro{font-size:14.5px;line-height:1.8;color:var(--silk-dim);margin:14px 0 26px;}
+.ref-panel-item{position:relative;padding:10px 0 10px 22px;font-size:14.5px;line-height:1.7;color:var(--silk-dim);border-bottom:1px solid rgba(240,236,224,.06);}
+.ref-panel-item::before{content:'—';position:absolute;left:0;color:var(--gold-l);}
+.ref-panel-item b{color:var(--silk);}
+.ref-panel-badge{display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:10px;font-family:'Space Mono',monospace;margin-left:8px;vertical-align:middle;background:rgba(201,168,76,.16);color:var(--gold-l);border:1px solid rgba(201,168,76,.4);}
+.ref-page{background:rgba(122,26,92,0.06);border:1px solid rgba(122,26,92,0.24);border-radius:16px;padding:26px 28px;margin:30px 0 10px;}
+.ref-page-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);margin-bottom:6px;}
+.ref-page-sub{font-size:13px;color:var(--silk-faint);margin-bottom:18px;line-height:1.6;}
+.ref-group-h{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:#e79cc7;margin-bottom:8px;}
+.ref-item{font-size:14px;line-height:1.85;color:var(--silk-dim);padding-left:16px;margin-bottom:5px;}
+
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:640px){
+  nav{padding:11px 14px;}
+  .wrap{padding:74px 12px 60px;}
+  .edu-pill{float:none;width:100%;margin:0 0 14px;}
+  
+  .match-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="cosmos"></div>
+<div class="deco-frame"></div>
+<div class="deco-corner tl"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M2 38 L2 2 L38 2" stroke="rgba(201,168,76,0.35)" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="rgba(201,168,76,0.4)"/></svg></div>
+<div class="deco-corner tr"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M2 38 L2 2 L38 2" stroke="rgba(201,168,76,0.35)" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="rgba(201,168,76,0.4)"/></svg></div>
+<div class="deco-corner bl"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M2 38 L2 2 L38 2" stroke="rgba(201,168,76,0.35)" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="rgba(201,168,76,0.4)"/></svg></div>
+<div class="deco-corner br"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M2 38 L2 2 L38 2" stroke="rgba(201,168,76,0.35)" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="rgba(201,168,76,0.4)"/></svg></div>
+
+<div class="banner-stripe"></div>
+<div class="pts-pop" id="ptsPop">+0</div>
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:297;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--crimson-l),var(--crimson));
+  border:2px solid rgba(201,168,76,.55);color:#fff;font-size:22px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(122,26,92,.45);
+  align-items:center;justify-content:center;opacity:.85;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:297;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--crimson-l),var(--crimson));
+  border:2px solid rgba(201,168,76,.55);color:#fff;font-size:22px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(122,26,92,.45);
+  align-items:center;justify-content:center;opacity:.85;">➡</button>
+<div class="combo-burst" id="comboBurst">
+  <div class="cbi">
+    <div class="cbi-title">Chuỗi đúng!</div>
+    <div class="cbi-label" id="comboLabel">🔥 COMBO x3</div>
+    <div class="cbi-pts" id="comboPtsLabel">+bonus điểm!</div>
+  </div>
+</div>
+
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🗺️ Hành Trình Nhụy Kiều Tướng Quân</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note">Các điểm dừng mở khóa dần khi bạn đi qua từng chương.</div>
+    <div class="jmap">
+    <svg viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M50,150 C160,90 220,70 280,90 S420,140 480,130 S620,70 680,90 S740,140 740,150"/>
+      <circle class="jmap-pt pt-nongcong" cx="50" cy="150" r="7"/><text class="jmap-yr pt-nongcong" x="50" y="170" text-anchor="middle">~240</text><text class="jmap-lbl pt-nongcong" x="50" y="182" text-anchor="middle">Nông Cống</text>
+      <circle class="jmap-pt locked pt-nuinua" cx="280" cy="90" r="6"/><text class="jmap-yr locked pt-nuinua" x="280" y="75" text-anchor="middle">248</text><text class="jmap-lbl locked pt-nuinua" x="280" y="65" text-anchor="middle">Núi Nưa</text>
+      <circle class="jmap-pt locked pt-cuuchan" cx="480" cy="130" r="6"/><text class="jmap-yr locked pt-cuuchan" x="480" y="150" text-anchor="middle">248</text><text class="jmap-lbl locked pt-cuuchan" x="480" y="162" text-anchor="middle">Cửu Chân, Giao Chỉ</text>
+      <circle class="jmap-pt locked pt-nuitung" cx="680" cy="90" r="7"/><text class="jmap-yr locked pt-nuitung" x="680" y="75" text-anchor="middle">248</text><text class="jmap-lbl locked pt-nuitung" x="680" y="65" text-anchor="middle">Núi Tùng</text>
+    </svg>
+    </div>
+  </div>
+</div>
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+  <div class="ref-panel">
+    <div class="ref-panel-head">
+      <div class="ref-panel-title">📚 Nguồn Tham Khảo</div>
+      <button class="ref-panel-close" onclick="toggleRefPage()">✕</button>
+    </div>
+    <div class="ref-panel-intro">Các sự kiện, ngày tháng, số liệu được đối chiếu từ sử liệu và truyền thuyết dân gian đã ghi chép. Hội thoại giữa các nhân vật là <strong>dựng lại minh họa</strong> theo tinh thần lịch sử.</div>
+    <div id="refPanelList"></div>
+  </div>
+</div>
+
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <div><span class="src-popup-badge" id="srcBadge">ĐÃ KIỂM CHỨNG</span></div>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<div class="hud-left">
+  <div class="streak-badge" id="streakBadge">
+    <span>⚔️</span>
+    <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim)">Streak</div><div class="streak-num" id="streakNum">0</div></div>
+  </div>
+</div>
+<div class="hud-right">
+  <div class="hud-badge">
+    <div><div class="hud-label">Điểm</div><div class="hud-num" id="scoreNum">0</div></div>
+    <div><div class="hud-label">Danh hiệu</div><div id="scoreRank" style="font-size:11px;color:var(--gold-l);">—</div></div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <a href="cau-chuyen-detail.html?id=9" class="nav-back">← Câu chuyện</a>
+    <a href="index.html" class="nav-logo">🏯 SỬ VIỆT</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="nav-map-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình">🗺️</button>
+    <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+  </div>
+</nav>
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:2%"></div></div>
+
+<div class="wrap">
+
+<!-- ═══════ COVER MỞ ĐẦU ═══════ -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">🌺</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">BÀ TRIỆU<br>Nữ Tướng Cưỡi Voi Đánh Giặc</div>
+    <div class="cover-sub">Năm 226 — 248 · Nhụy Kiều Tướng Quân</div>
+    <div class="cover-desc">Ngươi là Triệu Thị Trinh — cô gái núi rừng Cửu Chân mang khát vọng "cưỡi cơn gió mạnh, đạp luồng sóng dữ". Từ lời khước từ định kiến, dựng cờ khởi nghĩa tại núi Nưa, đến trận cuối bi tráng ở núi Tùng: một hành trình 3 chương về khí phách không phân biệt giới tính.</div>
+    <div class="cover-chips">
+      <span class="chip">🐘 5 chương</span>
+      <span class="chip">🎓 Kiến thức + Thử thách</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">🌺 Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ═══════════════ CHƯƠNG 1: KHÍ PHÁCH NÚI RỪNG ═══════════════ -->
+<div class="scene" id="s1">
+  <div class="chap-intro">
+    <div class="chap-num">Chương 1 / 5</div>
+    <div class="chap-title">Khí Phách Núi Rừng Thanh Hóa</div>
+    <div class="chap-sub">Năm 226–247 SCN · Nông Cống, Cửu Chân</div>
+  </div>
+
+  <div class="hero-slot">
+    <img src="images/nutuong.jpg" alt="Triệu Thị Trinh thời niên thiếu">
+    <div class="hero-overlay"></div>
+    <div class="hero-caption">
+      <div class="hero-caption-title">NÔNG CỐNG — CỬU CHÂN <span class="src-tag v" onclick="openSrcPopup('s1_boiconh')">📖 nguồn</span></div>
+      <div class="hero-caption-sub">Vùng núi rừng dưới ách đô hộ Đông Ngô</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot cur">1</div><div class="tl-year">~240</div><div class="tl-event">Khí phách</div></div>
+    <div class="tl-item"><div class="tl-dot todo">2</div><div class="tl-year">~245</div><div class="tl-event">Voi Trắng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">248</div><div class="tl-event">Khởi nghĩa</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">248</div><div class="tl-event">30 Trận Thắng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">248</div><div class="tl-event">Bất diệt</div></div>
+  </div>
+
+  <div class="power-meter reveal">
+    <span class="pm-icon">🔥</span>
+    <span class="pm-label">Khí Phách</span>
+    <div class="pm-track"><div class="pm-fill" id="powerMeter" style="width:5%"></div></div>
+    <span id="powerPct" style="font-size:11px;color:var(--gold-l);min-width:28px;text-align:right;">5%</span>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="pill-tag">📚 Bối cảnh</span>
+      Sau nhà Đông Hán, Giao Châu rơi vào tay Đông Ngô. Quan lại đô hộ sưu cao thuế nặng, đàn áp nhân dân Cửu Chân tàn bạo — mảnh đất mà ngươi sinh ra và lớn lên.
+    </div>
+    Ngươi là <strong>Triệu Thị Trinh</strong>, sinh năm 226 tại miền núi Nông Cống. Cha mẹ mất sớm, ngươi sống cùng anh trai <strong>Triệu Quốc Đạt</strong> — một hào trưởng có thế lực. Từ nhỏ, ngươi đã nổi tiếng khỏe mạnh, giỏi võ nghệ, có chí khí hơn người.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Triệu Quốc Đạt — khuyên em gái</div>
+    "Em đã đến tuổi lấy chồng. Hãy yên phận như bao cô gái khác, đừng nghĩ đến chuyện binh đao — thân gái liễu yếu, sao gánh nổi việc lớn?"
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">"Thân gái liễu yếu" là định kiến phổ biến thời bấy giờ. Điều gì khiến một người phụ nữ ở thế kỷ thứ 3 dám công khai bác bỏ định kiến ấy giữa một xã hội trọng nam?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — hãy tự suy ngẫm.</div>
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiến thức cơ bản <span class="kc-pts">+8 điểm</span></span>
+    <div class="kc-q">Bà Triệu khởi nghĩa chống lại triều đại phương Bắc nào?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'q1')">A. Nhà Hán</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'q1')">B. Đông Ngô</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q1')">C. Nhà Đường</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q1')">D. Nhà Tống</button>
+    </div>
+    <div class="kc-fb" id="q1-fb"></div>
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiến thức <span class="kc-pts">+8 điểm</span></span>
+    <div class="kc-q">Triệu Thị Trinh sống cùng ai sau khi cha mẹ mất sớm?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'q2')">A. Chú ruột</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'q2')">B. Anh trai Triệu Quốc Đạt</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q2')">C. Một vị tướng nuôi dưỡng</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q2')">D. Bà ngoại</button>
+    </div>
+    <div class="kc-fb" id="q2-fb"></div>
+  </div>
+
+  <div class="story reveal">Trước lời khuyên của anh trai, ngươi đã đáp lại bằng một câu nói sẽ lưu danh sử sách ngàn đời. Nhưng trước tiên, hãy sắp xếp lại hành trình đưa ngươi đến giây phút quyết định ấy.</div>
+
+  <div class="challenge-block reveal">
+    <span class="challenge-tag">⚔️ Thách thức · Sắp xếp hành trình</span>
+    <div class="challenge-title">Đặt đúng trình tự trước khi khởi nghĩa!</div>
+    <div class="challenge-desc">Kéo và thả để sắp xếp các sự kiện theo đúng thứ tự. Cần đúng ít nhất 3/4 bước để nhận điểm thưởng.</div>
+    <div class="arrange-items" id="arrangeList1">
+      <div class="arrange-item" draggable="true" data-order="2"><span class="arrange-handle">⠿</span>Rèn luyện võ nghệ, nổi tiếng khỏe mạnh, khí phách hơn người</div>
+      <div class="arrange-item" draggable="true" data-order="1"><span class="arrange-handle">⠿</span>Cha mẹ mất sớm, sống cùng anh trai Triệu Quốc Đạt</div>
+      <div class="arrange-item" draggable="true" data-order="4"><span class="arrange-handle">⠿</span>Khảng khái đáp lời anh trai, quyết chí dựng cờ khởi nghĩa</div>
+      <div class="arrange-item" draggable="true" data-order="3"><span class="arrange-handle">⠿</span>Anh trai khuyên nên lấy chồng, an phận như bao cô gái khác</div>
+    </div>
+    <button class="challenge-btn" onclick="checkArrange('arrangeList1','arrangeResult1',[1,2,3,4])">Kiểm tra thứ tự →</button>
+    <div class="challenge-result" id="arrangeResult1"></div>
+  </div>
+
+  <div class="choices-label">⚡ Trước lời khuyên của anh trai — ngươi đáp lại thế nào?</div>
+  <div class="choices">
+    <button class="c-btn" onclick="markCorrect('s1');go('s1A',15)">
+      <span class="c-letter">A</span>
+      <div>"Tôi muốn cưỡi cơn gió mạnh, đạp luồng sóng dữ... chứ không chịu khom lưng làm tỳ thiếp người ta!"<div class="c-sub">⭐ Câu nói bất hủ thật sự của Triệu Thị Trinh — lưu danh sử sách!</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s1B',5)">
+      <span class="c-letter">B</span>
+      <div>Nghe lời anh trai, lấy chồng để yên ổn.<div class="c-sub">An phận không phải là con đường của một người có chí lớn...</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s1C',5)">
+      <span class="c-letter">C</span>
+      <div>Rời quê đi lánh nạn nơi khác, tránh binh đao.<div class="c-sub">Trốn tránh không giải quyết được ách áp bức của nhân dân...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s1A">
+  <div class="chap-badge">⭐ Lựa chọn đúng lịch sử!</div>
+  <div class="outcome good">
+    <span class="outcome-icon">🌟</span>
+    <strong>Xuất sắc!</strong> Câu nói khảng khái ấy thể hiện khí phách phi thường của người con gái đất Việt — bác bỏ hoàn toàn định kiến "thân gái liễu yếu" của thời đại.
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Câu nói lưu danh sử sách</span>
+    "Tôi muốn cưỡi cơn gió mạnh, đạp luồng sóng dữ, chém cá kình ở biển Đông, đánh đuổi quân Ngô, giành lại giang sơn, cởi ách nô lệ, chứ không chịu khom lưng làm tỳ thiếp người ta!"
+    <div style="margin-top:10px;">
+      <span class="chip">👊 Khí phách phi thường</span>
+      <span class="chip">🌊 Cưỡi gió đạp sóng</span>
+      <span class="chip">⚔️ Khát vọng tự do</span>
+    </div>
+  </div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1x',0)"><span class="c-letter">→</span><div>Trước khi dấy binh — huyền thoại con voi trắng một ngà!</div></button></div>
+</div>
+<div class="scene" id="s1B">
+  <div class="chap-badge">📍 Suy nghĩ lại...</div>
+  <div class="outcome neutral"><span class="outcome-icon">⏳</span>An phận làm tỳ thiếp không phải là điều Triệu Thị Trinh mong muốn — nhân dân Cửu Chân vẫn tiếp tục chịu áp bức trong lúc ngươi lựa chọn im lặng.</div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s1B')">🔮 Nếu bà thật sự chọn an phận?</button>
+    <div class="counterf-body" id="cf-s1B">Nếu Triệu Thị Trinh chấp nhận an phận, rất có thể một trong những cuộc khởi nghĩa lớn nhất thời Bắc thuộc đã không xảy ra, và câu nói truyền cảm hứng cho biết bao thế hệ phụ nữ Việt Nam sau này sẽ không bao giờ được lưu lại.</div>
+  </div>
+  <div class="choices-label">⚡ Thay đổi quyết định...</div>
+  <div class="choices"><button class="c-btn" onclick="markCorrect('s1');go('s1A',8)"><span class="c-letter">→</span><div>"Không! Tôi phải cưỡi cơn gió mạnh, đạp luồng sóng dữ!"</div></button></div>
+</div>
+<div class="scene" id="s1C">
+  <div class="chap-badge">📍 Trốn tránh không giải quyết được gì</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Rời bỏ quê hương không giúp được nhân dân Cửu Chân thoát khỏi ách đô hộ — ngươi hiểu rằng phải ở lại và hành động ngay trên chính mảnh đất mình sinh ra.</div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s1C')">🔮 Nếu bà thật sự lánh nạn nơi khác?</button>
+    <div class="counterf-body" id="cf-s1C">Rời bỏ Cửu Chân đồng nghĩa với việc để lại nhân dân nơi đây tiếp tục chịu áp bức — và ngọn lửa khởi nghĩa vốn cần một người tại chỗ, hiểu rõ địa thế núi Nưa, có thể sẽ không bao giờ bùng lên đúng lúc.</div>
+  </div>
+  <div class="choices-label">⚡ Ở lại, đối mặt...</div>
+  <div class="choices"><button class="c-btn" onclick="markCorrect('s1');go('s1A',8)"><span class="c-letter">→</span><div>"Sức mạnh của ta phải bắt nguồn từ chính quê hương này!"</div></button></div>
+</div>
+
+<!-- ═══════════════ CHƯƠNG 2 (MỚI): THU PHỤC VOI TRẮNG MỘT NGÀ ═══════════════ -->
+<div class="scene" id="s1x">
+  <div class="chap-intro">
+    <div class="chap-num">Chương 2 / 5</div>
+    <div class="chap-title">Thu Phục Voi Trắng Một Ngà</div>
+    <div class="chap-sub">Khoảng năm 245 SCN · Rừng sâu Cửu Chân</div>
+  </div>
+
+  <div class="hero-slot">
+    <img src="images/nutuonggiapvang.jpg" alt="Bà Triệu thuần phục voi trắng một ngà">
+    <div class="hero-overlay"></div>
+    <div class="hero-caption">
+      <div class="hero-caption-title">RỪNG SÂU CỬU CHÂN <span class="src-tag v" onclick="openSrcPopup('s1x_voitrang')">📖 nguồn</span></div>
+      <div class="hero-caption-sub">Truyền thuyết về con voi trắng một ngà</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~240</div><div class="tl-event">Khí phách</div></div>
+    <div class="tl-item"><div class="tl-dot cur">2</div><div class="tl-year">~245</div><div class="tl-event">Voi Trắng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">248</div><div class="tl-event">Khởi nghĩa</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">248</div><div class="tl-event">30 Trận Thắng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">248</div><div class="tl-event">Bất diệt</div></div>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="pill-tag">🐘 Truyền thuyết dân gian</span>
+      Trong dân gian Thanh Hóa còn lưu truyền câu chuyện về một con voi trắng, chỉ có một ngà, hung dữ khác thường, từng quật chết không ít thợ săn bạo gan tìm cách thuần phục nó.
+    </div>
+    Trước khi dấy binh, ngươi nghe tin về con voi dữ đang tàn phá nương rẫy quanh vùng núi Nưa. Nhiều trai tráng khỏe mạnh đã thử sức và bỏ mạng dưới ngà voi. Ngươi một mình vào rừng sâu, không mang theo binh khí sắc bén — chỉ mang theo lòng gan dạ và sự am hiểu tập tính muông thú mà bao năm sống giữa núi rừng đã dạy cho ngươi.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Một cụ già trong làng — cản ngăn</div>
+    "Cô nương, con voi ấy đã hạ sát ba người rồi. Đến cả những thợ săn lành nghề nhất cũng không dám bén mảng tới gần!"
+  </div>
+
+  <div class="story reveal">
+    Nhiều ngày ròng rã, ngươi kiên nhẫn tiếp cận, học theo nhịp thở, dáng đi của con vật, không hề khiêu khích hay tấn công. Đến ngày con voi dữ chịu quỳ xuống trước mặt ngươi, cả vùng Cửu Chân xôn xao truyền tai nhau về người con gái đã thuần phục được thứ mà không người đàn ông nào dám lại gần.
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiến thức <span class="kc-pts">+10 điểm</span></span>
+    <div class="kc-q">Theo truyền thuyết dân gian, điều gì khiến con voi Bà Triệu thuần phục trở nên đặc biệt, xứng làm chiến mã của một vị tướng?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,true,'q4')">A. Nó chỉ có một ngà — đặc điểm cực hiếm gặp ở voi rừng</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q4')">B. Nó là con voi to lớn nhất vùng Cửu Chân</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q4')">C. Nó có màu lông đỏ như lửa</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q4')">D. Nó biết nghe hiểu tiếng người</button>
+    </div>
+    <div class="kc-fb" id="q4-fb"></div>
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Thuần phục một con vật dữ tợn mà nhiều người đàn ông khỏe mạnh phải bỏ mạng — dù là truyền thuyết hay sự thật, hình ảnh ấy muốn gửi gắm điều gì về người anh hùng dân gian?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai.</div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Ý nghĩa biểu tượng</span>
+    Hình ảnh con voi trắng một ngà trở thành một phần không thể tách rời trong hình tượng Bà Triệu — vị nữ tướng cưỡi voi ra trận. Nó không chỉ là phương tiện di chuyển, mà còn là biểu tượng cho sức mạnh phi thường, vượt lên trên giới hạn mà ngay cả những người đàn ông khỏe mạnh nhất cũng phải kính nể.
+    <div style="margin-top:10px;">
+      <span class="chip">🐘 Voi trắng một ngà</span>
+      <span class="chip">🌲 Rừng sâu Cửu Chân</span>
+      <span class="chip">✨ Biểu tượng sức mạnh</span>
+    </div>
+  </div>
+
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',0)"><span class="c-letter">→</span><div>Năm 248 — Dựng cờ khởi nghĩa tại núi Nưa!</div></button></div>
+</div>
+
+<!-- ═══════════════ CHƯƠNG 3: KHỞI NGHĨA NÚI NƯA & GIÁP VÀNG ═══════════════ -->
+<div class="scene" id="s2">
+  <div class="chap-intro">
+    <div class="chap-num">Chương 3 / 5</div>
+    <div class="chap-title">Khởi Nghĩa Núi Nưa & Giáp Vàng</div>
+    <div class="chap-sub">Năm 248 SCN · Núi Nưa, Cửu Chân</div>
+  </div>
+
+  <div class="hero-slot">
+    <img src="images/nutuongnuinua.jpg" alt="Khởi nghĩa núi Nưa">
+    <div class="hero-overlay"></div>
+    <div class="hero-caption">
+      <div class="hero-caption-title">NÚI NƯA — 248 SCN <span class="src-tag v" onclick="openSrcPopup('s2_khoinghia')">📖 nguồn</span></div>
+      <div class="hero-caption-sub">Căn cứ hiểm trở, nơi hào kiệt bốn phương tụ nghĩa</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~240</div><div class="tl-event">Khí phách</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">~245</div><div class="tl-event">Voi Trắng</div></div>
+    <div class="tl-item"><div class="tl-dot cur">3</div><div class="tl-year">248</div><div class="tl-event">Khởi nghĩa</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">248</div><div class="tl-event">30 Trận Thắng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">248</div><div class="tl-event">Bất diệt</div></div>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="pill-tag">🐘 Uy phong</span>
+      Mỗi khi xuất trận, ngươi mặc áo giáp vàng rực rỡ, cưỡi trên lưng voi chiến xông thẳng vào đội hình quân địch — hình ảnh khiến quân Đông Ngô khiếp vía.
+    </div>
+    Năm 248, ngươi cùng anh trai Triệu Quốc Đạt tập hợp nghĩa quân tại núi Nưa — căn cứ hiểm trở, rừng núi trùng điệp. Chỉ trong thời gian ngắn, hàng nghìn trai tráng khắp Cửu Chân tìm về tụ nghĩa. Triệu Quốc Đạt qua đời không lâu sau đó, ngươi được tướng sĩ suy tôn làm chủ tướng, tự xưng <strong>Nhụy Kiều tướng quân</strong>.
+  </div>
+
+  <div class="challenge-block reveal">
+    <span class="challenge-tag">📝 Thách thức · Điền từ còn thiếu</span>
+    <div class="challenge-title">Điền tên đúng vào chỗ trống!</div>
+    <div class="challenge-desc">Điền tên đúng vào các ô trống. Mỗi ô đúng +5 điểm.</div>
+    <div class="fill-blank-wrap" id="fillBlank1">
+      <div class="fill-row">
+        <label>Ngọn núi Bà Triệu chọn làm căn cứ khởi nghĩa là:</label>
+        <input class="fill-inp" id="fb1_1" placeholder="Núi ..." type="text">
+      </div>
+      <div class="fill-row">
+        <label>Danh hiệu Bà Triệu tự xưng khi làm chủ tướng là:</label>
+        <input class="fill-inp" id="fb1_2" placeholder="... tướng quân" type="text">
+      </div>
+      <div class="fill-row">
+        <label>Con vật Bà Triệu thường cưỡi khi xuất trận là:</label>
+        <input class="fill-inp" id="fb1_3" placeholder="..." type="text">
+      </div>
+    </div>
+    <button class="challenge-btn" onclick="checkFillBlank()">Nộp bài →</button>
+    <div class="challenge-result" id="fillResult1"></div>
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Lời truyền miệng trong quân Đông Ngô <span class="src-tag v" onclick="openSrcPopup('s2_luocdan')">📖 nguồn</span></div>
+    "Hoành qua đương hổ dị, đối diện Bà vương nan" — Vung giáo chống hổ dễ, đối mặt Vua Bà mới khó.
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Quân Đông Ngô sợ Bà Triệu hơn cả gặp hổ dữ. Vì sao một đội quân chính quy, đông đảo lại khiếp sợ một nữ tướng cầm đầu nghĩa quân địa phương đến vậy?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai.</div>
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiến thức <span class="kc-pts">+10 điểm</span></span>
+    <div class="kc-q">Nhà Đông Ngô cử viên tướng nào sang làm Thứ sử Giao Châu để đối phó với Bà Triệu?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'q3')">A. Mã Viện</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'q3')">B. Lục Dận</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q3')">C. Tô Định</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q3')">D. Sĩ Nhiếp</button>
+    </div>
+    <div class="kc-fb" id="q3-fb"></div>
+  </div>
+
+  <div class="gate reveal" id="gate2">
+    <span class="gate-icon">🗝️</span>
+    <div class="gate-title">Cổng Chương 4 — Ba Mươi Trận Thắng Lẫy Lừng</div>
+    <div class="gate-desc">Để chứng kiến chiến dịch thần tốc quét sạch quân Đông Ngô khỏi nhiều huyện thành, bạn cần tích lũy đủ <strong>25 điểm</strong>.</div>
+    <div class="gate-req" id="gateReq2">🔒 Cần: 25 điểm | Bạn đang có: <span id="gateScore2">0</span> điểm</div>
+    <button class="gate-unlock" id="gateBtn2" onclick="tryGate2()">Kiểm tra điều kiện →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ CHƯƠNG 4 (MỚI): BA MƯƠI TRẬN THẮNG LẪY LỪNG ═══════════════ -->
+<div class="scene" id="s2x">
+  <div class="chap-intro">
+    <div class="chap-num">Chương 4 / 5</div>
+    <div class="chap-title">Ba Mươi Trận Thắng Lẫy Lừng</div>
+    <div class="chap-sub">Năm 248 SCN · Khắp Cửu Chân, Giao Chỉ</div>
+  </div>
+
+  <div class="hero-slot">
+    <img src="images/nutuongbatran.jpg" alt="Nghĩa quân Bà Triệu liên tiếp thắng trận">
+    <div class="hero-overlay"></div>
+    <div class="hero-caption">
+      <div class="hero-caption-title">KHẮP CỬU CHÂN — GIAO CHỈ <span class="src-tag v" onclick="openSrcPopup('s2x_battles')">📖 nguồn</span></div>
+      <div class="hero-caption-sub">Uy danh Nhụy Kiều tướng quân lan khắp châu quận</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~240</div><div class="tl-event">Khí phách</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">~245</div><div class="tl-event">Voi Trắng</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">248</div><div class="tl-event">Khởi nghĩa</div></div>
+    <div class="tl-item"><div class="tl-dot cur">4</div><div class="tl-year">248</div><div class="tl-event">30 Trận Thắng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">248</div><div class="tl-event">Bất diệt</div></div>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="pill-tag">⚔️ Chiến dịch thần tốc</span>
+      Chỉ trong thời gian ngắn sau khi dựng cờ tại núi Nưa, nghĩa quân dưới sự chỉ huy của ngươi liên tục giành thắng lợi, đánh chiếm hết thành trì này đến thành trì khác.
+    </div>
+    Mỗi trận đánh, hình ảnh ngươi trong bộ giáp vàng, cưỡi trên lưng voi trắng một ngà, xông thẳng vào trận tiền khiến quân Đông Ngô hoảng loạn tháo chạy. Uy danh Nhụy Kiều tướng quân lan truyền khắp Cửu Chân, Giao Chỉ, khiến ngay cả những viên quan cai trị dày dạn kinh nghiệm nhất cũng phải run sợ khi nghe tên.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Một viên tướng bại trận — báo về triều đình Đông Ngô</div>
+    "Bẩm chúa công, thần chưa từng thấy đội quân nào đáng sợ như vậy. Người cầm đầu là một nữ tướng trẻ tuổi, nhưng dũng mãnh hơn bất kỳ nam nhi nào thần từng đối mặt!"
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiến thức <span class="kc-pts">+10 điểm</span></span>
+    <div class="kc-q">Trước loạt chiến thắng liên tiếp của Bà Triệu, triều đình Đông Ngô đã phản ứng ra sao?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'q5')">A. Bỏ mặc, cho rằng đó chỉ là loạn nhỏ địa phương</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'q5')">B. Cử Lục Dận — cháu danh tướng Lục Tốn — mang đại quân sang đối phó</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q5')">C. Đề nghị cầu hòa ngay lập tức</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'q5')">D. Rút toàn bộ quân khỏi Giao Châu</button>
+    </div>
+    <div class="kc-fb" id="q5-fb"></div>
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Chỉ trong thời gian ngắn, một đội nghĩa quân địa phương đã khiến cả một đế chế lớn phải điều động tướng giỏi nhất sang đối phó. Điều gì tạo nên sức mạnh áp đảo ấy — vũ khí, số đông, hay điều gì khác?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai.</div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Quy mô chiến dịch</span>
+    Sử sách ghi nhận nghĩa quân dưới quyền Bà Triệu đã đánh thắng hơn 30 trận lớn nhỏ, quét sạch quân đô hộ khỏi nhiều huyện thành tại Cửu Chân, Giao Chỉ — một chiến tích hiếm có đối với một cuộc khởi nghĩa quy mô địa phương thời bấy giờ.
+    <div style="margin-top:10px;">
+      <span class="chip">⚔️ 30+ trận thắng</span>
+      <span class="chip">🏯 Nhiều huyện thành thất thủ</span>
+      <span class="chip">😱 Quân Đông Ngô khiếp sợ</span>
+    </div>
+  </div>
+
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',15)"><span class="c-letter">→</span><div>Nhưng chiến thắng lớn cũng kéo theo hiểm họa lớn — trận cuối tại núi Tùng đang chờ đợi...</div></button></div>
+</div>
+
+<!-- ═══════════════ CHƯƠNG 5: NÚI TÙNG & BẤT DIỆT ═══════════════ -->
+<div class="scene" id="s3">
+  <div class="chap-intro">
+    <div class="chap-num">Chương 5 / 5</div>
+    <div class="chap-title">Trận Cuối Núi Tùng & Biểu Tượng Bất Diệt</div>
+    <div class="chap-sub">Năm 248 SCN · Núi Tùng, Hậu Lộc</div>
+  </div>
+
+  <div class="hero-slot">
+    <img src="images/nutuonggiapvang.jpg" alt="Bà Triệu áo giáp vàng ra trận">
+    <div class="hero-overlay"></div>
+    <div class="hero-caption">
+      <div class="hero-caption-title">GIÁP VÀNG RA TRẬN <span class="src-tag v" onclick="openSrcPopup('s3_giapvang')">📖 nguồn</span></div>
+      <div class="hero-caption-sub">Hơn 30 trận thắng, uy danh lẫy lừng khắp Giao Châu</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~240</div><div class="tl-event">Khí phách</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">~245</div><div class="tl-event">Voi Trắng</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">248</div><div class="tl-event">Khởi nghĩa</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">248</div><div class="tl-event">30 Trận Thắng</div></div>
+    <div class="tl-item"><div class="tl-dot cur">5</div><div class="tl-year">248</div><div class="tl-event">Bất diệt</div></div>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="pill-tag">🔗 Mưu kế thâm hiểm</span>
+      Lục Dận — cháu của danh tướng Lục Tốn — dùng của cải mua chuộc, chia rẽ nội bộ nghĩa quân, khiến lực lượng của ngươi dần suy yếu sau nhiều tháng chiến đấu.
+    </div>
+    Nghĩa quân dưới sự chỉ huy của ngươi đã đánh thắng hơn 30 trận lớn nhỏ, quét sạch quân Đông Ngô khỏi nhiều huyện thành. Nhưng sau 6 tháng cầm cự kiên cường, nghĩa quân bị bao vây tại <strong>núi Tùng</strong> (Hậu Lộc, Thanh Hóa ngày nay).
+  </div>
+
+  <div class="challenge-block reveal">
+    <span class="challenge-tag">🔗 Thách thức · Nối cột lịch sử</span>
+    <div class="challenge-title">Nối đúng hình ảnh với ý nghĩa!</div>
+    <div class="challenge-desc">Bấm một ô bên trái rồi bấm ô tương ứng bên phải. Nối đúng hết để nhận điểm thưởng +20 điểm!</div>
+    <div class="match-grid">
+      <div class="match-col" id="matchLeft">
+        <div class="match-item" data-id="m1" onclick="matchSelect(this,'left')">Áo giáp vàng, cưỡi voi ra trận</div>
+        <div class="match-item" data-id="m2" onclick="matchSelect(this,'left')">Tuẫn tiết trên núi Tùng</div>
+        <div class="match-item" data-id="m3" onclick="matchSelect(this,'left')">"Cưỡi cơn gió mạnh, đạp luồng sóng dữ"</div>
+        <div class="match-item" data-id="m4" onclick="matchSelect(this,'left')">Đền thờ tại Hậu Lộc, Thanh Hóa</div>
+      </div>
+      <div class="match-col" id="matchRight">
+        <div class="match-item" data-id="m3" onclick="matchSelect(this,'right')">Khát vọng tự do bất diệt</div>
+        <div class="match-item" data-id="m1" onclick="matchSelect(this,'right')">Hình ảnh oai phong khiến quân địch khiếp sợ</div>
+        <div class="match-item" data-id="m4" onclick="matchSelect(this,'right')">Nơi thờ phụng linh thiêng ngày nay</div>
+        <div class="match-item" data-id="m2" onclick="matchSelect(this,'right')">Giữ trọn khí tiết đến hơi thở cuối</div>
+      </div>
+    </div>
+    <div class="challenge-result" id="matchResult"></div>
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Trước sức mạnh áp đảo và mưu kế mua chuộc, chọn tuẫn tiết thay vì đầu hàng hay chạy trốn — điều gì khiến một người ở tuổi 23 đưa ra quyết định ấy?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai.</div>
+  </div>
+
+  <div class="challenge-block reveal" id="ch4Block">
+    <span class="challenge-tag">🔥 Thách thức cao · Chuỗi câu hỏi trận cuối</span>
+    <div class="challenge-title">Vượt qua 3/4 câu hỏi để mở khóa di sản Nhụy Kiều tướng quân!</div>
+    <div class="challenge-desc">Cần đúng ít nhất 3 trong 4 câu. Mỗi câu đúng +8 điểm.</div>
+
+    <div id="chainQ1" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">1. Lục Dận dùng thủ đoạn gì để làm suy yếu nghĩa quân?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="chainAns(this,false,1)">A. Chỉ tăng cường quân số</button>
+        <button class="kc-opt" onclick="chainAns(this,true,1)">B. Vừa tăng quân, vừa dùng của cải mua chuộc, chia rẽ nội bộ</button>
+        <button class="kc-opt" onclick="chainAns(this,false,1)">C. Cầu hòa với Bà Triệu</button>
+      </div>
+    </div>
+    <div id="chainQ2" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">2. Nghĩa quân cầm cự được bao lâu trước khi bị bao vây tại núi Tùng?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="chainAns(this,false,2)">A. 2 tháng</button>
+        <button class="kc-opt" onclick="chainAns(this,true,2)">B. 6 tháng</button>
+        <button class="kc-opt" onclick="chainAns(this,false,2)">C. 2 năm</button>
+      </div>
+    </div>
+    <div id="chainQ3" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">3. Núi Tùng — nơi Bà Triệu tuẫn tiết — nay thuộc địa phương nào?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="chainAns(this,false,3)">A. Nông Cống, Thanh Hóa</button>
+        <button class="kc-opt" onclick="chainAns(this,true,3)">B. Hậu Lộc, Thanh Hóa</button>
+        <button class="kc-opt" onclick="chainAns(this,false,3)">C. Triệu Sơn, Thanh Hóa</button>
+      </div>
+    </div>
+    <div id="chainQ4" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">4. Bà Triệu tuẫn tiết khi bao nhiêu tuổi?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="chainAns(this,false,4)">A. 19 tuổi</button>
+        <button class="kc-opt" onclick="chainAns(this,true,4)">B. 23 tuổi</button>
+        <button class="kc-opt" onclick="chainAns(this,false,4)">C. 30 tuổi</button>
+      </div>
+    </div>
+
+    <div class="challenge-result" id="chainResult" style="margin-top:10px;"></div>
+    <div id="chainGate" style="margin-top:14px;text-align:center;display:none;">
+      <button class="gate-unlock" onclick="markCorrect('s3');go('s3win',20)">🌺 Mở khóa — Xem di sản bất diệt!</button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s3win">
+  <div class="chap-badge">🌺 Biểu tượng bất diệt</div>
+  <div class="story reveal">
+    Không chịu để rơi vào tay giặc, ngươi — Triệu Thị Trinh — đã tuẫn tiết trên núi Tùng, giữ trọn khí tiết đến hơi thở cuối cùng. Dù cuộc khởi nghĩa không thành, tên tuổi Nhụy Kiều tướng quân mãi mãi được nhân dân tôn thờ, sánh ngang cùng Hai Bà Trưng hơn 200 năm trước đó.
+  </div>
+
+  <div class="legend-moment reveal">
+    <span class="legend-icon">🌸</span>
+    "Cưỡi cơn gió mạnh, đạp luồng sóng dữ — câu nói ấy không chết theo Bà Triệu. Nó sống trong từng thế hệ phụ nữ Việt Nam dám đứng lên vì tự do, từ Bà Trưng đến Bà Triệu, từ quá khứ đến hôm nay."
+  </div>
+
+  <div class="challenge-block reveal" id="finalChallenge">
+    <span class="challenge-tag">🏆 Thách thức cuối · Thử thách tổng hợp</span>
+    <div class="challenge-title">Kiểm tra toàn bộ hành trình — Cần đúng 4/5 câu!</div>
+    <div class="challenge-desc">Đây là thách thức khó nhất. Đúng 4/5 → nhận danh hiệu cao nhất. Mỗi câu đúng +15 điểm.</div>
+
+    <div id="fq1" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">1. Bà Triệu sinh năm nào?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="finalQ(this,true,1)">A. 226</button>
+        <button class="kc-opt" onclick="finalQ(this,false,1)">B. 248</button>
+        <button class="kc-opt" onclick="finalQ(this,false,1)">C. 200</button>
+      </div>
+    </div>
+    <div id="fq2" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">2. Bà Triệu tự xưng danh hiệu gì khi làm chủ tướng nghĩa quân?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="finalQ(this,false,2)">A. Trưng Vương</button>
+        <button class="kc-opt" onclick="finalQ(this,true,2)">B. Nhụy Kiều tướng quân</button>
+        <button class="kc-opt" onclick="finalQ(this,false,2)">C. Vạn Thắng Vương</button>
+      </div>
+    </div>
+    <div id="fq3" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">3. Nhà Đông Ngô cử ai — cháu của danh tướng Lục Tốn — sang đối phó với Bà Triệu?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="finalQ(this,true,3)">A. Lục Dận</button>
+        <button class="kc-opt" onclick="finalQ(this,false,3)">B. Mã Viện</button>
+        <button class="kc-opt" onclick="finalQ(this,false,3)">C. Tô Định</button>
+      </div>
+    </div>
+    <div id="fq4" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">4. Bài học lớn nhất từ Bà Triệu là gì?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="finalQ(this,false,4)">A. Phụ nữ nên tránh xa việc binh đao</button>
+        <button class="kc-opt" onclick="finalQ(this,true,4)">B. Khát vọng tự do và khí tiết bất khuất không phân biệt giới tính</button>
+        <button class="kc-opt" onclick="finalQ(this,false,4)">C. Chỉ nên khởi nghĩa khi chắc chắn thắng lợi</button>
+      </div>
+    </div>
+    <div id="fq5" style="margin-bottom:14px;">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:8px;">5. Điểm chung giữa Bà Triệu và Hai Bà Trưng là gì?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="finalQ(this,true,5)">A. Cả hai đều là nữ tướng lãnh đạo khởi nghĩa chống Bắc thuộc, trở thành biểu tượng bất khuất của phụ nữ Việt</button>
+        <button class="kc-opt" onclick="finalQ(this,false,5)">B. Cả hai đều giành được độc lập lâu dài</button>
+        <button class="kc-opt" onclick="finalQ(this,false,5)">C. Cả hai đều nhận viện binh từ nước ngoài</button>
+      </div>
+    </div>
+
+    <div class="challenge-result" id="finalChallengeResult"></div>
+    <div id="finalGate" style="margin-top:14px;text-align:center;display:none;">
+      <button class="gate-unlock" onclick="markCorrect('final_challenge');go('final',50)" style="font-size:17px;padding:14px 32px;">
+        🏆 Xem kết quả cuối — Danh hiệu của bạn!
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FINAL ═══════════════ -->
+<div class="scene" id="final">
+  <div class="final">
+    <div class="final-seal" id="finalSeal">🌺</div>
+    <div class="final-h" id="finalH">Hành Trình Hoàn Thành!</div>
+    <div class="final-pts" id="finalPts">0 điểm</div>
+    <div class="final-rank-badge" id="finalRank">—</div>
+    <div class="final-desc" id="finalDesc">...</div>
+    <div class="achievements" id="achieveWrap"></div>
+
+    <div class="jmap reveal" style="background:radial-gradient(ellipse at 12% 88%,rgba(201,168,76,.1),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(122,26,92,.12),transparent 55%),rgba(10,7,16,0.5);border:1px solid rgba(201,168,76,0.25);border-radius:16px;padding:24px;margin:26px 0;text-align:left;">
+      <span class="journal-tag">🗺️ Hành trình Nhụy Kiều tướng quân</span>
+      <div class="jmap-note">Sơ đồ cách điệu các mốc quan trọng của Bà Triệu.</div>
+      <div class="jmap">
+      <svg viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg">
+        <path class="jmap-path" d="M50,150 C160,90 220,70 280,90 S420,140 480,130 S620,70 680,90 S740,140 740,150"/>
+        <circle class="jmap-pt" cx="50" cy="150" r="7"/><text class="jmap-yr" x="50" y="170" text-anchor="middle">~240</text><text class="jmap-lbl" x="50" y="182" text-anchor="middle">Nông Cống</text>
+        <circle class="jmap-pt" cx="280" cy="90" r="6"/><text class="jmap-yr" x="280" y="75" text-anchor="middle">248</text><text class="jmap-lbl" x="280" y="65" text-anchor="middle">Núi Nưa</text>
+        <circle class="jmap-pt" cx="480" cy="130" r="6"/><text class="jmap-yr" x="480" y="150" text-anchor="middle">248</text><text class="jmap-lbl" x="480" y="162" text-anchor="middle">Cửu Chân, Giao Chỉ</text>
+        <circle class="jmap-pt" cx="680" cy="90" r="7"/><text class="jmap-yr" x="680" y="75" text-anchor="middle">248</text><text class="jmap-lbl" x="680" y="65" text-anchor="middle">Núi Tùng</text>
+      </svg>
+      </div>
+    </div>
+
+    <div class="journal reveal" id="journalBox">
+      <span class="journal-tag">📔 Nhật ký hành trình của bạn</span>
+      <div id="journalList"></div>
+      <button class="journal-copy" onclick="copyJournal()">📋 Sao chép nhật ký để chia sẻ</button>
+    </div>
+
+    <div class="final-lesson">
+      <span class="fl-tag">📚 Ba bài học từ Bà Triệu</span>
+      <strong>1. Khí phách không phân biệt giới tính:</strong> Trước một xã hội trọng nam, Bà Triệu chứng minh rằng dũng khí và khát vọng tự do không thuộc về riêng ai.<br><br>
+      <strong>2. Uy tín được xây từ hành động, không phải danh xưng:</strong> Từ một cô gái vùng núi, Bà Triệu được cả nghĩa quân lẫn quân địch nể sợ nhờ hơn 30 trận thắng thực chiến.<br><br>
+      <strong>3. Khí tiết bất diệt hơn cả chiến thắng:</strong> Cuộc khởi nghĩa không thành, nhưng câu nói và tinh thần "cưỡi cơn gió mạnh, đạp luồng sóng dữ" vẫn sống mãi gần 1800 năm sau.
+    </div>
+    <div class="btn-row">
+      <button class="btn-restart" onclick="restart()">🔄 Chơi lại</button>
+      <button class="btn-restart" onclick="openLeaderboard()">🏆 Bảng xếp hạng</button>
+      <a href="cau-chuyen.html" class="btn-home">📖 Câu chuyện khác</a>
+    </div>
+  </div>
+</div>
+
+<div class="ref-page reveal">
+  <div class="ref-page-title">📚 Nguồn Tham Khảo</div>
+  <div class="ref-page-sub">Các sự kiện, ngày tháng, số liệu trong trang này được đối chiếu từ các nguồn dưới đây. Các đoạn hội thoại (đánh dấu tag 🔵 dựng lại) là <strong>minh họa</strong> theo tinh thần lịch sử, không phải nguyên văn ghi chép.</div>
+  <div style="margin-bottom:16px;">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">— Đại Việt sử ký toàn thư — phần Ngoại kỷ (khởi nghĩa Bà Triệu, năm 248)</div>
+    <div class="ref-item">— Thiên Nam ngữ lục, Việt điện u linh — ghi chép và truyền thuyết dân gian về Bà Triệu</div>
+    <div class="ref-item">— Tư liệu di tích đền Bà Triệu, xã Triệu Lộc, huyện Hậu Lộc, Thanh Hóa</div>
+  </div>
+  <div>
+    <div class="ref-group-h">Ghi chú về phương pháp thể hiện</div>
+    <div class="ref-item">— Ngày tháng, số liệu, kết quả sự kiện: dựa trên tư liệu đã kiểm chứng (tag 📖 vàng)</div>
+    <div class="ref-item">— Hội thoại giữa các nhân vật: dựng lại nhằm minh họa bối cảnh, không phải nguyên văn có ghi chép (tag 🔵 xanh)</div>
+    <div class="ref-item">— Phần trò chơi lựa chọn (choices) là hư cấu mang tính giáo dục, xây dựng dựa trên diễn biến lịch sử và truyền thuyết dân gian đã ghi nhận</div>
+  </div>
+</div>
+
+</div><!-- end .wrap -->
+
+<canvas id="cursorCanvas"></canvas>
+
+<div class="lb-modal" id="leaderboard-modal">
+  <div class="lb-box">
+    <div class="lb-header">
+      <h3>🏆 Bảng Xếp Hạng</h3>
+      <span class="lb-close" onclick="document.getElementById('leaderboard-modal').classList.remove('show')">✕</span>
+    </div>
+    <div id="lb-content" class="lb-content"><div class="lb-loading">Đang tải...</div></div>
+  </div>
+</div>
+
+<script>
+ let expAwarded=false; 
+// ─── STARS + EMBER BACKGROUND ─────────────────────
+const bgC=document.getElementById('bgCanvas');
+const bgCtx=bgC.getContext('2d');
+function resizeBG(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+resizeBG();window.addEventListener('resize',resizeBG);
+const stars2=[];
+for(let i=0;i<70;i++)stars2.push({x:Math.random(),y:Math.random(),r:Math.random()*1.5+.3,a:Math.random(),da:(Math.random()-.5)*.008});
+const embers=[];
+function randEdgeX(){const side=Math.random()<0.5;return side?Math.random()*0.16:0.84+Math.random()*0.16;}
+for(let i=0;i<10;i++)embers.push({x:randEdgeX(),y:Math.random(),size:1+Math.random()*1.8,speed:0.05+Math.random()*0.1,drift:(Math.random()-.5)*0.08,a:0.08+Math.random()*0.18,hue:Math.random()<0.5?'201,168,76':'122,26,92'});
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  stars2.forEach(s=>{
+    s.a=Math.max(.05,Math.min(.8,s.a+s.da));
+    if(s.a<=.06||s.a>=.79)s.da*=-1;
+    bgCtx.beginPath();bgCtx.arc(s.x*bgC.width,s.y*bgC.height,s.r,0,Math.PI*2);
+    bgCtx.fillStyle=`rgba(255,255,255,${s.a})`;bgCtx.fill();
+  });
+  embers.forEach(e=>{
+    e.y-=e.speed/bgC.height*60;e.x+=e.drift/bgC.width*60;
+    if(e.y<-0.02){e.y=1.02;e.x=randEdgeX();}
+    if(e.x<-0.03||e.x>1.03)e.x=randEdgeX();
+    const px=e.x*bgC.width,py=e.y*bgC.height;
+    const grad=bgCtx.createRadialGradient(px,py,0,px,py,e.size*4);
+    grad.addColorStop(0,`rgba(${e.hue},${e.a})`);grad.addColorStop(1,`rgba(${e.hue},0)`);
+    bgCtx.beginPath();bgCtx.arc(px,py,e.size*4,0,Math.PI*2);bgCtx.fillStyle=grad;bgCtx.fill();
+    bgCtx.beginPath();bgCtx.arc(px,py,e.size,0,Math.PI*2);bgCtx.fillStyle=`rgba(${e.hue},${Math.min(1,e.a*1.8)})`;bgCtx.fill();
+  });
+  requestAnimationFrame(drawBG);
+}drawBG();
+
+// ─── VỆT LỬA THEO CON TRỎ (desktop) ──────────────
+const curC=document.getElementById('cursorCanvas');
+const curCtx=curC.getContext('2d');
+function resizeCur(){curC.width=window.innerWidth;curC.height=window.innerHeight;}
+resizeCur();window.addEventListener('resize',resizeCur);
+let trailPts=[];
+const isTouchDevice='ontouchstart' in window;
+if(!isTouchDevice){
+  let lastMove=0;
+  window.addEventListener('mousemove',e=>{
+    const now=Date.now();if(now-lastMove<28)return;lastMove=now;
+    trailPts.push({x:e.clientX,y:e.clientY,life:1,size:2+Math.random()*2.4});
+    if(trailPts.length>40)trailPts.shift();
+  });
+}
+function drawCursorTrail(){
+  curCtx.clearRect(0,0,curC.width,curC.height);
+  trailPts.forEach(p=>{
+    p.life-=0.028;const alpha=Math.max(0,p.life);
+    const grad=curCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*5);
+    grad.addColorStop(0,`rgba(240,204,114,${alpha*0.55})`);grad.addColorStop(1,'rgba(240,204,114,0)');
+    curCtx.beginPath();curCtx.arc(p.x,p.y,p.size*5,0,Math.PI*2);curCtx.fillStyle=grad;curCtx.fill();
+  });
+  trailPts=trailPts.filter(p=>p.life>0);
+  requestAnimationFrame(drawCursorTrail);
+}drawCursorTrail();
+
+// ─── RIPPLE KHI BẤM NÚT ───────────────────────────
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.c-btn,.kc-opt,.gate-unlock,.challenge-btn,.btn-restart,.btn-home,.journal-copy,.counterf-btn');
+  if(!btn||btn.disabled)return;
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);
+  const rip=document.createElement('span');
+  rip.className='ripple-el';
+  rip.style.width=rip.style.height=size+'px';
+  rip.style.left=(e.clientX-rect.left-size/2)+'px';
+  rip.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.style.position=btn.style.position||'relative';
+  btn.style.overflow='hidden';
+  btn.appendChild(rip);
+  setTimeout(()=>rip.remove(),650);
+});
+
+// ─── PARTICLE BURST ───────────────────────────────
+function burstParticles(x,y){
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');
+    p.className='gold-burst';
+    p.style.left=x+'px';p.style.top=y+'px';
+    document.body.appendChild(p);
+    const ang=Math.random()*Math.PI*2,dist=55+Math.random()*85;
+    const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist;
+    p.animate([
+      {transform:'translate(0,0) scale(1)',opacity:1},
+      {transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}
+    ],{duration:700+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'});
+    setTimeout(()=>p.remove(),1150);
+  }
+}
+
+// ─── SCROLL REVEAL ───────────────────────────────
+const ro=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));}
+initReveal();
+
+// ─── AUDIO ───────────────────────────────────────
+let ac=null;
+function getAC(){if(!ac)try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}return ac;}
+function tone(f,t,v,tp){const c=getAC();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=tp||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||0.07,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+(t||0.3));o.start();o.stop(c.currentTime+(t||0.3));}
+function sndOk(){tone(660,0.2,0.09);setTimeout(()=>tone(880,0.2,0.09),100);}
+function sndWrong(){tone(220,0.3,0.06);}
+function sndCombo(){tone(440,0.1,0.08);setTimeout(()=>tone(550,0.1,0.1),80);setTimeout(()=>tone(770,0.25,0.12),170);}
+function sndUnlock(){tone(523,0.15,0.1);setTimeout(()=>tone(659,0.15,0.1),150);setTimeout(()=>tone(784,0.3,0.12),300);}
+
+// ─── GAME STATE ──────────────────────────────────
+let pts=0, streak=0, maxStreak=0, totalCorrect=0, totalKC=0;
+let sceneRewarded={};
+let kcDone={};
+let chainCorrectSet={1:false,2:false,3:false,4:false};
+let finalQCorrect=0, finalQDone=0;
+let matchSelected={left:null,right:null};
+let matchCorrect=0;
+let arrangeAwarded=false;
+let fillBlankMaxAwarded=0;
+let choiceCorrect={s1:false,s3:false,final_challenge:false};
+
+const chapterNames={s1:'I. Khí phách núi rừng (~240)',s3:'III. Trận cuối núi Tùng (248)',final_challenge:'Thử thách tổng hợp — Di sản bất diệt'};
+
+const SCENE_PROG={'cover':0,'s1':5,'s1A':13,'s1B':8,'s1C':8,'s1x':24,'s2':36,'s2x':54,'s3':66,'s3win':80,'final':100};
+const mapUnlockStages={s2:['pt-nuinua'],s2x:['pt-cuuchan'],s3win:['pt-nuitung']};
+
+function markCorrect(id){choiceCorrect[id]=true;}
+
+// ─── NAVIGATION ──────────────────────────────────
+let sceneHistory=['cover'];
+let historyIndex=0;
+
+function go(id,addPts){
+  if(addPts>0&&!sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    pts+=addPts;showPop('+'+addPts);updateScore();
+  }
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(()=>{el.querySelectorAll('.reveal').forEach(r=>ro.observe(r));},80);
+  }
+  document.getElementById('prog').style.width=(SCENE_PROG[id]||0)+'%';
+  const gs2=document.getElementById('gateScore2');if(gs2)gs2.textContent=pts;
+  updateJourneyMap(id);
+  if(id==='final'){buildFinal();if(!expAwarded){awardExp(pts,document.title);expAwarded=true;}}
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+function updateJourneyMap(id){
+  const keys=mapUnlockStages[id];if(!keys)return;
+  keys.forEach(k=>{document.querySelectorAll('.'+k).forEach(el=>el.classList.remove('locked'));});
+}
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+
+// ─── SCORE / RANK ─────────────────────────────────
+function getRank(p){
+  if(p>=120)return{t:'👑 Nhụy Kiều Tướng Quân Tái Thế',e:'🌺',d:'Xuất sắc tuyệt đối! Bạn hiểu sâu sắc hành trình Bà Triệu — từ cô gái núi rừng đến vị nữ tướng cưỡi voi khiến quân địch khiếp sợ. Khí phách "cưỡi gió đạp sóng" sống trong bạn!'};
+  if(p>=75)return{t:'⚔️ Dũng Nữ Núi Nưa',e:'🐘',d:'Rất tốt! Bạn nắm vững hành trình Bà Triệu và ý nghĩa cuộc khởi nghĩa năm 248. Hãy thử lại để đạt danh hiệu cao nhất!'};
+  if(p>=35)return{t:'📜 Học Giả Cửu Chân',e:'🏛️',d:'Tốt! Bạn đã bước vào hành trình lịch sử. Ôn lại các câu hỏi và thử lại để hiểu sâu hơn!'};
+  return{t:'🌱 Người Học Sử Mới',e:'📚',d:'Bắt đầu hành trình! Mỗi lần chơi lại bạn sẽ hiểu thêm về vị nữ tướng bất khuất đất Thanh Hóa.'};
+}
+function updateScore(){
+  const n=document.getElementById('scoreNum');
+  n.textContent=pts;n.classList.add('bump');setTimeout(()=>n.classList.remove('bump'),280);
+  document.getElementById('scoreRank').textContent=getRank(pts).t;
+  const pct=Math.min(100,Math.round(pts/140*100));
+  const pm=document.getElementById('powerMeter'),pp=document.getElementById('powerPct');
+  if(pm)pm.style.width=pct+'%';if(pp)pp.textContent=pct+'%';
+}
+function showPop(txt){const p=document.getElementById('ptsPop');p.textContent=txt;p.className='pts-pop';void p.offsetWidth;p.className='pts-pop show';}
+
+// ─── STREAK / COMBO ──────────────────────────────
+function addStreak(){
+  streak++;if(streak>maxStreak)maxStreak=streak;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent=streak;
+  b.classList.add('show');
+  if(streak>=3){b.classList.add('hot');showCombo(streak);}
+  else b.classList.remove('hot');
+}
+function resetStreak(){streak=0;document.getElementById('streakBadge').classList.remove('show','hot');}
+function showCombo(n){
+  const labels={3:'🔥 COMBO x3',4:'⚡ FURY x4',5:'💥 GIÁP VÀNG x5'};
+  const bonus={3:10,4:18,5:25};
+  const lb=labels[n]||'🌺 BẤT DIỆT x'+n;const bn=bonus[n]||30;
+  document.getElementById('comboLabel').textContent=lb;
+  document.getElementById('comboPtsLabel').textContent='+'+bn+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bn;updateScore();showPop('+'+bn+' COMBO!');sndCombo();
+}
+
+// ─── KNOWLEDGE CHECK ─────────────────────────────
+const KCfb={
+  q1:{ok:'Đúng! Đông Ngô đô hộ Giao Châu thời kỳ đó, áp bức sưu cao thuế nặng lên nhân dân Cửu Chân.',no:'Đông Ngô là đáp án đúng — một trong Tam Quốc Trung Hoa, đô hộ Giao Châu giai đoạn này.'},
+  q2:{ok:'Đúng! Cha mẹ mất sớm, Triệu Thị Trinh sống cùng anh trai Triệu Quốc Đạt — một hào trưởng có thế lực.',no:'Triệu Quốc Đạt — anh trai bà — là người nuôi dưỡng và sau này cùng bà dựng cờ khởi nghĩa.'},
+  q3:{ok:'Đúng! Lục Dận — cháu của danh tướng Lục Tốn lừng danh — được cử làm Thứ sử Giao Châu để đối phó với Bà Triệu.',no:'Lục Dận là đáp án đúng — viên tướng già dặn nhất được Đông Ngô cử sang vì uy danh Bà Triệu quá lớn.'},
+  q4:{ok:'Đúng! Con voi chỉ có một ngà — đặc điểm cực hiếm gặp — khiến nó trở thành biểu tượng đặc biệt gắn liền với Bà Triệu.',no:'Đáp án đúng là con voi chỉ có một ngà, một đặc điểm cực hiếm gặp ở voi rừng.'},
+  q5:{ok:'Đúng! Trước uy danh và loạt chiến thắng của Bà Triệu, Đông Ngô phải cử Lục Dận — tướng dày dạn kinh nghiệm — mang đại quân sang đối phó.',no:'Đáp án đúng là Đông Ngô cử Lục Dận, cháu danh tướng Lục Tốn, mang đại quân sang đối phó.'}
+};
+function ansKC(btn,correct,id){
+  if(kcDone[id])return;
+  kcDone[id]=true;totalKC++;
+  const container=btn.parentElement;
+  container.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(correct){
+    btn.classList.add('correct');pts+=10;totalCorrect++;updateScore();showPop('+10');
+    fb.textContent='✅ '+KCfb[id].ok;fb.className='kc-fb show ok';addStreak();sndOk();
+  } else {
+    btn.classList.add('wrong');
+    container.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')?.includes('true'))b.classList.add('correct');});
+    fb.textContent='❌ '+KCfb[id].no;fb.className='kc-fb show no';resetStreak();sndWrong();
+    // Sai → cho phép thử lại sau 3 giây
+    setTimeout(()=>{
+      kcDone[id]=false;
+      container.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+      fb.className='kc-fb';fb.textContent='';
+    },3000);
+  }
+  const gs2=document.getElementById('gateScore2');if(gs2)gs2.textContent=pts;
+}
+
+// ─── ARRANGE (kéo thả) ───────────────────────────
+let dragSrc=null;
+function initDrag(){
+  document.querySelectorAll('.arrange-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{dragSrc=item;item.classList.add('dragging');});
+    item.addEventListener('dragend',()=>{item.classList.remove('dragging');});
+    item.addEventListener('dragover',e=>{e.preventDefault();item.classList.add('drag-over');});
+    item.addEventListener('dragleave',()=>item.classList.remove('drag-over'));
+    item.addEventListener('drop',e=>{
+      e.preventDefault();item.classList.remove('drag-over');
+      if(dragSrc&&dragSrc!==item){
+        const list=item.parentNode;const items=[...list.children];
+        const srcIdx=items.indexOf(dragSrc),tgtIdx=items.indexOf(item);
+        if(srcIdx<tgtIdx)list.insertBefore(dragSrc,item.nextSibling);
+        else list.insertBefore(dragSrc,item);
+      }
+    });
+  });
+}
+initDrag();
+function checkArrange(listId,resultId,correctOrder){
+  if(arrangeAwarded)return;
+  const list=document.getElementById(listId);
+  const items=[...list.children];
+  const orders=items.map(i=>parseInt(i.dataset.order));
+  let correct=0;orders.forEach((o,i)=>{if(o===correctOrder[i])correct++;});
+  const res=document.getElementById(resultId);
+  res.className='challenge-result show';
+  if(correct>=3){
+    arrangeAwarded=true;
+    res.classList.add('ok');
+    res.textContent=`✅ Xuất sắc! ${correct}/4 sự kiện đúng thứ tự. +15 điểm!`;
+    pts+=15;updateScore();showPop('+15');sndOk();addStreak();
+  } else {
+    res.classList.add('no');
+    res.textContent=`❌ Mới đúng ${correct}/4. Thứ tự đúng: Sống cùng anh trai → Rèn luyện võ nghệ → Anh khuyên lấy chồng → Khảng khái quyết chí khởi nghĩa.`;
+    sndWrong();
+  }
+}
+
+// ─── FILL BLANK (điền từ) ─────────────────────────
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ');}
+function checkFillBlank(){
+  const v1=norm(document.getElementById('fb1_1').value);
+  const v2=norm(document.getElementById('fb1_2').value);
+  const v3=norm(document.getElementById('fb1_3').value);
+  const answers=[
+    {inp:'fb1_1',ok:v1.includes('nưa')},
+    {inp:'fb1_2',ok:v2.includes('nhụy kiều')||v2.includes('nhuy kieu')},
+    {inp:'fb1_3',ok:v3.includes('voi')}
+  ];
+  let correct=0;
+  answers.forEach(a=>{const el=document.getElementById(a.inp);el.className='fill-inp '+(a.ok?'correct-inp':'wrong-inp');if(a.ok)correct++;});
+  const res=document.getElementById('fillResult1');
+  res.className='challenge-result show';
+  const newPts=correct*5;
+  const bonus=Math.max(0,newPts-fillBlankMaxAwarded);
+  if(bonus>0){fillBlankMaxAwarded=newPts;pts+=bonus;updateScore();}
+  if(correct===3){res.classList.add('ok');res.textContent=`✅ Hoàn hảo! Cả 3 đáp án đúng! +${bonus} điểm`;sndOk();addStreak();}
+  else if(correct>=1){res.classList.add('ok');res.textContent=`✅ ${correct}/3 đúng. +${bonus} điểm. Đáp án: Núi Nưa / Nhụy Kiều tướng quân / Voi`;}
+  else{res.classList.add('no');res.textContent='❌ Đáp án đúng: 1. Núi Nưa  2. Nhụy Kiều tướng quân  3. Voi';sndWrong();}
+  if(bonus>0)showPop('+'+bonus);
+}
+
+// ─── MATCH (nối cột) ─────────────────────────────
+function matchSelect(item,side){
+  if(item.classList.contains('matched')||item.classList.contains('used'))return;
+  if(side==='left'){document.querySelectorAll('#matchLeft .match-item').forEach(i=>i.classList.remove('selected'));item.classList.add('selected');matchSelected.left=item;}
+  else{document.querySelectorAll('#matchRight .match-item').forEach(i=>i.classList.remove('selected'));item.classList.add('selected');matchSelected.right=item;}
+  if(matchSelected.left&&matchSelected.right){
+    const leftItem=matchSelected.left,rightItem=matchSelected.right;
+    const lId=leftItem.dataset.id,rId=rightItem.dataset.id;
+    if(lId===rId){
+      leftItem.classList.replace('selected','matched');
+      rightItem.classList.replace('selected','matched');
+      matchCorrect++;pts+=5;updateScore();showPop('+5');sndOk();addStreak();
+      if(matchCorrect===4){
+        const res=document.getElementById('matchResult');
+        res.className='challenge-result show ok';
+        res.textContent='✅ Hoàn hảo! Nối đúng tất cả 4 cặp! Bonus +20 điểm!';
+        pts+=20;updateScore();showPop('+20 PERFECT!');sndUnlock();
+        const mg=document.querySelector('.match-grid');if(mg){const r=mg.getBoundingClientRect();burstParticles(r.left+r.width/2,r.top+30);}
+      }
+    } else {
+      leftItem.classList.add('wrong-flash');rightItem.classList.add('wrong-flash');
+      setTimeout(()=>{
+        leftItem.classList.remove('wrong-flash','selected');
+        rightItem.classList.remove('wrong-flash','selected');
+      },600);
+      sndWrong();
+    }
+    matchSelected={left:null,right:null};
+  }
+}
+
+// ─── CHAIN QUESTIONS (chương 5) ──────────────────
+function chainAns(btn,correct,qn){
+  if(chainCorrectSet[qn])return; // câu này đã trả lời đúng rồi, khóa
+  const qDiv=btn.closest('[id^="chainQ"]');
+  qDiv.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=true;});
+  if(correct){
+    btn.classList.add('correct');
+    chainCorrectSet[qn]=true;
+    pts+=8;updateScore();showPop('+8');sndOk();addStreak();
+    checkChainUnlock();
+  } else {
+    btn.classList.add('wrong');
+    qDiv.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')?.includes('true'))b.classList.add('correct');});
+    sndWrong();
+    // Sai → cho phép thử lại riêng câu này sau 3 giây
+    setTimeout(()=>{
+      qDiv.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+    },3000);
+  }
+}
+function checkChainUnlock(){
+  const correctCount=Object.values(chainCorrectSet).filter(Boolean).length;
+  const res=document.getElementById('chainResult');
+  if(correctCount>=3){
+    res.className='challenge-result show ok';
+    res.textContent=`✅ Xuất sắc! Đã trả lời đúng ${correctCount}/4 câu! Mở khóa thành công! +${correctCount*8} điểm`;
+    document.getElementById('chainGate').style.display='block';
+    sndUnlock();
+    const cb=document.getElementById('ch4Block');if(cb){const r=cb.getBoundingClientRect();burstParticles(r.left+r.width/2,r.top+40);}
+  } else {
+    res.className='challenge-result show';
+    res.textContent=`Đã đúng ${correctCount}/4 câu — cần thêm ${3-correctCount} câu đúng nữa để mở khóa.`;
+  }
+}
+
+// ─── GATE 2 ──────────────────────────────────────
+function tryGate2(){
+  document.getElementById('gateScore2').textContent=pts;
+  if(pts>=25){
+    sndUnlock();
+    const g=document.getElementById('gate2');
+    if(g){const r=g.getBoundingClientRect();burstParticles(r.left+r.width/2,r.top+r.height/2);}
+    go('s2x',10);
+  }
+  else{
+    const btn=document.getElementById('gateBtn2');
+    btn.textContent=`Cần thêm ${25-pts} điểm nữa! Trả lời các câu hỏi trên...`;
+    btn.style.background='rgba(120,0,0,0.3)';
+  }
+}
+
+// ─── FINAL QUESTIONS ─────────────────────────────
+let finalState={1:null,2:null,3:null,4:null,5:null};
+function finalQ(btn,correct,qn){
+  if(finalState[qn]!==null)return;
+  finalState[qn]=correct;
+  btn.parentElement.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=true;});
+  if(correct){btn.classList.add('correct');finalQCorrect++;pts+=15;updateScore();showPop('+15');sndOk();addStreak();}
+  else{btn.classList.add('wrong');btn.parentElement.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')?.includes('true'))b.classList.add('correct');});sndWrong();}
+  finalQDone++;
+  if(finalQDone===5){
+    const res=document.getElementById('finalChallengeResult');
+    res.className='challenge-result show';
+    if(finalQCorrect>=4){
+      res.classList.add('ok');
+      res.textContent=`🏆 Phi thường! ${finalQCorrect}/5 câu đúng! Bạn xứng danh sử gia đất Cửu Chân! +${finalQCorrect*15} điểm`;
+      document.getElementById('finalGate').style.display='block';sndUnlock();
+      const fc=document.getElementById('finalChallenge');if(fc){const r=fc.getBoundingClientRect();burstParticles(r.left+r.width/2,r.top+40);}
+      if(finalQCorrect===5){pts+=30;updateScore();showPop('+30 HOÀN HẢO!');}
+    } else {
+      res.classList.add('no');
+      res.textContent=`Đúng ${finalQCorrect}/5 (cần ít nhất 4). Đọc lại câu chuyện và thử lại!`;
+      setTimeout(()=>{
+        for(let i=1;i<=5;i++){
+          if(finalState[i]===false){
+            finalState[i]=null;finalQDone--;
+            const fq=document.getElementById('fq'+i);
+            if(fq)fq.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+          }
+        }
+        res.className='challenge-result';res.textContent='';
+      },3500);
+    }
+  }
+}
+
+// ─── GIẢ ĐỊNH PHẢN THỰC ──────────────────────────
+function toggleCounter(id){const el=document.getElementById(id);if(el)el.classList.toggle('show');}
+
+// ─── NGUỒN SỬ LIỆU ───────────────────────────────
+const sourceDB={
+  s1_boiconh:{v:true,title:'Bối cảnh Cửu Chân dưới thời Đông Ngô đô hộ',body:'Triệu Thị Trinh sinh năm 226 tại miền núi Nông Cống (Thanh Hóa ngày nay), giai đoạn Giao Châu chịu ách đô hộ của Đông Ngô — một trong Tam Quốc Trung Hoa — với sưu thuế nặng nề đè lên nhân dân Cửu Chân.',cite:'Đại Việt sử ký toàn thư — phần Ngoại kỷ'},
+  s1x_voitrang:{v:false,title:'Truyền thuyết voi trắng một ngà',body:'Dân gian Thanh Hóa lưu truyền câu chuyện Bà Triệu thuần phục một con voi trắng chỉ có một ngà, hung dữ khác thường, để làm chiến mã trước khi dấy binh khởi nghĩa.',cite:'Truyền thuyết dân gian, ghi lại qua các tư liệu địa phương Thanh Hóa'},
+  s2_khoinghia:{v:true,title:'Khởi nghĩa núi Nưa, năm 248',body:'Bà Triệu cùng anh trai Triệu Quốc Đạt tập hợp nghĩa quân tại vùng núi Nưa — căn cứ hiểm trở thuộc Cửu Chân — mở đầu cuộc khởi nghĩa lớn chống ách đô hộ Đông Ngô.',cite:'Đại Việt sử ký toàn thư; truyền thuyết dân gian Thanh Hóa'},
+  s2_luocdan:{v:true,title:'Câu truyền miệng trong quân Đông Ngô',body:'Câu nói "Hoành qua đương hổ dị, đối diện Bà vương nan" (vung giáo chống hổ dễ, đối mặt Vua Bà mới khó) được lưu truyền trong dân gian, thể hiện nỗi khiếp sợ của quân Đông Ngô trước uy danh Bà Triệu.',cite:'Truyền thuyết dân gian, ghi lại qua các tư liệu địa phương Thanh Hóa'},
+  s2x_battles:{v:true,title:'Chiến dịch hơn 30 trận thắng',body:'Nghĩa quân dưới quyền Bà Triệu liên tiếp giành thắng lợi, quét sạch quân Đông Ngô khỏi nhiều huyện thành tại Cửu Chân, Giao Chỉ, buộc triều đình Đông Ngô phải cử tướng giỏi nhất sang đối phó.',cite:'Đại Việt sử ký toàn thư; Việt điện u linh'},
+  s3_giapvang:{v:true,title:'Hình ảnh áo giáp vàng và hơn 30 trận thắng',body:'Theo truyền thuyết và sử sách, Bà Triệu mặc áo giáp vàng, cưỡi voi chiến ra trận, chỉ huy nghĩa quân đánh thắng hơn 30 trận, quét sạch quân Đông Ngô khỏi nhiều huyện thành ở Cửu Chân, Giao Chỉ.',cite:'Đại Việt sử ký toàn thư; Việt điện u linh'},
+  dramatized_note:{v:false,title:'Lời thoại dựng lại minh họa',body:'Các đoạn hội thoại trong câu chuyện được dựng lại dựa trên tinh thần và bối cảnh lịch sử/truyền thuyết đã ghi chép, nhằm giúp người đọc hình dung sinh động hơn — không phải nguyên văn có ghi chép lại.',cite:'Ghi chú phương pháp thể hiện nội dung'}
+};
+const refPanelTitles={s1_boiconh:'Chương 1 · Bối cảnh Cửu Chân',s1x_voitrang:'Chương 2 · Truyền thuyết voi trắng một ngà',s2_khoinghia:'Chương 3 · Khởi nghĩa núi Nưa',s2_luocdan:'Chương 3 · Lời truyền miệng quân Đông Ngô',s2x_battles:'Chương 4 · Ba mươi trận thắng lẫy lừng',s3_giapvang:'Chương 5 · Giáp vàng, hơn 30 trận thắng'};
+function renderRefPanel(){
+  const list=document.getElementById('refPanelList');if(!list)return;
+  let html='';
+  for(const key in refPanelTitles){
+    const d=sourceDB[key];if(!d)continue;
+    html+=`<div class="ref-panel-item"><b>${refPanelTitles[key]}</b><span class="ref-panel-badge">${d.v?'📖 đã kiểm chứng':'🔵 dựng lại'}</span><br>${d.body}<br><span style="font-size:12.5px;color:var(--silk-faint);font-style:italic;">📎 ${d.cite}</span></div>`;
+  }
+  list.innerHTML=html;
+}
+function toggleRefPage(){renderRefPanel();document.getElementById('refOverlay').classList.toggle('show');}
+
+function openSrcPopup(key){
+  const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcBadge').textContent=d.v?'📖 ĐÃ KIỂM CHỨNG':'🔵 DỰNG LẠI MINH HỌA';
+  document.getElementById('srcBadge').className='src-popup-badge '+(d.v?'v':'d');
+  document.getElementById('srcTitle').textContent=d.title;
+  document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;
+  document.getElementById('srcOverlay').classList.add('show');
+  tone(700,.08,0.08,'sine');
+}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+
+// ─── ACHIEVEMENTS / FINAL SCREEN ─────────────────
+const allAch=[
+  {id:'scholar',icon:'📜',name:'Sử Gia',cond:()=>totalCorrect>=3},
+  {id:'queen',icon:'👑',name:'Nhụy Kiều',cond:()=>pts>=120},
+  {id:'combo',icon:'🔥',name:'Chiến Binh',cond:()=>maxStreak>=3},
+  {id:'perfect',icon:'⭐',name:'Hoàn Hảo',cond:()=>totalCorrect>=6},
+  {id:'elephant',icon:'🐘',name:'Giáp Vàng',cond:()=>pts>=75},
+  {id:'complete',icon:'🏆',name:'Hoàn Thành',cond:()=>finalQDone>=5}
+];
+function buildFinal(){
+  const r=getRank(pts);
+  document.getElementById('finalSeal').textContent=r.e;
+  const titles={120:'👑 NHỤY KIỀU TƯỚNG QUÂN TÁI THẾ!',75:'🐘 Dũng Nữ Núi Nưa!',35:'📜 Học Giả Cửu Chân!'};
+  let h='🌱 Người Học Sử Mới!';
+  if(pts>=120)h=titles[120];else if(pts>=75)h=titles[75];else if(pts>=35)h=titles[35];
+  document.getElementById('finalH').textContent=h;
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=r.t;
+  document.getElementById('finalDesc').textContent=r.d;
+  const wrap=document.getElementById('achieveWrap');
+  wrap.innerHTML='';
+  allAch.forEach((a,i)=>{
+    const locked=!a.cond();
+    const d=document.createElement('div');
+    d.className='ach'+(locked?' locked':'');
+    d.style.animationDelay=(i*0.08)+'s';
+    d.innerHTML=`<span class="ach-icon">${a.icon}</span><div class="ach-name">${locked?'???':a.name}</div>`;
+    wrap.appendChild(d);
+  });
+  renderJournal();
+}
+function renderJournal(){
+  let jHtml='';
+  for(const key in chapterNames){
+    const ok=choiceCorrect[key];
+    jHtml+=`<div class="journal-row"><span>${chapterNames[key]}</span><span class="journal-status ${ok?'ok':'no'}">${ok?'✅ Đúng lịch sử':'○ Khác lịch sử'}</span></div>`;
+  }
+  const el=document.getElementById('journalList');if(el)el.innerHTML=jHtml;
+}
+function copyJournal(){
+  let txt='📔 NHẬT KÝ HÀNH TRÌNH — BÀ TRIỆU, NỮ TƯỚNG CƯỠI VOI ĐÁNH GIẶC\n\n';
+  for(const key in chapterNames){txt+=(choiceCorrect[key]?'✅ ':'○ ')+chapterNames[key]+'\n';}
+  txt+=`\nTổng điểm: ${pts} — ${getRank(pts).t}\n`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.journal-copy');
+    if(btn){const old=btn.textContent;btn.textContent='✅ Đã sao chép!';setTimeout(()=>btn.textContent=old,1800);}
+  }).catch(()=>{});
+}
+
+// ─── EXP / LEADERBOARD (backend) ─────────────────
+const API='http://localhost:3000/api';
+async function awardExp(amount,storyTitle){
+  const token=localStorage.getItem('token');
+  if(!token||!amount)return;
+  try{
+    await fetch(`${API}/exp/add`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({amount:amount,source_type:'GAME',note:storyTitle||''})});
+  }catch(err){console.warn('Không thể cộng EXP:',err.message);}
+}
+async function openLeaderboard(){
+  const modal=document.getElementById('leaderboard-modal');
+  modal.classList.add('show');
+  const content=document.getElementById('lb-content');
+  content.innerHTML='<div class="lb-loading">Đang tải...</div>';
+  try{
+    const token=localStorage.getItem('token');
+    const res=await fetch(`${API}/leaderboard`,{headers:token?{'Authorization':'Bearer '+token}:{}});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message||'Lỗi tải bảng xếp hạng');
+    const rows=data.data||[];
+    let html='<div class="lb-list">';
+    if(rows.length===0){html+='<div class="lb-empty">Chưa có dữ liệu xếp hạng.</div>';}
+    else{
+      rows.forEach((r,i)=>{
+        const name=r.fullname||r.username||r.name||'Ẩn danh';
+        const exp=r.exp??r.points??0;const level=r.level??'';
+        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+        html+=`<div class="lb-row"><div class="lb-rank">${medal}</div><div class="lb-name">${name}</div><div class="lb-exp">${exp} EXP${level?' · Lv.'+level:''}</div></div>`;
+      });
+    }
+    html+='</div>';
+    if(data.myRank){const m=data.myRank;html+=`<div class="lb-myrank"><strong>Hạng của bạn:</strong> #${m.rank_pos??'-'} — ${m.exp??m.points??0} EXP</div>`;}
+    content.innerHTML=html;
+  }catch(err){content.innerHTML=`<div class="lb-empty">Không tải được bảng xếp hạng. (${err.message})</div>`;}
+}
+
+// ─── RESTART ─────────────────────────────────────
+function restart(){
+  pts=0;streak=0;maxStreak=0;totalCorrect=0;totalKC=0;
+    sceneHistory=['cover'];historyIndex=0;expAwarded=false;sceneRewarded={};updateNavButtons();
+  kcDone={};chainCorrectSet={1:false,2:false,3:false,4:false};
+  finalQCorrect=0;finalQDone=0;finalState={1:null,2:null,3:null,4:null,5:null};
+  matchSelected={left:null,right:null};matchCorrect=0;
+  arrangeAwarded=false;fillBlankMaxAwarded=0;
+  choiceCorrect={s1:false,s3:false,final_challenge:false};
+  updateScore();
+  document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  document.getElementById('streakBadge').classList.remove('show','hot');
+  document.querySelectorAll('.kc-opt,.match-item').forEach(b=>{b.disabled=false;b.className=b.classList.contains('match-item')?'match-item':'kc-opt';});
+  document.querySelectorAll('.kc-fb,.challenge-result').forEach(el=>{el.className=el.classList.contains('kc-fb')?'kc-fb':'challenge-result';el.textContent='';});
+  document.querySelectorAll('.fill-inp').forEach(el=>{el.value='';el.className='fill-inp';});
+  document.querySelectorAll('.counterf-body').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.jmap-pt,.jmap-lbl,.jmap-yr').forEach(el=>{
+    if(!el.classList.contains('pt-nongcong'))el.classList.add('locked');
+  });
+  const cg=document.getElementById('chainGate');if(cg)cg.style.display='none';
+  const fg=document.getElementById('finalGate');if(fg)fg.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

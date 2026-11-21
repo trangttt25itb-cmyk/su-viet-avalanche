@@ -1,0 +1,15 @@
+{
+  "name": "Sử gia tập sự",
+  "description": "Huy hiệu học tập Sử Việt dành cho người học đạt cấp 7. Huy hiệu không thể chuyển nhượng.",
+  "image": "https://trangttt25itb-cmyk.github.io/su-viet-badges/3.svg",
+  "attributes": [
+    {
+      "trait_type": "Cấp độ yêu cầu",
+      "value": 7
+    },
+    {
+      "trait_type": "Loại",
+      "value": "Huy hiệu học tập"
+    }
+  ]
+}

@@ -1,0 +1,499 @@
+const fs = require('fs');
+const D = require('docx');
+const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, ShadingType,
+  AlignmentType, HeadingLevel, LevelFormat, BorderStyle, Footer, PageNumber } = D;
+
+const W = 9906; // content width (A4, 1000 margins)
+const FONT = "Arial";
+
+function rt(t, o = {}) {
+  return t.split('**').map((s, i) => new TextRun({
+    text: s, bold: (i % 2 === 1) || o.bold, size: o.size, color: o.color, italics: o.italics, font: FONT
+  }));
+}
+function p(t, o = {}) {
+  return new Paragraph({ children: rt(t, o), spacing: { after: o.after ?? 80, before: o.before ?? 0 }, alignment: o.align, keepNext: o.keepNext });
+}
+const h1 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: t, font: FONT })], pageBreakBefore: false });
+const h2 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: t, font: FONT })] });
+const h3 = (t) => new Paragraph({ heading: HeadingLevel.HEADING_3, children: [new TextRun({ text: t, font: FONT })] });
+const bl = (t, lvl = 0) => new Paragraph({ numbering: { reference: 'b', level: lvl }, children: rt(t), spacing: { after: 50 } });
+const pb = () => new Paragraph({ children: [new D.PageBreak()] });
+
+const border = { style: BorderStyle.SINGLE, size: 4, color: "A6A6A6" };
+const borders = { top: border, bottom: border, left: border, right: border };
+
+function cell(t, w, o = {}) {
+  const lines = String(t).split('\n');
+  return new TableCell({
+    width: { size: w, type: WidthType.DXA }, borders,
+    shading: o.fill ? { fill: o.fill, type: ShadingType.CLEAR, color: "auto" } : undefined,
+    margins: { top: 50, bottom: 50, left: 90, right: 90 },
+    children: lines.map(l => new Paragraph({ children: rt(l, { size: 19, bold: o.bold }), spacing: { after: 20 } }))
+  });
+}
+function tbl(headers, rows, widths) {
+  const hdr = new TableRow({ tableHeader: true, children: headers.map((h, i) => cell(h, widths[i], { fill: "D9E2F3", bold: true })) });
+  const body = rows.map(r => new TableRow({ cantSplit: true, children: r.map((c, i) => cell(c, widths[i], { fill: i === 0 ? "F2F2F2" : undefined })) }));
+  return new Table({ width: { size: W, type: WidthType.DXA }, columnWidths: widths, rows: [hdr, ...body] });
+}
+function box(lines, fill = "FFF2CC") {
+  return new Table({
+    width: { size: W, type: WidthType.DXA }, columnWidths: [W],
+    rows: [new TableRow({ children: [new TableCell({
+      width: { size: W, type: WidthType.DXA }, borders,
+      shading: { fill, type: ShadingType.CLEAR, color: "auto" },
+      margins: { top: 80, bottom: 80, left: 140, right: 140 },
+      children: lines.map(l => new Paragraph({ children: rt(l, { size: 20 }), spacing: { after: 40 } }))
+    })] })]
+  });
+}
+const sp = () => new Paragraph({ children: [], spacing: { after: 80 } });
+
+const c = []; // content
+
+// ---------- TITLE ----------
+c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 60 }, children: [new TextRun({ text: "ÔN THI GIỮA KỲ VẬT LÝ ĐẠI CƯƠNG", bold: true, size: 36, font: FONT, color: "1F3864" })] }));
+c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 60 }, children: [new TextRun({ text: "Chương 1: Cơ học – Câu 1, Câu 2b, Câu 2a, Câu 3", size: 26, font: FONT })] }));
+c.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 160 }, children: [new TextRun({ text: "Ký hiệu – đơn vị – khi nào dùng công thức nào – bài mẫu có lời giải", italics: true, size: 21, font: FONT })] }));
+
+c.push(h1("0. Cách dùng file này"));
+c.push(tbl(["Phần", "Điểm (theo đề mẫu)", "Mức ưu tiên", "Cách học"], [
+  ["Câu 1 (Phần A)", "4,0", "**Cao nhất**", "Thuộc các câu hoàn chỉnh, từ khóa in đậm là chỗ cô bỏ trống"],
+  ["Câu 2b (Phần B)", "khoảng 2,0", "**Cao nhất**", "Thuộc bảng ký hiệu – đơn vị và bảng “dấu hiệu → công thức”"],
+  ["Câu 2a (Phần C)", "khoảng 2,0", "Cao", "Học 1 khuôn: tìm N trước, kiểm tra N > 0, rồi ma sát, gia tốc"],
+  ["Câu 3 (Phần D)", "2,0 (có bạn kể 4,0)", "Trung bình", "Học khuôn hai vật nối dây; mặt nghiêng; ném xiên"]
+], [2000, 2100, 1700, 4106]));
+c.push(sp());
+c.push(box([
+  "**Quy tắc trình bày để ăn điểm từng bước:**",
+  "1) Gạch dữ kiện, ghi ký hiệu và đơn vị.  2) Viết công thức trước, thế số sau.  3) Ghi đơn vị ở kết quả.  4) Kiểm tra nhanh (N > 0? ω có nằm giữa hai giá trị đầu cuối? L = M·t?).",
+  "Chỗ nào không nhớ thì để trống chứ đừng đoán bừa; nhưng với bài tính toán, viết đúng công thức đã có điểm dù chưa ra đáp số."
+], "E2EFDA"));
+
+// ---------- PHẦN A ----------
+c.push(h1("PHẦN A. CÂU 1: TRẢ LỜI NGẮN (ĐIỀN KHUYẾT)"));
+c.push(p("Đề của cô có 4 ý a, b, c, d, mỗi ý một câu có chỗ trống. Đề thật không lặp lại đề mẫu nhưng dùng cùng các ý. **Từ in đậm** là chỗ cô sẽ bỏ trống."));
+
+c.push(h2("A1. Bảng “đại lượng nào đặc trưng cho gì” (học thuộc)"));
+c.push(tbl(["Đại lượng", "Đặc trưng cho", "Đơn vị"], [
+  ["Vận tốc", "**phương, chiều và sự nhanh chậm** của chuyển động", "m/s"],
+  ["Gia tốc", "**mức độ biến thiên của vận tốc**", "m/s²"],
+  ["Gia tốc tiếp tuyến aₜ", "sự biến đổi về **độ lớn** của vận tốc", "m/s²"],
+  ["Gia tốc pháp tuyến aₙ", "sự biến đổi về **phương** của vận tốc (hướng về bề lõm quỹ đạo)", "m/s²"],
+  ["Vận tốc góc ω", "mức độ quay nhanh hay chậm", "rad/s"],
+  ["Gia tốc góc β", "sự biến đổi của vận tốc góc", "rad/s²"],
+  ["Lực", "**sự tương tác giữa các vật** (làm đổi trạng thái chuyển động hoặc biến dạng)", "N"],
+  ["Khối lượng", "**quán tính** và khả năng hấp dẫn của vật", "kg"],
+  ["Động lượng p = mv", "chuyển động về mặt động lực học; khả năng truyền chuyển động", "kg·m/s"],
+  ["Xung lượng của lực", "**tác dụng** của lực trong một khoảng thời gian", "N·s"],
+  ["Momen lực M", "**sự thay đổi trạng thái chuyển động quay** của vật rắn", "N·m"],
+  ["Momen quán tính I", "**quán tính** của vật rắn trong chuyển động quay", "kg·m²"],
+  ["Momen động lượng L = Iω", "chuyển động quay (bảo toàn khi tổng momen ngoại lực = 0)", "kg·m²/s"]
+], [2600, 5906, 1400]));
+
+c.push(h2("A2. Các câu hoàn chỉnh cần thuộc"));
+c.push(h3("Động học chất điểm"));
+[
+  "Chuyển động là sự thay đổi **vị trí** của chất điểm đối với các vật khác theo **thời gian**; đứng yên hay chuyển động chỉ có tính **tương đối**.",
+  "Muốn biết dạng chuyển động của chất điểm, ta dựa vào **quỹ đạo** (phương trình quỹ đạo), kết hợp với vận tốc và gia tốc.",
+  "Phương trình chuyển động biểu diễn **vị trí của chất điểm theo thời gian**: x(t), y(t), z(t). Phương trình quỹ đạo có dạng f(x, y, z) = C, tìm bằng cách **khử tham số t**.",
+  "Vectơ vận tốc có phương **tiếp tuyến** với quỹ đạo, chiều **theo chiều chuyển động**; v = dr/dt (đạo hàm bậc nhất của bán kính vectơ theo thời gian).",
+  "Vectơ gia tốc a = dv/dt. Gia tốc toàn phần a = aₜ + aₙ, hai thành phần **vuông góc** nhau, a = √(aₜ² + aₙ²). aₙ = v²/R, hướng về **bề lõm** của quỹ đạo.",
+  "a·v > 0 (a và v tạo góc **nhọn**): chuyển động **nhanh dần**. a·v < 0 (góc **tù**): **chậm dần**.",
+  "aₙ = 0: chuyển động **thẳng**. aₜ = 0: chuyển động **cong đều**. a = 0: chuyển động **thẳng đều**.",
+  "Chuyển động thẳng nhanh dần đều: vận tốc **tăng đều** theo thời gian; chậm dần đều: **giảm đều**. Đồ thị v(t) là **đường thẳng**, đồ thị x(t) là **parabol**.",
+  "Ném xiên: quỹ đạo là **parabol**; aₓ = 0, a_y = −g; tại đỉnh quỹ đạo v_y = **0**.",
+  "Vận tốc góc ω = **dθ/dt** (rad/s); gia tốc góc β = **dω/dt** (rad/s²). Quay biến đổi đều: đồ thị ω(t) là **đường thẳng**, đồ thị θ(t) là **parabol**.",
+  "Chuyển động tròn đều: ω = const, β = 0, aₜ = **0**, chỉ có gia tốc **hướng tâm** aₙ = ω²R. Chu kì T = 2π/ω, tần số f = 1/T.",
+  "Liên hệ đại lượng dài và góc: v = **ωR**; aₜ = **βR**; aₙ = **ω²R**."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Động lực học chất điểm"));
+[
+  "Newton I: vật giữ nguyên trạng thái **đứng yên** hoặc **chuyển động thẳng đều** nếu không chịu lực nào tác dụng, hoặc các lực tác dụng vào nó **triệt tiêu**.",
+  "Newton II: F = **m·a**; gia tốc **tỉ lệ thuận với lực**, **tỉ lệ nghịch với khối lượng**. Nhiều lực cùng tác dụng thì mỗi lực gây một gia tốc **độc lập**.",
+  "Newton III: lực và phản lực **tồn tại đồng thời**, cùng **phương**, cùng **độ lớn**, **ngược** chiều, đặt vào **hai** vật khác nhau (nên không cùng điểm đặt, không triệt tiêu nhau).",
+  "Lực đặc trưng cho **sự tương tác giữa các vật**. Khối lượng đặc trưng cho **quán tính** (và hấp dẫn) của vật.",
+  "Hệ quy chiếu quán tính là hệ **đứng yên hoặc chuyển động thẳng đều**; các định luật Newton chỉ đúng ở hệ này. Hệ chuyển động **có gia tốc** (không quán tính): chất điểm chịu thêm **lực quán tính** F_qt = −m·a₀.",
+  "Trọng lực P = **m·g**. Trọng lượng là độ lớn lực vật **nén lên mặt đỡ**; ô tô chạy trên đường nằm ngang thì lực nén lên mặt đường bằng **trọng lượng** của ô tô (N = P).",
+  "Lực ma sát F_ms = **k·N**, **ngược chiều** chuyển động; N vuông góc với mặt tiếp xúc. Lực đàn hồi F = **k·Δl**.",
+  "Lực hấp dẫn tỉ lệ **thuận với tích hai khối lượng**, **nghịch với bình phương khoảng cách**; G = 6,67·10⁻¹¹ N·m²/kg². Rơi tự do là rơi **chỉ dưới tác dụng của trọng lực**.",
+  "Động lượng p = **m·v**. Định lý: độ biến thiên động lượng bằng **xung lượng** của lực: ΔP = ∫F·dt = F·Δt.",
+  "Tổng động lượng của hệ **cô lập** là đại lượng **bảo toàn**; khối tâm của hệ cô lập đứng yên hoặc chuyển động thẳng đều. Hệ cô lập là hệ không tương tác với vật ngoài hệ.",
+  "Khối tâm của hệ chuyển động như một chất điểm có khối lượng **bằng tổng khối lượng** của hệ, chịu lực **bằng tổng ngoại lực**; nội lực **không** làm đổi chuyển động của khối tâm.",
+  "Súng giật lùi: m·v + M·V = 0, V = −m·v/M; dấu trừ: súng chuyển động **ngược chiều** viên đạn.",
+  "Momen động lượng của chất điểm L = **r ∧ p**; định lý dL/dt = M. Lực xuyên tâm (phương qua O): momen lực = **0**, momen động lượng **không đổi**."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Chuyển động quay của vật rắn"));
+[
+  "Vật rắn là hệ chất điểm mà **khoảng cách giữa hai điểm bất kỳ không đổi**. Khi quay quanh trục cố định, mọi điểm có **cùng ω và cùng β**, trong cùng thời gian quay được **cùng một góc**.",
+  "Chỉ thành phần lực **tiếp tuyến** với quỹ đạo mới có tác dụng gây quay. Momen lực M = **F·R** (F tiếp tuyến).",
+  "Momen lực đặc trưng cho **sự thay đổi trạng thái chuyển động quay**. Momen quán tính đặc trưng cho **quán tính** của vật rắn trong chuyển động quay.",
+  "Momen quán tính I = Σmᵢrᵢ²; phụ thuộc **khối lượng**, **sự phân bố khối lượng** và **vị trí trục quay**; **không** phụ thuộc momen ngoại lực.",
+  "Phương trình cơ bản của chuyển động quay: **I·β = M**.",
+  "Định lý Steiner–Huyghens: I = **I_G + M·d²** (d là khoảng cách hai trục song song).",
+  "Momen động lượng L = **I·ω**; dL/dt = M. Khi tổng momen ngoại lực đối với trục bằng **0** thì **momen động lượng** bảo toàn: I₁ω₁ = I₂ω₂ (I giảm thì ω **tăng**).",
+  "Vật rắn cân bằng khi **gia tốc khối tâm bằng 0** và **gia tốc góc bằng 0** (ΣF = 0, ΣM = 0)."
+].forEach(s => c.push(bl(s)));
+
+c.push(h2("A3. Các cặp dễ nhầm"));
+c.push(tbl(["Cặp", "Phân biệt"], [
+  ["Momen lực ↔ Momen quán tính", "Momen lực: **sự thay đổi trạng thái chuyển động quay** (giống lực). Momen quán tính: **quán tính khi quay** (giống khối lượng)."],
+  ["Trọng lực ↔ Trọng lượng", "Trọng lực P = mg (Trái Đất hút vật). Trọng lượng: lực vật **nén lên mặt đỡ**; đề nói “nén lên mặt đường” thì điền **trọng lượng**."],
+  ["Động lượng ↔ Xung lượng", "Động lượng p = mv. Xung lượng = F·Δt = **độ biến thiên động lượng** (xung lượng không phải đại lượng bảo toàn; **tổng động lượng của hệ cô lập** mới bảo toàn)."],
+  ["aₜ ↔ aₙ", "aₜ đổi **độ lớn** của v (aₜ = 0: cong đều). aₙ đổi **phương** của v (aₙ = 0: thẳng)."],
+  ["Nhanh dần ↔ chậm dần", "Nhanh dần: a·v > 0, góc **nhọn**. Chậm dần: a·v < 0, góc **tù**."],
+  ["Hệ quán tính ↔ không quán tính", "Quán tính: đứng yên hoặc thẳng đều. Không quán tính: có gia tốc, có thêm **lực quán tính**."],
+  ["Đồ thị ω(t) ↔ θ(t)", "ω = ω₀ + βt bậc nhất: **đường thẳng**. θ = ½βt² + ω₀t bậc hai: **parabol**."]
+], [2900, 7006]));
+
+c.push(h2("A4. Tìm quỹ đạo từ phương trình chuyển động (khử t)"));
+c.push(p("**Khi nào dùng:** đề cho x(t), y(t), z(t) và hỏi “quỹ đạo có dạng đường gì, viết phương trình”. Quỹ đạo là phương trình **không còn t**."));
+c.push(tbl(["Dạng đề", "Cách khử t", "Quỹ đạo"], [
+  ["x, y đều bậc nhất theo t", "Rút t từ một phương trình, thế vào cái còn lại", "**đường thẳng**"],
+  ["Một bậc nhất, một bậc hai theo t", "Rút t từ phương trình bậc nhất, thế vào bậc hai", "**parabol**"],
+  ["x = R·cos t, y = R·sin t", "Bình phương hai vế rồi **cộng** (cos² + sin² = 1)", "**đường tròn** bán kính R"],
+  ["x = a·cos t, y = b·sin t", "Chia x cho a, y cho b, bình phương rồi cộng", "elip x²/a² + y²/b² = 1"]
+], [3000, 4506, 2400]));
+c.push(sp());
+c.push(tbl(["Ví dụ", "Lời giải ngắn", "Kết luận"], [
+  ["x = 2t + 1, y = 4t, z = 0", "t = (x − 1)/2; y = 4·(x − 1)/2", "**y = 2x − 2**, đường thẳng"],
+  ["x = t, y = 2t² + 1, z = 0", "t = x; thế vào y", "**y = 2x² + 1**, parabol"],
+  ["x = t², y = 2t, z = 0", "t = y/2; x = (y/2)²", "**x = y²/4**, parabol"],
+  ["x = 3t² + 2t, y = 8t, z = 0", "t = y/8; x = 3y²/64 + y/4", "**x = 3y²/64 + y/4**, parabol"],
+  ["x = 3cos t, y = 3sin t, z = 0", "x² + y² = 9(cos²t + sin²t) = 9", "**đường tròn** bán kính **3 m**"]
+], [3000, 4006, 2900]));
+c.push(p("Kiểm tra nhanh: lấy t = 0 và t = 1, tính (x, y) rồi thế vào phương trình quỹ đạo vừa tìm. z = 0 nghĩa là chuyển động nằm trong mặt phẳng Oxy.", { before: 60 }));
+
+c.push(h2("A5. Tính vận tốc và gia tốc từ phương trình chuyển động"));
+c.push(p("**4 bước:** (1) đạo hàm bậc 1 từng tọa độ được vₓ, v_y, v_z; (2) đạo hàm bậc 2 được aₓ, a_y, a_z; (3) thay giá trị t; (4) v = √(vₓ² + v_y² + v_z²), a = √(aₓ² + a_y² + a_z²)."));
+c.push(tbl(["Hàm", "Đạo hàm", "Ghi chú"], [
+  ["x = cos(kt)", "x′ = −k·sin(kt)", "k là hệ số trước t"],
+  ["x = sin(kt)", "x′ = k·cos(kt)", ""],
+  ["x = sin²t", "x′ = 2sin t·cos t = sin 2t", "cos²t có đạo hàm −sin 2t"],
+  ["x = a·tⁿ", "x′ = n·a·tⁿ⁻¹", "5t² → 10t; 3t² + 2t → 6t + 2"],
+  ["Giá trị tại t = π/6", "sin t = 1/2; cos t = √3/2; sin 2t = √3/2; cos 2t = 1/2", "hay gặp trong đề"]
+], [2400, 4806, 2700]));
+c.push(sp());
+c.push(tbl(["Ví dụ", "v", "a"], [
+  ["Đề 02: x = cos t, y = cos 2t, z = 0; t = π/6 s", "vₓ = −1/2, v_y = −√3\nv = √13/2 ≈ **1,80 m/s**", "aₓ = −√3/2, a_y = −2\na = √19/2 ≈ **2,18 m/s²**"],
+  ["Đề 04: x = cos 2t, y = 0, z = sin²t; t = π/6 s", "vₓ = −√3, v_z = √3/2\nv = √15/2 ≈ **1,94 m/s**", "aₓ = −2, a_z = 1\na = √5 ≈ **2,24 m/s²**"],
+  ["Slide: x = 15t, y = 5t²; t = 2 s", "vₓ = 15, v_y = 20; v = **25 m/s**", "aₓ = 0, a_y = 10; a = **10 m/s²**"],
+  ["x = 3t² + 2t, y = 8t; t = 1 s", "vₓ = 8, v_y = 8; v = 8√2 ≈ **11,3 m/s**", "aₓ = 6, a_y = 0; a = **6 m/s²**"]
+], [3400, 3300, 3206]));
+
+c.push(h2("A6. Câu Đúng/Sai hay gặp"));
+c.push(tbl(["Nhận định", "Đ/S", "Vì sao"], [
+  ["Chuyển động thẳng nhanh dần đều có vận tốc không đổi theo thời gian", "S", "Vận tốc tăng đều"],
+  ["Gia tốc pháp tuyến đặc trưng cho sự biến đổi về độ lớn của vận tốc", "S", "Đó là gia tốc tiếp tuyến; pháp tuyến đổi phương"],
+  ["Lực và phản lực có cùng điểm đặt nên triệt tiêu nhau", "S", "Đặt vào hai vật khác nhau"],
+  ["Momen quán tính phụ thuộc vào momen ngoại lực tác dụng lên vật", "S", "Chỉ phụ thuộc khối lượng, phân bố, trục quay"],
+  ["Chuyển động tròn đều có gia tốc tiếp tuyến bằng 0", "Đ", "Độ lớn v không đổi"],
+  ["Khi vật rắn cân bằng thì gia tốc khối tâm bằng 0", "Đ", "ΣF = 0 (và gia tốc góc cũng bằng 0)"],
+  ["Khối lượng đặc trưng cho quán tính của vật", "Đ", ""],
+  ["Xung lượng của lực chính là động lượng của vật", "S", "Xung lượng bằng độ **biến thiên** động lượng"]
+], [5600, 800, 3506]));
+
+// ---------- PHẦN B ----------
+c.push(new Paragraph({ children: [new D.PageBreak()] }));
+c.push(h1("PHẦN B. CÂU 2b: CHUYỂN ĐỘNG QUAY CỦA VẬT RẮN"));
+c.push(p("Câu 2b có **một khung cố định**: đề chỉ đổi số hoặc đổi cái cần tìm. Học chắc bảng ký hiệu, bảng công thức và các dạng bài dưới đây là gần như chắc điểm."));
+
+c.push(h2("B1. Bảng ký hiệu: mỗi chữ là gì, đơn vị gì"));
+c.push(tbl(["Ký hiệu", "Tên (cách đọc)", "Đơn vị", "Ý nghĩa / lưu ý"], [
+  ["θ hoặc φ", "góc quay (tê-ta, phi)", "rad", "Góc vật đã quay. 1 vòng = 2π rad ≈ 6,28 rad"],
+  ["ω₀", "vận tốc góc ban đầu", "rad/s", "ω lúc t = 0. Đề ghi “từ nghỉ” thì ω₀ = 0"],
+  ["ω", "**vận tốc góc** (ô-mê-ga)", "rad/s", "Quay nhanh hay chậm: mỗi giây quay được bao nhiêu rad. ω = dθ/dt"],
+  ["β", "**gia tốc góc** (bê-ta)", "rad/s²", "ω tăng hoặc giảm bao nhiêu mỗi giây. β = dω/dt. β cùng chiều ω: nhanh dần; ngược chiều: chậm dần"],
+  ["n", "tốc độ quay", "vòng/phút hoặc vòng/s", "Đề hay cho kiểu này. **Phải đổi sang ω (rad/s) trước khi tính**"],
+  ["t", "thời gian", "s", ""],
+  ["T, f", "chu kì, tần số", "s; Hz", "T = 2π/ω (thời gian 1 vòng); f = 1/T"],
+  ["R", "bán kính", "m", "Đổi cm sang m. Đề cho đường kính thì R = D/2"],
+  ["v", "vận tốc dài", "m/s", "Vận tốc của một điểm cách trục R. v = ωR"],
+  ["aₜ", "gia tốc tiếp tuyến", "m/s²", "Đổi **độ lớn** của v. aₜ = βR"],
+  ["aₙ", "gia tốc pháp tuyến (hướng tâm)", "m/s²", "Đổi **phương** của v. aₙ = ω²R"],
+  ["F", "lực tiếp tuyến ở vành", "N", ""],
+  ["M", "**momen lực**", "N·m", "Tác dụng làm quay của lực. Đặc trưng cho **sự thay đổi trạng thái chuyển động quay**"],
+  ["I", "**momen quán tính**", "kg·m²", "Vật “khó quay” cỡ nào: quán tính khi quay (như khối lượng m khi chuyển động thẳng)"],
+  ["L", "**momen động lượng**", "kg·m²/s", "L = I·ω. Bảo toàn khi tổng momen ngoại lực = 0"],
+  ["W", "động năng quay", "J", "W = ½Iω²"],
+  ["A", "công của momen lực", "J", "A = M·φ"]
+], [1200, 2500, 1500, 4706]));
+
+c.push(h2("B2. Bảng công thức: thấy dấu hiệu này trong đề thì dùng công thức này"));
+c.push(tbl(["Công thức", "Dùng khi nào (dấu hiệu trong đề)", "Vì sao dùng được"], [
+  ["ω = 2πn/60", "Đề cho **vòng/phút**. (Vòng/giây thì ω = 2πn)", "1 vòng = 2π rad; 1 phút = 60 s. Mọi công thức quay dùng rad/s"],
+  ["β = (ω − ω₀)/t", "Cho ω đầu, ω cuối, thời gian; hỏi β", "β là độ tăng của ω mỗi giây (β = Δω/Δt), dùng khi β không đổi"],
+  ["ω = ω₀ + βt", "Hỏi ω tại thời điểm t, β không đổi", "Giống v = v₀ + at"],
+  ["φ = ω₀t + ½βt²\nSố vòng = φ/2π", "Hỏi góc quay hoặc số vòng, có thời gian", "Giống s = v₀t + ½at²"],
+  ["ω² − ω₀² = 2βφ", "Hỏi góc quay nhưng **không có thời gian**", "Giống v² − v₀² = 2as"],
+  ["M = I·β  (β = M/I)", "Cho **M và I**, hỏi β (hoặc ngược lại)", "Phương trình cơ bản của chuyển động quay, như F = ma"],
+  ["M = F·R", "Lực **tiếp tuyến** F ở vành bán kính R", "Chỉ thành phần tiếp tuyến gây quay; cánh tay đòn là R"],
+  ["M_lực − M_ma sát = I·β", "Có **momen ma sát/cản**", "Ma sát cản quay nên trừ; M hợp lực mới gây β"],
+  ["L = I·ω", "Hỏi **momen động lượng**", "Định nghĩa momen động lượng của vật rắn"],
+  ["L = M·t", "M không đổi, quay từ nghỉ (dùng kiểm tra nhanh)", "Từ dL/dt = M; không cần biết I"],
+  ["I₁ω₁ = I₂ω₂", "Không có momen ngoại lực, hoặc người/vật **đổi vị trí** trên đĩa quay", "Bảo toàn momen động lượng: I giảm thì ω tăng"],
+  ["I = ½mR² (đĩa, trụ đặc)\nI = mR² (vành)\nI = ml²/12 (thanh qua tâm)\nI = 2mR²/5 (cầu đặc)", "Đề cho m, R (hoặc l) mà không cho I", "Công thức momen quán tính của vật đồng chất"],
+  ["I = I_G + M·d²", "Trục quay **không đi qua khối tâm**", "Định lý Steiner–Huyghens"],
+  ["I = Σ mᵢrᵢ²", "Hệ chất điểm", "Định nghĩa"],
+  ["v = ωR; aₜ = βR; aₙ = ω²R\na = √(aₜ² + aₙ²)", "Hỏi vận tốc, gia tốc của **điểm trên vành**", "Liên hệ đại lượng góc với đại lượng dài"],
+  ["W = ½Iω²; A = M·φ", "Hỏi động năng, công", "Công của momen lực bằng độ tăng động năng"],
+  ["ω = 0, β < 0", "Đề nói **hãm, dừng lại**", "β ngược chiều ω nên âm; dừng khi ω = 0"]
+], [2900, 3400, 3606]));
+
+c.push(h2("B3. Cách nhớ nhanh: cặp tương ứng với chuyển động thẳng"));
+c.push(tbl(["Chuyển động thẳng", "Chuyển động quay", "Chuyển động thẳng", "Chuyển động quay"], [
+  ["s", "φ (θ)", "F", "M"],
+  ["v", "ω", "m", "I"],
+  ["a", "β", "F = ma", "**M = Iβ**"],
+  ["v = v₀ + at", "ω = ω₀ + βt", "p = mv", "**L = Iω**"],
+  ["s = v₀t + ½at²", "φ = ω₀t + ½βt²", "W = ½mv²", "W = ½Iω²"]
+], [2400, 2553, 2400, 2553]));
+
+c.push(h2("B4. Đổi đơn vị (làm trước khi tính)"));
+[
+  "**vòng/phút → rad/s:** ω = 2πn/60. Ví dụ 120 vòng/phút = 4π rad/s; 300 vòng/phút = 10π rad/s; 1500 vòng/phút = 50π rad/s.",
+  "**vòng/giây → rad/s:** ω = 2πn. Ví dụ 7 vòng/s = 14π rad/s.",
+  "**độ → rad:** rad = độ·π/180. Số vòng = φ (rad)/2π.",
+  "**cm → m:** chia 100. Đường kính 50 cm: R = 0,25 m.",
+  "**g → kg:** chia 1000. Momen: 1 N·m = 1 kg·m²/s²."
+].forEach(s => c.push(bl(s)));
+
+c.push(h2("B5. Quy trình 5 bước cho mọi bài 2b"));
+c.push(tbl(["Bước", "Việc cần làm"], [
+  ["1", "Gạch dữ kiện, ghi ký hiệu và đơn vị. Có vòng/phút, cm, g thì đổi ngay."],
+  ["2", "Lập chuỗi suy ngược: đề hỏi gì ← cần gì ← đề cho gì (ví dụ L ← ω ← β ← M và I)."],
+  ["3", "Chọn công thức theo bảng B2, **viết công thức trước**, thế số sau."],
+  ["4", "Có momen ma sát hoặc hai giai đoạn thì tách riêng từng giai đoạn."],
+  ["5", "Kiểm tra: ω nằm giữa giá trị đầu và cuối? L = M·t trùng kết quả? Đơn vị đúng?"]
+], [900, 9006]));
+
+c.push(h2("B6. Các dạng bài mẫu có lời giải"));
+
+c.push(h3("Dạng 1 (Đề 02): quay biến đổi đều, cho vòng/phút"));
+c.push(p("Bánh xe đường kính 50 cm, β không đổi, trong 4 s tốc độ tăng từ 120 vòng/phút lên 360 vòng/phút. Xét tính chất chuyển động và tìm ω sau 2 s."));
+[
+  "Đổi đơn vị: ω₀ = 2π·120/60 = **4π rad/s** (≈ 12,57); ω₁ = 2π·360/60 = **12π rad/s** (≈ 37,70).",
+  "β = (ω₁ − ω₀)/t = (12π − 4π)/4 = **2π rad/s²** ≈ 6,28 rad/s².",
+  "β = const, β > 0, ω tăng: **quay nhanh dần đều**.",
+  "ω = ω₀ + βt = 4π + 2π·2 = **8π rad/s** ≈ 25,1 rad/s (= 240 vòng/phút, nằm giữa 120 và 360 nên hợp lý).",
+  "Nếu hỏi thêm (R = 0,25 m): v = ωR = 2π ≈ 6,28 m/s; aₜ = βR ≈ 1,57 m/s²; aₙ = ω²R = 16π² ≈ 157,9 m/s²; φ = ω₀t + ½βt² = 8π + 4π = 12π rad = 6 vòng."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Dạng 2 (Đề 04): cho M và I, hỏi ω và L"));
+c.push(p("Đĩa mài có I = 1,5·10⁻³ kg·m², chịu momen lực 15 N·m từ nghỉ. Tính momen động lượng sau 30 s."));
+[
+  "Chuỗi suy ngược: L ← ω ← β ← M và I.",
+  "β = M/I = 15/(1,5·10⁻³) = **10⁴ rad/s²**.",
+  "ω = ω₀ + βt = 0 + 10⁴·30 = **3·10⁵ rad/s**.",
+  "L = Iω = 1,5·10⁻³·3·10⁵ = **450 kg·m²/s**.",
+  "Kiểm tra: L = M·t = 15·30 = 450 ✓.",
+  "Hỏi thêm: φ = ½βt² = 4,5·10⁶ rad (≈ 7,16·10⁵ vòng); W = ½Iω² = 6,75·10⁷ J = A = Mφ."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Dạng 3: lực tiếp tuyến ở vành và momen ma sát"));
+c.push(p("Đĩa đặc m = 4 kg, R = 0,25 m, từ nghỉ, F = 5 N tiếp tuyến ở vành, momen ma sát 0,25 N·m. Tính β, ω và L sau 5 s."));
+[
+  "I = ½mR² = ½·4·0,25² = **0,125 kg·m²**.",
+  "M_F = F·R = 5·0,25 = 1,25 N·m. Momen hợp lực M = 1,25 − 0,25 = **1,0 N·m** (ma sát cản nên trừ).",
+  "β = M/I = 1,0/0,125 = **8 rad/s²**; ω = βt = **40 rad/s**; L = Iω = **5 kg·m²/s** (kiểm tra: M·t = 1,0·5 = 5 ✓).",
+  "Lỗi hay gặp: dùng M = 1,25 để tính β (ra 10, sai) vì quên trừ momen ma sát."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Dạng 4: hãm đến dừng, tính số vòng"));
+c.push(p("Bánh xe quay 300 vòng/phút, hãm đều dừng sau 10 s. Tính β và số vòng quay trong lúc hãm."));
+[
+  "ω₀ = 2π·300/60 = **10π rad/s**; lúc dừng ω = 0.",
+  "β = (0 − 10π)/10 = **−π rad/s²** (âm vì chậm dần).",
+  "φ = ω₀t + ½βt² = 100π − 50π = 50π rad; số vòng = 50π/2π = **25 vòng**.",
+  "Kiểm tra: tốc độ trung bình 150 vòng/phút nhân 10/60 phút = 25 vòng ✓."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Dạng 5: hai giai đoạn (tăng tốc rồi tắt lực, đĩa tự dừng)"));
+c.push(p("Đĩa mài I = 1,55·10⁻³ kg·m² tăng tốc từ nghỉ đến 1500 vòng/phút trong 5 s; ngừng tác dụng momen thì đĩa dừng sau 45 s. Tìm momen lực cần tác dụng."));
+[
+  "ω = 2π·1500/60 = 50π ≈ 157,1 rad/s.",
+  "**Giai đoạn hãm** (chỉ còn ma sát): |β₂| = 157,1/45 ≈ 3,49 rad/s²; M_ms = I·|β₂| ≈ 1,55·10⁻³·3,49 ≈ 5,4·10⁻³ N·m.",
+  "**Giai đoạn tăng tốc:** β₁ = 157,1/5 ≈ 31,4 rad/s².",
+  "M cần tìm = Iβ₁ + M_ms = 1,55·10⁻³·(31,4 + 3,49) ≈ **0,054 N·m**."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Dạng 6: bảo toàn momen động lượng"));
+c.push(p("Sàn quay là trụ đặc 25 kg, R = 2 m; người 50 kg đứng ở mép; hệ quay 0,2 vòng/s. Khi người đi vào cách trục 1 m thì tốc độ góc là bao nhiêu?"));
+[
+  "Không có momen ngoại lực nên I₁ω₁ = I₂ω₂.",
+  "I₁ = ½·25·2² + 50·2² = 50 + 200 = 250 kg·m²; I₂ = 50 + 50·1² = 100 kg·m².",
+  "ω₂ = ω₁·I₁/I₂ = 0,2·250/100 = **0,5 vòng/s** (I giảm nên ω tăng). Có thể giữ nguyên đơn vị vòng/s, không cần đổi sang rad/s vì hai vế cùng đơn vị.",
+  "Bài trượt băng nghệ thuật: ω từ 0,5 lên 3 vòng/s, I₁ = 4,6 kg·m² thì I₂ = 4,6·0,5/3 ≈ **0,77 kg·m²**."
+].forEach(s => c.push(bl(s)));
+
+c.push(h3("Dạng 7: tìm momen quán tính từ dữ kiện chuyển động (slide Cơ học 2)"));
+c.push(p("Bánh xe đường kính 10 cm, lực tiếp tuyến 0,5 N ở vành, từ nghỉ, sau 2 s quay được vòng đầu tiên. Tính I."));
+[
+  "φ = 2π = ½βt² = ½β·4, suy ra β = π rad/s².",
+  "M = F·R = 0,5·0,05 = 0,025 N·m, I = M/β = 0,025/π ≈ **0,00796 kg·m²**.",
+  "**Lưu ý:** slide của cô ghi đáp án 0,0159 kg·m². Con số đó ra khi lấy R = 0,1 m (coi 10 cm là bán kính). Bạn nên hỏi cô hoặc ghi rõ cách hiểu đề khi làm."
+].forEach(s => c.push(bl(s)));
+
+c.push(h2("B7. Các lỗi hay làm mất điểm ở 2b"));
+[
+  "Quên đổi vòng/phút sang rad/s (kết quả sai hàng chục lần).",
+  "Nhầm M, I, β với F, m, a. Nhớ: **M = Iβ** giống F = ma.",
+  "Quên trừ momen ma sát khi bài có ma sát/cản.",
+  "Bài hai giai đoạn: không tách riêng giai đoạn hãm để tìm momen ma sát.",
+  "Dùng đường kính thay cho bán kính (R = D/2).",
+  "Quên dấu âm của β khi hãm, hoặc ghi thiếu đơn vị ở kết quả."
+].forEach(s => c.push(bl(s)));
+
+// ---------- PHẦN C ----------
+c.push(new Paragraph({ children: [new D.PageBreak()] }));
+c.push(h1("PHẦN C. CÂU 2a: ĐỘNG LỰC HỌC CHẤT ĐIỂM"));
+c.push(h2("C1. Ký hiệu và đơn vị"));
+c.push(tbl(["Ký hiệu", "Tên", "Đơn vị", "Ý nghĩa"], [
+  ["m", "khối lượng", "kg", "Quán tính của vật"],
+  ["g", "gia tốc trọng trường", "m/s²", "9,8 hoặc 10 theo đề"],
+  ["P = mg", "trọng lực", "N", "Hướng xuống"],
+  ["N", "phản lực pháp tuyến", "N", "Mặt đẩy vật, vuông góc mặt. **N = 0 nghĩa là vật rời mặt**; N không thể âm"],
+  ["F", "lực kéo hoặc đẩy", "N", "Thường hợp với mặt một góc α"],
+  ["k (hoặc μ)", "hệ số ma sát trượt", "không có", "F_ms = kN"],
+  ["F_ms", "lực ma sát", "N", "Ngược chiều chuyển động"],
+  ["a, s, t, v", "gia tốc, quãng đường, thời gian, vận tốc", "m/s², m, s, m/s", "s = ½at², v = at (từ nghỉ)"],
+  ["T", "lực căng dây", "N", "Dây nhẹ, không giãn: T hai đầu bằng nhau"]
+], [1400, 2800, 1600, 4106]));
+
+c.push(h2("C2. Khuôn giải (4 bước, luôn theo thứ tự)"));
+c.push(tbl(["Bước", "Việc làm", "Vì sao"], [
+  ["1", "Vẽ lực: P, N, F, F_ms. Tách F thành phần song song mặt (F·cosα) và vuông góc mặt (F·sinα)", "Hai phương độc lập nhau"],
+  ["2", "Phương **vuông góc mặt**: tổng lực = 0, tìm **N**. **Kiểm tra N > 0**", "Vật không chuyển động theo phương này. N ≤ 0: vật rời mặt, không có ma sát"],
+  ["3", "F_ms = k·N", "Ma sát tỉ lệ với lực ép lên mặt"],
+  ["4", "Phương **chuyển động**: ΣF = ma, tìm a; rồi s = ½at² (từ nghỉ)", "Định luật II Newton"]
+], [900, 5600, 3406]));
+c.push(sp());
+c.push(tbl(["Tình huống", "N", "a"], [
+  ["Kéo chéo lên góc α so với mặt ngang", "mg − F·sinα", "(F·cosα − kN)/m"],
+  ["Đẩy chéo xuống góc α", "mg + F·sinα", "(F·cosα − kN)/m"],
+  ["Trượt xuống mặt nghiêng α (không lực kéo)", "mg·cosα", "g(sinα − k·cosα)"],
+  ["Mặt nghiêng α, kéo lên dọc mặt bằng F", "mg·cosα", "(F − mg·sinα − kN)/m"],
+  ["Mặt nghiêng α, F hợp góc β với mặt, hướng lên", "mg·cosα − F·sinβ", "(F·cosβ − mg·sinα − kN)/m"],
+  ["Vật chuyển động thẳng đều trên mặt ngang (a = 0)", "mg − F·sinα", "F = kmg/(cosα + k·sinα)"],
+  ["Điều kiện rời mặt", "N = 0", "Ngang: F = mg/sinα; F = z·t: t₀ = mg/(z·sinα)"]
+], [4200, 2400, 3306]));
+
+c.push(h2("C3. Bài mẫu: kéo vật trên mặt ngang"));
+c.push(p("Vật m = 2 kg, k = 0,2, F = 10 N hợp ngang 37° hướng lên (sin37° = 0,6; cos37° = 0,8; g = 10), từ nghỉ."));
+[
+  "P = mg = 20 N; F·sin37° = 6 N (nâng vật), F·cos37° = 8 N (kéo ngang).",
+  "(i) N = mg − F·sinα = 20 − 6 = **14 N** (> 0 ✓); F_ms = kN = 0,2·14 = **2,8 N**.",
+  "(ii) a = (F·cosα − F_ms)/m = (8 − 2,8)/2 = **2,6 m/s²**; s = ½at² = ½·2,6·3² = **11,7 m** sau 3 s.",
+  "(iii) Không rời mặt khi N > 0: F < mg/sinα = 20/0,6 ≈ **33,3 N**."
+].forEach(s => c.push(bl(s)));
+
+c.push(h2("C4. Đề 04: F = z·t, mặt nhẵn, tìm thời điểm rời mặt"));
+[
+  "Phương thẳng đứng: N + F·sinα − mg = 0, nên N = mg − z·t·sinα (N giảm dần theo t).",
+  "Rời mặt khi N = 0: **t₀ = mg/(z·sinα)**.",
+  "Hỏi thêm vận tốc lúc rời mặt: aₓ = z·t·cosα/m, tích phân từ 0 đến t₀: v = z·t₀²·cosα/(2m)."
+].forEach(s => c.push(bl(s)));
+
+c.push(h2("C5. Đề 02, Câu 2a (mặt bàn nghiêng 60°) và cái bẫy N âm"));
+c.push(p("Đề (đọc từ ảnh): m = 0,5 kg; mặt bàn nghiêng 60°; k = 0,3; F = 5 N hợp với phương chuyển động 30°, hướng lên; g = 9,8 m/s²; tìm quãng đường sau 1 s."));
+[
+  "mg = 4,9 N. Vuông góc mặt: N = mg·cosα − F·sinβ = 4,9·0,5 − 5·0,5 = 2,45 − 2,5 = **−0,05 N < 0**.",
+  "N không thể âm, nên giả thiết “vật còn trên mặt” sai: vật **rời khỏi mặt bàn**, N = 0 và **F_ms = 0**.",
+  "F hợp với phương ngang góc 60° + 30° = 90°, tức F thẳng đứng hướng lên, F = 5 N > P = 4,9 N.",
+  "Chỉ còn P và F: a = (F − mg)/m = (5 − 4,9)/0,5 = **0,2 m/s²**; s = ½at² = **0,1 m**.",
+  "Nếu mặt nghiêng 30° (các số khác giữ nguyên): N = 4,9·0,866 − 2,5 = 1,74 N; F_ms = 0,52 N; a ≈ 2,71 m/s²; s ≈ **1,36 m**."
+].forEach(s => c.push(bl(s)));
+c.push(box(["**Lưu ý:** các góc trong ảnh đề mình đọc từ ảnh chụp, bạn nên kiểm tra lại đề gốc. Dù số liệu thế nào, cách làm vẫn là: tìm N trước, kiểm tra N > 0, rồi mới tính ma sát."]));
+
+// ---------- PHẦN D ----------
+c.push(h1("PHẦN D. CÂU 3"));
+c.push(h2("D1. Hai vật nối dây qua ròng rọc, một vật trên mặt nghiêng (dạng bạn kể)"));
+c.push(p("Giả sử m₁ treo thẳng đứng, m₂ nằm trên mặt nghiêng góc α, ròng rọc nhẹ, dây không giãn. **Đọc kỹ đề xem vật nào treo, vật nào nằm trên dốc; nếu đổi vai thì đổi chỉ số 1 ↔ 2.**"));
+c.push(tbl(["Việc làm", "Phương trình (chiều dương = chiều chuyển động)"], [
+  ["Điều kiện", "Dây không giãn: hai vật cùng a. Ròng rọc nhẹ: sức căng T hai đầu bằng nhau"],
+  ["Vật treo m₁ (đi xuống)", "m₁g − T = m₁a"],
+  ["Vật trên dốc m₂ (đi lên dốc), dọc mặt", "T − m₂g·sinα − k·N = m₂a, với N = m₂g·cosα"],
+  ["Cộng hai phương trình (mất T)", "**a = g·[m₁ − m₂(sinα + k·cosα)]/(m₁ + m₂)**"],
+  ["Lực căng", "**T = m₁(g − a)**"]
+], [3500, 6406]));
+c.push(sp());
+c.push(p("**Không ma sát (k = 0):** a = g(m₁ − m₂·sinα)/(m₁ + m₂); T = m₁m₂g(1 + sinα)/(m₁ + m₂)."));
+c.push(p("**Ví dụ:** m₁ = 2 kg, m₂ = 1 kg, α = 30°, g = 10, bỏ qua ma sát: a = 10·(2 − 0,5)/3 = **5 m/s²**; T = 2·(10 − 5) = **10 N**. Kiểm tra bằng vật m₂: T − m₂g·sinα = 10 − 5 = 5 = m₂a ✓."));
+c.push(p("**Nếu a ra âm:** giả thiết chiều chuyển động sai (vật trên dốc trượt xuống); đảo chiều dương và đổi chiều ma sát."));
+c.push(p("**Nếu ròng rọc có khối lượng m** (đĩa đặc): thêm m/2 vào mẫu số: a = (m₁ − m₂)g/(m₁ + m₂ + m/2) cho hai vật treo hai bên."));
+c.push(p("**Hai vật, một vật trên mặt bàn ngang nhẵn:** a = m₁g/(m₁ + m₂); T = m₁m₂g/(m₁ + m₂). Hình trong slide Cơ học 2 (ví dụ 2) cần xem để biết trường hợp nào."));
+
+c.push(h2("D2. Mặt nghiêng và hệ số ma sát (Đề 04)"));
+c.push(p("Mặt nghiêng α = 4°, sin4° ≈ tan4° ≈ 0,07; g = 10 m/s²."));
+[
+  "Vật trượt được khi mg·sinα > k·mg·cosα, tức **tanα > k**. Hệ số ma sát giới hạn: k < tanα ≈ **0,07**.",
+  "Gia tốc khi trượt xuống: **a = g(sinα − k·cosα)**. Với k = 0,03: a ≈ 10·(0,07 − 0,03) ≈ **0,4 m/s²**."
+].forEach(s => c.push(bl(s)));
+
+c.push(h2("D3. Ném xiên (Đề 02)"));
+c.push(p("Ném vật từ độ cao h₁ = 1,5 m với v₀, góc α = 30°; điểm A cách L = 2 m theo phương ngang, cao h₂ = 1,86 m. Nếu v₀ = 5 m/s thì vật có đến được A không? (g = 9,8)"));
+c.push(tbl(["Đại lượng", "Công thức", "Số liệu"], [
+  ["Thời gian lên đỉnh", "t_đ = v₀·sinα/g", "5·0,5/9,8 ≈ 0,255 s"],
+  ["Độ cao cực đại", "y_max = h₁ + v₀²·sin²α/(2g)", "1,5 + 25·0,25/19,6 ≈ **1,82 m**"],
+  ["Độ cao tại x = L", "y(L) = h₁ + L·tanα − g·L²/(2v₀²cos²α)", "1,5 + 1,155 − 1,045 ≈ 1,61 m"],
+  ["Tầm xa (ném từ mặt đất)", "L = v₀²·sin2α/g", ""]
+], [2800, 4000, 3106]));
+c.push(p("Kết luận: y_max ≈ 1,82 m < h₂ = 1,86 m nên vật **không thể đến được A** (cũng không bay qua được độ cao h₂ ở bất cứ chỗ nào). Cách lập luận: so sánh độ cao cực đại với h₂.", { before: 60 }));
+
+// ---------- PHẦN E ----------
+c.push(h1("PHẦN E. CHECKLIST TRƯỚC KHI VÀO PHÒNG THI"));
+[
+  "Thuộc bảng “đại lượng đặc trưng cho gì” (A1) và các cặp dễ nhầm (A3).",
+  "Biết khử t để tìm quỹ đạo (A4) và đạo hàm để tính v, a (A5).",
+  "Thuộc bảng ký hiệu – đơn vị (B1) và nhìn đề biết dùng công thức nào (B2).",
+  "Nhớ cặp thẳng–quay: F = ma ↔ M = Iβ; p = mv ↔ L = Iω.",
+  "Câu 2a: **N trước, kiểm tra N > 0, rồi ma sát, rồi gia tốc**.",
+  "Câu 3: viết ΣF = ma cho **từng vật riêng**, rồi cộng để khử T.",
+  "Cuối mỗi bài: ghi đơn vị, kiểm tra nhanh bằng cách thứ hai nếu có."
+].forEach(s => c.push(bl(s)));
+c.push(sp());
+c.push(box([
+  "**Hai điều mình chưa chắc, bạn đối chiếu thêm:**",
+  "1) Số điểm của Câu 3 (đề mẫu ghi 2 điểm, bạn kể 4 điểm) và chi tiết đề Câu 3 (vật nào treo, vật nào trên dốc) – nên hỏi lại bạn hoặc cô.",
+  "2) Đáp án slide Cơ học 2 (0,0159 kg·m²) khác kết quả tính theo đường kính 10 cm (0,00796 kg·m²); xem mục B6, dạng 7."
+], "FCE4D6"));
+
+const doc = new Document({
+  creator: "Claude",
+  title: "Ôn thi giữa kỳ Vật lý đại cương - Cơ học",
+  styles: {
+    default: { document: { run: { font: FONT, size: 21 } } },
+    paragraphStyles: [
+      { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
+        run: { font: FONT, size: 30, bold: true, color: "1F3864" },
+        paragraph: { spacing: { before: 280, after: 120 }, keepNext: true, outlineLevel: 0 } },
+      { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
+        run: { font: FONT, size: 25, bold: true, color: "2F5496" },
+        paragraph: { spacing: { before: 200, after: 90 }, keepNext: true, outlineLevel: 1 } },
+      { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true,
+        run: { font: FONT, size: 22, bold: true, color: "C55A11" },
+        paragraph: { spacing: { before: 140, after: 60 }, keepNext: true, outlineLevel: 2 } }
+    ]
+  },
+  numbering: { config: [{ reference: 'b', levels: [
+    { level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 540, hanging: 270 } } } },
+    { level: 1, format: LevelFormat.BULLET, text: "–", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 1000, hanging: 270 } } } }
+  ] }] },
+  sections: [{
+    properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1000, bottom: 1000, left: 1000, right: 1000 } } },
+    footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [
+      new TextRun({ text: "Ôn thi Vật lý đại cương – Cơ học – trang ", size: 18, font: FONT, color: "7F7F7F" }),
+      new TextRun({ children: [PageNumber.CURRENT], size: 18, font: FONT, color: "7F7F7F" })
+    ] })] }) },
+    children: c
+  }]
+});
+
+Packer.toBuffer(doc).then(buf => {
+  fs.mkdirSync('/mnt/user-data/outputs', { recursive: true });
+  fs.writeFileSync('/mnt/user-data/outputs/On_thi_Co_hoc_Chuong1.docx', buf);
+  console.log('ok', buf.length);
+});

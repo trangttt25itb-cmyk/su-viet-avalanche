@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nguyễn Trãi | Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main: #8B0000;
+            --gold: #d4af37;
+            --dark: #1e1206;
+            --bg-light: #f8f4ea;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: #333; }
+
+        nav {
+            background: var(--dark);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 50px; color: white; position: sticky; top: 0; z-index: 100;
+        }
+        .logo-text span { display: block; font-weight: 700; font-size: 22px; color: var(--gold); letter-spacing: 0.5px; }
+        nav ul { display: flex; list-style: none; gap: 6px; align-items: center; }
+        nav ul li a { color: #ddd; text-decoration: none; font-size: 14px; padding: 7px 16px; border-radius: 8px; transition: 0.2s; }
+        nav ul li a:hover { color: white; background: rgba(255,255,255,0.08); }
+
+        .hero {
+            background: linear-gradient(to right, rgba(0,0,0,0.82) 45%, rgba(0,0,0,0.25) 100%),
+                        url('images/nguyentraihero.jpg') center/cover no-repeat;
+            min-height: 420px;
+            display: flex; align-items: center;
+            padding: 60px 80px;
+            color: white;
+            border-bottom: 3px solid var(--gold);
+            background-color: #0e1a12;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212,175,55,0.25);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 12px; font-weight: 500;
+            padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 14px; letter-spacing: 0.5px;
+        }
+        .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.05; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .hero .subtitle { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.85); margin-bottom: 22px; max-width: 520px; line-height: 1.65; }
+        .hero-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 13px; }
+
+        .breadcrumb { padding: 14px 80px; font-size: 13px; color: #888; border-bottom: 1px solid #e8e2d4; background: white; }
+        .breadcrumb a { color: var(--main); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 6px; }
+
+        .page-layout {
+            display: grid; grid-template-columns: 1fr 300px;
+            gap: 26px; padding: 30px 80px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .content-box {
+            background: white; border-radius: 16px;
+            padding: 28px 32px; margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .content-box h2 {
+            color: var(--main); font-size: 17px; font-weight: 700;
+            margin-bottom: 18px; display: flex; align-items: center; gap: 9px;
+            padding-bottom: 12px; border-bottom: 2px solid #f5ede0;
+        }
+        .content-box p { font-size: 14px; line-height: 1.9; color: #444; margin-bottom: 14px; }
+        .content-box p:last-child { margin-bottom: 0; }
+
+        .inline-img-right {
+            float: right; width: 250px;
+            margin: 0 0 16px 22px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-right img { width: 100%; display: block; }
+        .inline-img-left {
+            float: left; width: 250px;
+            margin: 0 22px 16px 0;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-left img { width: 100%; display: block; }
+        .img-cap { background: #f8f4ea; font-size: 11px; color: #888; text-align: center; padding: 6px 8px; font-style: italic; }
+        .img-banner { width: 100%; border-radius: 12px; overflow: hidden; margin: 18px 0; box-shadow: 0 3px 12px rgba(0,0,0,0.1); border: 2px solid #ede7d3; }
+        .img-banner img { width: 100%; display: block; max-height: 280px; object-fit: cover; }
+        .clearfix::after { content: ''; display: table; clear: both; }
+
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+            width: 2px; background: linear-gradient(to bottom, var(--gold), #e8d4a8); border-radius: 2px;
+        }
+        .tl-item { position: relative; margin-bottom: 28px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: 2px solid white; box-shadow: 0 0 0 2px var(--gold); }
+        .tl-dot.red { background: var(--main); box-shadow: 0 0 0 2px var(--main); }
+        .tl-dot.green { background: #2a8a2a; box-shadow: 0 0 0 2px #2a8a2a; }
+        .tl-year { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .tl-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .tl-text { font-size: 13px; color: #555; line-height: 1.7; }
+
+        .quote-block {
+            background: #fffbf0; border-left: 4px solid var(--gold);
+            border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0;
+        }
+        .quote-block p { font-size: 14px; font-style: italic; color: #555; line-height: 1.8; margin-bottom: 8px; }
+        .quote-source { font-size: 12px; color: #999; font-weight: 500; }
+
+        .trait-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .trait-tag { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .trait-red   { background: #fdeaea; color: #8b0000; }
+        .trait-gold  { background: #fdf3d0; color: #8a6800; }
+        .trait-blue  { background: #e6f0fb; color: #1a5fa8; }
+        .trait-green { background: #eaf5e0; color: #2a6e1a; }
+        .trait-pink  { background: #fce4ec; color: #880e4f; }
+
+        .achieve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .achieve-card { background: #fffdf7; border: 1px solid #ede7d3; border-radius: 12px; padding: 16px; }
+        .achieve-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .achieve-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #222; }
+        .achieve-text { font-size: 12px; color: #666; line-height: 1.6; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+        .stat-card { background: linear-gradient(135deg, #fffdf7, #f8f4ea); border: 1px solid #ede7d3; border-radius: 14px; padding: 20px 16px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 800; color: var(--main); display: block; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: #666; line-height: 1.4; }
+
+        .cause-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .cause-card { border-radius: 12px; padding: 18px 16px; }
+        .cause-card.economy { background: #f0f7e6; border: 2px solid #8fb86a; }
+        .cause-card.politics { background: #fdf3d0; border: 2px solid var(--gold); }
+        .cause-card.military  { background: #fdeaea; border: 2px solid #c0392b; }
+        .cause-card.culture  { background: #fce4ec; border: 2px solid #e879a0; }
+        .cause-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+        .cause-card.economy .cause-title { color: #2a6e1a; }
+        .cause-card.politics .cause-title { color: #8a6800; }
+        .cause-card.military .cause-title { color: #8b0000; }
+        .cause-card.culture .cause-title { color: #880e4f; }
+        .cause-text { font-size: 12px; color: #555; line-height: 1.6; }
+
+        .lesson-box { background: linear-gradient(135deg, #1e1206, #3a2010); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .lesson-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+        .lesson-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+        .legacy-box { background: linear-gradient(135deg, #0a1a10, #1a3a22); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .legacy-box .lesson-title { color: #a8e6b0; }
+
+        .hl { background: #fff2cc; padding: 1px 6px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #7a5a00; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { background: white; border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .sidebar-box h3 { font-size: 14px; font-weight: 700; color: var(--main); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #f5ede0; display: flex; align-items: center; gap: 7px; }
+        .sb { background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
+.sb-title { font-size:13px; font-weight:700; color:var(--red); padding-bottom:10px; margin-bottom:14px; border-bottom:2px solid #f2ead8; display:flex; align-items:center; gap:7px; }
+.sb-title .sb-icon { width:22px; height:22px; border-radius:6px; background:var(--gold); display:inline-flex; align-items:center; justify-content:center; font-size:12px; color:var(--dark); }
+
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table tr { border-bottom: 1px solid #f2ede0; }
+        .info-table tr:last-child { border-bottom: none; }
+        .info-table td { padding: 9px 0; font-size: 13px; vertical-align: top; }
+        .info-table td:first-child { color: #888; width: 44%; padding-right: 8px; }
+        .info-table td:last-child { font-weight: 500; color: #222; }
+
+        .legacy-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f2ede0; }
+        .legacy-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .legacy-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .legacy-text { font-size: 12px; color: #555; line-height: 1.6; }
+        .legacy-text strong { color: #222; font-size: 13px; display: block; margin-bottom: 2px; }
+
+        .char-mini { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f2ede0; text-decoration: none; color: inherit; transition: 0.2s; border-radius: 8px; }
+        .char-mini:last-child { border-bottom: none; }
+        .char-mini:hover { background: #f9f4ec; padding-left: 6px; }
+        .char-mini-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #ede7d3; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .char-mini-info { flex: 1; }
+        .char-mini-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .char-mini-desc { font-size: 11px; color: #888; }
+        .char-mini-arrow { font-size: 14px; color: #ccc; }
+
+        .heritage-card { margin-bottom: 16px; border: 1px solid #ede7d3; border-radius: 12px; overflow: hidden; background: #fffdf7; transition: 0.2s; }
+        .heritage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .heritage-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .heritage-content { padding: 12px; }
+        .heritage-content strong { display: block; font-size: 13px; color: #222; margin-bottom: 6px; }
+        .heritage-content p { font-size: 12px; color: #666; line-height: 1.6; margin: 0; }
+
+        .btn-back { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--main); color: white; border-radius: 9px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: var(--gold); color: #1e1206; }
+
+        footer { background: var(--dark); color: #bbb; padding: 28px 80px; margin-top: 10px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .footer-bottom a { color: #888; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo-text"><span>SỬ VIỆT</span></div>
+    <ul>
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="index.html">Hành trình lịch sử</a></li>
+        <li><a href="cauchuyen.html">Câu chuyện</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="index.html">Nhân vật</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <div>
+        <div class="hero-badge">✍️ NHÂN VẬT LỊCH SỬ</div>
+        <h1>NGUYỄN TRÃI</h1>
+        <p class="subtitle">Nhà chính trị, nhà quân sự, nhà thơ vĩ đại — người soạn thảo Bình Ngô Đại Cáo, bản tuyên ngôn độc lập thứ hai của nước Đại Việt</p>
+        <div class="hero-tags">
+            <span class="hero-tag">📅 1380 – 1442</span>
+            <span class="hero-tag">📍 Chí Linh, Hải Dương</span>
+            <span class="hero-tag">✍️ Ức Trai — hiệu của Nguyễn Trãi</span>
+            <span class="hero-tag">🏛️ Phò tá Lê Lợi đánh giặc Minh</span>
+        </div>
+    </div>
+</section>
+
+<div class="breadcrumb">
+    <a href="index.html">Trang chủ</a>
+    <span>›</span>
+    <a href="le-nguyen.html">Thời Lê - Nguyễn</a>
+    <span>›</span>
+    Nguyễn Trãi
+</div>
+
+<div class="page-layout">
+    <div class="main-col">
+
+        <!-- GIỚI THIỆU -->
+        <div class="content-box">
+            <h2>📖 GIỚI THIỆU</h2>
+            <div class="clearfix">
+                <div class="inline-img-right">
+                    <img src="images/nguyen-trai.PNG" alt="Nguyễn Trãi" onerror="this.parentElement.style.display='none'">
+                    <div class="img-cap">Nguyễn Trãi — Ức Trai tiên sinh (1380–1442)</div>
+                </div>
+                <p>
+                    Nguyễn Trãi, hiệu là <span class="hl">Ức Trai</span>, sinh năm 1380 tại làng Chi Ngại, huyện Phượng Sơn (nay thuộc Chí Linh, Hải Dương). Ông là một nhân vật toàn tài hiếm có trong lịch sử Việt Nam: vừa là <span class="hl">nhà chính trị</span>, vừa là <span class="hl">nhà quân sự chiến lược</span>, vừa là <span class="hl">nhà thơ, nhà văn hóa</span> lỗi lạc bậc nhất thời trung đại.
+                </p>
+                <p>
+                    Ông có công lao to lớn trong cuộc <span class="hl">kháng chiến chống quân Minh</span> (1418–1427), phò tá Lê Lợi soạn thảo chiến lược "tâm công" — lấy nhân nghĩa thắng hung tàn, lấy chí nhân thay cường bạo. Bộ óc chiến lược và ngòi bút tài hoa của ông đã góp phần quyết định vào chiến thắng vĩ đại, giải phóng hoàn toàn đất nước khỏi 20 năm Minh thuộc.
+                </p>
+                <p>
+                    Tác phẩm tiêu biểu nhất của ông là <span class="hl">Bình Ngô Đại Cáo</span> (1428) — được xem là bản tuyên ngôn độc lập thứ hai của dân tộc Việt, mở đầu bằng tư tưởng nhân nghĩa và khẳng định chủ quyền dân tộc một cách hùng hồn, bất hủ.
+                </p>
+            </div>
+            <div class="trait-tags">
+                <span class="trait-tag trait-blue">✍️ Nhà văn hóa — tư tưởng</span>
+                <span class="trait-tag trait-red">⚔️ Mưu thần kháng chiến</span>
+                <span class="trait-tag trait-gold">📜 Bình Ngô Đại Cáo</span>
+                <span class="trait-tag trait-green">🌿 Tư tưởng nhân nghĩa</span>
+            </div>
+        </div>
+
+        <!-- SỐ LIỆU NỔI BẬT -->
+        <div class="content-box">
+            <h2>📊 DẤU MỐC & CON SỐ</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">1418</span>
+                    <span class="stat-label">Năm gia nhập nghĩa quân Lam Sơn của Lê Lợi</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">10</span>
+                    <span class="stat-label">Năm kháng chiến gian khổ chống quân Minh</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1428</span>
+                    <span class="stat-label">Năm soạn Bình Ngô Đại Cáo, tuyên bố độc lập</span>
+                </div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">250+</span>
+                    <span class="stat-label">Thư từ ngoại giao soạn cho nghĩa quân Lam Sơn</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">62</span>
+                    <span class="stat-label">Tuổi khi bị hành hình (1442) — thảm án tru di tam tộc</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1980</span>
+                    <span class="stat-label">Năm UNESCO vinh danh là Danh nhân Văn hóa Thế giới</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NGUYÊN NHÂN / HOÀN CẢNH -->
+        <div class="content-box">
+            <h2>⚡ HOÀN CẢNH & CON ĐƯỜNG PHÒ TÁ LÊ LỢI</h2>
+            <p>Nguyễn Trãi bước vào con đường kháng chiến không phải từ sự bốc đồng mà từ nỗi đau mất nước sâu sắc, lòng yêu nước cháy bỏng và tư tưởng nhân nghĩa được hun đúc từ thuở thiếu thời.</p>
+            <div class="cause-grid">
+                <div class="cause-card culture">
+                    <div class="cause-title">💔 Nỗi đau mất nước — cha bị bắt</div>
+                    <div class="cause-text">Khi nhà Minh xâm lược (1407), cha ông là Nguyễn Phi Khanh bị giặc bắt đưa sang Trung Quốc. Nguyễn Trãi theo tiễn cha, được cha dặn: hãy trở về rửa nhục cho nước, không cần theo hầu. Lời cha trở thành lý tưởng suốt đời ông.</div>
+                </div>
+                <div class="cause-card politics">
+                    <div class="cause-title">🏛️ Ách đô hộ nhà Minh tàn khốc</div>
+                    <div class="cause-text">Nhà Minh thực hiện chính sách đồng hóa khắc nghiệt: vơ vét tài nguyên, bắt dân làm lao dịch, đốt phá sách vở, xóa bỏ văn hóa Việt. Nguyễn Trãi chứng kiến tất cả, nuôi chí giải phóng dân tộc.</div>
+                </div>
+                <div class="cause-card economy">
+                    <div class="cause-title">📜 Bút pháp và tư tưởng vũ khí</div>
+                    <div class="cause-text">Nguyễn Trãi nhận ra rằng muốn thắng giặc lâu dài phải "thắng lòng người" — chiến lược tâm công, dùng văn thư thuyết phục giặc đầu hàng. Ông soạn hàng trăm thư từ nhân danh Lê Lợi gửi cho các tướng Minh, làm tan rã tinh thần địch.</div>
+                </div>
+                <div class="cause-card military">
+                    <div class="cause-title">⚔️ Gặp Lê Lợi — kết hợp văn võ</div>
+                    <div class="cause-text">Khoảng năm 1416–1418, Nguyễn Trãi tìm đến Lam Sơn tham gia nghĩa quân của Lê Lợi. Sự kết hợp giữa tài cầm quân của Lê Lợi và bộ óc chiến lược của Nguyễn Trãi tạo nên sức mạnh vô song dẫn đến chiến thắng lịch sử.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIỄN BIẾN CUỘC ĐỜI -->
+        <div class="content-box">
+            <h2>📜 CUỘC ĐỜI & SỰ NGHIỆP</h2>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1380</div>
+                    <div class="tl-title">Nguyễn Trãi chào đời</div>
+                    <div class="tl-text">Sinh tại làng Chi Ngại, Chí Linh, Hải Dương trong một gia đình trí thức lớn. Cha là Nguyễn Phi Khanh — nhà Nho uyên bác, từng đỗ Thái học sinh. Ông ngoại là Trần Nguyên Đán — đại thần nhà Trần. Nguyễn Trãi thừa hưởng nền học vấn uyên thâm từ thuở nhỏ.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1400</div>
+                    <div class="tl-title">Đỗ Thái học sinh — khoa thi nhà Hồ</div>
+                    <div class="tl-text">Nguyễn Trãi đỗ kỳ thi Thái học sinh (tương đương Tiến sĩ) dưới triều Hồ Quý Ly, năm ông khoảng 20 tuổi. Ông bắt đầu làm quan cho nhà Hồ. Đây là nền tảng học vấn giúp ông sau này trở thành nhà văn hóa, nhà tư tưởng xuất sắc.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">1407</div>
+                    <div class="tl-title">Giặc Minh xâm lược — cha bị bắt</div>
+                    <div class="tl-text">Nhà Minh đánh bại nhà Hồ, xâm chiếm nước Việt. Cha ông Nguyễn Phi Khanh bị bắt đưa về Trung Quốc. Nguyễn Trãi theo tiễn cha đến tận biên giới, được cha căn dặn quay về tìm đường cứu nước. Lời cha trở thành lý tưởng sống của ông.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1407 – 1416</div>
+                    <div class="tl-title">Ẩn náu — chờ thời cơ</div>
+                    <div class="tl-text">Gần 10 năm Nguyễn Trãi ẩn mình, không chịu ra làm quan cho giặc Minh dù bị giam lỏng ở Đông Quan (Hà Nội). Ông dùng thời gian này trau dồi học vấn, nghiền ngẫm chiến lược và chờ đợi minh chủ xứng đáng để theo phò.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">~1416 – 1418</div>
+                    <div class="tl-title">Gia nhập nghĩa quân Lam Sơn</div>
+                    <div class="tl-text">Nguyễn Trãi tìm đến Lê Lợi ở Lam Sơn (Thanh Hóa), dâng <strong>Bình Ngô Sách</strong> — kế sách đánh đuổi quân Minh. Lê Lợi đọc xong hết sức khen ngợi, giao cho ông phụ trách mưu lược và ngoại giao. Từ đây, Nguyễn Trãi trở thành mưu sĩ số một của nghĩa quân.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1418 – 1427</div>
+                    <div class="tl-title">10 năm kháng chiến — chiến lược tâm công</div>
+                    <div class="tl-text">Nguyễn Trãi soạn thảo hàng trăm thư từ — <em>Quân trung từ mệnh tập</em> — gửi cho các tướng giặc, thuyết phục họ đầu hàng bằng lý lẽ nhân nghĩa. Chiến thuật "thắng địch bằng bút" này tiết kiệm hàng vạn sinh mạng và làm suy yếu tinh thần quân Minh từ bên trong.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1427</div>
+                    <div class="tl-title">Chiến thắng — giải phóng hoàn toàn đất nước</div>
+                    <div class="tl-text">Nghĩa quân Lam Sơn đại thắng, quân Minh đầu hàng toàn bộ. Nguyễn Trãi soạn <strong>thư thần phục</strong> và tổ chức lễ rút quân của 10 vạn quân Minh — một kết thúc nhân đạo hiếm có trong lịch sử chiến tranh thế giới, thể hiện rõ tư tưởng nhân nghĩa của ông.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">Đầu năm 1428</div>
+                    <div class="tl-title">Soạn Bình Ngô Đại Cáo — bản tuyên ngôn độc lập</div>
+                    <div class="tl-text">Nhân danh Lê Lợi, Nguyễn Trãi soạn <strong>Bình Ngô Đại Cáo</strong> — tuyên bố trước thiên hạ về chiến thắng và nền độc lập của Đại Việt. Bài cáo với tư tưởng nhân nghĩa, khẳng định chủ quyền dân tộc, được coi là áng văn bất hủ của văn học Việt Nam.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1428 – 1440</div>
+                    <div class="tl-title">Làm quan — rồi cáo quan về Côn Sơn</div>
+                    <div class="tl-text">Nguyễn Trãi tiếp tục làm quan dưới triều Lê Thái Tổ rồi Lê Thái Tông. Nhiều lần bị gièm pha, ông cáo quan về ẩn cư tại Côn Sơn (Hải Dương) — nơi ông sáng tác nhiều thơ văn bất hủ. <em>Côn Sơn Ca</em> ra đời trong giai đoạn ẩn dật thanh tịnh này.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">1442 — Thảm kịch Lệ Chi Viên</div>
+                    <div class="tl-title">Bị hàm oan — tru di tam tộc</div>
+                    <div class="tl-text">Vua Lê Thái Tông đột ngột băng hà tại vườn Lệ Chi (Bắc Ninh) khi đến thăm nhà Nguyễn Trãi. Nguyễn Trãi bị vu tội giết vua — bị xử tru di tam tộc (giết cả ba họ). Đây là thảm án oan khuất nhất lịch sử Việt Nam, mãi đến năm 1464 mới được Lê Thánh Tông minh oan.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- THÀNH TỰU -->
+        <div class="content-box">
+            <h2>🏆 DI SẢN VĂN HỌC & TƯ TƯỞNG</h2>
+            <p>Nguyễn Trãi để lại một gia tài văn chương và tư tưởng đồ sộ — từ những áng hùng văn kháng chiến đến thơ trữ tình thiên nhiên, từ chiến lược quân sự đến triết lý nhân nghĩa sâu sắc.</p>
+            <div class="achieve-grid">
+                <div class="achieve-card">
+                    <span class="achieve-icon">📜</span>
+                    <div class="achieve-title">Bình Ngô Đại Cáo</div>
+                    <div class="achieve-text">Áng hùng văn bất hủ tuyên bố nền độc lập của Đại Việt sau 20 năm Minh thuộc. Mở đầu bằng tư tưởng nhân nghĩa và ý thức dân tộc sâu sắc — được ví như bản Tuyên ngôn Độc lập thứ hai của Việt Nam.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">✉️</span>
+                    <div class="achieve-title">Quân trung từ mệnh tập</div>
+                    <div class="achieve-text">Tập hợp hơn 250 thư từ ngoại giao, hịch văn gửi cho quân Minh trong thời kháng chiến. Chiến lược "tâm công" — thắng địch bằng ngòi bút — là đóng góp độc đáo của Nguyễn Trãi cho nghệ thuật chiến tranh Việt Nam.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">🌿</span>
+                    <div class="achieve-title">Quốc âm thi tập</div>
+                    <div class="achieve-text">Tập thơ chữ Nôm đầu tiên và vĩ đại nhất của văn học trung đại Việt Nam với hơn 250 bài. Thể hiện tình yêu thiên nhiên, quê hương và tư tưởng nhân đạo sâu sắc. Khẳng định vị thế của chữ Nôm trong văn học dân tộc.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">📚</span>
+                    <div class="achieve-title">Dư địa chí & nhiều tác phẩm khác</div>
+                    <div class="achieve-text">Ngoài thơ văn, Nguyễn Trãi còn để lại <em>Dư địa chí</em> — công trình địa lý đầu tiên của Việt Nam, <em>Lam Sơn thực lục</em> — lịch sử cuộc kháng chiến, và nhiều áng văn chính luận có giá trị tư tưởng lớn.</div>
+                </div>
+            </div>
+
+            <div class="img-banner" style="margin-top:4px;">
+                <img src="images/binh-ngo-dai-cao.jpg" alt="Bình Ngô Đại Cáo" onerror="this.parentElement.style.display='none'">
+                <div class="img-cap">Bình Ngô Đại Cáo — áng hùng văn bất hủ của dân tộc Việt</div>
+            </div>
+
+            <div class="quote-block" style="margin-top:4px;">
+                <p>"Việc nhân nghĩa cốt ở yên dân — quân điếu phạt trước lo trừ bạo."</p>
+                <span class="quote-source">— Nguyễn Trãi, Bình Ngô Đại Cáo (1428)</span>
+            </div>
+        </div>
+
+        <!-- Ý NGHĨA -->
+        <div class="content-box">
+            <h2>💡 Ý NGHĨA LỊCH SỬ</h2>
+            <p>
+                Nguyễn Trãi không chỉ là nhân vật lịch sử của một thời đại — ông là biểu tượng của <span class="hl">trí tuệ Việt Nam</span>, của tinh thần dân tộc kết hợp với tư tưởng nhân văn sâu sắc. Tư tưởng nhân nghĩa của ông vượt qua thời đại, trở thành di sản tinh thần bền vững của dân tộc.
+            </p>
+            <p>
+                Đặc biệt, trong thời đại mà sức mạnh quân sự là tối cao, Nguyễn Trãi đã chứng minh rằng <span class="hl">văn hóa và tư tưởng</span> cũng là vũ khí — thậm chí còn mạnh hơn. Chiến lược "tâm công" của ông tiết kiệm sinh mạng của cả hai phía, thể hiện lòng nhân đạo hiếm có.
+            </p>
+            <div class="quote-block">
+                <p>"Nguyễn Trãi là bậc anh hùng dân tộc, văn võ song toàn. Ông xứng đáng được gọi là tinh hoa của dân tộc Việt Nam."</p>
+                <span class="quote-source">— Chủ tịch Hồ Chí Minh</span>
+            </div>
+            <div class="lesson-box">
+                <div class="lesson-title">🔥 Bài học từ cuộc đời Nguyễn Trãi</div>
+                <div class="lesson-text">Nguyễn Trãi dạy rằng: trí tuệ và nhân nghĩa là sức mạnh bền vững hơn bạo lực. Dù kết thúc cuộc đời trong oan khuất, tư tưởng và di sản của ông sống mãi — được UNESCO vinh danh năm 1980, khi cả thế giới công nhận ông là Danh nhân Văn hóa nhân loại.</div>
+            </div>
+            <div class="legacy-box" style="margin-top:14px;">
+                <div class="lesson-title">🌿 Di sản tư tưởng nhân nghĩa</div>
+                <div class="lesson-text">Tư tưởng "nhân nghĩa" của Nguyễn Trãi — lấy dân làm gốc, lấy hòa bình làm trọng — tiếp tục ảnh hưởng đến tư tưởng chính trị và văn học Việt Nam qua các thế kỷ. Từ Nguyễn Du, Cao Bá Quát đến Hồ Chí Minh, tinh thần ấy luôn hiện diện trong dòng chảy văn hóa dân tộc.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="sidebar-box">
+            <h3>📋 THÔNG TIN CƠ BẢN</h3>
+            <table class="info-table">
+                <tr><td>Tên đầy đủ</td><td>Nguyễn Trãi</td></tr>
+                <tr><td>Hiệu</td><td>Ức Trai</td></tr>
+                <tr><td>Sinh</td><td>1380, Chí Linh, Hải Dương</td></tr>
+                <tr><td>Mất</td><td>1442 (62 tuổi)</td></tr>
+                <tr><td>Cha</td><td>Nguyễn Phi Khanh</td></tr>
+                <tr><td>Phò tá</td><td>Lê Lợi — Lê Thái Tổ</td></tr>
+                <tr><td>Tác phẩm chính</td><td>Bình Ngô Đại Cáo</td></tr>
+                <tr><td>Vinh danh quốc tế</td><td>UNESCO 1980</td></tr>
+                <tr><td>Minh oan</td><td>1464 (vua Lê Thánh Tông)</td></tr>
+                <tr><td>Di sản</td><td>Danh nhân Văn hóa Thế giới</td></tr>
+            </table>
+        </div>
+
+<div class="sb">
+      <div class="sb-title">🗺️ BẢN ĐỒ DI SẢN</div>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1908439.4791870643!2d103.72844696044922!3d20.895381004901594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135b267007b1981%3A0x85d6f0a2ce82b18c!2sHistoric%20sites%20Nguyen%20Trai%20Temple!5e0!3m2!1sen!2s!4v1781283441722!5m2!1sen!2s"
+        width="100%" height="200"
+        style="border-radius:12px;border:0;display:block;margin-bottom:12px;"
+        allowfullscreen="" loading="lazy">
+      </iframe>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="color:#c0392b;font-size:18px;flex-shrink:0;margin-top:1px;">📍</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;">Khu di tích Côn Sơn — Kiếp Bạc, Hải Dương</div>
+            <div style="font-size:12px;color:#888;">Nơi Nguyễn Trãi ẩn cư và sáng tác Côn Sơn Ca</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="color:#c0392b;font-size:18px;flex-shrink:0;margin-top:1px;">📍</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;">Đền thờ Nguyễn Trãi — Nhị Khê, Hà Nội</div>
+            <div style="font-size:12px;color:#888;">Tọa lạc tại làng Nhị Khê, Thường Tín, Hà Nội — quê ngoại của ông.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="color:#c0392b;font-size:18px;flex-shrink:0;margin-top:1px;">📍</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;">Lệ Chi Viên — Bắc Ninh</div>
+            <div style="font-size:12px;color:#888;">Nơi xảy ra thảm án oan khuất năm 1442.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+        <div class="sidebar-box">
+            <h3>👑 NHÂN VẬT LIÊN QUAN</h3>
+            <a href="chi-tiet-le-loi.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #8b2000;">👑</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lê Lợi</div>
+                    <div class="char-mini-desc">Lê Thái Tổ — minh chủ nghĩa quân Lam Sơn</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="#" class="char-mini">
+                <div class="char-mini-avatar" style="background: #3a5a2a;">📖</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Nguyễn Phi Khanh</div>
+                    <div class="char-mini-desc">Cha của Nguyễn Trãi — nhà Nho bị giặc Minh bắt</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="#" class="char-mini">
+                <div class="char-mini-avatar" style="background: #3a4a6a;">⚔️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lê Thái Tông</div>
+                    <div class="char-mini-desc">Vua băng hà tại Lệ Chi Viên — gây oan khuất</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="#" class="char-mini">
+                <div class="char-mini-avatar" style="background: #5a3a8a;">👑</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lê Thánh Tông</div>
+                    <div class="char-mini-desc">Minh oan cho Nguyễn Trãi năm 1464</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>✨ SỰ THẬT THÚ VỊ</h3>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🌍</div>
+                <div class="legacy-text">
+                    <strong>Danh nhân Văn hóa UNESCO</strong>
+                    Năm 1980, UNESCO vinh danh Nguyễn Trãi là Danh nhân Văn hóa Thế giới nhân kỷ niệm 600 năm ngày sinh của ông — một trong số rất ít người Việt được vinh dự này.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">✉️</div>
+                <div class="legacy-text">
+                    <strong>Chiến lược "tâm công" độc đáo</strong>
+                    Nguyễn Trãi tin rằng thuyết phục bằng đạo lý còn mạnh hơn gươm giáo. Nhiều tướng Minh đã đầu hàng sau khi đọc thư ông — tiết kiệm sinh mạng của hàng vạn binh sĩ cả hai phía.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">📖</div>
+                <div class="legacy-text">
+                    <strong>Cha đẻ chữ Nôm văn học</strong>
+                    <em>Quốc âm thi tập</em> của ông là tập thơ chữ Nôm đầu tiên và lớn nhất Việt Nam, đặt nền móng cho nền văn học chữ Nôm — khẳng định bản sắc văn hóa riêng của người Việt.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">⚖️</div>
+                <div class="legacy-text">
+                    <strong>22 năm mang án oan</strong>
+                    Từ 1442 đến 1464 — 22 năm — Nguyễn Trãi mang tiếng phản loạn. Vua Lê Thánh Tông đã minh oan và phục hồi danh dự ông bằng câu nói lịch sử: "Ức Trai tâm thượng quang Khuê tảo."
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🌿</div>
+                <div class="legacy-text">
+                    <strong>Côn Sơn Ca — thơ thiên nhiên bất hủ</strong>
+                    Những vần thơ ông viết lúc ẩn cư ở Côn Sơn thể hiện tình yêu thiên nhiên thanh cao, tâm hồn trong sáng của một bậc hiền nhân — đối lập với thế sự nhiễu nhương ông từng chứng kiến.
+                </div>
+            </div>
+        </div>
+
+        <a href="le-nguyen.html" class="btn-back">← Quay lại Thời Lê - Nguyễn</a>
+
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        <span>© 2025 Sử Việt. Bảo lưu mọi quyền.</span>
+        <span><a href="#">Chính sách</a> · <a href="#">Điều khoản</a></span>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kết quả tìm kiếm — SỬ VIỆT</title>
+<style>
+  :root{
+    --cream:#fdf6e8;
+    --beige:#f6ecd6;
+    --gold:#c8a96e;
+    --gold-light:#e4c988;
+    --gold-dark:#a8823f;
+    --brown:#5c3a1e;
+    --maroon:#8B0000;
+    --ink:#2c1b12;
+    --muted:#8a7259;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Segoe UI', Arial, sans-serif; color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(200,169,110,0.14), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(139,0,0,0.06), transparent 50%),
+      var(--cream);
+  }
+
+  /* ---- Header ---- */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:16px 40px; background:var(--beige);
+    border-bottom:3px double var(--gold-dark);
+    box-shadow:0 2px 10px rgba(92,58,30,0.08);
+  }
+  .logo{ display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:2px; color:var(--maroon); font-size:16px; text-decoration:none; }
+  .logo img{ height:32px; }
+  nav.top-links{ display:flex; gap:26px; }
+  nav.top-links a{ position:relative; color:var(--brown); text-decoration:none; font-size:14px; font-weight:700; letter-spacing:.3px; }
+  nav.top-links a::after{
+    content:""; position:absolute; left:0; right:0; bottom:-6px; height:2px; background:var(--gold);
+    transform:scaleX(0); transition:transform .2s; transform-origin:left;
+  }
+  nav.top-links a:hover{ color:var(--maroon); }
+  nav.top-links a:hover::after{ transform:scaleX(1); }
+
+  .search-box-wrap{ position:relative; }
+  .search-box{
+    display:flex; align-items:center; background:var(--cream);
+    border:1.5px solid var(--gold); border-radius:24px; padding:6px 6px 6px 18px; min-width:260px;
+  }
+  .search-box input{ flex:1; border:none; background:transparent; outline:none; font-size:14px; color:var(--ink); }
+  .search-box .gsearch-wrap{ flex:1; min-width:0; }
+  .search-box button{
+    background:var(--maroon); border:none; color:#fff; width:32px; height:32px; border-radius:50%;
+    cursor:pointer; font-size:13px; flex-shrink:0;
+  }
+
+  main{ max-width:920px; margin:0 auto; padding:40px 24px 90px; }
+
+  .result-heading{
+    font-size:15px; color:var(--muted); margin-bottom:8px;
+  }
+  .result-heading b{ color:var(--maroon); }
+  .heading-rule{
+    display:flex; align-items:center; gap:10px; margin-bottom:32px;
+  }
+  .heading-rule::before, .heading-rule::after{
+    content:""; flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .heading-rule span{ color:var(--gold-dark); font-size:14px; }
+
+  .group{ margin-bottom:40px; }
+  .group-title{
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--maroon); margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid var(--gold);
+  }
+  .group-title .g-dot{
+    width:7px; height:7px; background:var(--gold-dark); transform:rotate(45deg); flex-shrink:0;
+  }
+  .group-title .g-count{ color:var(--muted); font-weight:600; text-transform:none; letter-spacing:0; }
+
+  /* ---- Card with corner ornaments ---- */
+  .result-card{
+    position:relative;
+    display:flex; align-items:center; gap:16px; padding:18px 22px;
+    background:var(--beige);
+    border:1.5px solid rgba(168,130,63,0.35);
+    border-radius:10px;
+    text-decoration:none; color:var(--ink);
+    margin-bottom:12px;
+    transition:transform .18s, box-shadow .18s, border-color .18s;
+  }
+  .result-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 26px rgba(92,58,30,0.16);
+    border-color:var(--gold);
+  }
+  .result-card::before, .result-card::after,
+  .result-card .corner-r::before, .result-card .corner-r::after{
+    content:""; position:absolute; width:14px; height:14px; pointer-events:none;
+    border-color:var(--gold-dark); opacity:0; transition:opacity .18s;
+  }
+  .result-card:hover::before, .result-card:hover::after,
+  .result-card:hover .corner-r::before, .result-card:hover .corner-r::after{ opacity:1; }
+  .result-card::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; border-top-left-radius:4px; }
+  .result-card::after{ bottom:-1px; left:-1px; border-bottom:2px solid; border-left:2px solid; border-bottom-left-radius:4px; }
+  .result-card .corner-r::before{ top:-1px; right:-1px; border-top:2px solid; border-right:2px solid; border-top-right-radius:4px; }
+  .result-card .corner-r::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; border-bottom-right-radius:4px; }
+
+  .result-icon{
+    font-size:22px; flex-shrink:0; width:44px; height:44px; display:flex; align-items:center; justify-content:center;
+    background:var(--cream); border:1px solid rgba(168,130,63,0.4); border-radius:50%;
+  }
+  .result-text{ min-width:0; }
+  .result-title{ font-weight:700; font-size:15.5px; margin-bottom:3px; color:var(--ink); }
+  .result-sub{ font-size:12.5px; color:var(--muted); }
+
+  .empty-state{ text-align:center; padding:70px 20px; color:var(--muted); }
+  .empty-state .big{ font-size:42px; margin-bottom:16px; }
+  .empty-state a{ color:var(--maroon); font-weight:700; text-decoration:none; }
+
+  @media(max-width:700px){
+    header{ padding:12px 16px; flex-wrap:wrap; }
+    nav.top-links{ display:none; }
+    .search-box{ min-width:0; width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo"><img src="images/logo.png" alt="Logo Sử Việt">SỬ VIỆT</a>
+  <nav class="top-links">
+    <a href="index.html">Trang chủ</a>
+    <a href="cau-chuyen.html">Câu chuyện</a>
+    <a href="quiz-langding.html">Quiz</a>
+    <a href="game.html">Trò chơi</a>
+  </nav>
+  <div class="search-box-wrap">
+    <div class="search-box">
+      <input type="text" id="navSearchInput" placeholder="Tìm kiếm nhân vật, quiz, trang...">
+      <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="result-heading" id="resultHeading"></div>
+  <div class="heading-rule"><span>❖</span></div>
+  <div id="resultsContainer"></div>
+</main>
+
+<script src="search-data.js"></script>
+<script src="search-engine.js"></script>
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const q = (params.get('q') || '').trim();
+  const heading = document.getElementById('resultHeading');
+  const container = document.getElementById('resultsContainer');
+  const input = document.getElementById('navSearchInput');
+  if (input) input.value = q;
+
+  if (!q) {
+    heading.textContent = 'Nhập từ khóa để bắt đầu tìm kiếm.';
+    container.innerHTML = '';
+    return;
+  }
+
+  const results = window.SuVietSearch.search(q); // không giới hạn số lượng
+  heading.innerHTML = 'Tìm thấy <b>' + results.length + '</b> kết quả cho "<b>' + window.SuVietSearch.escapeHtml(q) + '</b>"';
+
+  if (!results.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="big">🔍</div>
+        <p>Không tìm thấy kết quả phù hợp.</p>
+        <p>Thử tìm tên nhân vật (VD: "Ngô Quyền"), chủ đề quiz (VD: "Văn Lang") hoặc trang chức năng.</p>
+        <p><a href="index.html">← Quay về trang chủ</a></p>
+      </div>`;
+    return;
+  }
+
+  const groups = { page: [], story: [], quiz: [] };
+  results.forEach(item => groups[item.type].push(item));
+
+  const order = [
+    { key: 'page',  label: window.SuVietSearch.TYPE_LABEL.page },
+    { key: 'story', label: window.SuVietSearch.TYPE_LABEL.story },
+    { key: 'quiz',  label: window.SuVietSearch.TYPE_LABEL.quiz }
+  ];
+
+  let html = '';
+  order.forEach(({key, label}) => {
+    if (!groups[key].length) return;
+    html += `<div class="group"><div class="group-title"><span class="g-dot"></span>${label} <span class="g-count">(${groups[key].length})</span></div>`;
+    groups[key].forEach(item => {
+      html += `
+        <a class="result-card" href="${item.url}">
+          <span class="corner-r"></span>
+          <div class="result-icon">${item.icon || '🔎'}</div>
+          <div class="result-text">
+            <div class="result-title">${window.SuVietSearch.escapeHtml(item.name || item.title)}</div>
+            <div class="result-sub">${window.SuVietSearch.escapeHtml(window.SuVietSearch.itemSubtitle(item))}</div>
+          </div>
+        </a>`;
+    });
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chiến Dịch Hồ Chí Minh — Nhật Ký Pháo Thủ Xe Tăng | Sử Việt Tương Tác</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#d4a017;--gold-l:#f5c842;
+  --red:#c62828;--red-l:#ef5350;--red-dark:#7b0000;
+  --olive:#3a5a3a;--olive-l:#6a9a5a;--olive-dark:#1f331f;
+  --dust:#8a7a5a;--rust:#a6531a;
+  --star:#f0ece0;--star-dim:rgba(240,236,224,0.72);--star-faint:rgba(240,236,224,0.4);
+  --bg:#0a0d08;--surface:rgba(12,15,10,0.97);--ink:#04050a;
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--star);min-height:100vh;overflow-x:hidden;}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#cursorCanvas{position:fixed;inset:0;z-index:250;pointer-events:none;}
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 55% 40% at 15% 20%,rgba(198,40,40,0.07) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 75%,rgba(58,90,58,0.16) 0%,transparent 55%);}
+.corner{position:fixed;width:48px;height:48px;z-index:2;pointer-events:none;border-color:rgba(58,90,58,0.4);border-style:solid;}
+.corner.tl{top:18px;left:18px;border-width:2px 0 0 2px;}.corner.tr{top:18px;right:18px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:18px;left:18px;border-width:0 0 2px 2px;}.corner.br{bottom:18px;right:18px;border-width:0 2px 2px 0;}
+.top-stripe{position:fixed;top:0;left:0;right:0;height:4px;z-index:400;background:linear-gradient(90deg,var(--red) 0%,var(--red) 45%,var(--olive-l) 45%,var(--gold-l) 100%);}
+nav{position:fixed;top:4px;left:0;right:0;z-index:300;height:54px;background:rgba(10,13,8,0.98);border-bottom:1px solid rgba(58,90,58,0.25);display:flex;align-items:center;justify-content:space-between;padding:0 30px;backdrop-filter:blur(16px);}
+.nav-left{display:flex;align-items:center;gap:14px;}
+.nav-back{font-size:12px;color:var(--star-faint);text-decoration:none;padding:6px 14px;border:1px solid rgba(58,90,58,.45);border-radius:20px;white-space:nowrap;transition:.25s;}
+.nav-back:hover{color:var(--gold-l);border-color:var(--gold-l);background:rgba(58,90,58,.14);}
+
+.nav-brand{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold-l);letter-spacing:3px;text-decoration:none;}
+.nav-subtitle{font-size:10.5px;color:var(--star-faint);letter-spacing:1.5px;font-family:'Space Mono',monospace;}
+.nav-right{display:flex;gap:8px;}
+.nav-map-btn{background:transparent;border:1px solid rgba(58,90,58,.45);border-radius:50%;width:34px;height:34px;color:#a5d6a7;cursor:pointer;font-size:15px;}
+.prog-rail{position:fixed;top:58px;left:0;right:0;z-index:299;height:3px;background:rgba(255,255,255,0.04);}
+.prog-fill{height:100%;width:0%;transition:width .9s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--red-dark),var(--red),var(--olive-l),var(--gold-l));}
+.hud{position:fixed;top:70px;right:20px;z-index:298;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.hud-card{background:rgba(10,13,8,0.94);border:1px solid rgba(58,90,58,0.4);border-radius:40px;padding:7px 18px;display:flex;align-items:center;gap:10px;}
+.hud-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-family:'Space Mono',monospace;}
+.hud-val{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);font-weight:700;transition:transform .25s;}
+.hud-val.bump{transform:scale(1.5);}
+.pts-pop{position:fixed;top:82px;right:100px;z-index:999;font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;}
+.pts-pop.show{animation:popUp .85s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}35%{opacity:1;transform:translateY(-22px) scale(1.25);}100%{opacity:0;transform:translateY(-52px) scale(.9);}}
+
+.streak-badge{position:fixed;top:70px;left:20px;z-index:298;background:rgba(10,13,8,0.94);border:1px solid rgba(58,90,58,0.45);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--star-dim);opacity:0;transform:translateX(-12px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.hot{border-color:rgba(230,120,20,.7);box-shadow:0 0 16px rgba(230,120,20,.28);}
+.streak-num{font-family:'Playfair Display',serif;font-size:18px;color:var(--rust);font-weight:700;}
+.combo-burst{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.08);}}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(58,90,58,0.85),rgba(10,13,8,0.95));border:2px solid var(--gold-l);border-radius:16px;padding:16px 30px;box-shadow:0 0 60px rgba(212,160,23,.3);}
+.combo-title{font-size:11px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-family:'Space Mono',monospace;}
+.combo-label{font-size:26px;color:#fff;font-family:'Playfair Display',serif;}
+.combo-sub{font-size:12px;color:rgba(240,236,224,0.6);margin-top:4px;}
+.ripple-el{position:absolute;border-radius:50%;background:rgba(166,83,26,0.4);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(2.6);opacity:0;}}
+
+.wrap{max-width:800px;margin:0 auto;padding:82px 22px 80px;position:relative;z-index:2;}
+.scene{display:none;}
+.scene.active{display:block;animation:fadeUp .6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.cover-scene{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.cover-emblem{width:104px;height:104px;border-radius:50%;background:radial-gradient(circle,rgba(58,90,58,.45),rgba(10,13,8,.9));border:2px solid rgba(212,160,23,.5);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;box-shadow:0 0 50px rgba(58,90,58,.3);}
+.cover-eyebrow{font-size:11px;letter-spacing:4px;color:var(--gold-l);text-transform:uppercase;margin-bottom:12px;font-family:'Space Mono',monospace;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,46px);color:#fff;line-height:1.2;margin-bottom:10px;}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:17px;color:var(--gold-l);margin-bottom:20px;}
+.cover-desc{max-width:520px;font-size:15px;line-height:1.8;color:var(--star-dim);margin-bottom:20px;}
+.cover-note{max-width:520px;font-size:12.5px;line-height:1.7;color:var(--star-faint);background:rgba(58,90,58,.15);border:1px solid rgba(58,90,58,.4);border-radius:10px;padding:10px 16px;margin-bottom:26px;}
+.cover-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(58,90,58,0.16);border:1px solid rgba(58,90,58,0.35);border-radius:20px;padding:3px 11px;font-size:11px;color:#a5d6a7;}
+.cover-start-btn{padding:14px 34px;background:linear-gradient(135deg,var(--red),var(--red-dark));border:1px solid rgba(212,160,23,.5);border-radius:12px;color:#fff;font-size:17px;cursor:pointer;transition:.3s;box-shadow:0 12px 34px rgba(198,40,40,.3);}
+.cover-start-btn:hover{transform:translateY(-3px);}
+
+.chapter-map{display:flex;align-items:center;gap:0;margin:24px 0;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+.chapter-map::-webkit-scrollbar{display:none;}
+.cm-item{flex:1;min-width:80px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.cm-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(58,90,58,.4),rgba(58,90,58,.08));z-index:0;}
+.cm-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;}
+.cm-dot.done{background:var(--olive);border:2px solid var(--gold);color:#fff;}
+.cm-dot.now{background:var(--red);border:2px solid var(--gold-l);color:#fff;animation:pulseNow 2s ease-in-out infinite;}
+@keyframes pulseNow{0%,100%{box-shadow:0 0 0 0 rgba(198,40,40,.5);}50%{box-shadow:0 0 0 8px rgba(198,40,40,0);}}
+.cm-dot.lock{background:rgba(240,236,224,.04);border:2px solid rgba(240,236,224,.1);color:var(--star-faint);}
+.cm-lbl{font-size:9px;color:#a5d6a7;margin-top:5px;text-align:center;font-family:'Space Mono',monospace;}
+
+.chap-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(58,90,58,0.16);border:1px solid rgba(58,90,58,0.42);border-radius:30px;padding:6px 18px;font-size:10.5px;color:#a5d6a7;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;font-family:'Space Mono',monospace;}
+.hero-art{width:100%;height:250px;border-radius:14px;margin-bottom:22px;border:1px solid rgba(58,90,58,0.3);overflow:hidden;position:relative;}
+.hero-art img{width:100%;height:100%;object-fit:cover;opacity:.75;}
+.hero-art .lbl{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;background:linear-gradient(to bottom,transparent 40%,rgba(10,13,8,.8));color:var(--gold-l);font-size:14px;letter-spacing:1px;}
+.edu-pill{float:right;width:200px;margin:0 0 16px 20px;background:rgba(58,90,58,0.12);border:1px solid rgba(58,90,58,0.36);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.65;color:var(--star-dim);}
+.edu-tag{font-size:9.5px;color:#a5d6a7;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;font-family:'Space Mono',monospace;}
+.story{font-size:18px;line-height:1.9;color:rgba(240,236,224,.9);margin-bottom:13px;}
+.story::after{content:'';display:block;clear:both;}
+.story strong{color:#fff;}.story em{color:#ef9a9a;font-style:italic;}
+.dlg{background:rgba(198,40,40,0.07);border-left:3px solid rgba(198,40,40,0.5);border-radius:0 12px 12px 0;padding:15px 20px;margin:18px 0;font-style:italic;font-size:17px;color:var(--star);}
+.dlg-who{font-size:9.5px;font-style:normal;color:#ef9a9a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace;}
+.src-note{display:block;font-size:11px;font-style:italic;color:var(--star-faint);margin-top:8px;}
+.fact{background:rgba(58,90,58,0.13);border:1px solid rgba(58,90,58,0.4);border-radius:12px;padding:16px 19px;margin:18px 0;font-size:14.5px;line-height:1.8;color:var(--star-dim);}
+.fact-tag{font-size:9.5px;color:#a5d6a7;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:block;font-family:'Space Mono',monospace;}
+.quote-moment{text-align:center;padding:24px;background:rgba(198,40,40,0.07);border:1px solid rgba(198,40,40,0.22);border-radius:14px;margin:22px 0;font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);font-style:italic;line-height:1.65;}
+.quote-src{font-size:12px;color:var(--star-faint);font-style:normal;margin-top:10px;display:block;}
+.kc{background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.2);border-radius:14px;padding:18px 20px;margin:20px 0;}
+.kc-tag{font-size:9.5px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;font-family:'Space Mono',monospace;}
+.kc-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:12px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(240,236,224,.03);border:1px solid rgba(240,236,224,.1);border-radius:9px;padding:10px 15px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--star);cursor:pointer;text-align:left;transition:.2s;}
+.kc-opt:hover:not(:disabled){background:rgba(58,90,58,.14);border-color:rgba(58,90,58,.5);}
+.kc-opt.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-fb{margin-top:10px;font-size:14px;line-height:1.7;display:none;padding:9px 13px;border-radius:9px;}
+.kc-fb.show{display:block;}.kc-fb.ok{background:rgba(30,90,25,.16);color:#a5d6a7;}.kc-fb.no{background:rgba(120,0,0,.16);color:#ef9a9a;}
+.choices-lbl{font-size:9.5px;color:var(--red-l);letter-spacing:2px;text-transform:uppercase;margin:28px 0 12px;display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;}
+.choices-lbl::before,.choices-lbl::after{content:'';flex:1;height:1px;background:rgba(58,90,58,.4);}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.c-btn{background:rgba(240,236,224,.025);border:1px solid rgba(240,236,224,.1);border-radius:12px;padding:16px 20px;color:var(--star);font-size:16.5px;text-align:left;cursor:pointer;transition:.25s;display:flex;gap:12px;line-height:1.55;position:relative;overflow:hidden;}
+.c-btn:hover{background:rgba(58,90,58,0.14);border-color:rgba(58,90,58,.55);transform:translateX(6px);}
+.c-letter{width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(58,90,58,.16);border:1px solid rgba(58,90,58,.5);color:#a5d6a7;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.c-sub{font-size:12px;color:var(--star-faint);font-style:italic;margin-top:4px;}
+.reflect{background:rgba(58,90,58,0.08);border:1px dashed rgba(58,90,58,0.55);border-radius:14px;padding:16px 20px;margin:18px 0;}
+.reflect-tag{font-size:9.5px;color:#a5d6a7;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;font-family:'Space Mono',monospace;}
+.reflect-q{font-size:15.5px;font-style:italic;color:var(--star);line-height:1.65;}
+
+.gate{background:rgba(198,40,40,0.06);border:2px solid rgba(212,160,23,0.3);border-radius:16px;padding:20px 24px;margin:20px 0;text-align:center;}
+.gate-icon{font-size:42px;display:block;margin-bottom:10px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);margin-bottom:8px;}
+.gate-desc{font-size:14.5px;color:var(--star-dim);line-height:1.7;margin-bottom:14px;}
+.mq-dots{display:flex;gap:7px;margin-bottom:14px;justify-content:center;}
+.mq-dot{width:11px;height:11px;border-radius:50%;border:1px solid rgba(212,160,23,.5);background:transparent;}
+.mq-dot.done{background:var(--gold-l);}
+.mq-dot.now{background:var(--olive-l);border-color:var(--olive-l);}
+.challenge{background:rgba(58,90,58,0.08);border:1px solid rgba(58,90,58,0.35);border-radius:14px;padding:18px 20px;margin:16px 0;text-align:left;}
+.ch-tag{font-size:9.5px;color:#a5d6a7;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;font-family:'Space Mono',monospace;}
+.ch-q{font-size:15.5px;font-weight:600;color:#fff;margin-bottom:12px;line-height:1.5;}
+.ch-opts{display:flex;flex-direction:column;gap:8px;}
+.ch-opt{background:rgba(240,236,224,.03);border:1px solid rgba(240,236,224,.1);border-radius:9px;padding:10px 15px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--star);cursor:pointer;text-align:left;transition:.2s;}
+.ch-opt:hover:not(:disabled){background:rgba(58,90,58,.14);border-color:rgba(212,160,23,.3);}
+.ch-opt.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.ch-opt.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.ch-fb{margin-top:10px;font-size:14px;line-height:1.7;display:none;padding:9px 13px;border-radius:9px;}
+.ch-fb.show{display:block;}.ch-fb.ok{background:rgba(30,90,25,.16);color:#a5d6a7;}.ch-fb.no{background:rgba(120,0,0,.16);color:#ef9a9a;}
+.unlock-btn{display:inline-flex;align-items:center;gap:9px;margin-top:12px;padding:11px 24px;background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.4);border-radius:12px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;opacity:.35;pointer-events:none;}
+.unlock-btn.ready{opacity:1;pointer-events:auto;background:rgba(212,160,23,0.28);}
+.unlock-btn.ready:hover{background:rgba(212,160,23,0.45);}
+.gate-locked{pointer-events:none;opacity:0.45;}
+
+.outcome{border-radius:14px;padding:18px;margin:18px 0;font-size:16px;line-height:1.8;}
+.outcome.good{background:rgba(58,90,58,0.16);border:1px solid rgba(58,90,58,0.45);}
+.outcome.bad{background:rgba(100,10,10,0.18);border:1px solid rgba(139,0,0,0.32);}
+.outcome-icon{font-size:28px;display:block;margin-bottom:8px;}
+
+.final{text-align:center;padding:36px 0;}
+.final-seal{width:120px;height:120px;border-radius:50%;background:rgba(58,90,58,.18);border:2px solid rgba(58,90,58,.5);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:48px;animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 30px rgba(58,90,58,.2);}50%{box-shadow:0 0 70px rgba(212,160,23,.4);}}
+.final-h{font-family:'Playfair Display',serif;font-size:30px;color:var(--gold-l);margin-bottom:10px;}
+.final-pts{font-size:48px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:10px 0;}
+.final-rank-badge{display:inline-block;background:rgba(58,90,58,.18);border:1px solid rgba(58,90,58,.5);border-radius:30px;padding:6px 22px;font-size:13px;color:#a5d6a7;margin-bottom:18px;}
+.final-desc{font-size:16px;color:var(--star-dim);line-height:1.85;max-width:520px;margin:0 auto 24px;}
+.final-achs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:16px 0 24px;}
+.ach{background:rgba(212,160,23,.07);border:1px solid rgba(212,160,23,.26);border-radius:12px;padding:11px 14px;text-align:center;min-width:90px;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+.ach-icon{font-size:24px;display:block;margin-bottom:5px;}
+.ach-name{font-size:9.5px;color:var(--gold-l);font-family:'Space Mono',monospace;}
+.final-lesson{background:rgba(58,90,58,.1);border:1px solid rgba(58,90,58,.4);border-radius:14px;padding:20px 22px;text-align:left;margin:0 0 26px;font-size:15px;line-height:1.85;color:var(--star-dim);}
+.fl-tag{font-size:9.5px;color:#a5d6a7;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;font-family:'Space Mono',monospace;}
+.btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-ghost{padding:11px 24px;background:transparent;border:1px solid rgba(198,40,40,.4);border-radius:10px;color:#ef9a9a;font-size:15px;cursor:pointer;}
+.btn-solid{padding:11px 24px;background:rgba(58,90,58,.55);border:1px solid rgba(58,90,58,.5);border-radius:10px;color:var(--star);font-size:15px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+
+.jmap{background:radial-gradient(ellipse at 12% 88%,rgba(212,160,23,.08),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(198,40,40,.08),transparent 55%),rgba(10,13,8,0.5);border:1px solid rgba(58,90,58,0.4);border-radius:16px;padding:22px;margin:24px 0;}
+.jmap-tag{font-size:9.5px;color:#a5d6a7;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;display:block;font-family:'Space Mono',monospace;}
+.jmap-note{font-size:11px;color:var(--star-faint);margin-bottom:12px;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink);stroke-width:2;filter:drop-shadow(0 0 6px rgba(212,160,23,.75));transition:opacity .6s;}
+.jmap-pt.locked{opacity:.35;fill:rgba(240,236,224,.1);filter:none;}
+.jmap-lbl{fill:#f0ece0;font-size:11.5px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-lbl.locked{opacity:.35;}
+.jmap-line{stroke:rgba(212,160,23,0.5);stroke-width:3;stroke-dasharray:6 5;}
+
+.journal{background:rgba(58,90,58,0.1);border:1px solid rgba(58,90,58,0.4);border-radius:16px;padding:22px 24px;margin:0 0 26px;text-align:left;}
+.journal-tag{font-size:9.5px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(240,236,224,.06);font-size:14px;color:var(--star-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11px;padding:2px 10px;border-radius:10px;font-family:'Space Mono',monospace;white-space:nowrap;}
+.journal-status.ok{background:rgba(30,90,25,.22);color:#a5d6a7;}
+.journal-status.no{background:rgba(120,0,0,.2);color:#ef9a9a;}
+.journal-copy{margin-top:14px;background:rgba(212,160,23,.14);border:1px solid rgba(212,160,23,.35);border-radius:10px;padding:9px 18px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;}
+
+.ref-page{background:rgba(58,90,58,0.08);border:1px solid rgba(58,90,58,0.4);border-radius:14px;padding:20px 22px;margin:0 0 20px;font-size:13px;color:var(--star-dim);line-height:1.8;}
+.ref-item{padding-left:14px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold);}
+@media(max-width:640px){.wrap{padding:74px 14px 60px;}.edu-pill{float:none;width:100%;margin:0 0 14px;}.story{font-size:16.5px;}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<canvas id="cursorCanvas"></canvas>
+<div class="ambient"></div>
+<div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+<div class="top-stripe"></div>
+
+<div class="pts-pop" id="ptsPop">+0</div>
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red-l),var(--red-dark));
+  border:2px solid var(--gold);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(198,40,40,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red-l),var(--red-dark));
+  border:2px solid var(--gold);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(198,40,40,.45);
+  align-items:center;justify-content:center;">➡</button>
+<div class="streak-badge" id="streakBadge"><span>🎯</span><div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);">Liên tiếp</div><div class="streak-num" id="streakNum">0</div></div></div>
+<div class="combo-burst" id="comboBurst"><div class="combo-inner"><div class="combo-title">Trả lời liên tiếp đúng!</div><div class="combo-label" id="comboLabel">🎯 XUNG PHONG x3</div><div class="combo-sub" id="comboSub">+10 điểm thưởng</div></div></div>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=27">← Quay lại</a>
+    <a class="nav-brand" href="#">SỬ VIỆT</a>
+  </div>
+  <div class="nav-subtitle">NHẬT KÝ PHÁO THỦ XE TĂNG — MÙA XUÂN 1975</div>
+  <div class="nav-right">
+    <button class="nav-map-btn" onclick="toggleRef()" title="Nguồn tham khảo">📚</button>
+    <button class="nav-map-btn" onclick="toggleMap()" title="Bản đồ tiến quân">🗺️</button>
+    <button id="soundToggle" onclick="toggleSound()" style="background:transparent;border:1px solid rgba(58,90,58,.45);border-radius:50%;width:34px;height:34px;color:#a5d6a7;cursor:pointer;font-size:15px;">🔊</button>
+  </div>
+</nav>
+<div class="prog-rail"><div class="prog-fill" id="prog"></div></div>
+<div class="hud"><div class="hud-card"><div><div class="hud-label">Điểm</div><div class="hud-val" id="scoreEl">0</div></div><div><div class="hud-label">Danh Hiệu</div><div style="font-size:10px;color:#ef9a9a;" id="rankEl">—</div></div></div></div>
+
+<div class="wrap">
+
+<!-- COVER -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">🎖️</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">CHIẾN DỊCH HỒ CHÍ MINH<br>Nhật Ký Pháo Thủ Xe Tăng</div>
+    <div class="cover-sub">Tháng 3 — 30/4/1975 · 55 Ngày Đêm Thần Tốc</div>
+    <div class="cover-desc">Bạn là một pháo thủ trẻ trong Lữ đoàn Tăng — Thiết giáp 203, Quân đoàn 2 — không nhìn chiến dịch từ bản đồ chỉ huy, mà nếm trải từng chặng hành quân, từng trận đánh, cho đến khoảnh khắc chiếc xe tăng 390 húc đổ cánh cổng Dinh Độc Lập.</div>
+    <div class="cover-note">📌 Nhân vật "bạn" (pháo thủ) là hư cấu để dễ nhập vai. Các mốc thời gian, đơn vị, và diễn biến xe tăng 390 đều dựa trên tư liệu lịch sử đã kiểm chứng (xem mục 📚 Nguồn tham khảo).</div>
+    <div class="cover-chips">
+      <span class="chip">🎖️ 5 chương</span>
+      <span class="chip">🎯 Kiến thức + Combo</span>
+      <span class="chip">🗺️ Bản đồ tiến quân</span>
+      <span class="chip">📔 Sổ tay chiến dịch</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">🎖️ Bắt Đầu Hành Trình</button>
+  </div>
+</div>
+
+<!-- CHƯƠNG I -->
+<div class="scene" id="s1">
+<div class="chap-badge">🪖 CHƯƠNG I · THÁNG 3/1975 — LỆNH XUẤT KÍCH <span style="cursor:pointer;" onclick="openSrc('s1')">📖</span></div>
+<div class="hero-art"><img src="images/REPLACE-donghoi-1975.jpg" alt="Hành quân Đông Nam Bộ 1975" onerror="this.style.display='none'"><div class="lbl">🪖 ĐÔNG NAM BỘ, THÁNG 3/1975</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot now">1</div><div class="cm-lbl">Xuất Kích</div></div>
+  <div class="cm-item"><div class="cm-dot lock">2</div><div class="cm-lbl">Xuân Lộc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-lbl">Tiến Quân</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-lbl">Vào Nội Đô</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-lbl">Dinh Độc Lập</div></div>
+</div>
+
+<div class="story">
+  <div class="edu-pill"><span class="edu-tag">📚 BỐI CẢNH</span>Đầu 1975, sau chiến thắng Tây Nguyên và Huế — Đà Nẵng, Quân đoàn 2 được lệnh hành quân gấp từ miền Trung vào Đông Nam Bộ, chuẩn bị cho trận đánh cuối cùng vào Sài Gòn.</div>
+  Bạn ngồi trên tháp pháo chiếc xe tăng, mồ hôi ướt đẫm áo lính. Đoàn xe nối đuôi nhau hàng chục cây số trên đường hành quân, bụi đỏ bốc lên mù mịt. Anh trưởng xe gõ vào vai bạn, hét lớn qua tiếng động cơ gầm rú.
+</div>
+<div class="dlg"><div class="dlg-who">TRƯỞNG XE</div>"Chú mày biết không, lần này khác mọi lần đấy. Không phải đánh rồi rút — lần này đánh là đánh đến Sài Gòn luôn!"<span class="src-note">🔵 Đoạn hội thoại dựng lại minh họa, không phải ghi chép nguyên văn.</span></div>
+<div class="story">Cả đoàn quân đều cảm nhận được điều gì đó khác lạ trong không khí — sau Tây Nguyên, sau Huế, sau Đà Nẵng, tốc độ sụp đổ của đối phương nhanh đến mức ngay cả những người chỉ huy cấp trên cũng phải điều chỉnh kế hoạch liên tục.</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC</span>
+  <div class="kc-q">Đơn vị nào sau này có chiếc xe tăng 390 — chiếc húc đổ cổng chính Dinh Độc Lập trưa 30/4/1975?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1')">A. Lữ đoàn Bộ binh 316</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc1')">B. Lữ đoàn Tăng — Thiết giáp 203, Quân đoàn 2</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1')">C. Sư đoàn Không quân 372</button>
+  </div>
+  <div class="kc-fb" id="kc1-fb"></div>
+</div>
+
+<div class="reflect"><span class="reflect-tag">💭 SUY NGẪM</span><div class="reflect-q">Hành quân hàng trăm km liên tục dưới nắng, bụi, không biết ngày mai sẽ ra sao — điều gì giữ cho một đoàn quân không rã rời giữa đường?</div></div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="s1-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'s1',15,'⭐ Đúng với khí thế thực tế! Sau khi Tây Nguyên, Huế, Đà Nẵng lần lượt giải phóng chỉ trong hơn 20 ngày, toàn quân đều tin thời cơ thống nhất đã đến gần, tinh thần hành quân vì thế rất cao.')"><span class="c-letter">A</span><div>Cố gắng hết sức theo kịp đoàn xe, tin rằng lần này sẽ về đến Sài Gòn thật.<div class="c-sub">⭐ Đúng khí thế lịch sử</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'s1',5,'Tâm lý hoài nghi là dễ hiểu ở một người lính mệt mỏi, nhưng thực tế tốc độ thần tốc của các chiến dịch trước đó (Tây Nguyên chỉ 10 ngày, Huế-Đà Nẵng chưa đầy 1 tháng) đã khiến hầu hết binh sĩ tin tưởng cao độ vào chiến dịch lần này.')"><span class="c-letter">B</span><div>Hoài nghi, nghĩ rằng chắc lại là một chiến dịch dài hơi khác.</div></button>
+</div>
+<div class="kc-fb" id="s1-fb" style="margin-top:14px;"></div>
+
+<div class="choices-lbl" style="margin-top:26px;">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s2',0)"><span class="c-letter">→</span><div>Chương II: Trận Xuân Lộc — Cửa Ngõ Cuối Cùng</div></button></div>
+</div>
+
+<!-- CHƯƠNG II -->
+<div class="scene" id="s2">
+<div class="chap-badge">⚔️ CHƯƠNG II · 9–21/4/1975 — TRẬN XUÂN LỘC <span style="cursor:pointer;" onclick="openSrc('s2')">📖</span></div>
+<div class="hero-art"><img src="images/REPLACE-xuanloc-1975.jpg" alt="Trận Xuân Lộc" onerror="this.style.display='none'"><div class="lbl">⚔️ XUÂN LỘC, LONG KHÁNH</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-lbl">Xuất Kích</div></div>
+  <div class="cm-item"><div class="cm-dot now">2</div><div class="cm-lbl">Xuân Lộc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-lbl">Tiến Quân</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-lbl">Vào Nội Đô</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-lbl">Dinh Độc Lập</div></div>
+</div>
+
+<div class="story">
+  <div class="edu-pill"><span class="edu-tag">📚 BỐI CẢNH</span>Xuân Lộc là tuyến phòng thủ then chốt cuối cùng bảo vệ cửa ngõ đông bắc Sài Gòn — trận đánh ác liệt và kéo dài nhất trong toàn chiến dịch, khác hẳn tốc độ thần tốc ở Tây Nguyên và miền Trung.</div>
+  Khác với những nơi trước đó tan vỡ chỉ sau vài ngày, Xuân Lộc chống cự dữ dội gần hai tuần. Xe tăng của bạn nằm im trong công sự ngụy trang cả buổi, chờ lệnh, nghe rõ tiếng pháo cối nổ liên hồi phía trước.
+</div>
+<div class="dlg"><div class="dlg-who">CHÍNH TRỊ VIÊN ĐẠI ĐỘI</div>"Đừng nôn nóng. Trận này không giống mấy trận vừa rồi đâu. Chỗ này chúng phòng thủ kỹ, có chuẩn bị hẳn hoi. Ta phải đánh chắc, giữ đội hình, không được tùy tiện."<span class="src-note">🔵 Đoạn hội thoại dựng lại minh họa.</span></div>
+
+<div class="mq-dots" id="mq2-dots"><div class="mq-dot now" id="mq2d0"></div><div class="mq-dot" id="mq2d1"></div></div>
+<div class="gate" id="gate2">
+  <span class="gate-icon">🎯</span>
+  <div class="gate-title">CỬA ẢI TRẬN ĐỊA</div>
+  <div class="gate-desc">Trả lời đúng <strong>2 câu hỏi liên tiếp</strong> để nắm rõ trận đánh khó nhất chiến dịch!</div>
+
+  <div class="challenge" id="mq2-0">
+    <span class="ch-tag">🎯 CÂU HỎI 1/2</span>
+    <div class="ch-q">Vì sao trận Xuân Lộc lại quan trọng đến mức được xem là "cửa ngõ cuối cùng" của Sài Gòn?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,2,0)">A. Vì đây là nơi có nhiều sân bay quân sự lớn nhất</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,2,0)">B. Vì đây là tuyến phòng thủ then chốt trên đường tiến vào Sài Gòn từ phía đông bắc</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,0)">C. Vì đây là nơi đặt bộ chỉ huy cao nhất của quân đội Sài Gòn</button>
+    </div>
+    <div class="ch-fb" id="mq2fb-0"></div>
+  </div>
+
+  <div class="challenge" id="mq2-1" style="display:none">
+    <span class="ch-tag">🎯 CÂU HỎI 2/2</span>
+    <div class="ch-q">Sau gần hai tuần Xuân Lộc chưa dứt điểm hoàn toàn, Bộ Chỉ huy chiến dịch đã làm gì để không sa lầy?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,2,1)">A. Rút toàn bộ quân, bỏ hướng tiến công này</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,2,1)">B. Điều chỉnh, chuyển một phần lực lượng đánh vòng, khiến tuyến phòng thủ đối phương vẫn sụp đổ</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,1)">C. Kêu gọi đối phương đầu hàng qua đàm phán</button>
+    </div>
+    <div class="ch-fb" id="mq2fb-1"></div>
+  </div>
+
+  <button class="unlock-btn" id="gate2-btn" onclick="unlockGate('s2-body','gate2')">🎯 MỞ CỬA — TIẾP TỤC CHƯƠNG</button>
+</div>
+
+<div id="s2-body" class="gate-locked">
+<div class="fact"><span class="fact-tag">📖 SỰ THẬT LỊCH SỬ</span>Trận Xuân Lộc (9–21/4/1975) là trận đánh phòng ngự — tiến công quyết liệt nhất trước khi Sài Gòn thất thủ. Sau khi tuyến phòng thủ tại đây bị chọc thủng, toàn bộ hệ thống phòng thủ vòng ngoài của Sài Gòn coi như sụp đổ.</div>
+<div class="reflect"><span class="reflect-tag">💭 SUY NGẪM</span><div class="reflect-q">Sau hàng loạt chiến thắng thần tốc, gặp một trận đánh kéo dài, ác liệt hơn dự kiến — điều đó thử thách điều gì trong một đội quân đang trên đà thắng lợi?</div></div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s3',15)"><span class="c-letter">→</span><div>Chương III: Đường Tiến Về Sài Gòn</div></button></div>
+</div>
+</div>
+
+<!-- CHƯƠNG III -->
+<div class="scene" id="s3">
+<div class="chap-badge">🚛 CHƯƠNG III · 26–29/4/1975 — ĐƯỜNG TIẾN VỀ SÀI GÒN <span style="cursor:pointer;" onclick="openSrc('s3')">📖</span></div>
+<div class="hero-art"><img src="images/REPLACE-hanhquan-qlo1.jpg" alt="Hành quân Quốc lộ 1" onerror="this.style.display='none'"><div class="lbl">🚛 QUỐC LỘ 1, CỬA NGÕ SÀI GÒN</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-lbl">Xuất Kích</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-lbl">Xuân Lộc</div></div>
+  <div class="cm-item"><div class="cm-dot now">3</div><div class="cm-lbl">Tiến Quân</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-lbl">Vào Nội Đô</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-lbl">Dinh Độc Lập</div></div>
+</div>
+
+<div class="story">
+  <div class="edu-pill"><span class="edu-tag">📚 BỐI CẢNH</span>Ngày 21/4, Xuân Lộc được giải quyết. Cùng ngày, Tổng thống Nguyễn Văn Thiệu tuyên bố từ chức. Năm cánh quân lớn đồng loạt xiết vòng vây quanh Sài Gòn từ nhiều hướng — Quân đoàn 2 của bạn tiến theo hướng đông.</div>
+  Đoàn xe của bạn lăn bánh không nghỉ, ngày lẫn đêm. Hai bên đường, dân chúng đứng nhìn, có người vẫy tay, có người im lặng dò xét. Không khí căng như dây đàn — ai cũng cảm nhận: cuộc chiến đang đi đến những giờ cuối cùng.
+</div>
+<div class="dlg"><div class="dlg-who">MỘT CỤ GIÀ VEN ĐƯỜNG</div>"Bộ đội ơi, vô Sài Gòn thiệt hả? Bà con chờ ngày này lâu quá rồi con..."<span class="src-note">🔵 Đoạn hội thoại dựng lại minh họa.</span></div>
+<div class="fact"><span class="fact-tag">📖 SỰ THẬT LỊCH SỬ</span>Chỉ trong 55 ngày đêm (4/3 – 30/4/1975), toàn bộ miền Nam được giải phóng. Ngày 21/4/1975, Nguyễn Văn Thiệu tuyên bố từ chức — chính quyền Sài Gòn rơi vào khủng hoảng lãnh đạo ngay trước giờ quyết định.</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC</span>
+  <div class="kc-q">Chiến dịch giải phóng Sài Gòn được chính thức đặt tên là Chiến dịch Hồ Chí Minh vào ngày nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3')">A. 30/4/1975 — ngay sau khi giải phóng</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc3')">B. 14/4/1975 — trước khi tổng công kích bắt đầu</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3')">C. 21/4/1975 — khi Nguyễn Văn Thiệu từ chức</button>
+  </div>
+  <div class="kc-fb" id="kc3-fb"></div>
+</div>
+
+<div class="reflect"><span class="reflect-tag">💭 SUY NGẪM</span><div class="reflect-q">Với một người lính, cảm giác được người dân ven đường chờ đợi, tin tưởng khác gì với cảm giác chỉ hành quân theo lệnh?</div></div>
+
+<div class="choices-lbl" style="margin-top:26px;">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s4',0)"><span class="c-letter">→</span><div>Chương IV: Sáng 30/4 — Vào Nội Đô</div></button></div>
+</div>
+
+<!-- CHƯƠNG IV -->
+<div class="scene" id="s4">
+<div class="chap-badge">🌅 CHƯƠNG IV · SÁNG 30/4/1975 — VÀO NỘI ĐÔ <span style="cursor:pointer;" onclick="openSrc('s4')">📖</span></div>
+<div class="hero-art"><img src="images/REPLACE-noido-sangsom.jpg" alt="Sáng 30/4 vào nội đô" onerror="this.style.display='none'"><div class="lbl">🌅 CỬA NGÕ SÀI GÒN, SÁNG 30/4</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-lbl">Xuất Kích</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-lbl">Xuân Lộc</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-lbl">Tiến Quân</div></div>
+  <div class="cm-item"><div class="cm-dot now">4</div><div class="cm-lbl">Vào Nội Đô</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-lbl">Dinh Độc Lập</div></div>
+</div>
+
+<div class="story">
+  <div class="edu-pill"><span class="edu-tag">📚 BỐI CẢNH</span>Sáng 30/4, các cánh quân đồng loạt tiến vào nội đô Sài Gòn từ mọi hướng. Một số nơi vẫn còn giao tranh lẻ tẻ, nhưng phần lớn tuyến phòng thủ đã tan rã sau khi Dương Văn Minh lên thay chỉ vài ngày trước.</div>
+  Xe tăng của bạn tiến qua những con đường vắng lạ thường so với hình dung. Có đoạn ngổn ngang quân trang, giày, mũ sắt bị vứt lại dọc đường — dấu hiệu một đội quân đang tan rã chứ không phải đang chiến đấu.
+</div>
+<div class="dlg"><div class="dlg-who">TRƯỞNG XE</div>"Nhìn kìa — họ bỏ chạy hết rồi. Đường này thông, cứ theo đội hình mà tiến, đừng chủ quan nhưng cũng đừng chần chừ!"<span class="src-note">🔵 Đoạn hội thoại dựng lại minh họa.</span></div>
+<div class="fact"><span class="fact-tag">📖 SỰ THẬT LỊCH SỬ</span>Sáng 30/4/1975, năm cánh quân Giải phóng đồng loạt xiết chặt vòng vây, tiến vào nội đô Sài Gòn từ nhiều hướng gần như đồng thời — khiến quân đội Sài Gòn không kịp tổ chức phòng thủ có hệ thống.</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC</span>
+  <div class="kc-q">Ai là Tổng thống cuối cùng của chính quyền Sài Gòn, người tuyên bố đầu hàng trưa 30/4/1975?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4')">A. Nguyễn Văn Thiệu</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc4')">B. Dương Văn Minh</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4')">C. Trần Văn Hương</button>
+  </div>
+  <div class="kc-fb" id="kc4-fb"></div>
+</div>
+
+<div class="reflect"><span class="reflect-tag">💭 SUY NGẪM</span><div class="reflect-q">Đi qua một thành phố gần như bỏ trống thay vì một chiến trường — cảm giác đó chắc rất khác với những gì bạn tưởng tượng về "trận đánh cuối cùng"?</div></div>
+
+<div class="choices-lbl" style="margin-top:26px;">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s5',0)"><span class="c-letter">→</span><div>Chương V: 10h45 — Cổng Dinh Độc Lập</div></button></div>
+</div>
+
+<!-- CHƯƠNG V -->
+<div class="scene" id="s5">
+<div class="chap-badge">🏛️ CHƯƠNG V · 10H45, 30/4/1975 — CỔNG DINH ĐỘC LẬP <span style="cursor:pointer;" onclick="openSrc('s5')">📖</span></div>
+<div class="hero-art"><img src="images/REPLACE-dinhdoclap-1975.jpg" alt="Dinh Độc Lập 30/4/1975" onerror="this.style.display='none'"><div class="lbl">🏛️ DINH ĐỘC LẬP, TRƯA 30/4/1975</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-lbl">Xuất Kích</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-lbl">Xuân Lộc</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-lbl">Tiến Quân</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-lbl">Vào Nội Đô</div></div>
+  <div class="cm-item"><div class="cm-dot now">5</div><div class="cm-lbl">Dinh Độc Lập</div></div>
+</div>
+
+<div class="story">
+  <div class="edu-pill"><span class="edu-tag">📚 BỐI CẢNH</span>Đoàn xe tăng của Lữ đoàn 203 tiến đến khu vực trung tâm. Trong đoàn có chiếc xe tăng mang số hiệu 390 — chiếc sẽ đi vào lịch sử chỉ vài phút sau.</div>
+  Xe của bạn đi ngay sau đoàn dẫn đầu. Phía trước, cánh cổng sắt to lớn của Dinh Độc Lập hiện ra cuối đại lộ. Không một tiếng súng nào vang lên nữa — chỉ có tiếng xích sắt nghiến trên mặt đường và tim bạn đập dồn.
+</div>
+<div class="fact"><span class="fact-tag">📖 SỰ THẬT LỊCH SỬ — ĐÃ KIỂM CHỨNG</span>Đúng 10 giờ 45 phút ngày 30/4/1975, xe tăng mang số hiệu <strong>390</strong> húc đổ cánh cổng chính của Dinh Độc Lập, tiến thẳng vào sân dinh. (Nhiều năm sau, các nhà nghiên cứu xác định chính xe 390 — không phải xe 843 như một số tài liệu ban đầu ghi — là chiếc húc cổng chính). Đến 11 giờ 30 phút, Trung úy Bùi Quang Thận cắm lá cờ Mặt trận Dân tộc Giải phóng lên nóc dinh.</div>
+
+<div class="quote-moment">Không ai trong đoàn quân reo hò ngay lúc đó. Chỉ có một khoảng lặng ngắn — rồi tiếng vỗ tay, tiếng cười, có người bật khóc. 21 năm chia cắt, khép lại trong chưa đầy một giờ đồng hồ.<span class="quote-src">— Diễn biến trưa 30/4/1975, tổng hợp từ tư liệu lịch sử</span></div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC CUỐI</span>
+  <div class="kc-q">Ai là người tuyên bố đầu hàng vô điều kiện của chính quyền Sài Gòn trên đài phát thanh trưa 30/4/1975?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5')">A. Bùi Quang Thận</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc5')">B. Dương Văn Minh</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5')">C. Một sĩ quan Quân Giải phóng</button>
+  </div>
+  <div class="kc-fb" id="kc5-fb"></div>
+</div>
+
+<div class="reflect"><span class="reflect-tag">💭 SUY NGẪM</span><div class="reflect-q">Sau 55 ngày đêm hành quân, chiến đấu — khoảnh khắc chiến tranh kết thúc lại diễn ra trong im lặng chứ không phải reo hò ngay. Vì sao có lẽ lại như vậy?</div></div>
+
+<div class="choices-lbl" style="margin-top:26px;">⚡ HOÀN THÀNH</div>
+<div class="choices"><button class="c-btn" onclick="go('final',30)"><span class="c-letter">✓</span><div>🎉 <strong>HÀNH TRÌNH 55 NGÀY ĐÊM HOÀN THÀNH!</strong></div></button></div>
+</div>
+
+<!-- FINAL -->
+<div class="scene" id="final">
+<div class="final">
+  <div class="final-seal">⭐</div>
+  <div class="final-h" id="finalH">THỐNG NHẤT — 30/4/1975!</div>
+  <div class="final-pts" id="finalPts">0 điểm</div>
+  <div class="final-rank-badge" id="finalRank">—</div>
+  <div class="final-desc" id="finalDesc">Bạn đã đi trọn hành trình cùng người pháo thủ Lữ đoàn 203, từ lệnh xuất kích đến khoảnh khắc xe tăng 390 húc đổ cổng Dinh Độc Lập.</div>
+
+  <div class="final-achs" id="finalAchs"></div>
+
+  <div class="jmap">
+    <span class="jmap-tag">🗺️ TUYẾN TIẾN QUÂN 55 NGÀY ĐÊM</span>
+    <div class="jmap-note">Sơ đồ cách điệu đường tiến quân của Quân đoàn 2 — không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 760 140" xmlns="http://www.w3.org/2000/svg">
+      <line class="jmap-line" x1="40" y1="70" x2="720" y2="70"/>
+      <circle class="jmap-pt" cx="40" cy="70" r="7"/><text class="jmap-lbl" x="40" y="95" text-anchor="middle">Đông Nam Bộ</text>
+      <circle class="jmap-pt" cx="220" cy="70" r="7"/><text class="jmap-lbl" x="220" y="95" text-anchor="middle">Xuân Lộc</text>
+      <circle class="jmap-pt" cx="400" cy="70" r="7"/><text class="jmap-lbl" x="400" y="95" text-anchor="middle">QL1 Tiến Quân</text>
+      <circle class="jmap-pt" cx="560" cy="70" r="7"/><text class="jmap-lbl" x="560" y="95" text-anchor="middle">Nội Đô Sài Gòn</text>
+      <circle class="jmap-pt" cx="720" cy="70" r="8"/><text class="jmap-lbl" x="700" y="95" text-anchor="middle">Dinh Độc Lập</text>
+      <text x="40" y="45" text-anchor="middle" fill="#ffb74d" font-size="10" font-family="Space Mono">3/1975</text>
+      <text x="720" y="45" text-anchor="middle" fill="#ffb74d" font-size="10" font-family="Space Mono">10:45, 30/4</text>
+    </svg>
+  </div>
+
+  <div class="journal" id="journalBox">
+    <span class="journal-tag">📔 SỔ TAY CHIẾN DỊCH CỦA BẠN</span>
+    <div id="journalList"></div>
+    <button class="journal-copy" onclick="copyJournal()">📋 Sao chép sổ tay để chia sẻ</button>
+  </div>
+
+  <div class="final-lesson">
+    <span class="fl-tag">📚 HAI ĐIỀU ĐÁNG NHỚ</span>
+    <strong style="display:block;margin-top:12px;color:var(--gold-l);">1. TỐC ĐỘ THẦN TỐC KHÔNG PHẢI NGẪU NHIÊN</strong>
+    55 ngày đêm giải phóng cả miền Nam là kết quả của việc nắm bắt đúng thời cơ chiến lược, kết hợp đánh nhanh với điều chỉnh linh hoạt khi gặp trận đánh khó như Xuân Lộc.
+    <strong style="display:block;margin-top:12px;color:var(--gold-l);">2. LỊCH SỬ ĐƯỢC LÀM NÊN TỪ NHỮNG CON NGƯỜI CỤ THỂ</strong>
+    Phía sau cái tên "Chiến dịch Hồ Chí Minh" là hàng vạn người lính cụ thể như "bạn" trong câu chuyện — mỗi người mang theo mệt mỏi, hy vọng và cả nỗi sợ riêng, trên con đường tiến về một điểm hẹn lịch sử.
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-ghost" onclick="restart()">🔄 CHƠI LẠI</button>
+    <a href="cau-chuyen-detail.html?id=27" class="btn-solid">📖 XEM LẠI CÂU CHUYỆN ĐẦY ĐỦ</a>
+  </div>
+</div>
+</div>
+
+<div class="ref-page" id="refPage" style="display:none;">
+  <div style="font-family:'Playfair Display',serif;font-size:17px;color:var(--gold-l);margin-bottom:10px;">📚 Nguồn Tham Khảo</div>
+  <div class="ref-item">Lịch sử Việt Nam, Viện Sử học — tập Kháng chiến chống Mỹ 1954–1975</div>
+  <div class="ref-item">Tư liệu chiến dịch Hồ Chí Minh — Bảo tàng Lịch sử Quân sự Việt Nam</div>
+  <div class="ref-item">Diễn biến trận Xuân Lộc, chiến dịch giải phóng Sài Gòn — Tổng cục Chính trị QĐNDVN</div>
+  <div class="ref-item">Ghi chú: nhân vật "bạn" (pháo thủ) là hư cấu để nhập vai; các mốc thời gian, đơn vị (Lữ đoàn 203), xe tăng 390, và diễn biến trưa 30/4/1975 là sự kiện đã kiểm chứng. Đoạn hội thoại được dựng lại minh họa, không phải nguyên văn ghi chép.</div>
+</div>
+
+</div><!-- .wrap -->
+
+<script>
+// ===== CANVAS NỀN: bụi đất + khói mờ + tia đạn vạch =====
+const bgC=document.getElementById('bgCanvas');const bgCtx=bgC.getContext('2d');
+function resizeBG(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+resizeBG();window.addEventListener('resize',resizeBG);
+const dustMotes=[];
+for(let i=0;i<50;i++)dustMotes.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.4,a:Math.random()*.3+.1,da:(Math.random()-.5)*.006,drift:(Math.random()-.5)*.02});
+const smokeWisps=[];
+for(let i=0;i<6;i++)smokeWisps.push({x:Math.random(),y:1+Math.random()*.3,size:60+Math.random()*80,speed:0.03+Math.random()*0.04,a:0.03+Math.random()*0.04});
+let tracer=null,tracerTimer=0;
+function maybeSpawnTracer(){
+  tracerTimer++;
+  if(tracerTimer>240 && Math.random()<0.02){
+    tracer={x1:Math.random()*bgC.width,y1:Math.random()*bgC.height*.4,len:200+Math.random()*200,life:1,ang:Math.random()*Math.PI*0.3-0.15};
+    tracerTimer=0;
+  }
+}
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  smokeWisps.forEach(s=>{
+    s.y-=s.speed/bgC.height*60;
+    if(s.y<-0.3)s.y=1+Math.random()*.2;
+    const px=s.x*bgC.width,py=s.y*bgC.height;
+    const grad=bgCtx.createRadialGradient(px,py,0,px,py,s.size);
+    grad.addColorStop(0,`rgba(138,122,90,${s.a})`);
+    grad.addColorStop(1,'rgba(138,122,90,0)');
+    bgCtx.beginPath();bgCtx.arc(px,py,s.size,0,Math.PI*2);bgCtx.fillStyle=grad;bgCtx.fill();
+  });
+  dustMotes.forEach(d=>{
+    d.a=Math.max(.05,Math.min(.4,d.a+d.da));if(d.a<=.06||d.a>=.39)d.da*=-1;
+    d.x+=d.drift/bgC.width;if(d.x<0)d.x=1;if(d.x>1)d.x=0;
+    bgCtx.beginPath();bgCtx.arc(d.x*bgC.width,d.y*bgC.height,d.r,0,Math.PI*2);
+    bgCtx.fillStyle=`rgba(200,180,140,${d.a})`;bgCtx.fill();
+  });
+  maybeSpawnTracer();
+  if(tracer){
+    tracer.life-=0.03;
+    if(tracer.life>0){
+      const x2=tracer.x1+Math.cos(tracer.ang)*tracer.len;
+      const y2=tracer.y1+Math.sin(tracer.ang)*tracer.len;
+      bgCtx.beginPath();bgCtx.moveTo(tracer.x1,tracer.y1);bgCtx.lineTo(x2,y2);
+      bgCtx.strokeStyle=`rgba(230,150,60,${tracer.life*0.5})`;bgCtx.lineWidth=1.5;bgCtx.stroke();
+    } else tracer=null;
+  }
+  requestAnimationFrame(drawBG);
+}drawBG();
+
+// ===== CON TRỎ: tia bụi/mảnh vụn =====
+const curC=document.getElementById('cursorCanvas');const curCtx=curC.getContext('2d');
+function resizeCur(){curC.width=window.innerWidth;curC.height=window.innerHeight;}
+resizeCur();window.addEventListener('resize',resizeCur);
+let sparks=[];
+const isTouch='ontouchstart' in window;
+if(!isTouch){
+  let last=0;
+  window.addEventListener('mousemove',e=>{
+    const now=Date.now();if(now-last<45)return;last=now;
+    if(Math.random()<0.55){
+      sparks.push({x:e.clientX,y:e.clientY,vx:(Math.random()-.5)*1.4,vy:(Math.random()-.5)*1.4-0.4,life:1,size:1.5+Math.random()*1.8});
+    }
+  });
+}
+function drawSparks(){
+  curCtx.clearRect(0,0,curC.width,curC.height);
+  sparks.forEach(p=>{
+    p.life-=0.035;p.x+=p.vx;p.y+=p.vy;p.vy+=0.02;
+    const a=Math.max(0,p.life);
+    curCtx.beginPath();curCtx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    curCtx.fillStyle=`rgba(230,140,50,${a*0.7})`;curCtx.fill();
+  });
+  sparks=sparks.filter(p=>p.life>0);
+  requestAnimationFrame(drawSparks);
+}drawSparks();
+
+// ===== ÂM THANH: trầm, đục hơn (không có file mp3) =====
+let soundOn=true,actx=null;
+function getActx(){if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();return actx;}
+function toggleSound(){soundOn=!soundOn;document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';}
+function playTone(freq,dur,type='square',vol=.09){
+  if(!soundOn)return;
+  try{const ctx=getActx();const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(ctx.destination);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function soundCorrect(){playTone(220,.1,'square',.08);setTimeout(()=>playTone(330,.14,'triangle',.09),80);}
+function soundWrong(){playTone(110,.3,'sawtooth',.09);}
+function soundUnlock(){playTone(180,.1,'square',.1);setTimeout(()=>playTone(260,.18,'square',.1),100);}
+function soundCombo(){playTone(200,.08,'square',.09);setTimeout(()=>playTone(260,.08,'square',.1),70);setTimeout(()=>playTone(320,.16,'square',.11),140);}
+
+// ===== STATE =====
+let pts=0,answered={},mq2ans=[false,false],kcCorrectCount=0,kcTotalCount=0;
+let choiceCorrect={s1:false,s2:false};
+let streakN=0;
+let sceneRewarded={};
+
+function updateScore(){
+  document.getElementById('scoreEl').textContent=pts;
+  const el=document.getElementById('rankEl');
+  el.textContent=pts>=140?'🎖️ Chiến Sĩ Xuất Sắc':pts>=90?'🪖 Pháo Thủ Vững Vàng':pts>=40?'🎯 Chiến Sĩ Trẻ':'🌱 Tân Binh';
+}
+function showPts(t){const p=document.getElementById('ptsPop');p.textContent=t;p.className='pts-pop';void p.offsetWidth;p.className='pts-pop show';}
+
+function addStreak(){
+  streakN++;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent=streakN;
+  b.classList.add('show');
+  if(streakN>=3){b.classList.add('hot');showCombo(streakN);} else b.classList.remove('hot');
+}
+function resetStreak(){streakN=0;const b=document.getElementById('streakBadge');if(b)b.classList.remove('show','hot');}
+function showCombo(n){
+  const labels={3:'🎯 XUNG PHONG x3',4:'⚡ THẦN TỐC x4',5:'🪖 ÁP SÁT MỤC TIÊU x5'};
+  const bonus={3:10,4:15,5:20}[n]||25;
+  document.getElementById('comboLabel').textContent=labels[n]||('🎖️ BẤT KHUẤT x'+n);
+  document.getElementById('comboSub').textContent='+'+bonus+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bonus;updateScore();showPts('+'+bonus+' COMBO!');soundCombo();
+  burstDust(window.innerWidth/2,window.innerHeight*0.44);
+}
+function burstDust(x,y){
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');
+    p.style.position='fixed';p.style.width='6px';p.style.height='6px';p.style.borderRadius='50%';
+    p.style.background='rgba(166,83,26,0.7)';p.style.left=x+'px';p.style.top=y+'px';p.style.zIndex=9999;p.style.pointerEvents='none';
+    document.body.appendChild(p);
+    const ang=Math.random()*Math.PI*2,dist=50+Math.random()*80;
+    p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px) scale(0)`,opacity:0}],{duration:700+Math.random()*300,easing:'ease-out'});
+    setTimeout(()=>p.remove(),1100);
+  }
+}
+
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.c-btn,.kc-opt,.ch-opt,.unlock-btn,.btn-solid,.btn-ghost');
+  if(!btn||btn.disabled)return;
+  const rect=btn.getBoundingClientRect();const size=Math.max(rect.width,rect.height);
+  const rip=document.createElement('span');rip.className='ripple-el';
+  rip.style.width=rip.style.height=size+'px';rip.style.left=(e.clientX-rect.left-size/2)+'px';rip.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(rip);setTimeout(()=>rip.remove(),650);
+});
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+
+function go(id,add){
+  if(add>0&&!sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPts('+'+add);pts+=add;updateScore();
+  }
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  const progMap={cover:0,s1:15,s2:32,s3:50,s4:68,s5:86,final:100};
+  document.getElementById('prog').style.width=(progMap[id]||100)+'%';
+  if(id==='final')showFinal();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+const chapterNames={s1:'I. Lệnh xuất kích (3/1975)',s2:'II. Trận Xuân Lộc (4/1975)'};
+function renderJournal(){
+  let h='';
+  for(const k in chapterNames){
+    const ok=choiceCorrect[k];
+    h+=`<div class="journal-row"><span>${chapterNames[k]}</span><span class="journal-status ${ok?'ok':'no'}">${ok?'✅ Đúng chiến thuật':'○ Khác thực tế'}</span></div>`;
+  }
+  h+=`<div class="journal-row"><span>Kiến thức lịch sử</span><span class="journal-status ${kcCorrectCount===kcTotalCount&&kcTotalCount>0?'ok':'no'}">${kcCorrectCount}/${kcTotalCount} câu đúng</span></div>`;
+  document.getElementById('journalList').innerHTML=h;
+}
+function copyJournal(){
+  let txt='📔 SỔ TAY CHIẾN DỊCH — NHẬT KÝ PHÁO THỦ XE TĂNG 1975\n\n';
+  for(const k in chapterNames)txt+=(choiceCorrect[k]?'✅ ':'○ ')+chapterNames[k]+'\n';
+  txt+=`Kiến thức: ${kcCorrectCount}/${kcTotalCount} câu đúng\nTổng điểm: ${pts} — ${document.getElementById('rankEl').textContent}\n`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.journal-copy');if(btn){const old=btn.textContent;btn.textContent='✅ Đã sao chép!';setTimeout(()=>btn.textContent=old,1800);}
+  }).catch(()=>{});
+}
+function showFinal(){
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=document.getElementById('rankEl').textContent;
+  renderJournal();
+  const achs=[
+    {icon:'🎯',name:'Xạ Thủ Chính Xác',ok:kcTotalCount>0&&(kcCorrectCount/kcTotalCount)>=0.8},
+    {icon:'🪖',name:'Ý Chí Sắt Đá',ok:choiceCorrect.s1&&choiceCorrect.s2},
+    {icon:'🚛',name:'Hành Quân Bền Bỉ',ok:true},
+    {icon:'🏛️',name:'Chứng Nhân Lịch Sử',ok:true},
+    {icon:'🎖️',name:'Chiến Sĩ Xuất Sắc',ok:pts>=140}
+  ];
+  document.getElementById('finalAchs').innerHTML=achs.map(a=>`<div class="ach ${a.ok?'':'locked'}"><span class="ach-icon">${a.icon}</span><span class="ach-name">${a.name}</span></div>`).join('');
+}
+function ansSC(btn,ok,id,points,text){
+  if(answered[id])return;answered[id]=true;
+  ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  if(ok)choiceCorrect[id]=true;
+  document.getElementById(id+'-choices').querySelectorAll('.c-btn').forEach(b=>b.disabled=true);
+  pts+=points;updateScore();showPts('+'+points);
+  const fb=document.getElementById(id+'-fb');
+  fb.innerHTML=(ok?'✅ ':'❌ ')+text;fb.className='kc-fb show '+(ok?'ok':'no');
+}
+function ansKC(btn,ok,id){
+  if(answered[id])return;answered[id]=true;kcTotalCount++;
+  ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  const cont=btn.parentElement;cont.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(ok){btn.classList.add('correct');pts+=8;updateScore();showPts('+8');kcCorrectCount++;fb.textContent='✅ Chính xác!';fb.className='kc-fb show ok';}
+  else{btn.classList.add('wrong');cont.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick').includes(',true,'))b.classList.add('correct');});fb.textContent='❌ Xem đáp án đúng!';fb.className='kc-fb show no';}
+}
+function ansMQ(btn,ok,gate,idx){
+  const key=`mq${gate}-${idx}`;if(answered[key])return;
+  const cont=btn.parentElement;const fb=document.getElementById(`mq${gate}fb-${idx}`);
+  ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  if(ok){
+    answered[key]=true;kcTotalCount++;kcCorrectCount++;
+    cont.querySelectorAll('.ch-opt').forEach(b=>b.disabled=true);
+    btn.classList.add('correct');pts+=8;updateScore();showPts('+8');
+    fb.textContent='✅ Chính xác!';fb.className='ch-fb show ok';
+    document.getElementById(`mq${gate}d${idx}`).className='mq-dot done';
+    if(idx+1<2){
+      const next=document.getElementById(`mq${gate}-${idx+1}`);
+      setTimeout(()=>{next.style.display='block';next.scrollIntoView({behavior:'smooth',block:'center'});document.getElementById(`mq${gate}d${idx+1}`).className='mq-dot now';},600);
+    }
+    mq2ans[idx]=true;
+    if(mq2ans.every(x=>x))document.getElementById('gate2-btn').classList.add('ready');
+  } else {
+    btn.classList.add('wrong');btn.disabled=true;fb.textContent='❌ Chưa đúng, thử lại nhé!';fb.className='ch-fb show no';
+  }
+}
+function unlockGate(contentId,gateId){
+  if(sceneRewarded['gate_'+gateId])return;
+  sceneRewarded['gate_'+gateId]=true;
+  soundUnlock();choiceCorrect.s2=true;
+  document.getElementById(contentId).classList.remove('gate-locked');
+  const gate=document.getElementById(gateId);
+  const r=gate.getBoundingClientRect();burstDust(r.left+r.width/2,r.top+r.height/2);
+  gate.style.transition='opacity .4s';gate.style.opacity='0';setTimeout(()=>gate.style.display='none',420);
+  pts+=10;updateScore();showPts('+10 MỞ CỬA!');
+}
+
+// ===== NGUỒN THAM KHẢO / BẢN ĐỒ =====
+function toggleRef(){const r=document.getElementById('refPage');r.style.display=r.style.display==='none'?'block':'none';if(r.style.display==='block')r.scrollIntoView({behavior:'smooth'});}
+function openSrc(key){toggleRef();}
+function toggleMap(){
+  const finalScene = document.getElementById('final');
+  const jmap = document.querySelector('.jmap');
+  if(finalScene.classList.contains('active') && jmap){
+    jmap.scrollIntoView({behavior:'smooth'});
+  } else {
+    showMapToast();
+  }
+}
+function showMapToast(){
+  let t = document.getElementById('mapToast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'mapToast';
+    t.style.cssText = 'position:fixed;top:112px;left:50%;transform:translateX(-50%);background:rgba(10,13,8,0.96);border:1px solid rgba(212,160,23,.5);border-radius:30px;padding:10px 22px;color:var(--gold-l);font-size:13px;z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = '🗺️ Bản đồ đầy đủ mở khi bạn hoàn thành hành trình!';
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>{ t.style.opacity = '0'; }, 2200);
+}
+
+function restart(){
+  pts=0;answered={};mq2ans=[false,false];kcCorrectCount=0;kcTotalCount=0;streakN=0;
+    sceneHistory=['cover'];historyIndex=0;updateNavButtons();
+  choiceCorrect={s1:false,s2:false};sceneRewarded={};
+  document.getElementById('streakBadge').classList.remove('show','hot');
+  ['s1'].forEach(id=>{document.getElementById(id+'-choices').querySelectorAll('.c-btn').forEach(b=>b.disabled=false);const f=document.getElementById(id+'-fb');if(f){f.className='kc-fb';f.innerHTML='';}});
+  document.querySelectorAll('.ch-opt,.kc-opt').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+  document.querySelectorAll('.ch-fb,.kc-fb').forEach(f=>{f.className=f.classList.contains('ch-fb')?'ch-fb':'kc-fb';f.innerHTML='';});
+  document.getElementById('mq2-1').style.display='none';
+  document.getElementById('gate2').style.display='';document.getElementById('gate2').style.opacity='';
+  document.getElementById('s2-body').classList.add('gate-locked');
+  document.getElementById('gate2-btn').classList.remove('ready');
+  document.getElementById('mq2d0').className='mq-dot now';document.getElementById('mq2d1').className='mq-dot';
+  updateScore();document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

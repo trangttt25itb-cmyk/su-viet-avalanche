@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khởi Nghĩa Lam Sơn Thắng Lợi | Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main: #8B0000;
+            --gold: #d4af37;
+            --dark: #1e1206;
+            --bg-light: #f8f4ea;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: #333; }
+
+        .navbar-sv{
+          position:sticky;top:0;left:0;width:100%;z-index:1000;
+          display:flex;align-items:center;gap:28px;
+          padding:10px 28px;
+          background:linear-gradient(#2c1b12,#241610);
+          border-top:3px solid #c8a96e;
+          border-bottom:3px solid #c8a96e;
+        }
+        .corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+        .corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+        .corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+        .corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+        .corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+        .navbar-sv .logo{
+          display:flex;align-items:center;gap:12px;
+          color:#c8a96e;font-size:28px;font-weight:700;
+          font-family:'Libre Baskerville',serif;letter-spacing:1px;
+          text-decoration:none;flex-shrink:0;
+        }
+        .navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+        .nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+        .nav-menu-sv>li{position:relative;}
+        .nav-menu-sv .nav-item{
+          display:flex;flex-direction:column;align-items:center;gap:4px;
+          text-decoration:none;color:rgba(255,255,255,.85);
+          font-size:14px;font-weight:700;
+          padding:8px 18px;border-radius:10px;transition:.2s;
+          position:relative;min-width:96px;justify-content:center;
+          border:none;background:none;
+        }
+        .nav-ic{font-size:18px;line-height:1;}
+        .nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+        .nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+        .nav-menu-sv .nav-item.active::after{
+          content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+          width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+          border-bottom:6px solid #f4c542;
+        }
+        .caret{font-size:10px;opacity:.8;}
+        .has-dropdown .dropdown-menu{
+          position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);
+          background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;
+          min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+          opacity:0;visibility:hidden;transition:.25s;z-index:999;
+        }
+        .has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+        .dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+        .dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+        .dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+        .nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+        .nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+        .nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+        .nav-search-sv input::placeholder{color:#999;}
+        .nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+        .nav-user-item{position:relative;}
+        .nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;}
+        .nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:500;}
+        .nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;}
+        .nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-user-dropdown{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border-radius:12px;min-width:220px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:999;}
+        .nav-user-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+        .nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+        .nav-dropdown-avatar{width:44px;height:44px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;}
+        .nav-dropdown-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-dropdown-divider{height:1px;background:#eee;margin:8px 0;}
+        .nav-dropdown-logout{display:block;color:#8B0000;text-decoration:none;font-weight:600;font-size:13px;}
+        .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+        .nav-toggle span{width:24px;height:2px;background:#c8a96e;display:block;}
+        @media(max-width:1000px){
+          .nav-menu-sv{display:none !important;}
+          .nav-menu-sv.open{
+            display:flex !important;flex-direction:column;
+            position:fixed;top:78px;left:0;right:0;margin:0;padding:16px;
+            background:#2c1b12;border-bottom:3px solid #c8a96e;z-index:998;gap:6px;
+          }
+          .nav-menu-sv.open .nav-item{min-width:0;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;}
+          .nav-menu-sv.open .has-dropdown .dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;display:none;box-shadow:none;margin-top:4px;}
+          .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+          .nav-search-sv{display:none !important;}
+          .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+          .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+          .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+          .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+          .nav-user-email-text{display:none !important;}
+          .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;}
+          .navbar-sv .logo{font-size:20px;gap:8px;}
+          .navbar-sv .logo img{width:38px;height:38px;}
+          .nav-right-sv{gap:8px;flex-shrink:0;}
+          .nav-toggle{display:flex !important;flex-shrink:0;}
+        }
+
+        .hero {
+            background: linear-gradient(to right, rgba(0,0,0,0.82) 45%, rgba(0,0,0,0.25) 100%),
+                        url('images/lamson-hero.jpg') center/cover no-repeat;
+            min-height: 420px;
+            display: flex; align-items: center;
+            padding: 60px 80px;
+            color: white;
+            border-bottom: 3px solid var(--gold);
+            background-color: #2a1a0a;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212,175,55,0.25);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 12px; font-weight: 500;
+            padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 14px; letter-spacing: 0.5px;
+        }
+        .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.05; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .hero .subtitle { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.85); margin-bottom: 22px; max-width: 520px; line-height: 1.65; }
+        .hero-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 13px; }
+
+        .breadcrumb { padding: 14px 80px; font-size: 13px; color: #888; border-bottom: 1px solid #e8e2d4; background: white; }
+        .breadcrumb a { color: var(--main); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 6px; }
+
+        .page-layout {
+            display: grid; grid-template-columns: 1fr 300px;
+            gap: 26px; padding: 30px 80px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .content-box {
+            background: white; border-radius: 16px;
+            padding: 28px 32px; margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .content-box h2 {
+            color: var(--main); font-size: 17px; font-weight: 700;
+            margin-bottom: 18px; display: flex; align-items: center; gap: 9px;
+            padding-bottom: 12px; border-bottom: 2px solid #f5ede0;
+        }
+        .content-box p { font-size: 14px; line-height: 1.9; color: #444; margin-bottom: 14px; }
+        .content-box p:last-child { margin-bottom: 0; }
+
+        .inline-img-right {
+            float: right; width: 250px;
+            margin: 0 0 16px 22px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-right img { width: 100%; display: block; }
+        .img-cap { background: #f8f4ea; font-size: 11px; color: #888; text-align: center; padding: 6px 8px; font-style: italic; }
+        .clearfix::after { content: ''; display: table; clear: both; }
+
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+            width: 2px; background: linear-gradient(to bottom, var(--gold), #e8d4a8); border-radius: 2px;
+        }
+        .tl-item { position: relative; margin-bottom: 28px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: 2px solid white; box-shadow: 0 0 0 2px var(--gold); }
+        .tl-dot.red { background: var(--main); box-shadow: 0 0 0 2px var(--main); }
+        .tl-dot.green { background: #2a8a2a; box-shadow: 0 0 0 2px #2a8a2a; }
+        .tl-year { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .tl-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .tl-text { font-size: 13px; color: #555; line-height: 1.7; }
+
+        .quote-block {
+            background: #fffbf0; border-left: 4px solid var(--gold);
+            border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0;
+        }
+        .quote-block p { font-size: 14px; font-style: italic; color: #555; line-height: 1.8; margin-bottom: 8px; }
+        .quote-source { font-size: 12px; color: #999; font-weight: 500; }
+
+        .trait-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .trait-tag { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .trait-red   { background: #fdeaea; color: #8b0000; }
+        .trait-gold  { background: #fdf3d0; color: #8a6800; }
+        .trait-blue  { background: #e6f0fb; color: #1a5fa8; }
+        .trait-green { background: #eaf5e0; color: #2a6e1a; }
+
+        .achieve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .achieve-card { background: #fffdf7; border: 1px solid #ede7d3; border-radius: 12px; padding: 16px; }
+        .achieve-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .achieve-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #222; }
+        .achieve-text { font-size: 12px; color: #666; line-height: 1.6; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+        .stat-card { background: linear-gradient(135deg, #fffdf7, #f8f4ea); border: 1px solid #ede7d3; border-radius: 14px; padding: 20px 16px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 800; color: var(--main); display: block; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: #666; line-height: 1.4; }
+
+        .cause-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .cause-card { border-radius: 12px; padding: 18px 16px; }
+        .cause-card.economy { background: #f0f7e6; border: 2px solid #8fb86a; }
+        .cause-card.politics { background: #fdf3d0; border: 2px solid var(--gold); }
+        .cause-card.military  { background: #fdeaea; border: 2px solid #c0392b; }
+        .cause-card.culture  { background: #e6f0fb; border: 2px solid #5a9bd4; }
+        .cause-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+        .cause-card.economy .cause-title { color: #2a6e1a; }
+        .cause-card.politics .cause-title { color: #8a6800; }
+        .cause-card.military .cause-title { color: #8b0000; }
+        .cause-card.culture .cause-title { color: #1a5fa8; }
+        .cause-text { font-size: 12px; color: #555; line-height: 1.6; }
+
+        .lesson-box { background: linear-gradient(135deg, #1e1206, #3a2010); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .lesson-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+        .lesson-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+        .legacy-box { background: linear-gradient(135deg, #0a2010, #1a4a2a); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .legacy-box .lesson-title { color: #7dffaa; }
+
+        .hl { background: #fff2cc; padding: 1px 6px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #7a5a00; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { background: white; border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .sidebar-box h3 { font-size: 14px; font-weight: 700; color: var(--main); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #f5ede0; display: flex; align-items: center; gap: 7px; }
+
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table tr { border-bottom: 1px solid #f2ede0; }
+        .info-table tr:last-child { border-bottom: none; }
+        .info-table td { padding: 9px 0; font-size: 13px; vertical-align: top; }
+        .info-table td:first-child { color: #888; width: 44%; padding-right: 8px; }
+        .info-table td:last-child { font-weight: 500; color: #222; }
+
+        .legacy-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f2ede0; }
+        .legacy-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .legacy-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .legacy-text { font-size: 12px; color: #555; line-height: 1.6; }
+        .legacy-text strong { color: #222; font-size: 13px; display: block; margin-bottom: 2px; }
+
+        .char-mini { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f2ede0; text-decoration: none; color: inherit; transition: 0.2s; border-radius: 8px; }
+        .char-mini:last-child { border-bottom: none; }
+        .char-mini:hover { background: #f9f4ec; padding-left: 6px; }
+        .char-mini-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #ede7d3; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .char-mini-info { flex: 1; }
+        .char-mini-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .char-mini-desc { font-size: 11px; color: #888; }
+        .char-mini-arrow { font-size: 14px; color: #ccc; }
+
+        .heritage-card {
+            margin-bottom: 16px; border: 1px solid #ede7d3;
+            border-radius: 12px; overflow: hidden; background: #fffdf7; transition: 0.2s;
+        }
+        .heritage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .heritage-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .heritage-content { padding: 12px; }
+        .heritage-content strong { display: block; font-size: 13px; color: #222; margin-bottom: 6px; }
+        .heritage-content p { font-size: 12px; color: #666; line-height: 1.6; margin: 0; }
+
+        .btn-back { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--main); color: white; border-radius: 9px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: var(--gold); color: #1e1206; }
+
+        footer { background: var(--dark); color: #bbb; padding: 28px 80px; margin-top: 10px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .footer-bottom a { color: #888; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Sử Việt">
+      SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+      <li class="mobile-search-item" style="display:none;">
+        <div class="nav-search-mobile">
+          <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+          <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+        </div>
+      </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item active" aria-current="page"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm" autocomplete="off">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng" onkeydown="if(event.key==='Enter'||event.key===' '){this.click();}">
+          <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+          <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+          <span style="color:#c8a96e; font-size:10px;" aria-hidden="true">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+          <div class="nav-dropdown-info">
+            <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+            <div>
+              <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+              <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+            </div>
+          </div>
+          <div class="nav-dropdown-divider"></div>
+          <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+    <div>
+        <div class="hero-badge">🏛️ SỰ KIỆN LỊCH SỬ</div>
+        <h1>KHỞI NGHĨA LAM SƠN THẮNG LỢI</h1>
+        <p class="subtitle">10 năm nếm mật nằm gai của Lê Lợi và nghĩa quân Lam Sơn, cùng mưu lược của Nguyễn Trãi, đã đánh đuổi hoàn toàn quân Minh, chấm dứt 20 năm đô hộ, giành lại nền độc lập cho dân tộc</p>
+        <div class="hero-tags">
+            <span class="hero-tag">📅 1418 – 1427</span>
+            <span class="hero-tag">📍 Lam Sơn (Thanh Hóa) → Đông Quan (Thăng Long)</span>
+            <span class="hero-tag">🏛️ Kháng chiến chống quân Minh</span>
+            <span class="hero-tag">⚔️ Lê Lợi & Nguyễn Trãi lãnh đạo</span>
+        </div>
+    </div>
+</section>
+
+<div class="breadcrumb">
+    <a href="index.html">Trang chủ</a>
+    <span>›</span>
+    <a href="ho-minh.html">Nhà Hồ – Thuộc Minh</a>
+    <span>›</span>
+    Khởi nghĩa Lam Sơn thắng lợi
+</div>
+
+<div class="page-layout">
+    <div class="main-col">
+
+        <!-- GIỚI THIỆU -->
+        <div class="content-box">
+            <h2>📖 GIỚI THIỆU</h2>
+            <div class="clearfix">
+                <div class="inline-img-right">
+                    <img src="images/lamson.jpg" alt="Khởi nghĩa Lam Sơn" onerror="this.parentElement.style.display='none'">
+                    <div class="img-cap">Nghĩa quân Lam Sơn dưới sự lãnh đạo của Lê Lợi</div>
+                </div>
+                <p>
+                    Năm <span class="hl">1416</span>, tại núi rừng Lam Sơn (nay thuộc Thọ Xuân, Thanh Hóa), Lê Lợi cùng 18 vị tướng lĩnh tổ chức <span class="hl">Hội thề Lũng Nhai</span>, cùng nhau thề nguyện đồng tâm đánh đuổi giặc Minh, giành lại giang sơn cho Đại Việt.
+                </p>
+                <p>
+                    Năm 1418, Lê Lợi chính thức dựng cờ khởi nghĩa, tự xưng <span class="hl">Bình Định Vương</span>. Buổi đầu, nghĩa quân còn non yếu, nhiều lần bị quân Minh vây đánh, phải ba lần rút lên núi Chí Linh, có lúc phải đào củ chuối, ăn rau rừng cầm hơi — hoàn cảnh mà sử sách gọi là "nếm mật nằm gai".
+                </p>
+                <p>
+                    Nhờ kế sách đúng đắn của Nguyễn Chích, năm 1424 nghĩa quân chuyển hướng vào Nghệ An, xây dựng căn cứ địa vững chắc, từng bước làm chủ cả vùng Thanh Hóa – Nghệ An – Tân Bình – Thuận Hóa, tạo thế và lực để tiến ra Bắc.
+                </p>
+                <p>
+                    Sau các thắng lợi liên tiếp tại Tốt Động – Chúc Động (1426) và đỉnh cao là trận <span class="hl">Chi Lăng – Xương Giang</span> (1427) tiêu diệt viện binh do Liễu Thăng chỉ huy, tướng Minh Vương Thông buộc phải xin hòa. Đầu năm 1428, Lê Lợi lên ngôi hoàng đế, Nguyễn Trãi soạn <span class="hl">Bình Ngô đại cáo</span> tuyên bố nền độc lập, mở ra thời kỳ nhà Lê sơ.
+                </p>
+            </div>
+            <div class="trait-tags">
+                <span class="trait-tag trait-gold">⛰️ Nếm mật nằm gai</span>
+                <span class="trait-tag trait-green">🤝 Hội thề Lũng Nhai</span>
+                <span class="trait-tag trait-blue">⚔️ Chi Lăng – Xương Giang</span>
+                <span class="trait-tag trait-red">📜 Bình Ngô đại cáo</span>
+            </div>
+        </div>
+
+        <!-- SỐ LIỆU NỔI BẬT -->
+        <div class="content-box">
+            <h2>📊 DẤU MỐC & CON SỐ</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">10</span>
+                    <span class="stat-label">Năm kháng chiến gian khổ (1418 – 1427)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">18</span>
+                    <span class="stat-label">Nghĩa sĩ dự Hội thề Lũng Nhai năm 1416</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1427</span>
+                    <span class="stat-label">Năm đại thắng Chi Lăng – Xương Giang</span>
+                </div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Lần nghĩa quân rút lui lên núi Chí Linh</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1</span>
+                    <span class="stat-label">Bản Bình Ngô đại cáo — thiên cổ hùng văn</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1428</span>
+                    <span class="stat-label">Năm Lê Lợi lên ngôi, mở đầu nhà Lê sơ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NGUYÊN NHÂN THẮNG LỢI -->
+        <div class="content-box">
+            <h2>⚡ NGUYÊN NHÂN THẮNG LỢI</h2>
+            <p>Từ một cuộc khởi nghĩa nhỏ ở vùng rừng núi Thanh Hóa, Lam Sơn đã lớn mạnh thành cuộc kháng chiến toàn dân nhờ sự kết hợp giữa lòng dân, chiến lược quân sự tài tình và tư tưởng nhân nghĩa.</p>
+
+            <div class="cause-grid">
+                <div class="cause-card politics">
+                    <div class="cause-title">🏛️ Lòng dân quy tụ</div>
+                    <div class="cause-text">Nghĩa quân được nhân dân khắp nơi che chở, tiếp tế lương thực, tham gia đánh giặc, tạo nên thế trận nhân dân rộng khắp trong suốt 10 năm kháng chiến.</div>
+                </div>
+                <div class="cause-card culture">
+                    <div class="cause-title">🎭 Chuyển hướng chiến lược vào Nghệ An</div>
+                    <div class="cause-text">Theo kế của Nguyễn Chích năm 1424, nghĩa quân rời vùng rừng núi hiểm trở nhưng thiếu lương thảo, tiến vào Nghệ An xây dựng hậu phương vững chắc.</div>
+                </div>
+                <div class="cause-card military">
+                    <div class="cause-title">⚔️ Vây thành diệt viện</div>
+                    <div class="cause-text">Lê Lợi, Nguyễn Trãi chủ trương vây hãm thành Đông Quan, tập trung lực lượng tiêu diệt viện binh Liễu Thăng tại Chi Lăng – Xương Giang thay vì công thành tốn kém.</div>
+                </div>
+                <div class="cause-card economy">
+                    <div class="cause-title">🕊️ Tâm công — đánh vào lòng người</div>
+                    <div class="cause-text">Nguyễn Trãi chủ trương dùng thư từ chiêu dụ, phân hóa hàng ngũ địch, hạn chế đổ máu, mở đường hiếu sinh cho quân Minh rút về nước trong danh dự.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIỄN BIẾN LỊCH SỬ -->
+        <div class="content-box">
+            <h2>📜 DIỄN BIẾN LỊCH SỬ</h2>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">1416</div>
+                    <div class="tl-title">Hội thề Lũng Nhai</div>
+                    <div class="tl-text">Lê Lợi cùng 18 vị tướng lĩnh tổ chức hội thề tại Lũng Nhai (Thanh Hóa), nguyện đồng tâm hiệp lực đánh đuổi giặc Minh, giành lại độc lập cho đất nước.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1418</div>
+                    <div class="tl-title">Dựng cờ khởi nghĩa tại Lam Sơn</div>
+                    <div class="tl-text">Lê Lợi tự xưng Bình Định Vương, chính thức phát động khởi nghĩa. Nghĩa quân còn non yếu, nhiều lần bị quân Minh vây đánh, phải rút lui lên núi Chí Linh để bảo toàn lực lượng.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1419</div>
+                    <div class="tl-title">Lê Lai liều mình cứu chúa</div>
+                    <div class="tl-text">Trước nguy cơ Lê Lợi bị quân Minh vây bắt tại núi Chí Linh, tướng Lê Lai cải trang giả làm chủ tướng, phá vòng vây rồi hy sinh anh dũng, giúp Lê Lợi thoát hiểm.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1424</div>
+                    <div class="tl-title">Chuyển hướng vào Nghệ An</div>
+                    <div class="tl-text">Theo kế sách của Nguyễn Chích, nghĩa quân rời núi rừng Thanh Hóa, đánh chiếm và làm chủ Nghệ An, sau đó mở rộng ra Tân Bình, Thuận Hóa, xây dựng căn cứ địa vững chắc.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1426</div>
+                    <div class="tl-title">Tiến quân ra Bắc — đại thắng Tốt Động, Chúc Động</div>
+                    <div class="tl-text">Nghĩa quân chia làm nhiều đạo tiến ra Bắc, đánh tan quân Minh tại Tốt Động – Chúc Động, siết chặt vòng vây quanh thành Đông Quan (Thăng Long).</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">1427</div>
+                    <div class="tl-title">Đại thắng Chi Lăng – Xương Giang</div>
+                    <div class="tl-text">Nhà Minh cử Liễu Thăng và Mộc Thạnh đem 10 vạn viện binh sang cứu viện. Nghĩa quân phục kích tại ải Chi Lăng, chém chết Liễu Thăng, sau đó truy kích tiêu diệt toàn bộ cánh quân tại Xương Giang.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">Cuối 1427</div>
+                    <div class="tl-title">Hội thề Đông Quan</div>
+                    <div class="tl-text">Mất viện binh, Vương Thông khiếp sợ xin giảng hòa. Hai bên tổ chức hội thề tại Đông Quan, quân Minh cam kết rút toàn bộ quân về nước.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1428</div>
+                    <div class="tl-title">Lê Lợi lên ngôi — Bình Ngô đại cáo</div>
+                    <div class="tl-text">Đầu năm 1428, Lê Lợi lên ngôi hoàng đế, lấy hiệu Lê Thái Tổ. Nguyễn Trãi thay lời vua soạn Bình Ngô đại cáo, chính thức tuyên bố nền độc lập, mở ra triều đại nhà Lê sơ.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- THÀNH TỰU & DẤU ẤN -->
+        <div class="content-box">
+            <h2>🏆 THÀNH TỰU & DẤU ẤN</h2>
+            <p>
+                Khởi nghĩa Lam Sơn để lại những dấu ấn sâu đậm trong lịch sử dân tộc — không chỉ chấm dứt ách đô hộ mà còn mở ra một thời kỳ phát triển rực rỡ.
+            </p>
+            <div class="achieve-grid">
+                <div class="achieve-card">
+                    <span class="achieve-icon">🛡️</span>
+                    <div class="achieve-title">Chấm dứt 20 năm thuộc Minh</div>
+                    <div class="achieve-text">Sau 10 năm kháng chiến gian khổ, nghĩa quân Lam Sơn đánh đuổi hoàn toàn quân Minh ra khỏi bờ cõi, chấm dứt ách đô hộ tàn bạo kéo dài từ 1407.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">⚔️</span>
+                    <div class="achieve-title">Nghệ thuật "vây thành diệt viện"</div>
+                    <div class="achieve-text">Trận Chi Lăng – Xương Giang trở thành mẫu mực về nghệ thuật quân sự: vây hãm thành trì, tập trung lực lượng tiêu diệt viện binh, được sử sách ghi nhận muôn đời.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">📜</span>
+                    <div class="achieve-title">Bình Ngô đại cáo bất hủ</div>
+                    <div class="achieve-text">Nguyễn Trãi soạn Bình Ngô đại cáo năm 1428, được xem là bản tuyên ngôn độc lập thứ hai của dân tộc, áng thiên cổ hùng văn còn lưu truyền đến ngày nay.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">👑</span>
+                    <div class="achieve-title">Mở đầu triều đại nhà Lê sơ</div>
+                    <div class="achieve-text">Lê Lợi lên ngôi năm 1428, mở ra nhà Lê sơ — một trong những triều đại thịnh trị bậc nhất trong lịch sử phong kiến Việt Nam.</div>
+                </div>
+            </div>
+
+            <div class="quote-block" style="margin-top:20px;">
+                <p>"Việc nhân nghĩa cốt ở yên dân" — tư tưởng cốt lõi mở đầu Bình Ngô đại cáo, thể hiện triết lý lấy dân làm gốc xuyên suốt cuộc khởi nghĩa Lam Sơn.</p>
+                <span class="quote-source">— Bình Ngô đại cáo, Nguyễn Trãi, 1428</span>
+            </div>
+        </div>
+
+        <!-- Ý NGHĨA -->
+        <div class="content-box">
+            <h2>💡 Ý NGHĨA LỊCH SỬ</h2>
+            <p>
+                Thắng lợi của khởi nghĩa Lam Sơn đã <span class="hl">chấm dứt hoàn toàn 20 năm đô hộ</span> của nhà Minh, khôi phục nền độc lập, chủ quyền dân tộc sau những năm tháng bị đồng hóa và bóc lột hà khắc.
+            </p>
+            <p>
+                Cuộc khởi nghĩa còn mở ra <span class="hl">thời kỳ phát triển rực rỡ của nhà Lê sơ</span>, đặt nền móng cho một giai đoạn thịnh trị lâu dài về chính trị, kinh tế và văn hóa của Đại Việt.
+            </p>
+            <div class="quote-block">
+                <p>Từ Lũng Nhai đến Đông Quan, hành trình 10 năm nếm mật nằm gai đã chứng minh: một cuộc khởi nghĩa nhỏ, nếu có lòng dân và chiến lược đúng đắn, hoàn toàn có thể đánh bại một đế chế xâm lược.</p>
+                <span class="quote-source">— Nhận định lịch sử Việt Nam</span>
+            </div>
+            <div class="lesson-box">
+                <div class="lesson-title">⛰️ Ý nghĩa cái tên "Lam Sơn"</div>
+                <div class="lesson-text">Lam Sơn là vùng núi rừng thuộc Thọ Xuân, Thanh Hóa — quê hương và căn cứ phát tích của Lê Lợi, nơi khởi đầu cho cuộc kháng chiến 10 năm giành lại độc lập dân tộc.</div>
+            </div>
+            <div class="legacy-box" style="margin-top:14px;">
+                <div class="lesson-title">🏅 Di sản tinh thần</div>
+                <div class="lesson-text">Tinh thần "nếm mật nằm gai", ý chí kiên trì vượt qua gian khổ buổi đầu khởi nghĩa trở thành bài học bất hủ về lòng kiên định trước nghịch cảnh cho các thế hệ người Việt sau này.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="sidebar-box">
+            <h3>📋 THÔNG TIN CƠ BẢN</h3>
+            <table class="info-table">
+                <tr><td>Tên sự kiện</td><td>Khởi nghĩa Lam Sơn</td></tr>
+                <tr><td>Lãnh đạo</td><td>Lê Lợi (Bình Định Vương)</td></tr>
+                <tr><td>Quân sư</td><td>Nguyễn Trãi</td></tr>
+                <tr><td>Thời gian</td><td>1418 – 1427</td></tr>
+                <tr><td>Nơi phát tích</td><td>Lam Sơn (Thọ Xuân, Thanh Hóa)</td></tr>
+                <tr><td>Kẻ thù</td><td>Quân Minh</td></tr>
+                <tr><td>Trận quyết định</td><td>Chi Lăng – Xương Giang (1427)</td></tr>
+                <tr><td>Văn kiện tiêu biểu</td><td>Bình Ngô đại cáo</td></tr>
+                <tr><td>Kết quả</td><td>Giành độc lập, lập nhà Lê sơ (1428)</td></tr>
+            </table>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>🏛️ DI SẢN & DI TÍCH</h3>
+
+            <div class="heritage-card">
+                <img src="images/lamkinh.jpg" alt="Khu di tích Lam Kinh" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Khu di tích Lam Kinh — Thanh Hóa</strong>
+                    <p>Kinh đô thứ hai của nhà Lê sơ, nơi an táng Lê Lợi và các vua Lê. Di tích Quốc gia đặc biệt, gắn liền với quê hương phát tích của cuộc khởi nghĩa.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/aichilang.jpg" alt="Ải Chi Lăng" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Ải Chi Lăng — Lạng Sơn</strong>
+                    <p>Nơi diễn ra trận phục kích lịch sử năm 1427, tiêu diệt viện binh Liễu Thăng, quyết định thắng lợi cuối cùng của cuộc kháng chiến.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/denleLai.jpg" alt="Đền thờ Lê Lai" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Đền thờ Lê Lai — Thanh Hóa</strong>
+                    <p>Tưởng nhớ công lao liều mình cứu chúa của tướng Lê Lai tại núi Chí Linh trong giai đoạn đầu gian khó của cuộc khởi nghĩa.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sidebar-box">
+            <h3>👑 NHÂN VẬT LIÊN QUAN</h3>
+            <a href="chi-tiet-le-loi.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #6a3a1a;">👑</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lê Lợi</div>
+                    <div class="char-mini-desc">Lãnh đạo khởi nghĩa, sau lên ngôi Lê Thái Tổ</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-nguyen-trai.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #2a5a3a;">📜</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Nguyễn Trãi</div>
+                    <div class="char-mini-desc">Quân sư kiệt xuất, tác giả Bình Ngô đại cáo</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-le-lai.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #8a2a2a;">🛡️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lê Lai</div>
+                    <div class="char-mini-desc">Liều mình cứu chúa tại núi Chí Linh</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-nguyen-chich.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #5a4a7a;">🧭</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Nguyễn Chích</div>
+                    <div class="char-mini-desc">Hiến kế chuyển hướng chiến lược vào Nghệ An</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>✨ SỰ THẬT THÚ VỊ</h3>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🤝</div>
+                <div class="legacy-text">
+                    <strong>Hội thề Lũng Nhai</strong>
+                    Năm 1416, Lê Lợi cùng 18 vị tướng lĩnh thân tín thề nguyện đồng cam cộng khổ, mở đầu cho cuộc khởi nghĩa Lam Sơn.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🛡️</div>
+                <div class="legacy-text">
+                    <strong>Lê Lai liều mình cứu chúa</strong>
+                    Tướng Lê Lai cải trang thành Lê Lợi, phá vòng vây quân Minh tại núi Chí Linh rồi hy sinh, giúp chủ tướng thoát hiểm.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🧭</div>
+                <div class="legacy-text">
+                    <strong>Bước ngoặt Nghệ An</strong>
+                    Kế sách của Nguyễn Chích năm 1424 đưa nghĩa quân từ thế bị động ở rừng núi sang thế chủ động làm chủ cả một vùng rộng lớn.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">⚔️</div>
+                <div class="legacy-text">
+                    <strong>Liễu Thăng tử trận</strong>
+                    Tại ải Chi Lăng năm 1427, chủ tướng viện binh nhà Minh là Liễu Thăng bị nghĩa quân phục kích chém chết, làm sụp đổ toàn bộ kế hoạch cứu viện.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">📜</div>
+                <div class="legacy-text">
+                    <strong>Bình Ngô đại cáo</strong>
+                    Áng văn của Nguyễn Trãi được xem là bản tuyên ngôn độc lập thứ hai của dân tộc, sau bài thơ "Nam quốc sơn hà".
+                </div>
+            </div>
+        </div>
+
+        <a href="ho-minh.html" class="btn-back">← Quay lại Nhà Hồ – Thuộc Minh</a>
+
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        <span>© 2026 Sử Việt. Bảo lưu mọi quyền.</span>
+        <span><a href="#">Chính sách</a> · <a href="#">Điều khoản</a></span>
+    </div>
+</footer>
+<script src="nav.js"></script>
+<script src="search-data.js"></script>
+<script src="search-engine.js"></script>
+</body>
+</html>

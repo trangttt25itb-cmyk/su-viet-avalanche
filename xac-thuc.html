@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xác thực huy hiệu - Sử Việt</title>
+<meta name="description" content="Kiểm tra công khai huy hiệu NFT học tập của bất kỳ ví nào trên blockchain Avalanche Fuji.">
+<link rel="icon" type="image/png" href="images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --nau:#2c1b12; --vang:#c8a96e; --vang-sang:#f4c542; --kem:#f5e9c8; --do:#8B0000; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Poppins',sans-serif; color:var(--nau); background:var(--kem) url('images/bg2.png') center/cover fixed; min-height:100vh; }
+  main { max-width:1000px; margin:0 auto; padding:54px 5% 70px; text-align:center; }
+  .eyebrow { display:inline-block; background:rgba(139,0,0,.1); color:var(--do); font-weight:700; font-size:13px; padding:6px 16px; border-radius:20px; margin-bottom:14px; }
+  h1 { font:700 clamp(28px,5vw,42px) 'Libre Baskerville',serif; margin-bottom:12px; }
+  .lead { color:#5a4630; max-width:640px; margin:0 auto 26px; line-height:1.75; }
+  form { display:flex; gap:10px; max-width:640px; margin:0 auto 14px; flex-wrap:wrap; justify-content:center; }
+  input { flex:1 1 320px; padding:13px 18px; border-radius:28px; border:2px solid var(--vang); font:500 14px 'Poppins',sans-serif; background:#fff; color:var(--nau); }
+  input:focus-visible, button:focus-visible { outline:3px solid var(--vang-sang); outline-offset:2px; }
+  button { background:var(--do); color:#fff; border:0; border-radius:28px; padding:13px 28px; font:700 15px 'Poppins',sans-serif; cursor:pointer; transition:.25s; }
+  button:hover { background:#a50000; }
+  button:disabled { opacity:.6; cursor:wait; }
+  #msg { min-height:24px; font-size:14px; color:#5a4630; margin-bottom:24px; }
+  #msg.err { color:var(--do); font-weight:600; }
+  #result { display:flex; flex-wrap:wrap; gap:22px; justify-content:center; margin-bottom:40px; }
+  .card { width:220px; background:linear-gradient(160deg,#2c1b12,#3d2616); color:#f1d58a; border:2px solid var(--vang); border-radius:18px; padding:20px 16px; box-shadow:0 8px 22px rgba(44,27,18,.3); }
+  .card img { border-radius:14px; margin-bottom:12px; background:#2b1a10; }
+  .card.no img { filter:grayscale(1) brightness(.6); }
+  .card h2 { font:700 17px 'Libre Baskerville',serif; margin-bottom:8px; }
+  .status { font-weight:700; font-size:14px; }
+  .yes .status { color:#8fd694; }
+  .no .status { color:#c9b27a; }
+  .info { background:rgba(255,253,240,.88); border:1.5px solid rgba(200,169,110,.5); border-radius:18px; padding:22px 26px; text-align:left; font-size:14px; line-height:1.9; }
+  .info h3 { font:700 18px 'Libre Baskerville',serif; margin-bottom:8px; }
+  .info a { color:var(--do); font-weight:600; word-break:break-all; }
+  footer { background:var(--nau); color:rgba(255,255,255,.65); text-align:center; padding:22px 5%; font-size:13px; border-top:3px solid var(--vang); }
+  footer a { color:var(--vang-sang); }
+</style>
+<link rel="stylesheet" href="navbar-sv.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar-sv" aria-label="Điều hướng chính">
+      <span class="corner corner-tl"></span><span class="corner corner-tr"></span>
+      <span class="corner corner-bl"></span><span class="corner corner-br"></span>
+      <a href="index.html" class="logo"><img src="images/logo.png" alt="Logo Sử Việt">SỬ VIỆT</a>
+      <ul class="nav-menu-sv" id="navMenu">
+        <li><a href="index.html" class="nav-item"><span class="nav-ic" aria-hidden="true">🏠</span><span>Trang chủ</span></a></li>
+        <li><a href="index.html#timeline" class="nav-item"><span class="nav-ic" aria-hidden="true">📅</span><span>Hành trình lịch sử</span></a></li>
+        <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic" aria-hidden="true">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+          <div class="dropdown-menu">
+            <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+            <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+            <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+            <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+            <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+            <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+          </div>
+        </li>
+        <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic" aria-hidden="true">❓</span><span>Quiz</span></a></li>
+        <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic" aria-hidden="true">👤</span><span>Nhân vật</span></a></li>
+        <li><a href="huy-hieu.html" class="nav-item"><span class="nav-ic" aria-hidden="true">🏅</span><span>Huy hiệu</span></a></li>
+        <li><a href="xac-thuc.html" class="nav-item active" aria-current="page"><span class="nav-ic" aria-hidden="true">🔎</span><span>Xác thực</span></a></li>
+      </ul>
+      <div class="nav-right-sv">
+        <a href="login-signup.html" class="nav-login-link" id="navLoginLink">Đăng nhập</a>
+        <div class="nav-user-item" id="navUserItem" style="display:none">
+          <div class="nav-user-trigger" id="navUserTrigger" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng">
+            <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+            <span class="nav-user-email-text" id="navEmailText"></span>
+            <span style="color:#c8a96e;font-size:10px" aria-hidden="true">▾</span>
+          </div>
+          <div class="nav-user-dropdown" id="navUserDropdown">
+            <div class="nav-dropdown-info">
+              <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+              <div>
+                <div style="font-weight:700;color:#2c1b12;font-size:13px" id="navDropName">Người dùng</div>
+                <div style="font-size:11px;color:#7a5c3a" id="navDropEmail"></div>
+              </div>
+            </div>
+            <div class="nav-dropdown-divider"></div>
+            <a href="login-signup.html" class="nav-dropdown-logout" id="navLogout">🚪 Đăng xuất</a>
+          </div>
+        </div>
+        <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="eyebrow">🔎 Kiểm chứng công khai</div>
+    <h1>XÁC THỰC HUY HIỆU</h1>
+    <p class="lead">Dán địa chỉ ví bất kỳ để xem ví đó sở hữu huy hiệu Sử Việt nào. Dữ liệu được đọc trực tiếp từ blockchain, không cần đăng nhập và không qua máy chủ của Sử Việt.</p>
+
+    <form id="f">
+      <label for="addr" style="position:absolute;left:-9999px">Địa chỉ ví</label>
+      <input id="addr" type="text" placeholder="Dán địa chỉ ví, ví dụ 0x3679…984A" autocomplete="off" spellcheck="false">
+      <button id="go" type="submit">Kiểm tra</button>
+    </form>
+    <div id="msg" role="status" aria-live="polite"></div>
+    <div id="result"></div>
+
+    <section class="info" aria-label="Thông tin hợp đồng">
+      <h3>Thông tin hợp đồng</h3>
+      Mạng: Avalanche Fuji Testnet (43113)<br>
+      Chuẩn: ERC-1155, huy hiệu không thể chuyển nhượng (soulbound)<br>
+      Địa chỉ: <a href="https://testnet.snowtrace.io/address/0xea538FBA5d0BDF42229656Ca5989C377A0A06333" target="_blank" rel="noopener">0xea538FBA5d0BDF42229656Ca5989C377A0A06333</a>
+    </section>
+  </main>
+
+  <footer>© 2026 Sử Việt · Nhóm CMW · ĐH CNTT &amp; TT Việt Hàn · <a href="index.html">Về trang chủ</a></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+  <script>
+  (function () {
+    const RPC = 'https://api.avax-test.network/ext/bc/C/rpc';
+    const CONTRACT = '0xea538FBA5d0BDF42229656Ca5989C377A0A06333';
+    const IMG_BASE = 'https://trangttt25itb-cmyk.github.io/su-viet-badges/';
+    const BADGES = { 1: 'Học trò Sử Việt', 2: 'Người kể sử', 3: 'Sử gia tập sự', 4: 'Nhà sử học' };
+    const ABI = ['function balanceOf(address account, uint256 id) view returns (uint256)'];
+
+    const form = document.getElementById('f');
+    const input = document.getElementById('addr');
+    const go = document.getElementById('go');
+    const msg = document.getElementById('msg');
+    const result = document.getElementById('result');
+
+    function say(text, isErr) { msg.textContent = text; msg.className = isErr ? 'err' : ''; }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      result.innerHTML = '';
+      const addr = input.value.trim();
+      if (!window.ethers || !ethers.isAddress(addr)) { say('Địa chỉ ví không hợp lệ. Địa chỉ gồm 42 ký tự, bắt đầu bằng 0x.', true); return; }
+      go.disabled = true; say('Đang đọc dữ liệu từ blockchain…');
+      try {
+        const provider = new ethers.JsonRpcProvider(RPC, 43113);
+        const c = new ethers.Contract(CONTRACT, ABI, provider);
+        const ids = Object.keys(BADGES);
+        const bal = await Promise.all(ids.map(id => c.balanceOf(addr, id)));
+        let owned = 0;
+        ids.forEach((id, i) => {
+          const has = bal[i] > 0n;
+          if (has) owned++;
+          const div = document.createElement('div');
+          div.className = 'card ' + (has ? 'yes' : 'no');
+          const img = document.createElement('img');
+          img.src = IMG_BASE + id + '.svg'; img.width = 120; img.height = 120; img.loading = 'lazy';
+          img.alt = 'Huy hiệu ' + BADGES[id];
+          const h = document.createElement('h2'); h.textContent = BADGES[id];
+          const s = document.createElement('div'); s.className = 'status';
+          s.textContent = has ? '✅ Đã sở hữu' : 'Chưa sở hữu';
+          div.append(img, h, s);
+          result.appendChild(div);
+        });
+        say('Ví ' + addr.slice(0, 6) + '…' + addr.slice(-4) + ' sở hữu ' + owned + '/' + ids.length + ' huy hiệu.');
+      } catch (err) {
+        console.error(err);
+        say('Không đọc được dữ liệu từ blockchain. Hãy kiểm tra mạng và thử lại.', true);
+      } finally { go.disabled = false; }
+    });
+  })();
+  </script>
+  <script src="navbar-sv.js"></script>
+</body>
+</html>

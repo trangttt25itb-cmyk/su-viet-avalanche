@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nguyễn Du — Chữ Tâm Kia Mới Bằng Ba Chữ Tài | Sử Việt Tương Tác</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --jade:#1f6f5c;--jade-l:#3fae8f;--jade-dim:#123f34;
+  --plum:#6b2d5c;--plum-l:#c072a8;--plum-dark:#3a1830;
+  --gold:#c9a44c;--gold-l:#f0cf7e;--gold-dim:#8a6f2e;
+  --rose:#9c3652;--rose-l:#d97a91;
+  --paper:#f3ecd6;--paper-dim:rgba(243,236,214,0.72);--paper-faint:rgba(243,236,214,0.38);
+  --ink-bg:#0a0e14;--surface:rgba(11,15,22,0.97);
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--ink-bg);color:var(--paper);min-height:100vh;overflow-x:hidden;cursor:default;}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#cursorCanvas{position:fixed;inset:0;z-index:250;pointer-events:none;}
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 55% 40% at 15% 20%,rgba(107,45,92,0.10) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 75%,rgba(31,111,92,0.10) 0%,transparent 55%);}
+.corner{position:fixed;width:44px;height:44px;z-index:2;pointer-events:none;border-color:rgba(201,164,76,0.32);border-style:solid;}
+.corner.tl{top:16px;left:16px;border-width:2px 0 0 2px;}.corner.tr{top:16px;right:16px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:16px;left:16px;border-width:0 0 2px 2px;}.corner.br{bottom:16px;right:16px;border-width:0 2px 2px 0;}
+.top-stripe{position:fixed;top:0;left:0;right:0;height:4px;z-index:400;background:linear-gradient(90deg,var(--plum) 0%,var(--plum) 45%,var(--gold) 45%,var(--gold-l) 100%);}
+nav{position:fixed;top:4px;left:0;right:0;z-index:300;height:54px;background:rgba(10,14,20,0.97);border-bottom:1px solid rgba(201,164,76,0.2);display:flex;align-items:center;justify-content:space-between;padding:0 32px;backdrop-filter:blur(16px);}
+.nav-brand{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold-l);letter-spacing:3px;text-decoration:none;display:flex;align-items:center;gap:8px;}
+.nav-subtitle{font-size:10.5px;color:var(--paper-faint);letter-spacing:2px;font-family:'Space Mono',monospace;text-align:center;flex:1;}
+.nav-left{display:flex;align-items:center;gap:14px;}
+.nav-back{font-size:12px;color:var(--paper-faint);letter-spacing:1px;text-decoration:none;padding:6px 14px;border:1px solid rgba(201,164,76,.3);border-radius:20px;transition:all .25s;white-space:nowrap;}
+.nav-back:hover{color:var(--gold-l);border-color:var(--gold-l);background:rgba(201,164,76,.1);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-btn{background:transparent;border:1px solid rgba(201,164,76,.3);border-radius:50%;width:32px;height:32px;color:var(--plum-l);cursor:pointer;font-size:14px;}
+.prog-rail{position:fixed;top:58px;left:0;right:0;z-index:299;height:3px;background:rgba(255,255,255,0.04);}
+.prog-fill{height:100%;width:0%;transition:width 1s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--plum-dark),var(--plum),var(--gold),var(--gold-l));}
+.hud{position:fixed;top:70px;right:18px;z-index:298;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.hud-card{background:rgba(10,14,20,0.94);border:1px solid rgba(201,164,76,0.26);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(14px);}
+.hud-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);font-family:'Space Mono',monospace;}
+.hud-val{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);font-weight:700;min-width:32px;text-align:center;}
+.pts-pop{position:fixed;top:82px;right:96px;z-index:999;font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 20px rgba(201,164,76,.9);}
+.pts-pop.show{animation:popUp .85s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}35%{opacity:1;transform:translateY(-20px) scale(1.2);}72%{opacity:1;transform:translateY(-36px) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(.9);}}
+.chapter-map{display:flex;align-items:center;gap:0;margin:26px 0;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);}
+.chapter-map::-webkit-scrollbar{display:none;}
+.cm-item{flex:1;min-width:70px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.cm-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(201,164,76,.28),rgba(201,164,76,.06));z-index:0;}
+.cm-dot{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.cm-dot.done{background:var(--jade-dim);border:2px solid var(--jade-l);color:var(--paper);}
+.cm-dot.now{background:var(--plum);border:2px solid var(--gold-l);color:#fff;animation:pulseNow 2s ease-in-out infinite;}
+@keyframes pulseNow{0%,100%{box-shadow:0 0 0 0 rgba(201,164,76,.5);}50%{box-shadow:0 0 0 8px rgba(201,164,76,0);}}
+.cm-dot.lock{background:rgba(243,236,214,.04);border:2px solid rgba(243,236,214,.1);color:var(--paper-faint);}
+.cm-year{font-size:9.5px;color:var(--plum-l);margin-top:5px;text-align:center;font-family:'Space Mono',monospace;}
+.cm-evt{font-size:8.5px;color:var(--paper-faint);margin-top:2px;text-align:center;line-height:1.3;}
+.cover-scene{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:108px;height:108px;border-radius:50%;background:radial-gradient(circle,rgba(107,45,92,.42),rgba(10,14,20,.9));border:2px solid rgba(201,164,76,.5);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:24px;box-shadow:0 0 60px rgba(107,45,92,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(107,45,92,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(201,164,76,.45),0 0 130px rgba(107,45,92,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(30px,6.5vw,52px);color:#fff;line-height:1.2;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(107,45,92,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:18px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:540px;font-size:15px;line-height:1.85;color:var(--paper-dim);margin-bottom:28px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(107,45,92,0.14);border:1px solid rgba(201,164,76,0.24);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--gold-l);margin:3px 3px 3px 0;}
+.cover-start-btn{padding:15px 36px;background:linear-gradient(135deg,var(--plum),var(--plum-dark));border:1px solid rgba(201,164,76,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(107,45,92,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(107,45,92,.5),0 0 40px rgba(201,164,76,.25);}
+.cover-scroll-hint{margin-top:16px;font-size:11px;color:var(--paper-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+.wrap{max-width:800px;margin:0 auto;padding:80px 22px 80px;position:relative;z-index:2;}
+.scene{display:none;}
+.scene.active{display:block;animation:pageFlip .7s cubic-bezier(.22,1,.36,1);max-width:800px;margin:0 auto;padding:0 22px;}
+@keyframes pageFlip{0%{opacity:0;transform:translateY(24px);}100%{opacity:1;transform:translateY(0);}}
+.streak-badge{position:fixed;top:70px;left:18px;z-index:298;background:rgba(10,14,20,0.94);border:1px solid rgba(107,45,92,0.4);border-radius:40px;padding:7px 15px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--paper-dim);backdrop-filter:blur(12px);opacity:0;transform:translateX(-12px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(240,207,126,.6);box-shadow:0 0 18px rgba(201,164,76,.25);}
+.streak-num{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold-l);font-weight:700;}
+.combo-burst{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06);}}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(107,45,92,0.85),rgba(10,14,20,0.95));border:2px solid var(--gold-l);border-radius:20px;padding:16px 30px;box-shadow:0 0 60px rgba(201,164,76,.35);}
+.combo-title{font-size:11px;color:var(--gold-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:27px;color:#fff;font-family:'Playfair Display',serif;}
+.combo-sub{font-size:12px;color:rgba(243,236,214,0.6);margin-top:4px;}
+.ripple-el{position:absolute;border-radius:50%;background:rgba(201,164,76,0.42);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(2.6);opacity:0;}}
+.chap-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(107,45,92,0.12);border:1px solid rgba(107,45,92,0.36);border-radius:30px;padding:6px 18px;font-size:11px;color:var(--plum-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;font-family:'Space Mono',monospace;}
+.hero-art{width:100%;max-width:750px;margin:0 auto 24px;height:220px;border-radius:16px;border:1px solid rgba(201,164,76,0.22);overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hero-art .hero-emoji{font-size:52px;filter:drop-shadow(0 0 20px rgba(201,164,76,.4));position:relative;z-index:1;}
+.hero-art .hero-label{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:var(--gold-l);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:2px;z-index:2;text-shadow:0 2px 8px rgba(0,0,0,.85);}
+.hero-art .hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity .35s;}
+.hero-art .hero-img.loaded{opacity:1;}
+.hero-art.has-photo .hero-emoji{display:none;}
+.hero-art::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.55) 100%);z-index:1;pointer-events:none;opacity:0;transition:opacity .35s;}
+.hero-art.has-photo::after{opacity:1;}
+.story{font-size:18px;line-height:1.92;color:rgba(243,236,214,.9);margin-bottom:14px;}
+.story em{color:var(--plum-l);font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.edu-pill{background:rgba(107,45,92,0.08);border:1px solid rgba(107,45,92,0.24);border-radius:12px;padding:14px 17px;margin-bottom:16px;font-size:13.5px;line-height:1.72;color:var(--paper-dim);}
+.edu-tag{font-size:10px;color:var(--plum-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;font-family:'Space Mono',monospace;}
+.dlg{background:rgba(107,45,92,0.08);border-left:3px solid rgba(107,45,92,0.5);border-radius:0 12px 12px 0;padding:16px 22px;margin:20px 0;font-style:italic;font-size:17.5px;line-height:1.78;color:var(--paper);}
+.dlg-who{font-size:10px;font-style:normal;color:var(--plum-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;font-family:'Space Mono',monospace;}
+.fact{background:rgba(31,111,92,0.1);border:1px solid rgba(31,111,92,0.3);border-radius:12px;padding:17px 20px;margin:20px 0;font-size:14.5px;line-height:1.82;color:var(--paper-dim);}
+.fact-tag{font-size:10px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;font-family:'Space Mono',monospace;}
+.quote-moment{text-align:center;padding:26px;background:rgba(107,45,92,0.08);border:1px solid rgba(201,164,76,0.22);border-radius:16px;margin:24px 0;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);line-height:1.72;font-style:italic;}
+.quote-src{font-size:12.5px;color:rgba(243,236,214,0.45);font-style:normal;font-family:'Crimson Pro',serif;margin-top:12px;display:block;}
+.kc{background:rgba(201,164,76,0.05);border:1px solid rgba(201,164,76,0.2);border-radius:14px;padding:18px 20px;margin:22px 0;}
+.kc-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.kc-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(243,236,214,.03);border:1px solid rgba(243,236,214,.1);border-radius:9px;padding:11px 15px;font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--paper);cursor:pointer;text-align:left;transition:all .22s;}
+.kc-opt:hover:not(:disabled){background:rgba(201,164,76,.08);border-color:rgba(201,164,76,.3);transform:translateX(5px);}
+.kc-opt.correct{background:rgba(31,111,92,.28)!important;border-color:var(--jade-l)!important;color:#a6e0cb!important;}
+.kc-opt.wrong{background:rgba(156,54,82,.28)!important;border-color:var(--rose-l)!important;color:#f2a9b8!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:11px;font-size:14.5px;line-height:1.72;display:none;padding:10px 14px;border-radius:9px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(31,111,92,.16);color:#a6e0cb;}
+.kc-fb.no{background:rgba(156,54,82,.16);color:#f2a9b8;}
+.choices-lbl{font-size:10px;color:var(--plum-l);letter-spacing:2.5px;text-transform:uppercase;margin:30px 0 13px;display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;}
+.choices-lbl::before,.choices-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(107,45,92,.35),transparent);}
+.choices{display:flex;flex-direction:column;gap:11px;}
+.c-btn{background:rgba(243,236,214,.025);border:1px solid rgba(243,236,214,.1);border-radius:12px;padding:16px 20px;color:var(--paper);font-family:'Crimson Pro',serif;font-size:16.5px;text-align:left;cursor:pointer;transition:all .28s;display:flex;align-items:flex-start;gap:13px;line-height:1.55;}
+.c-btn:hover{background:rgba(107,45,92,0.12);border-color:rgba(107,45,92,.5);transform:translateX(6px);}
+.c-letter{width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(107,45,92,.14);border:1px solid rgba(107,45,92,.42);color:var(--plum-l);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;}
+.c-btn:hover .c-letter{background:rgba(107,45,92,.28);border-color:var(--gold-l);}
+.c-sub{font-size:12px;color:var(--paper-faint);font-style:italic;margin-top:4px;}
+.gate{background:rgba(107,45,92,0.06);border:2px solid rgba(201,164,76,0.28);border-radius:16px;padding:22px 24px;margin:22px 0;text-align:center;}
+.gate-icon{font-size:42px;display:block;margin-bottom:10px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);margin-bottom:8px;}
+.gate-desc{font-size:14.5px;color:var(--paper-dim);line-height:1.7;margin-bottom:14px;}
+.gate-req{display:inline-block;background:rgba(107,45,92,0.16);border:1px solid rgba(201,164,76,0.3);border-radius:22px;padding:5px 16px;font-size:11.5px;color:var(--gold-l);margin-bottom:16px;font-family:'Space Mono',monospace;}
+.unlock-btn{display:inline-flex;align-items:center;gap:9px;margin-top:14px;padding:12px 24px;background:rgba(201,164,76,0.15);border:1px solid rgba(201,164,76,0.4);border-radius:12px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:all .3s;opacity:0.35;pointer-events:none;}
+.unlock-btn.ready{opacity:1;pointer-events:auto;background:rgba(201,164,76,0.28);}
+.unlock-btn.ready:hover{background:rgba(201,164,76,0.45);transform:translateY(-2px);}
+.gate-locked{pointer-events:none;opacity:0.45;}
+.challenge{background:rgba(31,111,92,0.07);border:1px solid rgba(31,111,92,0.28);border-radius:14px;padding:18px 20px;margin:16px 0;text-align:left;}
+.ch-tag{font-size:10px;color:var(--jade-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.ch-q{font-size:15.5px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.ch-opts{display:flex;flex-direction:column;gap:8px;}
+.ch-opt{background:rgba(243,236,214,.03);border:1px solid rgba(243,236,214,.1);border-radius:9px;padding:11px 15px;font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--paper);cursor:pointer;text-align:left;transition:all .22s;}
+.ch-opt:hover:not(:disabled){background:rgba(31,111,92,.12);border-color:rgba(201,164,76,.3);transform:translateX(4px);}
+.ch-opt.correct{background:rgba(31,111,92,.28)!important;border-color:var(--jade-l)!important;color:#a6e0cb!important;}
+.ch-opt.wrong{background:rgba(156,54,82,.28)!important;border-color:var(--rose-l)!important;color:#f2a9b8!important;}
+.ch-opt:disabled{cursor:default;}
+.ch-fb{margin-top:10px;font-size:14.5px;line-height:1.7;display:none;padding:10px 14px;border-radius:9px;}
+.ch-fb.show{display:block;}
+.ch-fb.ok{background:rgba(31,111,92,.18);color:#a6e0cb;}
+.ch-fb.no{background:rgba(156,54,82,.18);color:#f2a9b8;}
+.mq-dots{display:flex;gap:7px;margin-bottom:14px;justify-content:center;}
+.mq-dot{width:11px;height:11px;border-radius:50%;border:1px solid rgba(201,164,76,.45);background:transparent;transition:all .3s;}
+.mq-dot.done{background:var(--gold-l);}
+.mq-dot.now{background:var(--jade-l);border-color:var(--jade-l);}
+.final{text-align:center;padding:36px 0;}
+.final-seal{width:128px;height:128px;border-radius:50%;background:rgba(107,45,92,.1);border:2px solid rgba(107,45,92,.4);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:50px;animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(107,45,92,.2);}50%{box-shadow:0 0 80px rgba(107,45,92,.5),0 0 110px rgba(201,164,76,.15);}}
+.final-h{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold-l);margin-bottom:11px;line-height:1.3;}
+.final-pts{font-size:52px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:10px 0;text-shadow:0 0 32px rgba(201,164,76,.5);}
+.final-rank-badge{display:inline-block;background:rgba(107,45,92,.14);border:1px solid rgba(107,45,92,.4);border-radius:30px;padding:7px 24px;font-size:13.5px;color:var(--plum-l);margin-bottom:20px;letter-spacing:1px;}
+.final-desc{font-size:16px;color:var(--paper-dim);line-height:1.9;max-width:520px;margin:0 auto 28px;}
+.final-achs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:16px 0 24px;}
+.ach{background:rgba(201,164,76,.06);border:1px solid rgba(201,164,76,.24);border-radius:12px;padding:11px 14px;text-align:center;min-width:90px;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+.ach-icon{font-size:24px;display:block;margin-bottom:5px;}
+.ach-name{font-size:9.5px;color:var(--gold-l);letter-spacing:1px;font-family:'Space Mono',monospace;}
+.final-lesson{background:rgba(107,45,92,.06);border:1px solid rgba(107,45,92,.2);border-radius:14px;padding:20px 22px;text-align:left;margin:0 0 32px;font-size:15px;line-height:1.86;color:var(--paper-dim);}
+.fl-tag{font-size:10px;color:var(--plum-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+.btn-ghost{padding:12px 24px;background:transparent;border:1px solid rgba(107,45,92,.4);border-radius:10px;color:var(--plum-l);font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;}
+.btn-ghost:hover{background:rgba(107,45,92,.14);}
+.btn-solid{padding:12px 24px;background:rgba(107,45,92,.5);border:1px solid rgba(107,45,92,.4);border-radius:10px;color:var(--paper);font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-solid:hover{background:var(--plum);}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.tam-bar{background:rgba(107,45,92,0.07);border:1px solid rgba(201,164,76,0.22);border-radius:11px;padding:13px 16px;margin:18px 0;display:flex;align-items:center;gap:13px;}
+.tam-label{font-size:10px;color:var(--plum-l);letter-spacing:2px;text-transform:uppercase;min-width:60px;font-family:'Space Mono',monospace;}
+.tam-track{flex:1;height:7px;background:rgba(243,236,214,0.06);border-radius:4px;overflow:hidden;}
+.tam-fill{height:100%;border-radius:4px;width:0%;background:linear-gradient(90deg,var(--plum),var(--gold),var(--gold-l));transition:width .9s cubic-bezier(.4,0,.2,1);}
+.tam-pct{font-size:11px;color:var(--gold-l);min-width:28px;text-align:right;font-family:'Space Mono',monospace;}
+.verified{border-left:3px solid var(--gold)!important;}
+.dramatized{border-left:3px solid var(--jade-l)!important;}
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:10px;margin-left:8px;cursor:pointer;vertical-align:middle;transition:.2s;}
+.src-tag.v{background:rgba(201,164,76,.14);color:var(--gold-l);border:1px solid rgba(201,164,76,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.src-note{display:block;font-size:11px;font-style:italic;color:var(--paper-faint);margin-top:8px;opacity:.85;}
+.src-popup-overlay,.ref-overlay,.map-overlay{position:fixed;inset:0;background:rgba(2,3,6,.75);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show,.ref-overlay.show,.map-overlay.show{display:flex;}
+.src-popup,.ref-modal,.map-modal{background:var(--surface);border:1px solid rgba(201,164,76,.35);border-radius:16px;padding:24px 26px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+.ref-modal,.map-modal{max-width:700px;max-height:85vh;overflow-y:auto;}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;background:rgba(201,164,76,.16);color:var(--gold-l);border:1px solid rgba(201,164,76,.4);display:inline-block;margin-bottom:12px;}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:17px;color:#fff;margin-bottom:10px;line-height:1.4;}
+.src-popup-body{font-size:14px;line-height:1.75;color:var(--paper-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(243,236,214,.04);border-left:2px solid rgba(201,164,76,.4);padding:9px 13px;font-size:12.5px;color:var(--paper-faint);font-style:italic;margin-bottom:14px;}
+.src-popup-close,.ref-modal-close,.map-modal-close{background:rgba(201,164,76,.15);border:1px solid rgba(201,164,76,.35);color:var(--gold-l);padding:8px 18px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:13.5px;cursor:pointer;}
+.ref-modal-head,.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:14px;}
+.ref-page-title,.map-modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold-l);}
+.ref-page-sub{font-size:12.5px;color:var(--paper-faint);margin-bottom:16px;line-height:1.6;}
+.ref-group{margin-bottom:14px;}
+.ref-group-h{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--plum-l);margin-bottom:8px;font-family:'Space Mono',monospace;}
+.ref-item{font-size:13.5px;line-height:1.8;color:var(--paper-dim);padding-left:16px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold-dim);}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-note{font-size:11px;color:var(--paper-faint);margin-bottom:12px;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink-bg);stroke-width:2;filter:drop-shadow(0 0 7px rgba(201,164,76,.75));transition:opacity .7s,r .3s;}
+.jmap-pt.locked{opacity:1;fill:rgba(243,236,214,.08);stroke:rgba(243,236,214,.35);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl{fill:#f3ecd6;font-size:12px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-yr{fill:var(--gold-l);font-size:10px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-lbl.locked,.jmap-yr.locked{opacity:0.4;fill:var(--paper-faint);font-weight:400;}
+.jmap-path{fill:none;stroke:rgba(201,164,76,0.5);stroke-width:2.5;stroke-dasharray:5 5;}
+.journal{background:rgba(201,164,76,0.05);border:1px solid rgba(201,164,76,0.22);border-radius:16px;padding:22px 24px;margin:0 0 28px;text-align:left;}
+.journal-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(243,236,214,.06);font-size:14px;color:var(--paper-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11px;padding:2px 10px;border-radius:10px;font-family:'Space Mono',monospace;white-space:nowrap;}
+.journal-status.ok{background:rgba(31,111,92,.22);color:#a6e0cb;}
+.journal-status.no{background:rgba(156,54,82,.2);color:#f2a9b8;}
+.journal-copy{margin-top:14px;background:rgba(201,164,76,.14);border:1px solid rgba(201,164,76,.35);border-radius:10px;padding:10px 18px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;}
+@media(max-width:640px){nav{padding:0 14px;}.wrap{padding:74px 12px 60px;}.story{font-size:16.5px;}.chapter-map{margin:20px -12px;padding:0 12px 10px;}.cm-item{min-width:56px;}.cm-dot{width:23px;height:23px;font-size:9.5px;}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<canvas id="cursorCanvas"></canvas>
+<div class="ambient"></div>
+<div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+<div class="pts-pop" id="ptsPop">+0</div>
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--plum-l),var(--plum-dark));
+  border:2px solid var(--gold);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(107,45,92,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--plum-l),var(--plum-dark));
+  border:2px solid var(--gold);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(107,45,92,.45);
+  align-items:center;justify-content:center;">➡</button>
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🗺️ Hành Trình 55 Năm Của Tố Như</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note">Các điểm dừng chân mở khóa dần khi bạn đi qua từng chương. Sơ đồ cách điệu, không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,180 C100,140 130,90 170,100 S250,150 280,140 S360,60 400,70 S480,160 520,150 S600,90 640,100 S710,170 720,175"/>
+      <circle class="jmap-pt pt-thanglong" cx="40" cy="180" r="6"/><text class="jmap-yr pt-thanglong" x="40" y="200" text-anchor="middle">1765</text><text class="jmap-lbl pt-thanglong" x="40" y="212" text-anchor="middle">Thăng Long</text>
+      <circle class="jmap-pt locked pt-tiendien" cx="170" cy="100" r="6"/><text class="jmap-yr locked pt-tiendien" x="170" y="85" text-anchor="middle">1775</text><text class="jmap-lbl locked pt-tiendien" x="170" y="75" text-anchor="middle">Tiên Điền</text>
+      <circle class="jmap-pt locked pt-thaibinh" cx="280" cy="140" r="6"/><text class="jmap-yr locked pt-thaibinh" x="280" y="160" text-anchor="middle">1786</text><text class="jmap-lbl locked pt-thaibinh" x="280" y="172" text-anchor="middle">Thái Bình</text>
+      <circle class="jmap-pt locked pt-honglinh" cx="400" cy="70" r="6"/><text class="jmap-yr locked pt-honglinh" x="400" y="55" text-anchor="middle">1790</text><text class="jmap-lbl locked pt-honglinh" x="400" y="45" text-anchor="middle">Núi Hồng Lĩnh</text>
+      <circle class="jmap-pt locked pt-hue1" cx="520" cy="150" r="6"/><text class="jmap-yr locked pt-hue1" x="520" y="170" text-anchor="middle">1802</text><text class="jmap-lbl locked pt-hue1" x="520" y="182" text-anchor="middle">Huế</text>
+      <circle class="jmap-pt locked pt-yenkinh" cx="640" cy="100" r="6"/><text class="jmap-yr locked pt-yenkinh" x="640" y="85" text-anchor="middle">1813</text><text class="jmap-lbl locked pt-yenkinh" x="640" y="75" text-anchor="middle">Yên Kinh</text>
+      <circle class="jmap-pt locked pt-hue2" cx="720" cy="175" r="7"/><text class="jmap-yr locked pt-hue2" x="700" y="195" text-anchor="middle">1820</text><text class="jmap-lbl locked pt-hue2" x="700" y="207" text-anchor="middle">Huế</text>
+    </svg>
+  </div>
+</div>
+
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <span class="src-popup-badge" id="srcBadge">ĐÃ KIỂM CHỨNG</span>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<div class="streak-badge" id="streakBadge">
+  <span>🖋️</span>
+  <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);">Liên tiếp</div><div class="streak-num" id="streakNum">0</div></div>
+</div>
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Trả lời liên tiếp đúng!</div>
+    <div class="combo-label" id="comboLabel">🖋️ COMBO x3</div>
+    <div class="combo-sub" id="comboSub">+10 điểm thưởng</div>
+  </div>
+</div>
+
+<div class="top-stripe"></div>
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=18">← Quay lại</a>
+    <a class="nav-brand" href="#"><span>📜</span> SỬ VIỆT</a>
+  </div>
+  <div class="nav-subtitle">NGUYỄN DU — CHỮ TÂM KIA MỚI BẰNG BA CHỮ TÀI (9 Chương)</div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+    <button class="nav-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình">🗺️</button>
+    <button id="soundToggle" class="nav-btn" onclick="toggleSound()">🔊</button>
+  </div>
+</nav>
+<div class="prog-rail"><div class="prog-fill" id="prog"></div></div>
+<div class="hud">
+  <div class="hud-card">
+    <div><div class="hud-label">Điểm</div><div class="hud-val" id="scoreEl">0</div></div>
+    <div><div class="hud-label">Danh Hiệu</div><div style="font-size:10px;color:var(--plum-l);" id="rankEl">—</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== COVER ===== -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">📜</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">NGUYỄN DU<br>Chữ Tâm Kia Mới Bằng Ba Chữ Tài</div>
+    <div class="cover-sub">Năm 1765 — 1820 · Đại Thi Hào Dân Tộc</div>
+    <div class="cover-desc">Ngươi là Nguyễn Du — công tử Thăng Long mồ côi giữa cảnh nước loạn, mười năm gió bụi giữ trọn khí tiết, rồi trên đường đi sứ nhà Thanh tình cờ chạm vào một cuốn tiểu thuyết tầm thường sẽ đổi thay cả nền văn học Việt Nam. Một hành trình 9 chương từ mất mát, ẩn nhẫn, đến khi "chữ tâm" hóa thành 3.254 câu Kiều bất hủ.</div>
+    <div class="cover-chips">
+      <span class="chip">📜 9 chương</span>
+      <span class="chip">🎓 Kiến thức + Cửa ải</span>
+      <span class="chip">🗺️ Bản đồ hành trình</span>
+      <span class="chip">📔 Nhật ký hành trình</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">📜 Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ===== CHƯƠNG I ===== -->
+<div class="scene" id="s1">
+<div class="chap-badge">🏛️ CHƯƠNG I · 1765–1775 — CÔNG TỬ THĂNG LONG <span class="src-tag v" onclick="openSrcPopup('s1')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#12060f 0%,#221022 100%);"><img class="hero-img" src="images/ch1-thanglong.jpg" alt="Dinh thự quý tộc Thăng Long thế kỷ 18" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">🏯</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">DINH THỰ HỌ NGUYỄN — THĂNG LONG</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot now">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot lock">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="tam-bar reveal"><span style="font-size:18px;">🖋️</span><span class="tam-label">Chữ Tâm</span><div class="tam-track"><div class="tam-fill" id="tamMeter"></div></div><span class="tam-pct" id="tamPct">0%</span></div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">📚 BỐI CẢNH</span>Năm 1765, tại Thăng Long, một cậu bé cất tiếng khóc chào đời trong dinh thự của một gia đình đại quý tộc bậc nhất Bắc Hà. Cha là Nguyễn Nghiễm — Tể tướng triều Lê; mẹ là bà Trần Thị Tần, người xứ Kinh Bắc nổi tiếng hát hay. Cậu bé ấy được đặt tên chữ là <strong>Tố Như</strong>.</div>
+  Nguyễn Du lớn lên giữa tiếng đàn, tiếng hát và sách vở chất đầy giá. Nhà họ Nguyễn quyền quý đến mức ít ai trong kinh thành sánh kịp — nhưng đâu đó ngoài cổng phủ, tiếng đồn về loạn lạc chính sự đã len vào những câu chuyện người lớn thì thầm sau bữa cơm.
+</div>
+<div class="dlg reveal"><div class="dlg-who">NGUYỄN NGHIỄM — DẶN CON</div>"Con phải học cho tinh, đọc cho rộng. Đời quan lộ có lúc thịnh lúc suy, chỉ có chữ nghĩa là giữ được mãi trong lòng người."</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Cha của Nguyễn Du — Nguyễn Nghiễm — từng giữ chức vụ gì trong triều Lê?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1')">A. Đại tướng quân</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc1')">B. Tể tướng</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1')">C. Thượng thư Bộ Hình</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1')">D. Trạng nguyên</button>
+  </div>
+  <div class="kc-fb" id="kc1-fb"></div>
+</div>
+<div class="story reveal">Cậu bé công tử ngày ngày nghe mẹ hát những làn điệu quan họ, nghe cha bàn chuyện chính sự cùng các quan đại thần. Không ai ngờ rằng, đứa trẻ ấy đang thầm thu nhặt vào lòng mình từng nhịp điệu ngôn ngữ dân gian — thứ chất liệu sẽ nở hoa thành áng thơ bất hủ suốt gần năm mươi năm sau.</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="s1-choices">
+  <button class="c-btn" onclick="pickChoice('s1','s2',15,true)"><span class="c-letter">A</span><div>Chuyên tâm học chữ, thơ phú, lắng nghe cả tiếng đàn dân gian lẫn kinh sử nhà nho.<div class="c-sub">⭐ ĐÚNG HƯỚNG! Nền tảng học vấn rộng và sâu này về sau nuôi dưỡng ngòi bút Truyện Kiều.</div></div></button>
+  <button class="c-btn" onclick="pickChoice('s1','s1B',5,false)"><span class="c-letter">B</span><div>Chỉ ham chơi đàn hát, bỏ bê sách vở kinh sử.<div class="c-sub">Vui trước mắt nhưng bỏ lỡ nền tảng học vấn quan trọng.</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s1B">
+<div class="chap-badge">❌ THIẾU NỀN TẢNG</div>
+<div class="fact reveal"><span class="fact-tag">⚠️ HỆ QUẢ</span>Người anh cùng cha khác mẹ nhắc nhở: "Chữ nghĩa không tự nhiên mà có, phải dồn tâm sức từ nhỏ." Nguyễn Du nhận ra mình cần thay đổi, quay lại chuyên tâm đèn sách.</div>
+<div class="choices-lbl">⚡ SỬA ĐỔI</div>
+<div class="choices"><button class="c-btn" onclick="markCorrect('s1');go('s2',8)"><span class="c-letter">→</span><div>Quay lại chuyên tâm học hành, vừa học kinh sử vừa lắng nghe âm nhạc dân gian.</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG II ===== -->
+<div class="scene" id="s2">
+<div class="chap-badge">💔 CHƯƠNG II · 1775–1786 — MỒ CÔI GIỮA CƠ NGHIỆP SỤP ĐỔ <span class="src-tag v" onclick="openSrcPopup('s2')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#0c0a12 0%,#1a1020 100%);"><img class="hero-img" src="images/ch2-mocoi.jpg" alt="Cảnh tang tóc, loạn lạc thời Lê mạt" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">🍂</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">BIẾN CỐ GIA TỘC</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot now">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">📉 BIẾN CỐ DỒN DẬP</span>Năm Nguyễn Du 10 tuổi, cha qua đời. Hai năm sau, mẹ cũng mất. Cậu công tử vừa quen hơi ấm nhung lụa giờ phải sống nhờ người anh cùng cha khác mẹ, giữa lúc thế nước rung chuyển: chúa Trịnh suy yếu, phong trào Tây Sơn nổi lên khắp nơi.</div>
+  Cơ nghiệp lừng lẫy một thời của họ Nguyễn Tiên Điền bắt đầu lung lay theo vận nước. Vinh hoa từng bao bọc tuổi thơ cậu giờ chỉ còn là câu chuyện người lớn nhắc lại trong tiếc nuối.
+</div>
+<div class="dlg reveal"><div class="dlg-who">NGUYỄN DU — TỰ NHỦ</div>"Vinh hoa một thuở, nay chỉ còn là hoài niệm. Ta phải học cách đứng vững một mình."</div>
+<div class="story reveal">Giữa cảnh mất mát chồng chất, có hai cách để một cậu bé mười hai tuổi đối diện với cuộc đời: khép kín lòng mình lại, hoặc mở mắt quan sát để hiểu thấu nỗi đau của những phận người quanh mình.</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc2-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc2',15,'⭐ ĐÚNG HƯỚNG! Nguyễn Du âm thầm quan sát, ghi nhớ mọi biến cố quanh mình — chính những trải nghiệm mất mát này sau trở thành chất liệu cho Truyện Kiều.')"><span class="c-letter">A</span><div>Nương tựa anh trai, âm thầm quan sát và ghi nhớ mọi biến cố quanh mình.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc2',5,'Đây không phải điều đã xảy ra. Nguyễn Du không khép kín hoàn toàn — ông vẫn mở lòng quan sát đời sống quanh mình để sau này thấu hiểu nỗi khổ của muôn người trong Truyện Kiều.')"><span class="c-letter">B</span><div>Oán trách số phận, khép mình không giao du với ai.</div></button>
+</div>
+<div class="ch-fb" id="sc2-fb" style="margin-top:14px;"></div>
+<div class="fact reveal"><span class="fact-tag">📖 ĐIỀU ÍT AI BIẾT</span>Câu thơ nổi tiếng "Trải qua một cuộc bể dâu, những điều trông thấy mà đau đớn lòng" trong Truyện Kiều được nhiều nhà nghiên cứu cho là phản chiếu chính những năm tháng chứng kiến cơ nghiệp gia tộc sụp đổ của Nguyễn Du thời thơ ấu.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s3',10)"><span class="c-letter">→</span><div>Chương III: 1786–1796 — Mười Năm Gió Bụi</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG III ===== -->
+<div class="scene" id="s3">
+<div class="chap-badge">🏔️ CHƯƠNG III · 1786–1796 — MƯỜI NĂM GIÓ BỤI <span class="src-tag v" onclick="openSrcPopup('s3')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#08110d 0%,#132018 100%);"><img class="hero-img" src="images/ch3-honglinh.jpg" alt="Núi Hồng Lĩnh, Hà Tĩnh" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">⛰️</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">NÚI HỒNG LĨNH — HÀ TĨNH</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot now">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">🌫️ THẬP TẢI PHONG TRẦN</span>Khi Tây Sơn làm chủ đất nước, Nguyễn Du — vốn mang ơn nhà Lê — không chịu ra làm quan cho triều mới. Suốt mười năm (1786–1796), ông sống lưu lạc: lúc về quê vợ ở Thái Bình, lúc lên núi Hồng Lĩnh quê nhà sống ẩn dật, tự gọi mình là <em>"Hồng Sơn liệp hộ"</em> — người đi săn núi Hồng.</div>
+  Cuộc sống nghèo túng, phiêu bạt khắp nơi khiến chàng công tử năm nào phải nếm trải đủ mọi cảnh đời cơ cực của dân chúng — điều mà nếu cứ mãi sống trong nhung lụa, ông sẽ không bao giờ chạm tới được.
+</div>
+<div class="dlg reveal"><div class="dlg-who">MỘT NGƯỜI BẠN CŨ KHUYÊN NHỦ</div>"Tài như huynh, sao không ra giúp đời? Cứ ẩn mãi nơi rừng núi thì phí hoài năm tháng."</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Nguyễn Du tự gọi mình là gì trong giai đoạn ẩn dật ở quê nhà?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3')">A. Thanh Hiên cư sĩ</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc3')">B. Hồng Sơn liệp hộ (người đi săn núi Hồng)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3')">C. Tố Như tiên sinh</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3')">D. Nam Hải điếu đồ</button>
+  </div>
+  <div class="kc-fb" id="kc3-fb"></div>
+</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc3-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc3',15,'⭐ ĐÚNG HƯỚNG! Nguyễn Du giữ trọn khí tiết, thà sống nghèo khó còn hơn trái lòng mình — chính giai đoạn gian khổ này hun đúc nên chiều sâu nhân văn trong ngòi bút của ông sau này.')"><span class="c-letter">A</span><div>Giữ khí tiết, thà sống nghèo khó còn hơn trái lòng mình.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc3',5,'Đây không phải lựa chọn của Nguyễn Du. Ông chọn giữ khí tiết, không ra làm quan cho triều đại mà mình không mang ơn.')"><span class="c-letter">B</span><div>Ra làm quan cho Tây Sơn để có bổng lộc yên thân.</div></button>
+</div>
+<div class="ch-fb" id="sc3-fb" style="margin-top:14px;"></div>
+<div class="fact reveal"><span class="fact-tag">📖 SỰ THẬT ÍT BIẾT</span>Tập thơ chữ Hán "Thanh Hiên thi tập" của Nguyễn Du phần lớn được viết trong giai đoạn mười năm gió bụi này — ghi lại tâm sự u uất, cô đơn của một kẻ sĩ giữa thời loạn lạc.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s4',15)"><span class="c-letter">→</span><div>Chương IV: 1802 — Ra Làm Quan Triều Nguyễn</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG IV ===== -->
+<div class="scene" id="s4">
+<div class="chap-badge">🏛️ CHƯƠNG IV · 1802 — RA LÀM QUAN TRIỀU NGUYỄN <span class="src-tag v" onclick="openSrcPopup('s4')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#100b08 0%,#221812 100%);"><img class="hero-img" src="images/ch4-hue-quan.jpg" alt="Kinh thành Huế triều Nguyễn" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">⚜️</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">KINH ĐÔ HUẾ</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot now">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">👑 THỜI THẾ ĐỔI THAY</span>Năm 1802, Nguyễn Ánh lên ngôi, lập ra nhà Nguyễn, thống nhất đất nước sau bao năm chia cắt. Dù trong lòng còn nặng tình với nhà Lê cũ, Nguyễn Du được vời ra làm quan — lần lượt giữ các chức: Tri huyện, Cai bạ Quảng Bình, rồi được thăng đến Hữu Tham tri Bộ Lễ tại kinh đô Huế.</div>
+  Người từng mười năm ẩn dật giữ khí tiết giờ đứng trước một câu hỏi khác: đất nước đã thống nhất, liệu có nên tiếp tục khép mình, hay đem chút tài mọn ra giúp đời trong một triều đại mới?
+</div>
+<div class="dlg reveal"><div class="dlg-who">NGUYỄN DU — TỰ VẤN</div>"Thời thế đã đổi, đất nước đã thống nhất. Có lẽ đã đến lúc đem chút tài mọn ra giúp đời, dù lòng vẫn còn vương vấn cũ."</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Chức quan cao nhất Nguyễn Du từng giữ dưới triều Nguyễn là gì?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4')">A. Tể tướng</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc4')">B. Hữu Tham tri Bộ Lễ</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4')">C. Tổng đốc</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4')">D. Thượng thư Bộ Binh</button>
+  </div>
+  <div class="kc-fb" id="kc4-fb"></div>
+</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc4-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc4',15,'⭐ ĐÚNG HƯỚNG! Nguyễn Du nhận chức nhưng sống khép kín, ít giao du — đúng như sử chép: vua Gia Long từng nhận xét ông là người \'ít nói\'.')"><span class="c-letter">A</span><div>Làm tròn phận sự nhưng sống khép kín, giữ riêng tâm sự cũ trong lòng.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc4',5,'Đây không đúng với tính cách trầm lặng, hoài niệm của Nguyễn Du. Ông không quên hẳn chuyện xưa mà giữ riêng nỗi niềm ấy trong lòng suốt những năm làm quan.')"><span class="c-letter">B</span><div>Hòa mình sôi nổi vào chốn quan trường, quên hẳn chuyện xưa.</div></button>
+</div>
+<div class="ch-fb" id="sc4-fb" style="margin-top:14px;"></div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s5',15)"><span class="c-letter">→</span><div>Chương V: 1813 — Đi Sứ Nhà Thanh</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG V ===== -->
+<div class="scene" id="s5">
+<div class="chap-badge">⛵ CHƯƠNG V · 1813 — SỨ ĐOÀN SANG YÊN KINH <span class="src-tag v" onclick="openSrcPopup('s5')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#0a0d14 0%,#141a26 100%);"><img class="hero-img" src="images/ch5-yenkinh.jpg" alt="Sứ đoàn nhà Nguyễn tại Trung Hoa, 1813" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">📖</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">TRUNG HOA — 1813</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot now">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">✉️ MỘT CHUYẾN ĐI ĐỊNH MỆNH</span>Năm 1813, Nguyễn Du được cử làm <strong>Chánh sứ</strong> dẫn đầu đoàn đi sứ nhà Thanh. Chuyến đi ngoại giao tưởng như bình thường ấy lại trở thành bước ngoặt lớn nhất trong sự nghiệp văn chương của ông.</div>
+  Tại Trung Hoa, tình cờ ông tiếp cận cuốn tiểu thuyết văn xuôi <em>Kim Vân Kiều truyện</em> của Thanh Tâm Tài Nhân — một tác phẩm vốn ít được đánh giá cao ngay tại chính quê hương của nó.
+</div>
+<div class="dlg reveal"><div class="dlg-who">NGUYỄN DU — ĐỌC XONG TẬP TRUYỆN</div>"Câu chuyện tầm thường, nhưng số phận nàng Kiều trong đó... sao giống cả một kiếp người, giống cả những gì ta đã trải."</div>
+<div class="story reveal">Một cuốn tiểu thuyết bình dân trong tay một người bình thường có lẽ chỉ là một cuốn sách giải trí rồi bị lãng quên. Nhưng trong tay một người từng mồ côi, từng mười năm gió bụi, từng chứng kiến bao cảnh đời dâu bể — nó lại chạm đúng vào một sợi dây rung động sâu thẳm.</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 SO SÁNH VĂN BẢN — TỪ VĂN XUÔI ĐẾN THƠ LỤC BÁT</span>
+  <div class="kc-q" style="margin-bottom:10px;">Cùng một chi tiết — cảnh Kiều bán mình chuộc cha — nhưng "hồn cốt" đã đổi khác hoàn toàn khi qua tay Nguyễn Du:</div>
+  <div style="background:rgba(243,236,214,.03);border:1px solid rgba(243,236,214,.1);border-radius:9px;padding:12px 15px;margin-bottom:10px;">
+    <div style="font-size:10px;color:var(--paper-faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace;">📘 Kim Vân Kiều truyện (văn xuôi, kể việc)</div>
+    <div style="font-size:14.5px;line-height:1.7;color:var(--paper-dim);font-style:italic;">Chỉ thuật lại sự việc: nàng Kiều quyết định bán mình để lấy tiền chuộc cha, rồi lo liệu giấy tờ, gả bán — một chuỗi hành động được kể tuần tự, khách quan, không đi sâu vào tâm trạng.</div>
+  </div>
+  <div style="background:rgba(107,45,92,.07);border:1px solid rgba(201,164,76,.22);border-radius:9px;padding:12px 15px;">
+    <div style="font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace;">📜 Nguyễn Du viết lại (lục bát, tả tâm trạng)</div>
+    <div style="font-size:15px;line-height:1.75;color:var(--paper);">"Đau lòng kẻ ở người đi,<br>Lệ rơi thấm đá, tơ chia rũ tằm."</div>
+    <div style="font-size:13px;line-height:1.65;color:var(--paper-dim);margin-top:8px;">Cùng một khoảnh khắc chia ly, Nguyễn Du không kể sự việc — ông "vẽ" nỗi đau bằng hình ảnh (đá thấm lệ, tơ tằm đứt rũ), biến một tình tiết trong cốt truyện thành một khoảnh khắc rung động của tâm hồn.</div>
+  </div>
+</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc5-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc5',20,'⭐ ĐÚNG HƯỚNG! Nguyễn Du nhận ra đây là chất liệu quý — có thể viết lại bằng thơ Việt, gửi gắm tâm sự riêng. Đây chính là khoảnh khắc khai sinh ra Truyện Kiều.')"><span class="c-letter">A</span><div>Nhận ra đây là chất liệu quý, có thể viết lại bằng thơ Việt, gửi gắm tâm sự riêng.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc5',5,'Đây không phải điều đã xảy ra. Hình ảnh nàng Kiều cứ trở đi trở lại trong tâm trí Nguyễn Du — một câu chuyện chạm vào lòng người sẽ không dễ dàng bị quên lãng.')"><span class="c-letter">B</span><div>Xem đây chỉ là một câu chuyện giải trí bình thường, gấp lại rồi quên.</div></button>
+</div>
+<div class="ch-fb" id="sc5-fb" style="margin-top:14px;"></div>
+<div class="fact reveal"><span class="fact-tag">📖 SỰ THẬT ÍT BIẾT</span>Kim Vân Kiều truyện nguyên tác của Thanh Tâm Tài Nhân chỉ là một tiểu thuyết chương hồi bình thường ở Trung Quốc, gần như bị lãng quên tại chính quê hương nó — trong khi bản phóng tác của Nguyễn Du lại trở thành kiệt tác bất hủ của một dân tộc khác.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s6',15)"><span class="c-letter">→</span><div>Chương VI: Sáng Tạo Truyện Kiều — Đoạn Trường Tân Thanh</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG VI (GATE) ===== -->
+<div class="scene" id="s6">
+<div class="chap-badge">🖋️ CHƯƠNG VI · ĐOẠN TRƯỜNG TÂN THANH <span class="src-tag v" onclick="openSrcPopup('s6')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#0e0810 0%,#221530 100%);"><img class="hero-img" src="images/ch6-truyenkieu.jpg" alt="Bản Truyện Kiều chữ Nôm cổ" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">📜</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">3.254 CÂU LỤC BÁT</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot now">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">✒️ VIỆC LỚN NHẤT ĐỜI</span>Trở về sau chuyến đi sứ, Nguyễn Du bắt tay vào việc lớn nhất đời mình: viết lại câu chuyện nàng Kiều — không phải dịch, mà <strong>sáng tạo lại hoàn toàn</strong> bằng thể thơ lục bát thuần Việt. Ông đặt tên tác phẩm là <em>"Đoạn trường tân thanh"</em> (Tiếng kêu mới đứt ruột) — sau này được gọi phổ biến là <strong>Truyện Kiều</strong>.</div>
+</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="s6-choices">
+  <button class="c-btn" onclick="pickChoice('s6','s6A',20,true)"><span class="c-letter">A</span><div>Viết lại hoàn toàn bằng ngôn ngữ Việt, đưa ca dao, thành ngữ vào thơ bác học, gửi gắm tâm sự riêng.<div class="c-sub">⭐ ĐÚNG HƯỚNG! Chính điều này làm nên sự vĩ đại của Nguyễn Du</div></div></button>
+  <button class="c-btn" onclick="pickChoice('s6','s6B',5,false)"><span class="c-letter">B</span><div>Dịch sát nguyên tác Trung Quốc sang tiếng Việt cho đúng cốt truyện.<div class="c-sub">Một bản dịch sát nghĩa khó lòng trở thành kiệt tác...</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s6A">
+<div class="chap-badge">✅ ĐÚNG HƯỚNG — TUYỆT TÁC RA ĐỜI</div>
+<div class="fact reveal"><span class="fact-tag">🏆 THÀNH TỰU</span><strong>Chính xác!</strong> Bằng tài năng phi thường, Nguyễn Du đã "lột xác" một tiểu thuyết văn xuôi tầm thường thành 3.254 câu thơ lục bát — với chiều sâu tâm lý và giá trị nhân văn vượt xa nguyên tác.</div>
+<div class="edu-pill reveal">
+  <span class="edu-tag">✍️ BA BÚT PHÁP LÀM NÊN "PHÙ THỦY NGÔN NGỮ"</span>
+  <strong style="color:#fff;display:block;margin-top:6px;">Ước lệ tượng trưng</strong> — mượn hình ảnh thiên nhiên, điển cố quen thuộc (hoa, trăng, liễu, mây) để gợi vẻ đẹp hay số phận con người, thay vì tả trực tiếp: "Làn thu thủy, nét xuân sơn" gợi đôi mắt đẹp mà không cần miêu tả chi tiết khuôn mặt.<br>
+  <strong style="color:#fff;display:block;margin-top:10px;">Tả cảnh ngụ tình</strong> — cảnh vật trong thơ không chỉ là phông nền, mà mang tâm trạng nhân vật: cảnh buồn khi lòng người u uất, cảnh tươi khi lòng người hân hoan.<br>
+  <strong style="color:#fff;display:block;margin-top:10px;">Ngôn ngữ bình dân hóa bác học</strong> — lồng ghép thành ngữ, tục ngữ, ca dao vào thể thơ lục bát vốn dùng cho hát ru, đồng dao, khiến áng thơ bác học vẫn gần gũi với người bình dân.
+</div>
+<div class="gate reveal" id="gate6">
+  <span class="gate-icon">🖋️</span>
+  <div class="gate-title">CỬA ẢI KIẾN THỨC</div>
+  <div class="gate-desc">Trả lời đúng <strong>3 câu hỏi liên tiếp</strong> để mở khóa và tìm hiểu sâu hơn về kiệt tác Truyện Kiều!</div>
+  <div class="gate-req">📜 Cần đúng 3/3 câu hỏi</div>
+  <div class="mq-dots" id="mq6-dots"><div class="mq-dot now" id="mq6d0"></div><div class="mq-dot" id="mq6d1"></div><div class="mq-dot" id="mq6d2"></div></div>
+  <div class="challenge" id="mq6-0">
+    <span class="ch-tag">📜 CÂU HỎI 1/3</span>
+    <div class="ch-q">Truyện Kiều của Nguyễn Du có tổng cộng bao nhiêu câu thơ lục bát?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,6,0)">A. 1.254 câu</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,6,0)">B. 3.254 câu</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,6,0)">C. 5.254 câu</button>
+    </div>
+    <div class="ch-fb" id="mq6fb-0"></div>
+  </div>
+  <div class="challenge" id="mq6-1" style="display:none">
+    <span class="ch-tag">📜 CÂU HỎI 2/3</span>
+    <div class="ch-q">Nguyên tác mà Nguyễn Du dựa vào để sáng tạo Truyện Kiều có tên là gì?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,6,1)">A. Tây Du Ký</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,6,1)">B. Kim Vân Kiều truyện của Thanh Tâm Tài Nhân</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,6,1)">C. Hồng Lâu Mộng</button>
+    </div>
+    <div class="ch-fb" id="mq6fb-1"></div>
+  </div>
+  <div class="challenge" id="mq6-2" style="display:none">
+    <span class="ch-tag">📜 CÂU HỎI 3/3</span>
+    <div class="ch-q">Bút pháp "mượn hình ảnh thiên nhiên, điển cố để gợi vẻ đẹp hay số phận con người" (ví dụ "làn thu thủy, nét xuân sơn") trong Truyện Kiều được gọi là gì?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,6,2)">A. Tả thực chi tiết</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,6,2)">B. Ước lệ tượng trưng</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,6,2)">C. Ngụ ngôn</button>
+    </div>
+    <div class="ch-fb" id="mq6fb-2"></div>
+  </div>
+  <button class="unlock-btn" id="gate6-btn" onclick="unlockGate('s6-body','gate6')">🖋️ MỞ CỬA — TIẾP TỤC CHƯƠNG</button>
+</div>
+<div id="s6-body" class="gate-locked">
+<div class="story reveal">Điều làm nên sự vĩ đại của Truyện Kiều không phải cốt truyện, mà là ngôn ngữ: Nguyễn Du đưa tiếng Việt bình dân, ca dao, thành ngữ vào thơ bác học một cách tài tình, khiến áng thơ vừa uyên bác vừa gần gũi với muôn người.</div>
+<div class="quote-moment reveal">"Trải qua một cuộc bể dâu, những điều trông thấy mà đau đớn lòng."<span class="quote-src">— Truyện Kiều, câu 3–4</span></div>
+<div class="edu-pill reveal">
+  <span class="edu-tag">🌿 TẢ CẢNH NGỤ TÌNH — MỘT VÍ DỤ</span>
+  Trong đoạn Kiều ở lầu Ngưng Bích, cảnh vật đổi theo từng nhịp tâm trạng: "Buồn trông cửa bể chiều hôm" mở ra nỗi cô đơn nhìn về nơi xa xăm; "Buồn trông ngọn nước mới sa" gợi cảm giác trôi dạt, vô định của số phận; điệp từ "buồn trông" lặp đi lặp lại như từng đợt sóng lòng dội vào cảnh vật — đây chính là bút pháp tả cảnh ngụ tình đạt đến độ mẫu mực trong văn học trung đại Việt Nam.
+</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s7',20)"><span class="c-letter">→</span><div>Chương VII: Thuyết Tài Mệnh Tương Đố & Chữ Tâm</div></button></div>
+</div>
+</div>
+
+<div class="scene" id="s6B">
+<div class="chap-badge">❌ CHỈ LÀ MỘT BẢN DỊCH</div>
+<div class="fact reveal"><span class="fact-tag">⚠️ HỆ QUẢ</span>Đọc lại những gì mình viết, Nguyễn Du thấy thiếu vắng linh hồn. "Chữ đúng nhưng hồn chưa tới." Ông gác bút, suy nghĩ lại cách tiếp cận — bởi nguyên tác Kim Vân Kiều truyện chỉ là một tiểu thuyết tầm thường, dịch sát nghĩa sẽ khó lòng trở thành kiệt tác.</div>
+<div class="choices-lbl">⚡ VIẾT LẠI THEO CÁCH RIÊNG</div>
+<div class="choices"><button class="c-btn" onclick="markCorrect('s6');go('s6A',10)"><span class="c-letter">→</span><div>Thổi hồn Việt vào tác phẩm, không câu nệ nguyên tác.</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG VII ===== -->
+<div class="scene" id="s7">
+<div class="chap-badge">💠 CHƯƠNG VII · TÀI MỆNH TƯƠNG ĐỐ & CHỮ TÂM <span class="src-tag v" onclick="openSrcPopup('s7')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#0d0a12 0%,#1c1524 100%);"><img class="hero-img" src="images/ch7-chutam.jpg" alt="Thư pháp chữ Tâm và chữ Tài" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">💭</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">TRIẾT LÝ XUYÊN SUỐT ÁNG KIỀU</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot now">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">🎭 TRIẾT LÝ CỐT LÕI</span>Xuyên suốt 3.254 câu thơ là triết lý <strong>"tài mệnh tương đố"</strong> — người càng tài hoa càng lắm truân chuyên. Đây không chỉ là bi kịch của riêng Thúy Kiều, mà còn phản chiếu chính cuộc đời đầy biến động của Nguyễn Du.</div>
+</div>
+<div class="quote-moment reveal">"Chữ tài chữ mệnh khéo là ghét nhau."<span class="quote-src">— Truyện Kiều, câu 5</span></div>
+<div class="dlg reveal"><div class="dlg-who">NGUYỄN DU — VIẾT TRONG ĐÊM</div>"Chữ tâm kia mới bằng ba chữ tài — dù đời có vùi dập thế nào, tấm lòng mới là điều còn lại sau cùng."</div>
+<div class="edu-pill reveal">
+  <span class="edu-tag">📜 HAI CÂU THƠ MỞ ĐẦU VÀ KẾT THÚC — MỘT VÒNG TRÒN TƯ TƯỞNG</span>
+  Truyện Kiều mở đầu bằng "Trăm năm trong cõi người ta, chữ tài chữ mệnh khéo là ghét nhau" và khép lại bằng "Chữ tâm kia mới bằng ba chữ tài" — cả tác phẩm là một hành trình đi từ nghi vấn về số phận đến câu trả lời về giá trị con người: không phải tài năng, mà tấm lòng mới là điều đáng quý và bền vững nhất.
+</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Theo triết lý "tài mệnh tương đố", điều gì thường đi kèm với người tài hoa trong Truyện Kiều?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7')">A. Giàu sang phú quý</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc7')">B. Số phận truân chuyên, nhiều bất hạnh</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7')">C. Quyền lực chính trị</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7')">D. Sự nổi tiếng lâu dài</button>
+  </div>
+  <div class="kc-fb" id="kc7-fb"></div>
+</div>
+<div class="choices-lbl">⚡ ĐIỀU BẠN MUỐN NHẤN MẠNH NHẤT QUA NHÂN VẬT THÚY KIỀU</div>
+<div class="choices" id="sc7-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc7',20,'⭐ ĐÚNG HƯỚNG! Đây chính là tinh thần cốt lõi Nguyễn Du gửi gắm — chữ Tâm hơn chữ Tài. Dù trải bao tủi nhục, tấm lòng hiếu thảo và thủy chung của Kiều vẫn ngời sáng.')"><span class="c-letter">A</span><div>Dù trải bao tủi nhục, tấm lòng hiếu thảo và thủy chung của Kiều vẫn ngời sáng.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc7',5,'Đây thiếu đi thông điệp nhân văn cốt lõi của tác phẩm. Nguyễn Du tin rằng giữa khổ đau, phẩm giá con người vẫn phải được giữ gìn — chứ không chỉ là bi kịch đơn thuần.')"><span class="c-letter">B</span><div>Chỉ tập trung miêu tả bi kịch, số phận nghiệt ngã mà không có điểm sáng nào.</div></button>
+</div>
+<div class="ch-fb" id="sc7-fb" style="margin-top:14px;"></div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s8',20)"><span class="c-letter">→</span><div>Chương VIII: Những Năm Cuối Đời</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG VIII ===== -->
+<div class="scene" id="s8">
+<div class="chap-badge">🍁 CHƯƠNG VIII · NĂM 1820 — HUẾ <span class="src-tag v" onclick="openSrcPopup('s8')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#0a0a0f 0%,#181822 100%);"><img class="hero-img" src="images/ch8-hue-cuoidoi.jpg" alt="Huế hoàng hôn, những năm cuối đời Nguyễn Du" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">🕊️</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">NHỮNG NĂM CUỐI ĐỜI</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot done">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot now">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">🌫️ NỖI U UẤT KHÔNG TÊN</span>Dù làm quan lớn trong triều, Nguyễn Du sống khép kín, ít giao du, thường u uất vì mang tâm sự hoài Lê khó giãi bày dưới triều đại mới. Vua Gia Long từng nhận xét ông là người "ít nói".</div>
+  Năm 1820, khi được cử làm Chánh sứ đi Trung Quốc lần hai, Nguyễn Du lâm bệnh nặng. Trong những ngày cuối cùng, có một câu hỏi day dứt cứ trở đi trở lại trong tâm trí ông: liệu áng thơ ông dồn cả đời tâm huyết viết ra có còn được ai nhớ đến sau ba trăm năm nữa?
+</div>
+<div class="quote-moment reveal">"Bất tri tam bách dư niên hậu, thiên hạ hà nhân khấp Tố Như?"<span class="quote-src">— Nguyễn Du, tự hỏi về hậu thế</span></div>
+<div class="choices-lbl">⚡ TÂM NGUYỆN CUỐI CÙNG CỦA BẠN LÀ GÌ?</div>
+<div class="choices" id="sc8-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc8',20,'⭐ ĐÚNG HƯỚNG! Câu thơ tự vấn đầy trăn trở của Nguyễn Du cho thấy rõ: ông vẫn khắc khoải liệu áng Kiều và tấm lòng mình có được hậu thế thấu hiểu hay không.')"><span class="c-letter">A</span><div>Mong áng Kiều sẽ còn sống mãi trong lòng người Việt, dù bản thân có bị lãng quên.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc8',5,'Điều này không khớp với câu thơ tự vấn đầy trăn trở ông để lại — cho thấy ông vẫn rất quan tâm liệu hậu thế có thấu hiểu tấm lòng mình hay không.')"><span class="c-letter">B</span><div>Chỉ mong được yên nghỉ, không quan tâm hậu thế nhớ hay quên.</div></button>
+</div>
+<div class="ch-fb" id="sc8-fb" style="margin-top:14px;"></div>
+<div class="story reveal">Nguyễn Du qua đời tại Huế, hưởng thọ 55 tuổi, chưa kịp lên đường sang Trung Quốc lần nữa. Ông được an táng tại Huế, sau này di dời hài cốt về quê nhà Tiên Điền, Hà Tĩnh.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s9',15)"><span class="c-letter">→</span><div>Chương IX: Di Sản Vượt Thời Gian</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG IX ===== -->
+<div class="scene" id="s9">
+<div class="chap-badge">🌏 CHƯƠNG IX · 1965 — DANH NHÂN VĂN HÓA THẾ GIỚI <span class="src-tag v" onclick="openSrcPopup('s9')">📖 nguồn</span></div>
+<div class="hero-art" style="height:auto;background:linear-gradient(135deg,#0a0e0c 0%,#132018 100%);"><img class="hero-img" src="images/ch9-tiendien.jpg" alt="Khu di tích Nguyễn Du, Tiên Điền, Hà Tĩnh" style="position:static;width:100%;height:auto;object-fit:contain;opacity:1;display:block;" onload="this.classList.add('loaded');this.closest('.hero-art').classList.add('has-photo')" onerror="this.remove()"><span class="hero-emoji">🌾</span><div class="hero-label" style="position:static;background:rgba(10,10,15,.5);padding:10px;text-shadow:none;">TIÊN ĐIỀN, HÀ TĨNH</div></div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1765</div><div class="cm-evt">Sinh Ra</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1775</div><div class="cm-evt">Mồ Côi</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1786</div><div class="cm-evt">Gió Bụi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1802</div><div class="cm-evt">Làm Quan</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1813</div><div class="cm-evt">Đi Sứ</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">~1815</div><div class="cm-evt">Viết Kiều</div></div>
+  <div class="cm-item"><div class="cm-dot done">7</div><div class="cm-year">—</div><div class="cm-evt">Chữ Tâm</div></div>
+  <div class="cm-item"><div class="cm-dot done">8</div><div class="cm-year">1820</div><div class="cm-evt">Cuối Đời</div></div>
+  <div class="cm-item"><div class="cm-dot now">9</div><div class="cm-year">1965</div><div class="cm-evt">Di Sản</div></div>
+</div>
+<div class="story reveal">
+  <div class="edu-pill"><span class="edu-tag">🌏 200 NĂM SAU</span>Năm 1965, nhân kỷ niệm 200 năm sinh, Hội đồng Hòa bình Thế giới vinh danh Nguyễn Du là <strong>Danh nhân văn hóa thế giới</strong> — một trong số ít văn nhân Việt Nam được thế giới công nhận ở tầm vóc này.</div>
+  Truyện Kiều đã được dịch ra hơn 20 thứ tiếng. Nhiều câu Kiều đã trở thành thành ngữ trong đời sống người Việt: "Trăm năm trong cõi người ta", "Sen tàn cúc lại nở hoa"... và tục "bói Kiều" vẫn còn phổ biến đến ngày nay.
+</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ CUỐI</span>
+  <div class="kc-q">Nguyễn Du được UNESCO/Hội đồng Hòa bình Thế giới vinh danh Danh nhân văn hóa thế giới vào năm nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9')">A. 1945</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc9')">B. 1965</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9')">C. 1990</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9')">D. 1820</button>
+  </div>
+  <div class="kc-fb" id="kc9-fb"></div>
+</div>
+<div class="choices-lbl">⚡ CÂU HỎI CUỐI DÀNH CHO BẠN</div>
+<div class="choices" id="sc9-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc9',20,'⭐ ĐÚNG HƯỚNG! Câu hỏi day dứt của Nguyễn Du năm xưa đã được lịch sử trả lời vượt xa mong đợi — người đời không chỉ nhớ đến Tố Như, mà còn tôn vinh ông là Danh nhân văn hóa thế giới.')"><span class="c-letter">A</span><div>Tin rằng chữ Tâm và tài năng chân chính luôn được hậu thế ghi nhận, dù có phải chờ đợi rất lâu.<div class="c-sub">⭐ ĐÚNG HƯỚNG!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc9',5,'Lịch sử đã chứng minh điều ngược lại — 145 năm sau khi Nguyễn Du mất, thế giới vẫn nhớ đến và vinh danh ông.')"><span class="c-letter">B</span><div>Cho rằng tài năng cá nhân rồi sẽ bị thời gian vùi lấp, không có gì tồn tại mãi.</div></button>
+</div>
+<div class="ch-fb" id="sc9-fb" style="margin-top:14px;"></div>
+<div class="quote-moment reveal">"Chữ tâm kia mới bằng ba chữ tài."<span class="quote-src">— Truyện Kiều, câu 3251</span></div>
+<div class="choices-lbl">⚡ HOÀN THÀNH HÀNH TRÌNH</div>
+<div class="choices"><button class="c-btn" onclick="go('final',20)"><span class="c-letter">✓</span><div>📜 <strong>HÀNH TRÌNH TRỌN ĐỜI NGUYỄN DU HOÀN THÀNH!</strong></div></button></div>
+</div>
+
+<!-- ===== FINAL ===== -->
+<div class="scene" id="final">
+<div class="final">
+  <div class="final-seal" id="finalSeal">📜</div>
+  <div class="final-h" id="finalH">HÀNH TRÌNH HOÀN THÀNH!</div>
+  <div class="final-pts" id="finalPts">0 điểm</div>
+  <div class="final-rank-badge" id="finalRank">—</div>
+  <div class="final-desc" id="finalDesc">Bạn đã hoàn thành hành trình cuộc đời Nguyễn Du!</div>
+  <div class="final-achs" id="finalAchs"></div>
+  <div class="jmap reveal">
+    <span class="journal-tag" style="color:var(--gold-l);">🗺️ HÀNH TRÌNH 55 NĂM</span>
+    <div class="jmap-note">Sơ đồ cách điệu các điểm dừng chân quan trọng — không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,180 C100,140 130,90 170,100 S250,150 280,140 S360,60 400,70 S480,160 520,150 S600,90 640,100 S710,170 720,175"/>
+      <circle class="jmap-pt" cx="40" cy="180" r="6"/><text class="jmap-yr" x="40" y="200" text-anchor="middle">1765</text><text class="jmap-lbl" x="40" y="212" text-anchor="middle">Thăng Long</text>
+      <circle class="jmap-pt" cx="170" cy="100" r="6"/><text class="jmap-yr" x="170" y="85" text-anchor="middle">1775</text><text class="jmap-lbl" x="170" y="75" text-anchor="middle">Tiên Điền</text>
+      <circle class="jmap-pt" cx="280" cy="140" r="6"/><text class="jmap-yr" x="280" y="160" text-anchor="middle">1786</text><text class="jmap-lbl" x="280" y="172" text-anchor="middle">Thái Bình</text>
+      <circle class="jmap-pt" cx="400" cy="70" r="6"/><text class="jmap-yr" x="400" y="55" text-anchor="middle">1790</text><text class="jmap-lbl" x="400" y="45" text-anchor="middle">Hồng Lĩnh</text>
+      <circle class="jmap-pt" cx="520" cy="150" r="6"/><text class="jmap-yr" x="520" y="170" text-anchor="middle">1802</text><text class="jmap-lbl" x="520" y="182" text-anchor="middle">Huế</text>
+      <circle class="jmap-pt" cx="640" cy="100" r="6"/><text class="jmap-yr" x="640" y="85" text-anchor="middle">1813</text><text class="jmap-lbl" x="640" y="75" text-anchor="middle">Yên Kinh</text>
+      <circle class="jmap-pt" cx="720" cy="175" r="7"/><text class="jmap-yr" x="700" y="195" text-anchor="middle">1820</text><text class="jmap-lbl" x="700" y="207" text-anchor="middle">Huế</text>
+    </svg>
+  </div>
+  <div class="journal reveal" id="journalBox">
+    <span class="journal-tag">📔 NHẬT KÝ HÀNH TRÌNH CỦA BẠN</span>
+    <div id="journalList"></div>
+    <button class="journal-copy" onclick="copyJournal()">📋 Sao chép nhật ký để chia sẻ</button>
+  </div>
+  <div class="final-lesson">
+    <span class="fl-tag">📚 BA BÀI HỌC VƯỢT THỜI GIAN</span>
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">1. NGHỊCH CẢNH LÀ CHẤT LIỆU CỦA SÁNG TẠO</strong>
+    Mồ côi, mười năm gió bụi, nghèo khó — những nỗi đau tưởng chừng chỉ là bất hạnh lại trở thành chất liệu quý giá nhất cho một kiệt tác văn chương vượt thời gian.
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">2. DÁM SÁNG TẠO THAY VÌ SAO CHÉP</strong>
+    Nguyễn Du không dịch nguyên tác, mà thổi hồn Việt vào một câu chuyện vay mượn — biến nó thành áng thơ mang bản sắc riêng, vượt xa nguồn gốc của chính nó.
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">3. CHỮ TÂM MỚI LÀ ĐIỀU CÒN LẠI SAU CÙNG</strong>
+    <em>"Chữ tâm kia mới bằng ba chữ tài."</em> Tài năng có thể lụi tàn theo thời gian, nhưng tấm lòng chân thành với con người và cuộc đời mới là điều khiến một tác phẩm trường tồn.
+    <strong style="display:block;margin-top:15px;color:var(--plum-l);font-size:17px;">Ba trăm năm lẻ đã qua — và người đời vẫn còn nhắc tên Tố Như.</strong>
+  </div>
+  <div class="btn-row" style="margin-top:26px;">
+    <button class="btn-ghost" onclick="restart()">🔄 CHƠI LẠI</button>
+    <a href="#" class="btn-solid">📖 TÌM HIỂU THÊM VỀ NGUYỄN DU</a>
+  </div>
+</div>
+</div>
+
+</div><!-- .wrap -->
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-modal">
+  <div class="ref-modal-head"><span class="ref-page-title">📚 Nguồn Tham Khảo</span><button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button></div>
+  <div class="ref-page-sub">Các sự kiện, ngày tháng, số liệu trong trang này được đối chiếu từ các nguồn chính thống dưới đây. Các đoạn hội thoại (viền tím 🔵) là <strong>dựng lại minh họa</strong> dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.</div>
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính sử & văn học sử</div>
+    <div class="ref-item">Quốc sử quán triều Nguyễn, Đại Nam liệt truyện</div>
+    <div class="ref-item">Đại Nam thực lục, các chương liên quan đến sứ đoàn 1813</div>
+    <div class="ref-item">Nguyễn Du, Thanh Hiên thi tập (thơ chữ Hán giai đoạn ẩn dật)</div>
+  </div>
+  <div class="ref-group">
+    <div class="ref-group-h">Văn bản học Truyện Kiều</div>
+    <div class="ref-item">Các bản Nôm cổ Truyện Kiều; nghiên cứu văn bản học của Đào Duy Anh</div>
+    <div class="ref-item">Hồ sơ vinh danh Danh nhân văn hóa thế giới, Hội đồng Hòa bình Thế giới, 1965</div>
+  </div>
+  <div class="ref-group">
+    <div class="ref-group-h">Ghi chú phương pháp thể hiện</div>
+    <div class="ref-item">Hội thoại giữa các nhân vật: dựng lại nhằm minh họa, giúp người học hình dung bối cảnh — không phải trích dẫn nguyên văn có ghi chép</div>
+  </div>
+  <div class="ref-group">
+    <div class="ref-group-h">📷 Khung ảnh mỗi chương — cách tự thêm ảnh</div>
+    <div class="ref-item">Tạo một thư mục tên <strong>images</strong> nằm cùng chỗ với file HTML này, rồi lưu ảnh bạn tìm được vào đó, đặt đúng tên file như dưới đây. Trang sẽ tự hiện ảnh thay cho biểu tượng emoji.</div>
+    <div class="ref-item">ch1-thanglong.jpg — Dinh thự quý tộc / kiến trúc Thăng Long thế kỷ 18</div>
+    <div class="ref-item">ch2-mocoi.jpg — Cảnh loạn lạc, tang tóc thời Lê mạt</div>
+    <div class="ref-item">ch3-honglinh.jpg — Núi Hồng Lĩnh, Hà Tĩnh</div>
+    <div class="ref-item">ch4-hue-quan.jpg — Kinh thành Huế, quan lại triều Nguyễn</div>
+    <div class="ref-item">ch5-yenkinh.jpg — Sứ đoàn / Trung Hoa đầu thế kỷ 19</div>
+    <div class="ref-item">ch6-truyenkieu.jpg — Bản Truyện Kiều chữ Nôm cổ / thư pháp</div>
+    <div class="ref-item">ch7-chutam.jpg — Thư pháp chữ Tâm, chữ Tài</div>
+    <div class="ref-item">ch8-hue-cuoidoi.jpg — Huế hoàng hôn, không khí trầm buồn</div>
+    <div class="ref-item">ch9-tiendien.jpg — Khu di tích Nguyễn Du, Tiên Điền, Hà Tĩnh</div>
+    <div class="ref-item">Kích thước đề xuất: ảnh ngang, tối thiểu 750×220px. Nếu không tìm được ảnh cho chương nào, khung sẽ tự giữ nguyên biểu tượng emoji như hiện tại.</div>
+  </div>
+</div>
+</div>
+
+<script>
+// ===== CANVAS NỀN: SAO + CÁNH HOA MẬN & GIỌT MỰC RƠI =====
+const bgC=document.getElementById('bgCanvas');const bgCtx=bgC.getContext('2d');
+function resizeBG(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+resizeBG();window.addEventListener('resize',resizeBG);
+const stars2=[];for(let i=0;i<80;i++)stars2.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.3,a:Math.random(),da:(Math.random()-.5)*.008});
+const drops=[];
+function randTopX(){return Math.random();}
+for(let i=0;i<24;i++)drops.push({
+  x:randTopX(),y:Math.random(),size:1.2+Math.random()*2.2,speed:.06+Math.random()*.12,
+  drift:(Math.random()-.5)*.05,spin:Math.random()*Math.PI*2,dspin:(Math.random()-.5)*.02,
+  kind:Math.random()<0.55?'petal':'ink',
+  hue:Math.random()<0.5?'201,164,76':'107,45,92'
+});
+function drawPetal(ctx,x,y,size,spin,hue,alpha){
+  ctx.save();ctx.translate(x,y);ctx.rotate(spin);
+  ctx.fillStyle=`rgba(${hue},${alpha})`;
+  ctx.beginPath();ctx.ellipse(0,0,size*1.6,size*0.9,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  stars2.forEach(s=>{s.a=Math.max(.05,Math.min(.75,s.a+s.da));if(s.a<=.06||s.a>=.74)s.da*=-1;
+    bgCtx.beginPath();bgCtx.arc(s.x*bgC.width,s.y*bgC.height,s.r,0,Math.PI*2);bgCtx.fillStyle=`rgba(255,255,255,${s.a})`;bgCtx.fill();});
+  drops.forEach(d=>{
+    d.y+=d.speed/bgC.height*60;d.x+=d.drift/bgC.width*60+Math.sin(d.y*8)*0.0006;d.spin+=d.dspin;
+    if(d.y>1.03){d.y=-0.02;d.x=randTopX();}
+    if(d.x<-0.03||d.x>1.03)d.x=randTopX();
+    const px=d.x*bgC.width,py=d.y*bgC.height;
+    if(d.kind==='petal'){drawPetal(bgCtx,px,py,d.size,d.spin,d.hue,0.32);}
+    else{const grad=bgCtx.createRadialGradient(px,py,0,px,py,d.size*3.4);grad.addColorStop(0,`rgba(${d.hue},0.5)`);grad.addColorStop(1,`rgba(${d.hue},0)`);
+      bgCtx.beginPath();bgCtx.arc(px,py,d.size*3.4,0,Math.PI*2);bgCtx.fillStyle=grad;bgCtx.fill();
+      bgCtx.beginPath();bgCtx.arc(px,py,d.size*0.7,0,Math.PI*2);bgCtx.fillStyle=`rgba(${d.hue},0.7)`;bgCtx.fill();}
+  });
+  requestAnimationFrame(drawBG);
+}drawBG();
+
+// ===== CURSOR TRAIL: NÉT MỰC =====
+const curC=document.getElementById('cursorCanvas');const curCtx=curC.getContext('2d');
+function resizeCur(){curC.width=window.innerWidth;curC.height=window.innerHeight;}
+resizeCur();window.addEventListener('resize',resizeCur);
+let trailPts=[];const isTouchDevice='ontouchstart' in window;
+if(!isTouchDevice){let lastMove=0;window.addEventListener('mousemove',e=>{const now=Date.now();if(now-lastMove<30)return;lastMove=now;
+  trailPts.push({x:e.clientX,y:e.clientY,life:1,size:2+Math.random()*2.2});if(trailPts.length>36)trailPts.shift();});}
+function drawCursorTrail(){curCtx.clearRect(0,0,curC.width,curC.height);
+  trailPts.forEach(p=>{p.life-=0.03;const alpha=Math.max(0,p.life);
+    const grad=curCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*5);
+    grad.addColorStop(0,`rgba(201,164,76,${alpha*0.5})`);grad.addColorStop(1,'rgba(201,164,76,0)');
+    curCtx.beginPath();curCtx.arc(p.x,p.y,p.size*5,0,Math.PI*2);curCtx.fillStyle=grad;curCtx.fill();});
+  trailPts=trailPts.filter(p=>p.life>0);requestAnimationFrame(drawCursorTrail);
+}drawCursorTrail();
+
+// ===== STATE =====
+let pts=0,streak=0,totalKC=0;let answered={};let mq6ans=[false,false,false];let sceneRewarded={};
+let choiceCorrect={s1:false,sc2:false,sc3:false,sc4:false,sc5:false,s6:false,sc7:false,sc8:false,sc9:false};
+let kcCorrectCount=0,kcTotalCount=0;
+
+// ===== SOUND =====
+let soundOn=true,actx=null;
+function getActx(){if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();return actx;}
+function toggleSound(){soundOn=!soundOn;document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';}
+function playTone(freq,dur,type='sine',vol=.11){if(!soundOn)return;try{const ctx=getActx();const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(ctx.destination);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start();o.stop(ctx.currentTime+dur);}catch(e){}}
+function soundCorrect(){playTone(660,.14,'sine',.12);setTimeout(()=>playTone(880,.18,'sine',.1),90);}
+function soundWrong(){playTone(160,.26,'sawtooth',.09);}
+function soundUnlock(){playTone(523,.12,'triangle',.11);setTimeout(()=>playTone(784,.2,'triangle',.11),110);}
+function soundCombo(){playTone(440,.1,'sine',.09);setTimeout(()=>playTone(550,.1,'sine',.1),80);setTimeout(()=>playTone(660,.2,'sine',.12),160);}
+
+// ===== STREAK & COMBO =====
+let streakN=0,maxStreak=0;
+function addStreak(){streakN++;if(streakN>maxStreak)maxStreak=streakN;
+  const b=document.getElementById('streakBadge');document.getElementById('streakNum').textContent=streakN;b.classList.add('show');
+  if(streakN>=3){b.classList.add('fire');showCombo(streakN);}else b.classList.remove('fire');}
+function resetStreak(){streakN=0;const b=document.getElementById('streakBadge');if(b)b.classList.remove('show','fire');}
+function showCombo(n){const labels={3:'🖋️ COMBO x3',4:'📜 THI HỨNG x4',5:'💠 TÀI HOA x5',6:'🌟 CHỮ TÂM x6'};
+  const bonus={3:10,4:15,5:20,6:30}[n]||30;
+  document.getElementById('comboLabel').textContent=labels[n]||('🌟 BẤT HỦ x'+n);
+  document.getElementById('comboSub').textContent='+'+bonus+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bonus;updateScore();showPts('+'+bonus+' COMBO!');soundCombo();burstParticles(window.innerWidth/2,window.innerHeight*0.44);}
+
+// ===== REVEAL OBSERVER =====
+const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));}
+initReveal();
+
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.c-btn,.kc-opt,.ch-opt,.unlock-btn,.btn-solid,.btn-ghost');
+  if(!btn||btn.disabled)return;const rect=btn.getBoundingClientRect();const size=Math.max(rect.width,rect.height);
+  const rip=document.createElement('span');rip.className='ripple-el';rip.style.width=rip.style.height=size+'px';
+  rip.style.left=(e.clientX-rect.left-size/2)+'px';rip.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(rip);setTimeout(()=>rip.remove(),650);
+});
+
+// ===== SCORE & UI =====
+let lastMilestone=0;
+function updateScore(){
+  document.getElementById('scoreEl').textContent=pts;
+  document.getElementById('rankEl').textContent=pts>=250?'📜 Đại Thi Hào':pts>=170?'🖋️ Kẻ Sĩ Gió Bụi':pts>=90?'📚 Học Giả':'🌱 Tìm Hiểu';
+  const pct=Math.min(100,Math.round((pts/300)*100));
+  const sf=document.getElementById('tamMeter'),sp=document.getElementById('tamPct');
+  if(sf)sf.style.width=pct+'%';if(sp)sp.textContent=pct+'%';
+}
+function showPts(txt){const p=document.getElementById('ptsPop');p.textContent=txt;p.className='pts-pop';void p.offsetWidth;p.className='pts-pop show';}
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+
+function go(id,add){
+  if(add>0&&!sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPts('+'+add);pts+=add;
+  }
+  updateScore();
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+      const navOffset=62;const y=el.getBoundingClientRect().top+window.scrollY-navOffset;
+      window.scrollTo({top:Math.max(0,y),behavior:'smooth'});el.querySelectorAll('.reveal').forEach(r=>revObs.observe(r));
+    });});}
+  const progMap={cover:0,s1:8,s2:18,s3:30,s4:42,s5:54,s6:66,s7:80,s8:90,s9:96,final:100};
+  document.getElementById('prog').style.width=(progMap[id]||100)+'%';
+  updateJourneyMap(id);
+  if(id==='final')showFinal();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+const chapterNames={s1:'I. Công Tử Thăng Long',sc2:'II. Mồ Côi Giữa Cơ Nghiệp Sụp Đổ',sc3:'III. Mười Năm Gió Bụi',sc4:'IV. Ra Làm Quan Triều Nguyễn',sc5:'V. Đi Sứ — Gặp Kim Vân Kiều Truyện',s6:'VI. Sáng Tạo Truyện Kiều',sc7:'VII. Tài Mệnh Tương Đố — Chữ Tâm',sc8:'VIII. Những Năm Cuối Đời',sc9:'IX. Di Sản Vượt Thời Gian'};
+function renderJournal(){let jHtml='';for(const key in chapterNames){const ok=choiceCorrect[key];
+  jHtml+=`<div class="journal-row"><span>${chapterNames[key]}</span><span class="journal-status ${ok?'ok':'no'}">${ok?'✅ Đúng hướng':'○ Khác hướng'}</span></div>`;}
+  const el=document.getElementById('journalList');if(el)el.innerHTML=jHtml;}
+function copyJournal(){let txt='📔 NHẬT KÝ HÀNH TRÌNH — NGUYỄN DU: CHỮ TÂM KIA MỚI BẰNG BA CHỮ TÀI\\n\\n';
+  for(const key in chapterNames){txt+=(choiceCorrect[key]?'✅ ':'○ ')+chapterNames[key]+'\\n';}
+  txt+=`\\nTổng điểm: ${pts} — ${document.getElementById('rankEl').textContent}\\n`;
+  navigator.clipboard.writeText(txt).then(()=>{const btn=document.querySelector('.journal-copy');if(btn){const old=btn.textContent;btn.textContent='✅ Đã sao chép!';setTimeout(()=>btn.textContent=old,1800);}}).catch(()=>{});}
+
+function showFinal(){
+  const h=pts>=250?'📜 ĐẠI THI HÀO DÂN TỘC!':pts>=170?'🖋️ KẺ SĨ GIÓ BỤI KIÊN TRÌ!':pts>=90?'📚 HỌC GIẢ SÂU SẮC!':'🌱 HÀNH TRÌNH KHỞI ĐẦU!';
+  document.getElementById('finalH').textContent=h;document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=document.getElementById('rankEl').textContent;renderJournal();
+  const descEl=document.getElementById('finalDesc');
+  if(pts>=250){descEl.textContent='Bạn đã đi trọn hành trình cùng Nguyễn Du với sự thấu hiểu sâu sắc — không chỉ nhớ sự kiện, mà còn hiểu được vì sao mỗi lựa chọn của ông lại quan trọng đến vậy.';}
+  else if(pts>=170){descEl.textContent='Bạn đã hoàn thành hành trình với một nền tảng kiến thức vững chắc, nắm được những cột mốc quan trọng nhất trong cuộc đời Nguyễn Du.';}
+  else if(pts>=90){descEl.textContent='Bạn đã đi qua hành trình và nắm được những nét chính. Còn nhiều chi tiết thú vị đang chờ bạn khám phá thêm nếu chơi lại!';}
+  else{descEl.textContent='Bạn vừa mới bắt đầu làm quen với cuộc đời Nguyễn Du. Hãy thử chơi lại để khám phá sâu hơn những khoảnh khắc văn chương này!';}
+  const achs=[
+    {icon:'🎓',name:'Học Giả',ok:kcTotalCount>0&&(kcCorrectCount/kcTotalCount)>=0.8},
+    {icon:'🖋️',name:'Ý Chí Vững Vàng',ok:choiceCorrect.s1&&choiceCorrect.sc2&&choiceCorrect.sc3&&choiceCorrect.sc4&&choiceCorrect.sc5&&choiceCorrect.s6&&choiceCorrect.sc7&&choiceCorrect.sc8&&choiceCorrect.sc9},
+    {icon:'🌏',name:'Người Gió Bụi',ok:true},
+    {icon:'📜',name:'Nhà Thơ Lớn',ok:choiceCorrect.s6},
+    {icon:'💠',name:'Chữ Tâm Sáng',ok:choiceCorrect.sc7},
+    {icon:'🌟',name:'Danh Nhân Thế Giới',ok:pts>=250}
+  ];
+  document.getElementById('finalAchs').innerHTML=achs.map(a=>`<div class="ach ${a.ok?'':'locked'}"><span class="ach-icon">${a.icon}</span><span class="ach-name">${a.name}</span></div>`).join('');
+}
+
+// ===== KNOWLEDGE CHECK =====
+const kcFB={
+  kc1:'Đúng! Nguyễn Nghiễm giữ chức Tể tướng triều Lê — một trong những vị trí quyền lực nhất triều đình.',
+  kc3:'Đúng! "Hồng Sơn liệp hộ" — người đi săn núi Hồng — là biệt hiệu Nguyễn Du tự đặt cho mình khi ẩn dật.',
+  kc4:'Hữu Tham tri Bộ Lễ là chức quan cao nhất Nguyễn Du từng giữ dưới triều Nguyễn, tại kinh đô Huế.',
+  kc7:'Đúng! Triết lý "tài mệnh tương đố" cho rằng người càng tài hoa càng lắm truân chuyên — số phận và tài năng luôn đối nghịch nhau.',
+  kc9:'Năm 1965, nhân 200 năm sinh, Nguyễn Du được vinh danh Danh nhân văn hóa thế giới.'
+};
+function markCorrect(id){choiceCorrect[id]=true;}
+function pickChoice(originId,target,points,correct){
+  if(answered[originId])return;answered[originId]=true;
+  const cont=document.getElementById(originId+'-choices');
+  if(cont)cont.querySelectorAll('.c-btn').forEach(b=>b.disabled=true);
+  if(correct)markCorrect(originId);
+  go(target,points);
+}
+function ansSC(btn,ok,id,points,text){
+  if(answered[id])return;answered[id]=true;ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  if(ok)choiceCorrect[id]=true;
+  const cont=document.getElementById(id+'-choices');cont.querySelectorAll('.c-btn').forEach(b=>b.disabled=true);
+  pts+=points;updateScore();showPts('+'+points);
+  const fb=document.getElementById(id+'-fb');fb.innerHTML=(ok?'✅ ':'❌ ')+text;fb.className='ch-fb show '+(ok?'ok':'no');
+}
+function ansKC(btn,ok,id){
+  if(answered[id])return;answered[id]=true;totalKC++;kcTotalCount++;ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  const cont=btn.parentElement;cont.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(ok){btn.classList.add('correct');pts+=8;updateScore();showPts('+8');kcCorrectCount++;if(fb){fb.textContent='✅ '+kcFB[id];fb.className='kc-fb show ok';}}
+  else{btn.classList.add('wrong');cont.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(',true,'))b.classList.add('correct');});
+    if(fb){fb.textContent='❌ Xem lại đáp án đúng!';fb.className='kc-fb show no';}}
+}
+
+// ===== GATE 6 =====
+function ansMQ(btn,ok,gate,idx){
+  const key=`mq${gate}-${idx}`;if(answered[key])return;const cont=btn.parentElement;
+  const fb=document.getElementById(`mq${gate}fb-${idx}`);const dots=document.getElementById(`mq${gate}-dots`);
+  ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  if(ok){answered[key]=true;kcTotalCount++;kcCorrectCount++;cont.querySelectorAll('.ch-opt').forEach(b=>b.disabled=true);
+    btn.classList.add('correct');pts+=8;updateScore();showPts('+8');if(fb){fb.textContent='✅ Chính xác!';fb.className='ch-fb show ok';}
+    if(dots)document.getElementById(`mq${gate}d${idx}`).className='mq-dot done';
+    const nextIdx=idx+1;
+    if(nextIdx<3){const next=document.getElementById(`mq${gate}-${nextIdx}`);if(next){setTimeout(()=>{next.style.display='block';next.scrollIntoView({behavior:'smooth',block:'center'});if(dots)document.getElementById(`mq${gate}d${nextIdx}`).className='mq-dot now';},700);}}
+    if(gate===6){mq6ans[idx]=true;if(mq6ans.every(x=>x))document.getElementById('gate6-btn').classList.add('ready');}
+  }else{btn.classList.add('wrong');btn.disabled=true;if(fb){fb.textContent='❌ Chưa đúng, thử lại nhé!';fb.className='ch-fb show no';}}
+}
+
+// ===== PARTICLE BURST =====
+function burstParticles(x,y){for(let i=0;i<20;i++){const p=document.createElement('div');p.className='ripple-el';
+  p.style.width='6px';p.style.height='6px';p.style.borderRadius='50%';p.style.background='var(--gold-l)';p.style.position='fixed';
+  p.style.left=x+'px';p.style.top=y+'px';p.style.animation='none';document.body.appendChild(p);
+  const ang=Math.random()*Math.PI*2,dist=60+Math.random()*90;const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist;
+  p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}],{duration:750+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'});
+  setTimeout(()=>p.remove(),1200);}}
+
+// ===== UNLOCK GATE =====
+function unlockGate(contentId,gateId){
+  if(sceneRewarded['gate_'+gateId])return;
+  sceneRewarded['gate_'+gateId]=true;
+  soundUnlock();
+  const content=document.getElementById(contentId);if(content)content.classList.remove('gate-locked');
+  const gate=document.getElementById(gateId);
+  if(gate){const r=gate.getBoundingClientRect();burstParticles(r.left+r.width/2,r.top+r.height/2);
+    gate.style.transition='opacity .4s';gate.style.opacity='0';setTimeout(()=>gate.style.display='none',420);}
+  pts+=10;updateScore();showPts('+10 MỞ CỬA!');}
+
+// ===== NGUỒN SỬ LIỆU =====
+const sourceDB={
+  s1:{title:'Thăng Long, gia đình đại quý tộc',body:'Nguyễn Du sinh năm 1765 tại Thăng Long. Cha là Nguyễn Nghiễm — Tể tướng triều Lê, mẹ là bà Trần Thị Tần, người Kinh Bắc nổi tiếng hát hay.',cite:'Đại Nam liệt truyện; các công trình nghiên cứu Nguyễn Du học'},
+  s2:{title:'Mồ côi giữa cảnh nhà sụp đổ',body:'Cha mất khi ông 10 tuổi, mẹ mất năm ông 12 tuổi. Ông sống nhờ anh trai cùng cha khác mẹ giữa lúc cơ nghiệp họ Nguyễn Tiên Điền suy tàn theo vận nước.',cite:'Tiểu sử Nguyễn Du, các bộ văn học sử Việt Nam'},
+  s3:{title:'Mười năm gió bụi (1786–1796)',body:'Không ra làm quan cho Tây Sơn vì còn nặng ơn nhà Lê, Nguyễn Du sống lưu lạc, tự gọi mình là "Hồng Sơn liệp hộ" (người đi săn núi Hồng).',cite:'Thanh Hiên thi tập; các nghiên cứu về giai đoạn ẩn dật của Nguyễn Du'},
+  s4:{title:'Ra làm quan triều Nguyễn',body:'Năm 1802, được vời ra làm quan, lần lượt giữ các chức Tri huyện, Cai bạ Quảng Bình, rồi Hữu Tham tri Bộ Lễ tại Huế.',cite:'Đại Nam thực lục; Đại Nam liệt truyện'},
+  s5:{title:'Đi sứ nhà Thanh, gặp Kim Vân Kiều truyện',body:'Năm 1813, làm Chánh sứ đi sứ nhà Thanh. Tại đây ông tiếp cận cuốn tiểu thuyết Kim Vân Kiều truyện của Thanh Tâm Tài Nhân.',cite:'Đại Nam thực lục; các công trình văn bản học Truyện Kiều'},
+  s6:{title:'Sáng tạo Truyện Kiều',body:'Từ một tiểu thuyết văn xuôi tầm thường, Nguyễn Du viết lại thành 3.254 câu thơ lục bát — Đoạn trường tân thanh, đưa tiếng Việt lên đỉnh cao văn chương.',cite:'Truyện Kiều (các bản Nôm cổ); nghiên cứu văn bản học của Đào Duy Anh'},
+  s7:{title:'Thuyết "tài mệnh tương đố"',body:'Triết lý xuyên suốt Truyện Kiều: người càng tài hoa càng lắm truân chuyên — phản chiếu chính cuộc đời nhiều biến động của tác giả.',cite:'Truyện Kiều, câu 1–8; các công trình phê bình văn học'},
+  s8:{title:'Những năm cuối và cái chết',body:'Năm 1820, được cử làm Chánh sứ đi Trung Quốc lần hai nhưng lâm bệnh nặng, qua đời tại Huế trước khi lên đường, thọ 55 tuổi.',cite:'Đại Nam liệt truyện'},
+  s9:{title:'Danh nhân văn hóa thế giới',body:'Năm 1965, nhân 200 năm sinh, Hội đồng Hòa bình Thế giới vinh danh Nguyễn Du là Danh nhân văn hóa thế giới.',cite:'Hồ sơ vinh danh của Hội đồng Hòa bình Thế giới, 1965'}
+};
+function openSrcPopup(key){const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcBadge').textContent='📖 ĐÃ KIỂM CHỨNG';
+  document.getElementById('srcTitle').textContent=d.title;document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;document.getElementById('srcOverlay').classList.add('show');playTone(700,.08,'sine',.07);}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+function decorateSources(){
+  document.querySelectorAll('.fact').forEach(el=>{if(!el.classList.contains('verified'))el.classList.add('verified');});
+  document.querySelectorAll('.dlg').forEach(el=>{if(el.classList.contains('dramatized'))return;el.classList.add('dramatized');
+    if(!el.querySelector('.src-note')){const note=document.createElement('span');note.className='src-note';
+      note.textContent='🔵 Đoạn hội thoại được dựng lại dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.';el.appendChild(note);}});
+}
+decorateSources();
+
+// ===== JOURNEY MAP =====
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+const mapUnlockStages={s2:['pt-tiendien'],s3:['pt-thaibinh','pt-honglinh'],s4:['pt-hue1'],s5:['pt-yenkinh'],s8:['pt-hue2']};
+function updateJourneyMap(id){const keys=mapUnlockStages[id];if(!keys)return;let unlockedSomething=false;
+  keys.forEach(k=>{document.querySelectorAll('.'+k).forEach(el=>{if(el.classList.contains('locked')){el.classList.remove('locked');unlockedSomething=true;}});});
+  if(unlockedSomething)showPts('🗺️ Mở khóa địa điểm mới!');}
+
+// ===== RESTART =====
+function restart(){
+  pts=0;answered={};mq6ans=[false,false,false];totalKC=0;lastMilestone=0;
+  
+  sceneHistory=['cover'];historyIndex=0;updateNavButtons();
+  streakN=0;maxStreak=0;const sb=document.getElementById('streakBadge');if(sb)sb.classList.remove('show','fire');
+  choiceCorrect={s1:false,sc2:false,sc3:false,sc4:false,sc5:false,s6:false,sc7:false,sc8:false,sc9:false};
+  sceneRewarded={};
+  kcCorrectCount=0;kcTotalCount=0;
+  ['s1','sc2','sc3','sc4','sc5','s6','sc7','sc8','sc9'].forEach(id=>{const c=document.getElementById(id+'-choices');
+    if(c)c.querySelectorAll('.c-btn').forEach(b=>b.disabled=false);
+    const f=document.getElementById(id+'-fb');if(f){f.className='ch-fb';f.innerHTML='';}});
+  document.querySelectorAll('.ch-opt,.kc-opt').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+  document.querySelectorAll('.ch-fb,.kc-fb').forEach(f=>{f.className=f.classList.contains('ch-fb')?'ch-fb':'kc-fb';});
+  ['mq6-1','mq6-2'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['gate6'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='';el.style.opacity='';}});
+  ['s6-body'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('gate-locked');});
+  ['gate6-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('ready');});
+  for(let i=0;i<3;i++){const d=document.getElementById('mq6d'+i);if(d)d.className='mq-dot'+(i===0?' now':'');}
+  document.querySelectorAll('.jmap-pt,.jmap-lbl,.jmap-yr').forEach(el=>{if(el.className.baseVal!==undefined){}});
+  document.querySelectorAll('[class*="pt-"]').forEach(el=>{if(!el.closest('#final')){el.classList.add('locked');}});
+  document.querySelectorAll('#final [class*="pt-"]').forEach(el=>el.classList.remove('locked'));
+  document.querySelectorAll('.pt-thanglong').forEach(el=>el.classList.remove('locked'));
+  updateScore();document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

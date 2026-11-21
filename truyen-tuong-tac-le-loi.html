@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lê Lợi — Gươm Thần Kháng Chiến | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --gold:#c9920a;
+  --gold-l:#f4c542;
+  --gold-dim:#8b6914;
+  --red:#8B0000;
+  --ink:#1a1008;
+  --parch:#f5ead6;
+  --parch-dim:rgba(245,234,214,0.75);
+  --parch-faint:rgba(245,234,214,0.45);
+  --bg:#0b0803;
+  --panel:rgba(20,12,4,0.92);
+  --teal:#19b2b2;
+}
+
+body{
+  font-family:'Crimson Pro',Georgia,serif;
+  background:var(--bg);
+  color:var(--parch);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 20%,rgba(201,146,10,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 75%,rgba(139,0,0,0.09) 0%,transparent 55%);
+}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#cursorCanvas{position:fixed;inset:0;z-index:250;pointer-events:none;}
+.top-stripe{position:fixed;top:0;left:0;right:0;height:4px;z-index:400;background:linear-gradient(90deg,var(--red) 0%,var(--red) 45%,var(--gold) 45%,var(--gold-l) 100%);}
+
+nav{
+  position:fixed;top:4px;left:0;right:0;z-index:200;
+  background:rgba(11,8,3,0.96);
+  border-bottom:1px solid rgba(201,146,10,0.2);
+  padding:14px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold-l);text-decoration:none;letter-spacing:3px;}
+.nav-back{font-size:13px;color:var(--parch-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;}
+.nav-back:hover{color:var(--gold-l);}
+
+.prog-bar{position:fixed;top:61px;left:0;right:0;z-index:199;height:2px;background:rgba(255,255,255,0.05);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .7s cubic-bezier(.4,0,.2,1);}
+
+.score-badge{
+  position:fixed;top:74px;right:24px;z-index:198;
+  background:rgba(11,8,3,0.9);border:1px solid rgba(201,146,10,0.35);border-radius:40px;
+  padding:8px 18px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--parch-dim);backdrop-filter:blur(8px);
+}
+.score-num{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);font-weight:700;min-width:28px;text-align:center;}
+.score-title{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dim);}
+
+.pts-pop{position:fixed;top:88px;right:130px;z-index:999;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 20px rgba(201,146,10,0.9);}
+.pts-pop.show{animation:popUp .85s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}35%{opacity:1;transform:translateY(-22px) scale(1.25);}72%{opacity:1;transform:translateY(-38px) scale(1);}100%{opacity:0;transform:translateY(-52px) scale(.9);}}
+.streak-badge{position:fixed;top:74px;left:20px;z-index:198;background:rgba(11,8,3,0.94);border:1px solid rgba(139,0,0,0.32);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--parch-dim);backdrop-filter:blur(12px);opacity:0;transform:translateX(-12px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(255,140,0,.65);box-shadow:0 0 18px rgba(255,110,0,.28);}
+.streak-num{font-family:'Playfair Display',serif;font-size:19px;color:#ffa040;font-weight:700;}
+.combo-burst{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-4deg);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);}70%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.08) rotate(0);}}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(139,0,0,0.85),rgba(11,8,3,0.95));border:2px solid var(--gold-l);border-radius:20px;padding:18px 34px;box-shadow:0 0 60px rgba(201,146,10,.4),0 0 110px rgba(139,0,0,.2);}
+.combo-title{font-size:12px;color:var(--gold-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:30px;color:#fff;font-family:'Playfair Display',serif;}
+.combo-sub{font-size:13px;color:rgba(245,234,214,0.6);margin-top:4px;}
+.ripple-el{position:absolute;border-radius:50%;background:rgba(244,197,66,0.45);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(2.6);opacity:0;}}
+
+.spirit-bar{background:rgba(139,0,0,0.07);border:1px solid rgba(139,0,0,0.22);border-radius:11px;padding:13px 17px;margin:18px 0;display:flex;align-items:center;gap:13px;}
+.spirit-label{font-size:10px;color:#e57373;letter-spacing:2px;text-transform:uppercase;min-width:68px;}
+.spirit-track{flex:1;height:7px;background:rgba(245,234,214,0.06);border-radius:4px;overflow:hidden;}
+.spirit-fill{height:100%;border-radius:4px;width:0%;background:linear-gradient(90deg,var(--red),var(--gold),var(--gold-l));transition:width .9s cubic-bezier(.4,0,.2,1);}
+.spirit-pct{font-size:11px;color:var(--gold-l);min-width:28px;text-align:right;}
+.spirit-fill.pulse{animation:spiritPulse .6s ease;}
+@keyframes spiritPulse{0%{filter:brightness(1);}40%{filter:brightness(1.6);box-shadow:0 0 18px rgba(201,146,10,.8);}100%{filter:brightness(1);}}
+
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:10px;margin-left:8px;cursor:pointer;vertical-align:middle;transition:.2s;font-family:'Space Mono',monospace;}
+.src-tag.v{background:rgba(201,146,10,.14);color:var(--gold-l);border:1px solid rgba(201,146,10,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.src-note{display:block;font-size:11.5px;font-style:italic;color:var(--parch-faint);margin-top:8px;opacity:.85;}
+.src-popup-overlay{position:fixed;inset:0;background:rgba(5,3,1,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--panel);border:1px solid rgba(201,146,10,.4);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;background:rgba(201,146,10,.18);color:var(--gold-l);border:1px solid rgba(201,146,10,.4);font-family:'Space Mono',monospace;}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin:12px 0 10px;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--parch-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(245,234,214,.04);border-left:2px solid rgba(201,146,10,.4);padding:9px 13px;font-size:13px;color:var(--parch-faint);font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(201,146,10,.15);border:1px solid rgba(201,146,10,.35);color:var(--gold-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;}
+.src-popup-close:hover{background:rgba(201,146,10,.28);}
+
+.reflect{background:rgba(25,178,178,0.06);border:1px dashed rgba(25,178,178,0.35);border-radius:14px;padding:18px 22px;margin:22px 0;}
+.reflect-tag{font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.reflect-q{font-size:16.5px;font-style:italic;color:var(--parch);line-height:1.7;margin-bottom:8px;}
+.reflect-note{font-size:12px;color:var(--parch-faint);}
+.counterf-btn{background:rgba(201,146,10,.08);border:1px solid rgba(201,146,10,.3);border-radius:10px;padding:10px 18px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;margin-top:14px;transition:.25s;}
+.counterf-btn:hover{background:rgba(201,146,10,.16);}
+.counterf-body{display:none;margin-top:12px;background:rgba(139,0,0,0.05);border-left:3px solid rgba(139,0,0,.4);border-radius:0 12px 12px 0;padding:15px 20px;font-size:14.5px;line-height:1.8;color:var(--parch-dim);font-style:italic;}
+.counterf-body.show{display:block;animation:reflectIn .4s ease;}
+@keyframes reflectIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.journal{background:rgba(201,146,10,0.05);border:1px solid rgba(201,146,10,0.25);border-radius:16px;padding:24px 26px;margin:0 0 30px;text-align:left;}
+.journal-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(245,234,214,.06);font-size:14.5px;color:var(--parch-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11.5px;padding:2px 10px;border-radius:10px;white-space:nowrap;font-family:'Space Mono',monospace;}
+.journal-status.ok{background:rgba(39,100,30,.2);color:#a5d6a7;}
+.journal-status.no{background:rgba(139,0,0,.2);color:#ef9a9a;}
+.journal-copy{margin-top:16px;background:rgba(201,146,10,.14);border:1px solid rgba(201,146,10,.35);border-radius:10px;padding:10px 20px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.2s;}
+.journal-copy:hover{background:rgba(201,146,10,.24);}
+
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.4),rgba(11,8,3,.9));border:2px solid rgba(201,146,10,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(139,0,0,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(139,0,0,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(201,146,10,.5),0 0 130px rgba(139,0,0,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,56px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(139,0,0,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:520px;font-size:15.5px;line-height:1.85;color:var(--parch-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.22);border-radius:20px;padding:3px 11px;font-size:11.5px;color:var(--gold-l);}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--red),#5a0000);border:1px solid rgba(201,146,10,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(139,0,0,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(139,0,0,.5),0 0 40px rgba(201,146,10,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--parch-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:780px;margin:0 auto;padding:96px 24px 80px;position:relative;z-index:1;}
+
+.scene{display:none;}
+.scene.active{display:block;animation:fadeUp .7s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+.chap{display:inline-flex;align-items:center;gap:8px;background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.3);border-radius:30px;padding:5px 16px;font-size:12px;color:#d4a574;letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;flex-wrap:wrap;}
+
+.hero-img{width:100%;height:460px;object-fit:cover;object-position:top center;border-radius:16px;margin-bottom:28px;border:1px solid rgba(201,146,10,0.15);box-shadow:0 24px 64px rgba(0,0,0,0.8);filter:sepia(.2) contrast(1.08);}
+
+.edu-pill{float:right;width:220px;margin:0 0 20px 24px;background:rgba(201,146,10,0.07);border:1px solid rgba(201,146,10,0.25);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.7;color:var(--parch-dim);clear:right;}
+.edu-pill .edu-tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+
+.story{font-size:19px;line-height:1.95;color:rgba(245,234,214,.9);margin-bottom:16px;}
+.story em{color:#d4a574;font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+
+.dlg{background:rgba(201,146,10,0.07);border-left:3px solid var(--gold-dim);border-radius:0 12px 12px 0;padding:16px 22px;margin:22px 0;font-style:italic;font-size:18px;line-height:1.75;color:var(--parch);}
+.dlg-who{font-size:11px;font-style:normal;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+
+.fact{background:rgba(139,0,0,0.12);border:1px solid rgba(139,0,0,0.3);border-radius:12px;padding:18px 22px;margin:22px 0;font-size:15px;line-height:1.8;color:var(--parch-dim);}
+.fact-tag{font-size:11px;color:#e57373;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block;}
+
+.outcome{border-radius:14px;padding:22px;margin:22px 0;font-size:17px;line-height:1.8;}
+.outcome.bad{background:rgba(139,0,0,0.14);border:1px solid rgba(139,0,0,0.3);}
+.outcome.good{background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.3);}
+.outcome-icon{font-size:30px;display:block;margin-bottom:10px;}
+
+.choices-label{font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:34px 0 14px;}
+.choices{display:flex;flex-direction:column;gap:12px;}
+
+.c-btn{background:rgba(245,234,214,.03);border:1px solid rgba(245,234,214,.13);border-radius:12px;padding:18px 22px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:17px;text-align:left;cursor:pointer;transition:all .28s;display:flex;align-items:flex-start;gap:14px;line-height:1.55;position:relative;overflow:hidden;}
+.c-btn:hover{background:rgba(201,146,10,0.1);border-color:rgba(201,146,10,.4);transform:translateX(6px);}
+.c-btn:active{transform:translateX(3px) scale(.99);}
+
+.c-letter{width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(201,146,10,.15);border:1px solid var(--gold-dim);color:var(--gold);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;}
+.c-sub{font-size:13px;color:var(--parch-faint);font-style:italic;margin-top:4px;}
+
+.cont-btn{display:inline-flex;align-items:center;gap:10px;margin-top:32px;padding:15px 30px;background:rgba(139,0,0,0.7);border:1px solid rgba(201,146,10,0.35);border-radius:12px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:17px;cursor:pointer;transition:all .3s;letter-spacing:.5px;position:relative;overflow:hidden;}
+.cont-btn:hover{background:var(--red);border-color:rgba(201,146,10,.6);transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,0,0,.5);}
+
+.tl{display:flex;align-items:flex-start;gap:0;margin:32px 0;overflow-x:auto;padding-bottom:8px;}
+.tl-item{flex:1;min-width:98px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:rgba(201,146,10,.2);z-index:0;}
+.tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.tl-dot.done{background:var(--gold-dim);border:2px solid var(--gold);color:var(--ink);}
+.tl-dot.current{background:var(--red);border:2px solid var(--gold-l);color:#fff;box-shadow:0 0 16px rgba(201,146,10,.5);}
+.tl-dot.todo{background:rgba(245,234,214,.06);border:2px solid rgba(245,234,214,.15);color:var(--parch-faint);}
+.tl-year{font-size:10px;color:var(--gold-dim);margin-top:6px;text-align:center;letter-spacing:.5px;}
+.tl-event{font-size:10px;color:var(--parch-faint);margin-top:3px;text-align:center;line-height:1.3;padding:0 3px;}
+
+.kc{background:rgba(201,146,10,0.06);border:1px solid rgba(201,146,10,.25);border-radius:14px;padding:20px 24px;margin:24px 0;}
+.kc-tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.kc-q{font-size:17px;font-weight:600;color:#fff;margin-bottom:14px;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(245,234,214,.04);border:1px solid rgba(245,234,214,.12);border-radius:8px;padding:11px 16px;font-family:'Crimson Pro',serif;font-size:16px;color:var(--parch);cursor:pointer;text-align:left;transition:all .25s;display:flex;align-items:center;gap:10px;}
+.kc-opt:hover:not(:disabled){background:rgba(201,146,10,.1);border-color:rgba(201,146,10,.3);}
+.kc-opt.correct{background:rgba(39,100,30,.25)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(139,0,0,.25)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:12px;font-size:15px;line-height:1.7;display:none;padding:10px 14px;border-radius:8px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(39,100,30,.15);color:#a5d6a7;}
+.kc-fb.no{background:rgba(139,0,0,.15);color:#ef9a9a;}
+
+.final{text-align:center;padding:40px 0;}
+.final-seal{width:120px;height:120px;border-radius:50%;background:rgba(201,146,10,.1);border:2px solid var(--gold-dim);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:40px;color:var(--gold);animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(139,0,0,.2);}50%{box-shadow:0 0 80px rgba(139,0,0,.5),0 0 110px rgba(201,146,10,.18);}}
+.final-h{font-family:'Playfair Display',serif;font-size:30px;color:var(--gold-l);margin-bottom:12px;line-height:1.3;}
+.final-pts{font-size:48px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:12px 0;text-shadow:0 0 32px rgba(201,146,10,.4);}
+.final-rank{display:inline-block;background:rgba(201,146,10,.12);border:1px solid rgba(201,146,10,.35);border-radius:30px;padding:6px 22px;font-size:14px;color:#d4a574;margin-bottom:24px;letter-spacing:1px;}
+.final-desc{font-size:17px;color:var(--parch-dim);line-height:1.9;max-width:540px;margin:0 auto 32px;}
+.final-lesson{background:rgba(201,146,10,.06);border:1px solid rgba(201,146,10,.2);border-radius:14px;padding:22px 26px;text-align:left;margin:0 0 36px;font-size:16px;line-height:1.85;color:var(--parch-dim);}
+.final-lesson .fl-tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-restart{padding:13px 28px;background:transparent;border:1px solid var(--gold-dim);border-radius:10px;color:#d4a574;font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.btn-restart:hover{background:rgba(201,146,10,.15);}
+.btn-home{padding:13px 28px;background:rgba(139,0,0,.6);border:1px solid rgba(201,146,10,.3);border-radius:10px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-home:hover{background:var(--red);}
+
+.ref-note{background:rgba(139,0,0,0.04);border:1px dashed rgba(201,146,10,0.25);border-radius:10px;padding:12px 16px;margin:26px 0 6px;font-size:12.5px;color:var(--parch-faint);line-height:1.7;}
+.ref-note strong{color:#d4a574;}
+
+.nav-ref-btn{background:transparent;border:1px solid rgba(201,146,10,.32);border-radius:50%;width:34px;height:34px;color:var(--gold-l);cursor:pointer;font-size:15px;}
+.ref-overlay{position:fixed;inset:0;background:rgba(5,3,1,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ref-overlay.show{display:flex;}
+.ref-modal{background:var(--panel);border:1px solid rgba(201,146,10,.4);border-radius:16px;padding:26px 28px;max-width:740px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.ref-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:14px;}
+.ref-modal-close{background:rgba(201,146,10,.15);border:1px solid rgba(201,146,10,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.ref-page{background:rgba(139,0,0,0.05);border:1px solid rgba(139,0,0,0.2);border-radius:16px;padding:26px 28px;margin:30px 0 10px;}
+.ref-page-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);margin-bottom:6px;}
+.ref-page-sub{font-size:13px;color:var(--parch-faint);margin-bottom:18px;line-height:1.6;}
+.ref-group{margin-bottom:16px;}
+.ref-group-h{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:#d4a574;margin-bottom:8px;font-family:'Space Mono',monospace;}
+.ref-item{font-size:14px;line-height:1.85;color:var(--parch-dim);padding-left:16px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold-dim);}
+
+.story::after,.edu-after{content:'';display:block;clear:both;}
+
+@media(max-width:640px){
+  nav{padding:12px 16px;}
+  .wrap{padding:100px 14px 60px;}
+  .edu-pill{float:none;width:100%;margin:0 0 16px;}
+  .hero-img{height:220px;}
+  .story{font-size:17px;}
+  .tl{gap:0;}
+  .streak-badge{top:120px;}
+  .score-badge{top:120px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<canvas id="cursorCanvas"></canvas>
+<div class="ambient"></div>
+<div class="top-stripe"></div>
+<div class="pts-pop" id="ptsPop">+0</div>
+
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#5a0000);
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(139,0,0,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#5a0000);
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(139,0,0,.45);
+  align-items:center;justify-content:center;">➡</button>
+
+<div class="streak-badge" id="streakBadge">
+  <span>🔥</span>
+  <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);">Liên tiếp</div><div class="streak-num" id="streakNum">0</div></div>
+</div>
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Trả lời liên tiếp đúng!</div>
+    <div class="combo-label" id="comboLabel">🔥 COMBO x3</div>
+    <div class="combo-sub" id="comboSub">+10 điểm thưởng</div>
+  </div>
+</div>
+
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <span class="src-popup-badge">📖 ĐÃ KIỂM CHỨNG</span>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">SỬ VIỆT</a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button class="nav-ref-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+    <a href="cau-chuyen-detail.html?id=5" class="nav-back">← Về câu chuyện</a>
+  </div>
+</nav>
+
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+
+<div class="score-badge">
+  <div>
+    <div class="score-title">Điểm của bạn</div>
+    <div class="score-num" id="scoreNum">0</div>
+  </div>
+  <div>
+    <div class="score-title">Danh hiệu</div>
+    <div id="scoreRank" style="font-size:12px;color:#d4a574;">—</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ══════════════════════════════
+     COVER MỞ ĐẦU
+═══════════════════════════════════ -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">⚔️</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">LÊ LỢI<br>Gươm Thần Kháng Chiến</div>
+    <div class="cover-sub">Năm 1407 — 1428 · Khởi Nghĩa Lam Sơn</div>
+    <div class="cover-desc">Ngươi là Lê Lợi — hào trưởng đất Lam Sơn dấy binh chống ách đô hộ nhà Minh. Từ gươm thần Thuận Thiên, sự hi sinh của Lê Lai, bước ngoặt Nghệ An, đến đại thắng Chi Lăng và bản Bình Ngô đại cáo lừng danh: một hành trình 8 chương về ý chí, mưu lược và nhân nghĩa dựng nước.</div>
+    <div class="cover-chips">
+      <span class="cover-chip">⚔️ 8 chương</span>
+      <span class="cover-chip">🎓 Kiến thức + Thử thách</span>
+      <span class="cover-chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">⚔️ Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 1 — GƯƠM THẦN THUẬN THIÊN (1407)
+═══════════════════════════════════ -->
+<div class="scene" id="s1">
+  <div class="chap">⚔️ Chương 1 · Năm 1407 — Gươm Thần Xuất Hiện <span class="src-tag v" onclick="openSrcPopup('s1_guom')">📖 nguồn</span></div>
+
+  <img class="hero-img" src="images/LeLoixuathien.jpg" alt="Lê Lợi">
+
+  <div class="tl" id="tl1">
+    <div class="tl-item"><div class="tl-dot current">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot todo">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter1"></div></div>
+    <span class="spirit-pct" id="spiritPct1">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">📚 Sự kiện lịch sử</span>
+      Năm 1407, nhà Minh thôn tính Đại Việt sau khi nhà Hồ thất bại. Hơn <strong>20 năm đô hộ</strong> với chính sách đồng hoá tàn bạo: đốt sách, phá chùa, bắt phu, thu thuế nặng nề.
+    </div>
+    Năm 1407. <strong>Ngươi — Lê Lợi</strong> — hào trưởng đất Lam Sơn, Thanh Hoá. Ngươi có ruộng đất, có uy tín, nhưng ngươi không thể yên ngủ khi tiếng khóc của người dân vang vọng khắp thôn xóm.
+  </div>
+  <div class="story after-clear">
+    Nhà Minh ra sức vơ vét: thuế muối, thuế cá, thuế vải. Chúng bắt hàng nghìn thợ thủ công và học giả sang Trung Hoa. Sách Việt bị đốt, tiếng Việt bị cấm dạy trong trường.
+  </div>
+
+  <div class="dlg">
+    <div class="dlg-who">Người già trong làng — thì thầm với Lê Lợi</div>
+    "Lê hào trưởng ơi... nghe nói có một thanh gươm thần nằm dưới đáy hồ Lục Thuỷ. Người nào có đủ thiên mệnh mới có thể tìm thấy. Chỉ gươm thần mới có thể cứu được dân ta!"
+  </div>
+
+  <div class="story">
+    Ngươi ra hồ Lục Thuỷ lúc sáng sớm. Màn sương tan dần. Dưới đáy nước trong vắt, ánh sáng kỳ lạ loé lên từ một vật gì đó...
+  </div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Thanh gươm thần của Lê Lợi gắn với tên hồ nào ở Hà Nội ngày nay?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">A. Hồ Tây</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">B. Hồ Trúc Bạch</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1')">C. Hồ Hoàn Kiếm</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">D. Hồ Thiền Quang</button>
+    </div>
+    <div class="kc-fb" id="kc1-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Nếu là bạn, đứng trước một lời đồn về thiên mệnh chưa kiểm chứng — bạn có dám đặt cược cả sự nghiệp vào đó không?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+  </div>
+
+  <div class="choices-label">⚡ Bạn quyết định...</div>
+  <div class="choices" id="s1-choices">
+    <button class="c-btn" onclick="pickChoice('s1','s1A',15,true)">
+      <span class="c-letter">A</span>
+      <div>Lặn xuống hồ tìm gươm thần. Nếu đây là thiên mệnh, ta phải đón nhận!
+        <div class="c-sub">Hành động quyết đoán — thể hiện khí phách anh hùng</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s1','s1B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Bỏ về. Gươm thần chỉ là huyền thoại, không có căn cứ thực tế.
+        <div class="c-sub">Thực dụng, nhưng bỏ lỡ thời cơ...</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s1','s1C',8,false)">
+      <span class="c-letter">C</span>
+      <div>Quan sát kỹ hơn, hỏi thêm dân làng trước khi hành động.
+        <div class="c-sub">Thận trọng — nhưng thiên mệnh không chờ đợi</div></div>
+    </button>
+  </div>
+  <div class="ref-note"><strong>📚 Xem toàn bộ nguồn tham khảo</strong> ở cuối trang, sau khi hoàn thành hành trình.</div>
+</div>
+
+<div class="scene" id="s1A">
+  <div class="chap">⭐ Lựa chọn A · Thiên Mệnh Được Đón Nhận</div>
+  <img class="hero-img" src="images/le-loi-hero.png" alt="Gươm thần">
+  <div class="outcome good">
+    <span class="outcome-icon">⚔️</span>
+    <strong>Đây chính là Lê Lợi trong lịch sử!</strong> Tương truyền ngài kéo được lưỡi gươm từ lòng hồ, sau đó lại nhặt được chuôi gươm khắc chữ <em>"Thuận Thiên"</em> — có nghĩa là "Thuận theo ý Trời". Từ đó, thanh gươm trở thành biểu tượng thiên mệnh của cuộc kháng chiến.
+  </div>
+  <div class="story">Khi gươm Thuận Thiên trong tay, <strong>tin lành lan khắp vùng</strong>. Người ta nói: Lê Lợi được Trời trao mệnh đánh đuổi giặc Minh. Hào kiệt khắp nơi kéo về Lam Sơn.</div>
+  <div class="fact">
+    <span class="fact-tag">📖 Tư liệu lịch sử</span>
+    Theo <em>Đại Việt sử ký toàn thư</em>, năm 1418 Lê Lợi chính thức phát động khởi nghĩa Lam Sơn, xưng là <strong>Bình Định Vương</strong>. Lực lượng ban đầu chỉ vài trăm nghĩa quân, nhưng ý chí sắt đá.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục hành trình...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',0)"><span class="c-letter">→</span><div>Năm 1419 — Nghĩa quân bị vây tại núi Chí Linh...</div></button></div>
+</div>
+
+<div class="scene" id="s1B">
+  <div class="chap">📍 Lựa chọn B · Bỏ Lỡ Thiên Mệnh</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    <strong>Lê Lợi chưa bao giờ từ bỏ!</strong> Tinh thần anh hùng là dám đối mặt với điều chưa biết. Gươm Thuận Thiên — dù là huyền thoại hay thực tế — chính là ngọn lửa thắp sáng lòng quân và dân.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s1B')">🔮 Nếu Lê Lợi thật sự bỏ về thì sao?</button>
+    <div class="counterf-body" id="cf-s1B">Nếu không đón nhận biểu tượng gươm thần, rất có thể hào kiệt các nơi sẽ không tin vào "thiên mệnh" của Lê Lợi sớm như vậy, khiến việc tập hợp lực lượng ban đầu ở Lam Sơn chậm lại đáng kể.</div>
+  </div>
+  <div class="choices-label">⚡ Suy nghĩ lại...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1A',8)"><span class="c-letter">→</span><div>"Không! Ta phải đón nhận thiên mệnh, vì dân tộc này!"</div></button></div>
+</div>
+
+<div class="scene" id="s1C">
+  <div class="chap">📍 Lựa chọn C · Thận Trọng</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Thận trọng là đức tính tốt, nhưng <strong>thời cơ lịch sử không chờ đợi ai</strong>. Lê Lợi đã hành động dứt khoát — đó là lý do ngài trở thành anh hùng dân tộc.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s1C')">🔮 Nếu Lê Lợi cứ dò hỏi mãi thì sao?</button>
+    <div class="counterf-body" id="cf-s1C">Nếu chỉ mãi thăm dò dư luận, tin đồn về gươm thần có thể lan sang tay một hào trưởng khác nhanh tay hơn — và lịch sử biết đâu đã rẽ theo hướng khác.</div>
+  </div>
+  <div class="choices-label">⚡ Quyết đoán hơn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1A',8)"><span class="c-letter">→</span><div>"Lòng dân là thiên mệnh. Ta sẽ hành động!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 2 — LÊ LAI XẢ THÂN (1419)
+═══════════════════════════════════ -->
+<div class="scene" id="s2">
+  <div class="chap">⚔️ Chương 2 · Năm 1419 — Lê Lai Xả Thân <span class="src-tag v" onclick="openSrcPopup('s2_lelai')">📖 nguồn</span></div>
+  <img class="hero-img" src="images/leloikn.jpg" alt="Lam Sơn">
+
+  <div class="tl" id="tl2">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot current">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter2"></div></div>
+    <span class="spirit-pct" id="spiritPct2">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">🗡️ Chiến thuật du kích</span>
+      Nghĩa quân Lam Sơn áp dụng <strong>chiến thuật du kích</strong>: đánh rồi rút, dựa vào địa hình rừng núi Thanh Hoá để ẩn náu và bất ngờ tập kích.
+    </div>
+    Năm 1419. Quân Minh vây hãm chặt nghĩa quân trên núi Chí Linh. <strong>Lê Lợi — tức Ngươi</strong> — bị bao vây, quân số chỉ còn vài trăm người. Đây là giờ phút nguy cấp nhất.
+  </div>
+  <div class="story">Tướng <strong>Lê Lai</strong> — người đã theo Lê Lợi từ ngày đầu — bước ra, mắt rực lửa quyết tâm:</div>
+  <div class="dlg">
+    <div class="dlg-who">Lê Lai — tướng trung thành nhất</div>
+    "Bình Định Vương! Để thần mặc áo bào của Ngài, dẫn một đội ra đánh thẳng vào trận địa địch. Chúng sẽ tưởng Ngài đã bị bắt, rồi lơi lỏng vòng vây. Ngài hãy nhân cơ hội đó rút lui!"
+  </div>
+  <div class="story">Lê Lai biết rõ điều này có nghĩa là gì — <em>cái chết chắc chắn</em>. Nhưng ngài không do dự.</div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Câu nói nào của Lê Lợi thể hiện sự ghi nhớ công ơn Lê Lai đến muôn đời?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2')">A. "Lê Lai cứu chúa, muôn năm không quên"</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc2')">B. "Lê Lai thứ nhất, Lê Lợi thứ hai" — giỗ Lê Lai trước giỗ Lê Lợi một ngày</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2')">C. "Trung thần đứng đầu mọi công thần"</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2')">D. "Hi sinh vì nước, trời đất ghi công"</button>
+    </div>
+    <div class="kc-fb" id="kc2-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Nếu bạn là người phải đưa ra quyết định hi sinh một người thân tín nhất để cứu cả tập thể — bạn sẽ mang cảm giác đó theo mình bao lâu?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+  </div>
+
+  <div class="choices-label">⚡ Trước lời đề nghị của Lê Lai, bạn...</div>
+  <div class="choices" id="s2-choices">
+    <button class="c-btn" onclick="pickChoice('s2','s2A',20,true)">
+      <span class="c-letter">A</span>
+      <div>Đau lòng nhưng chấp nhận — hi sinh một người để cứu cả cuộc kháng chiến.
+        <div class="c-sub">Quyết định của người lãnh đạo — gánh nặng thiên hạ</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s2','s2B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Từ chối. Không thể để một người trung thành chết thay cho mình!
+        <div class="c-sub">Nghĩa khí cao, nhưng có thể làm mất cả cuộc kháng chiến...</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s2','s2C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Cùng Lê Lai đột phá vòng vây, liều mạng cùng nhau.
+        <div class="c-sub">Dũng cảm, nhưng quá mạo hiểm với sinh mạng của chủ tướng</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s2A">
+  <div class="chap">⭐ Lựa chọn A · Gánh Nặng Của Người Lãnh Đạo</div>
+  <img class="hero-img" src="images/leloi2.jpg" alt="Lê Lợi">
+  <div class="outcome good">
+    <span class="outcome-icon">🛡️</span>
+    <strong>Đây chính là bi kịch và vĩ đại của người lãnh đạo.</strong> Lê Lợi chấp nhận hi sinh Lê Lai — không phải vì tàn nhẫn, mà vì ngài gánh sứ mệnh của cả dân tộc. Lê Lai anh dũng hi sinh, quân Minh tưởng bắt được Lê Lợi nên lơi lỏng. Nghĩa quân thoát vây an toàn.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Lê Lợi — thề trước anh linh Lê Lai</div>
+    "Lê Lai! Ta sẽ không bao giờ quên. Ngày ta thắng lợi, ngày ta lên ngôi... ta sẽ giỗ ngươi trước một ngày. Công ơn của ngươi, sử sách muôn đời ghi nhớ!"
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Sự thật lịch sử</span>
+    Lê Lợi giữ đúng lời thề. Sau khi lập nhà Lê, <strong>giỗ Lê Lai được tổ chức vào ngày 21 tháng 8 âm lịch — trước giỗ Lê Lợi (22 tháng 8) đúng một ngày</strong>. Câu "Lê Lai thứ nhất, Lê Lợi thứ hai" trở thành thành ngữ dân gian về lòng biết ơn.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục hành trình...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',0)"><span class="c-letter">→</span><div>Năm 1424 — Nguyễn Trãi xuất hiện, thay đổi cục diện...</div></button></div>
+</div>
+
+<div class="scene" id="s2B">
+  <div class="chap">📍 Lựa chọn B · Nghĩa Khí Nhưng...</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    Lòng nhân ái của ngươi đáng trân trọng. Nhưng <strong>người lãnh đạo đôi khi phải chịu đựng những quyết định đau đớn nhất</strong> — không phải vì ích kỷ, mà vì trách nhiệm với hàng triệu người.
+    <br><br>Trong lịch sử, Lê Lợi đã chấp nhận hi sinh của Lê Lai — và sau đó giữ lời thề biết ơn đến cuối đời.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s2B')">🔮 Nếu Lê Lợi từ chối kế của Lê Lai thì sao?</button>
+    <div class="counterf-body" id="cf-s2B">Nếu từ chối, rất có thể cả Lê Lợi lẫn Lê Lai đều bị bắt hoặc tử trận cùng lúc — nghĩa quân Lam Sơn mất luôn cả người đứng đầu lẫn tướng trung thành nhất, khiến cuộc khởi nghĩa có nguy cơ tan rã ngay từ năm 1419.</div>
+  </div>
+  <div class="choices-label">⚡ Hiểu được gánh nặng lãnh đạo...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2A',10)"><span class="c-letter">→</span><div>"Ta hiểu rồi. Lê Lai, ta sẽ ghi nhớ công ơn này mãi mãi..."</div></button></div>
+</div>
+
+<div class="scene" id="s2C">
+  <div class="chap">📍 Lựa chọn C · Dũng Cảm Nhưng Thiếu Khôn Ngoan</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    Dũng cảm đột phá vòng vây nghe có vẻ anh hùng. Nhưng <strong>mất đi người lãnh đạo = mất cả cuộc kháng chiến</strong>. Lê Lợi hiểu rằng ngài phải sống để giải phóng đất nước.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s2C')">🔮 Nếu hai người cùng liều mạng thì sao?</button>
+    <div class="counterf-body" id="cf-s2C">Nếu cả hai cùng đột phá vòng vây, khả năng cả hai đều bị bắt hoặc tử trận là rất cao — quân Minh sẽ dồn toàn lực vào một điểm, không có ai đóng vai nghi binh đánh lạc hướng.</div>
+  </div>
+  <div class="choices-label">⚡ Suy ngẫm lại...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2A',10)"><span class="c-letter">→</span><div>"Lê Lai đúng rồi. Hi sinh một người để cứu cả dân tộc."</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 3 — NGUYỄN TRÃI & CÔNG TÂM (1424)
+═══════════════════════════════════ -->
+<div class="scene" id="s3">
+  <div class="chap">📜 Chương 3 · Năm 1424 — Nguyễn Trãi Và Bút Mực Thần <span class="src-tag v" onclick="openSrcPopup('s3_nguyentrai')">📖 nguồn</span></div>
+  <img class="hero-img" src="images/nguyentraileloi.jpg" alt="Nguyễn Trãi">
+
+  <div class="tl" id="tl3">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot current">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter3"></div></div>
+    <span class="spirit-pct" id="spiritPct3">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">✍️ Nguyễn Trãi</span>
+      <strong>Nguyễn Trãi</strong> (1380–1442) là thiên tài văn học và tư tưởng bậc nhất Việt Nam. Tác giả <em>Bình Ngô đại cáo</em> — viết bằng chữ Hán đầy khí phách.
+    </div>
+    Năm 1424. Vị mưu sĩ tài ba <strong>Nguyễn Trãi</strong> tìm đến Lam Sơn. Ngài không cầm gươm giỏi, nhưng ngài cầm bút — và <em>bút của ngài còn sắc hơn gươm</em>.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Nguyễn Trãi — dâng kế sách lên Lê Lợi</div>
+    "Bình Định Vương! Đánh giặc bằng sức mạnh quân sự là một cách. Nhưng <em>đánh vào lòng người</em> — khiến dân chúng, thậm chí cả quân lính Minh, hiểu rằng chúng ta đứng về phía chính nghĩa — đó mới là chiến thắng bền vững. Thần xin dùng bút mực viết thư chiêu hàng các tướng Minh!"
+  </div>
+  <div class="story">Chiến lược <em>"công tâm"</em> — tấn công vào tinh thần và ý chí của đối phương — là tư tưởng quân sự đột phá của Nguyễn Trãi.</div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Câu mở đầu nổi tiếng của "Bình Ngô đại cáo" thể hiện tư tưởng gì?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3')">A. Đề cao sức mạnh quân sự</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc3')">B. "Việc nhân nghĩa cốt ở yên dân" — đề cao nhân nghĩa và bảo vệ nhân dân</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3')">C. Ca ngợi chiến thắng quân sự của nhà Lê</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3')">D. Tuyên bố chủ quyền lãnh thổ</button>
+    </div>
+    <div class="kc-fb" id="kc3-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Giữa "gươm" và "bút" — bạn nghĩ vũ khí nào khó dùng hơn trong một cuộc chiến sinh tử?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+  </div>
+
+  <div class="choices-label">⚡ Khi Nguyễn Trãi đề xuất chiến lược "công tâm", bạn...</div>
+  <div class="choices" id="s3-choices">
+    <button class="c-btn" onclick="pickChoice('s3','s3A',20,true)">
+      <span class="c-letter">A</span>
+      <div>Đồng ý toàn phần — kết hợp "công tâm" của Nguyễn Trãi với quân sự của mình.
+        <div class="c-sub">Chiến lược toàn diện — đây là cách Lê Lợi thực sự đã làm!</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s3','s3B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Từ chối — chiến tranh cần gươm giáo, không cần bút mực.
+        <div class="c-sub">Quan điểm chiến tranh thuần tuý — bỏ lỡ vũ khí mạnh nhất</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s3','s3C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Dùng chiến lược "công tâm" trước, quân sự là phương án cuối cùng.
+        <div class="c-sub">Ưu tiên hoà bình — tốt về nhân đạo nhưng có thể mất thời cơ</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s3A">
+  <div class="chap">⭐ Lựa chọn A · Chiến Lược Toàn Diện</div>
+  <img class="hero-img" src="images/lenguyen.jpg" alt="Chiến lược">
+  <div class="outcome good">
+    <span class="outcome-icon">📜</span>
+    <strong>Hoàn hảo!</strong> Lê Lợi kết hợp hai mũi nhọn: <em>gươm của Lê Lợi + bút của Nguyễn Trãi</em>. Kết quả: hàng chục thành trì của quân Minh đầu hàng mà không cần đổ máu.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Nguyễn Trãi — sau khi được chấp thuận</div>
+    "Bình Định Vương sáng suốt! Nhân nghĩa chi cử, yếu tại an dân — việc nhân nghĩa, cốt lõi là bình yên cho dân. Đây sẽ là nguyên tắc của triều đại mới!"
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Di sản văn học</span>
+    <em>Bình Ngô đại cáo</em> (1428) do Nguyễn Trãi soạn theo lệnh Lê Lợi là tác phẩm chính luận vĩ đại nhất lịch sử Việt Nam.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4',0)"><span class="c-letter">→</span><div>Năm 1424 — Bước ngoặt: chuyển hướng vào Nghệ An...</div></button></div>
+</div>
+
+<div class="scene" id="s3B">
+  <div class="chap">📍 Lựa chọn B · Chỉ Tin Vào Gươm Giáo</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    <strong>Bỏ lỡ vũ khí mạnh nhất!</strong> Chiến lược "công tâm" của Nguyễn Trãi đã giúp nhiều thành trì đầu hàng mà không tốn một mũi tên nào.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s3B')">🔮 Nếu chỉ đánh bằng quân sự thuần tuý thì sao?</button>
+    <div class="counterf-body" id="cf-s3B">Nếu bỏ qua chiến lược "công tâm", nghĩa quân sẽ phải giao tranh đẫm máu tại từng thành trì — cuộc kháng chiến có thể kéo dài thêm nhiều năm.</div>
+  </div>
+  <div class="choices-label">⚡ Thay đổi nhận thức...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3A',10)"><span class="c-letter">→</span><div>"Nguyễn Trãi nói đúng. Bút mực và gươm phải đi cùng nhau!"</div></button></div>
+</div>
+
+<div class="scene" id="s3C">
+  <div class="chap">📍 Lựa chọn C · Ưu Tiên Công Tâm</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Tư tưởng nhân đạo tốt, nhưng <strong>kết hợp cả hai mới là chiến lược tối ưu</strong>.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s3C')">🔮 Nếu chỉ dùng công tâm trước, quân sự sau cùng thì sao?</button>
+    <div class="counterf-body" id="cf-s3C">Nếu chờ đàm phán xong mới dùng quân sự, quân Minh có thể tận dụng thời gian đó củng cố phòng thủ hoặc xin thêm viện binh — thời cơ vàng có nguy cơ tuột mất.</div>
+  </div>
+  <div class="choices-label">⚡ Điều chỉnh chiến lược...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3A',10)"><span class="c-letter">→</span><div>"Kết hợp cả hai — đó là con đường đúng đắn nhất!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 4 — NGUYỄN CHÍCH & BƯỚC NGOẶT NGHỆ AN (1424) — MỚI
+═══════════════════════════════════ -->
+<div class="scene" id="s4">
+  <div class="chap">🗺️ Chương 4 · Năm 1424 — Bước Ngoặt Nghệ An <span class="src-tag v" onclick="openSrcPopup('s4_nghean')">📖 nguồn</span></div>
+  <!-- ẢNH MỚI CÓ THỂ THÊM: cảnh núi rừng Nghệ An / bản đồ hành quân, tạm dùng ảnh sẵn có -->
+  <img class="hero-img" src="images/knthanhhoa.jpg" alt="Chuyển hướng Nghệ An" style="object-position:center;">
+
+  <div class="tl" id="tl4">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot current">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter4"></div></div>
+    <span class="spirit-pct" id="spiritPct4">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">🗺️ Thế bí sau 6 năm</span>
+      Sau 6 năm kháng chiến (1418–1424), nghĩa quân vẫn quanh quẩn vùng núi Thanh Hoá chật hẹp, quân số ít, lương thực cạn dần — có nguy cơ bị quân Minh bao vây tiêu diệt dần từng đợt.
+    </div>
+    Một hào trưởng địa phương giàu kinh nghiệm trận mạc — <strong>Nguyễn Chích</strong> — xin vào yết kiến Lê Lợi, dâng lên một kế sách táo bạo.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Nguyễn Chích — dâng kế chuyển hướng</div>
+    "Bình Định Vương! Cứ quanh quẩn Thanh Hoá, ta như con hổ bị nhốt trong lồng hẹp. Nghệ An đất rộng, dân đông, lại xa trung tâm quân Minh — nếu chiếm được, ta có thể dựng căn cứ vững chắc rồi từ đó đánh tràn ra cả nước!"
+  </div>
+  <div class="story">Đây là một quyết định khó khăn: rời bỏ vùng đất quen thuộc, đem quân đi xa, chấp nhận rủi ro lớn — nhưng cũng có thể là con đường duy nhất để thoát thế bí.</div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Ai là người đề xuất kế sách chuyển hướng chiến lược vào Nghệ An năm 1424?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4')">A. Nguyễn Trãi</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc4')">B. Nguyễn Chích</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4')">C. Lê Lai</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4')">D. Đinh Liệt</button>
+    </div>
+    <div class="kc-fb" id="kc4-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Sau 6 năm kiên trì theo một hướng đi, bạn có đủ can đảm để thay đổi toàn bộ chiến lược không?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+  </div>
+
+  <div class="choices-label">⚡ Trước kế sách của Nguyễn Chích, bạn...</div>
+  <div class="choices" id="s4-choices">
+    <button class="c-btn" onclick="pickChoice('s4','s4A',20,true)">
+      <span class="c-letter">A</span>
+      <div>Nghe theo, đem quân tiến vào Nghệ An để xây căn cứ mới.
+        <div class="c-sub">Táo bạo thay đổi chiến lược — đây là bước ngoặt thật sự của lịch sử!</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s4','s4B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Tiếp tục cố thủ ở vùng núi Thanh Hoá quen thuộc.
+        <div class="c-sub">An toàn hơn, nhưng địa bàn quá hẹp, khó phát triển lâu dài</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s4','s4C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Chia quân, vừa giữ Thanh Hoá vừa đánh thăm dò Nghệ An.
+        <div class="c-sub">Cẩn trọng, nhưng dàn trải lực lượng vốn đã ít ỏi</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s4A">
+  <div class="chap">⭐ Lựa chọn A · Bước Ngoặt Chiến Lược</div>
+  <img class="hero-img" src="images/knthanhhoa.jpg" alt="Chuyển hướng Nghệ An">
+  <div class="outcome good">
+    <span class="outcome-icon">🗺️</span>
+    <strong>Chính xác — đây là bước ngoặt quyết định cả cuộc kháng chiến!</strong> Nghĩa quân bất ngờ vượt qua vùng núi hiểm trở, đánh chiếm thành Trà Lân rồi làm chủ gần như toàn bộ Nghệ An. Từ đây, lực lượng Lam Sơn phát triển vượt bậc cả về quân số lẫn lương thảo.
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Tư liệu lịch sử</span>
+    Từ căn cứ Nghệ An, nghĩa quân tiếp tục đánh lan ra Thuận Hoá, Tân Bình — làm chủ cả một dải đất rộng lớn phía Nam, tạo thế và lực để tiến ra Bắc giải phóng Thăng Long.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục hành trình...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5',0)"><span class="c-letter">→</span><div>Năm 1426 — Trận Tốt Động – Chúc Động...</div></button></div>
+</div>
+
+<div class="scene" id="s4B">
+  <div class="chap">📍 Lựa chọn B · Cố Thủ Vùng Hẹp</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    Cố thủ mãi ở vùng núi hẹp khiến nghĩa quân khó phát triển lực lượng, lương thực ngày càng cạn kiệt — <strong>đây không phải con đường Lê Lợi đã chọn</strong>.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s4B')">🔮 Nếu cứ cố thủ Thanh Hoá mãi thì sao?</button>
+    <div class="counterf-body" id="cf-s4B">Nếu không chuyển hướng, nghĩa quân có nguy cơ bị quân Minh siết chặt vòng vây theo thời gian, thiếu lương thực và quân số bổ sung — cuộc khởi nghĩa có thể lụi tàn dần trong vài năm tới.</div>
+  </div>
+  <div class="choices-label">⚡ Nghe theo kế sách mới...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4A',10)"><span class="c-letter">→</span><div>"Nguyễn Chích nói đúng. Ta phải tiến vào Nghệ An!"</div></button></div>
+</div>
+
+<div class="scene" id="s4C">
+  <div class="chap">📍 Lựa chọn C · Chia Quân Nửa Vời</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Chia quân dàn trải khi lực lượng vốn đã ít ỏi là điều tối kỵ trong binh pháp. <strong>Lê Lợi hiểu rằng phải dồn toàn lực cho một hướng đi dứt khoát.</strong>
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s4C')">🔮 Nếu chia quân thăm dò cả hai hướng thì sao?</button>
+    <div class="counterf-body" id="cf-s4C">Với quân số vốn đã mỏng, chia đôi lực lượng sẽ khiến cả hai mặt trận đều yếu — quân Minh có thể lần lượt đánh bại từng cánh quân nhỏ lẻ.</div>
+  </div>
+  <div class="choices-label">⚡ Dồn toàn lực...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4A',10)"><span class="c-letter">→</span><div>"Không thể nửa vời. Dồn toàn lực tiến vào Nghệ An!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 5 — TỐT ĐỘNG – CHÚC ĐỘNG (1426) — MỚI
+═══════════════════════════════════ -->
+<div class="scene" id="s5">
+  <div class="chap">🌊 Chương 5 · Năm 1426 — Trận Tốt Động – Chúc Động <span class="src-tag v" onclick="openSrcPopup('s5_totdong')">📖 nguồn</span></div>
+  <!-- ẢNH MỚI CÓ THỂ THÊM: cảnh đầm lầy phục kích, tạm dùng ảnh sẵn có -->
+  <img class="hero-img" src="images/totdong.png" alt="Tốt Động – Chúc Động" style="object-position:center;">
+
+  <div class="tl" id="tl5">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot current">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter5"></div></div>
+    <span class="spirit-pct" id="spiritPct5">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">🌊 Địa hình đầm lầy</span>
+      Vùng Tốt Động – Chúc Động (nay thuộc Chương Mỹ, Hà Nội) là vùng đồng chiêm trũng, nhiều đầm lầy — ngựa và bộ binh quân Minh di chuyển rất khó khăn.
+    </div>
+    Sau khi làm chủ Nghệ An, nghĩa quân tiến ra Bắc. Tướng Minh <strong>Vương Thông</strong> đem đại quân từ Đông Quan xuống đối phó, quyết tâm bẻ gãy đà tiến công của Lam Sơn ngay tại cửa ngõ kinh thành.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Tướng Lam Sơn — bàn kế trước trận</div>
+    "Quân Minh cậy đông, ắt sẽ khinh địch tiến sâu. Nếu ta nhử chúng vào vùng đầm lầy Tốt Động rồi bốn bề phục kích, ngựa chiến của chúng sẽ sa lầy, không thể phát huy sức mạnh!"
+  </div>
+  <div class="story">Lê Lợi cân nhắc: đánh trực diện giữa đồng bằng trống trải, hay dùng chính địa hình hiểm trở làm vũ khí?</div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Kết quả trận Tốt Động – Chúc Động (1426) đối với quân Minh ra sao?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5')">A. Quân Minh thắng lớn, chiếm lại Nghệ An</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc5')">B. Quân Minh đại bại, hàng vạn quân bị diệt hoặc bắt sống, Vương Thông chạy về cố thủ Đông Quan</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5')">C. Hai bên hoà, rút quân về giữ nguyên trạng</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5')">D. Trận đánh không phân thắng bại</button>
+    </div>
+    <div class="kc-fb" id="kc5-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Dùng chính điểm yếu của "sân nhà" đối phương để đánh bại một đội quân đông hơn — bạn nghĩ điều gì quan trọng hơn: quân số hay hiểu địa hình?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+  </div>
+
+  <div class="choices-label">⚡ Trước đại quân Vương Thông, bạn quyết định...</div>
+  <div class="choices" id="s5-choices">
+    <button class="c-btn" onclick="pickChoice('s5','s5A',20,true)">
+      <span class="c-letter">A</span>
+      <div>Nhử địch vào vùng đầm lầy Tốt Động, bốn bề phục kích.
+        <div class="c-sub">Lợi dụng địa hình — đây chính là chiến thuật lịch sử!</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s5','s5B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Dàn quân nghênh chiến trực diện giữa đồng bằng trống trải.
+        <div class="c-sub">Quân Minh đông hơn nhiều — đánh trực diện rất bất lợi</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s5','s5C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Rút lui tránh giao chiến, bảo toàn lực lượng.
+        <div class="c-sub">An toàn trước mắt, nhưng bỏ lỡ thời cơ đánh phủ đầu</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s5A">
+  <div class="chap">⭐ Lựa chọn A · Đầm Lầy Thành Vũ Khí</div>
+  <img class="hero-img" src="images/quanminh.jpg" alt="Đại thắng Tốt Động" style="object-position:center;">
+  <div class="outcome good">
+    <span class="outcome-icon">🌊</span>
+    <strong>Đại thắng vang dội!</strong> Quân Minh sa vào đầm lầy, ngựa chiến lún bùn không thể xoay trở. Nghĩa quân từ bốn phía đổ ra đánh úp. Hàng vạn quân Minh bị tiêu diệt hoặc bắt sống, Vương Thông phải chạy thoát thân về cố thủ trong thành Đông Quan.
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Ý nghĩa lịch sử</span>
+    Trận Tốt Động – Chúc Động đánh dấu bước ngoặt: từ thế phòng ngự, nghĩa quân Lam Sơn chính thức chuyển sang thế tấn công áp đảo, mở đường vây hãm kinh thành Đông Quan ngay sau đó.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục hành trình...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s6',0)"><span class="c-letter">→</span><div>Năm 1427 — Chi Lăng – Xương Giang, Liễu Thăng tử trận...</div></button></div>
+</div>
+
+<div class="scene" id="s5B">
+  <div class="chap">📍 Lựa chọn B · Đánh Trực Diện</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    Quân Minh đông và trang bị tốt hơn nhiều. Đánh trực diện giữa đồng bằng trống trải sẽ khiến nghĩa quân <strong>chịu tổn thất rất lớn mà chưa chắc thắng</strong>.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s5B')">🔮 Nếu đánh trực diện giữa đồng bằng thì sao?</button>
+    <div class="counterf-body" id="cf-s5B">Nếu không tận dụng địa hình đầm lầy, đội hình kỵ binh và bộ binh đông đảo của quân Minh có thể phát huy tối đa sức mạnh, khiến nghĩa quân — vốn ít quân hơn — rơi vào thế bất lợi ngay từ đầu trận.</div>
+  </div>
+  <div class="choices-label">⚡ Đổi chiến thuật...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5A',10)"><span class="c-letter">→</span><div>"Phải dùng đầm lầy làm lợi thế — nhử địch vào Tốt Động!"</div></button></div>
+</div>
+
+<div class="scene" id="s5C">
+  <div class="chap">📍 Lựa chọn C · Rút Lui Bỏ Lỡ Thời Cơ</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Rút lui giữa lúc này sẽ để quân Minh tiến sát đe doạ Nghệ An vừa mới giành được. <strong>Đây là thời cơ vàng để giáng một đòn quyết định.</strong>
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s5C')">🔮 Nếu rút lui tránh giao chiến thì sao?</button>
+    <div class="counterf-body" id="cf-s5C">Nếu rút lui, quân Minh sẽ có thời gian củng cố và tiến sâu hơn vào vùng đất nghĩa quân mới kiểm soát, khiến toàn bộ thành quả từ Nghệ An có nguy cơ bị đe doạ.</div>
+  </div>
+  <div class="choices-label">⚡ Nắm lấy thời cơ...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5A',10)"><span class="c-letter">→</span><div>"Không thể lùi bước — phục kích ngay tại Tốt Động!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 6 — CHI LĂNG – XƯƠNG GIANG (1427) — MỚI
+═══════════════════════════════════ -->
+<div class="scene" id="s6">
+  <div class="chap">⛰️ Chương 6 · Năm 1427 — Chi Lăng – Xương Giang <span class="src-tag v" onclick="openSrcPopup('s6_chilang')">📖 nguồn</span></div>
+  <!-- ẢNH MỚI CÓ THỂ THÊM: ải Chi Lăng, tạm dùng ảnh sẵn có -->
+  <img class="hero-img" src="images/chilang.jpg" alt="Chi Lăng – Xương Giang">
+
+  <div class="tl" id="tl6">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot done">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot current">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter6"></div></div>
+    <span class="spirit-pct" id="spiritPct6">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">⛰️ Ải Chi Lăng</span>
+      Chi Lăng (Lạng Sơn) là ải núi hiểm trở bậc nhất trên con đường từ Trung Quốc vào Thăng Long — hai bên vách đá dựng đứng, chỉ có một lối đi hẹp ở giữa.
+    </div>
+    Cuối năm 1427, thất bại liên tiếp khiến nhà Minh cử <strong>Liễu Thăng</strong> đem 10 vạn quân sang cứu viện thành Đông Quan đang bị vây khốn. Lê Lợi và các tướng quyết định phục kích ngay tại cửa ngõ Chi Lăng.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Tướng Lê Sát — bàn kế phục kích</div>
+    "Thưa Bình Định Vương, Liễu Thăng vốn kiêu ngạo, khinh địch. Nếu ta cho quân nhẹ ra khiêu chiến rồi giả thua dụ hắn vào sâu trong ải hẹp, phục binh hai bên núi ắt sẽ chặt đứt được đầu rắn!"
+  </div>
+  <div class="story">Đây là trận đánh mang tính sống còn: nếu để viện binh Liễu Thăng đến được Đông Quan, toàn bộ thành quả 10 năm kháng chiến có thể sụp đổ.</div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Điều gì đã xảy ra với chủ tướng Liễu Thăng tại ải Chi Lăng năm 1427?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc6')">A. Liễu Thăng thắng trận, tiến vào giải vây Đông Quan</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc6')">B. Liễu Thăng bị phục kích và chém chết ngay tại trận</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc6')">C. Liễu Thăng đầu hàng và được thả về nước</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc6')">D. Liễu Thăng rút lui an toàn về Trung Quốc</button>
+    </div>
+    <div class="kc-fb" id="kc6-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Một trận đánh có thể quyết định vận mệnh của cả 10 năm kháng chiến — áp lực đó nặng nề đến mức nào với người chỉ huy?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+  </div>
+
+  <div class="choices-label">⚡ Trước viện binh của Liễu Thăng, bạn quyết định...</div>
+  <div class="choices" id="s6-choices">
+    <button class="c-btn" onclick="pickChoice('s6','s6A',25,true)">
+      <span class="c-letter">A</span>
+      <div>Cho quân nhẹ khiêu chiến, giả thua dụ Liễu Thăng vào ải hẹp rồi phục kích.
+        <div class="c-sub">Đúng chiến thuật lịch sử — đánh vào đúng điểm yếu kiêu ngạo của địch!</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s6','s6B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Dàn toàn bộ quân chặn ngay cửa ải, đối đầu trực diện.
+        <div class="c-sub">10 vạn quân địch quá đông — đối đầu trực diện rất mạo hiểm</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s6','s6C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Bỏ ải Chi Lăng, rút về cố thủ bảo toàn lực lượng.
+        <div class="c-sub">Để mất ải hiểm yếu đồng nghĩa mở đường cho viện binh vào cứu Đông Quan</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s6A">
+  <div class="chap">⭐ Lựa chọn A · Chặt Đứt Đầu Rắn</div>
+  <img class="hero-img" src="images/khoinghialamson.png" alt="Đại thắng Chi Lăng" style="object-position:center;">
+  <div class="outcome good">
+    <span class="outcome-icon">⛰️</span>
+    <strong>Chiến thắng quyết định!</strong> Liễu Thăng đắc thắng đuổi theo, lọt thỏm vào ải hẹp Chi Lăng. Phục binh hai bên núi đổ ra, Liễu Thăng bị chém chết ngay tại trận. Toàn bộ 10 vạn viện binh sau đó tiếp tục bị đánh tan tại Xương Giang.
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Ý nghĩa lịch sử</span>
+    Mất viện binh, tướng Vương Thông trong thành Đông Quan hoàn toàn tuyệt vọng, không còn hy vọng được cứu viện. Đây là đòn quyết định làm sụp đổ ý chí chiến đấu của toàn bộ quân Minh tại Đại Việt.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục hành trình...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s7',0)"><span class="c-letter">→</span><div>Năm 1427 — Vây hãm Đông Quan, giờ quyết chiến cuối cùng...</div></button></div>
+</div>
+
+<div class="scene" id="s6B">
+  <div class="chap">📍 Lựa chọn B · Đối Đầu Trực Diện</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    10 vạn quân của Liễu Thăng là đội quân tinh nhuệ. Đối đầu trực diện ngay tại cửa ải sẽ khiến nghĩa quân <strong>chịu tổn thất nặng nề mà chưa chắc ngăn được địch</strong>.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s6B')">🔮 Nếu đối đầu trực diện với Liễu Thăng thì sao?</button>
+    <div class="counterf-body" id="cf-s6B">Nếu dàn quân đối đầu trực diện, ưu thế số đông của quân Minh sẽ phát huy tối đa ngay tại cửa ải — nghĩa quân có nguy cơ bị đánh bật, mở đường cho viện binh tiến thẳng vào giải vây Đông Quan.</div>
+  </div>
+  <div class="choices-label">⚡ Đổi chiến thuật...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s6A',12)"><span class="c-letter">→</span><div>"Phải dùng mưu kế — dụ địch vào ải hẹp mà đánh!"</div></button></div>
+</div>
+
+<div class="scene" id="s6C">
+  <div class="chap">📍 Lựa chọn C · Bỏ Ải Hiểm Yếu</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Bỏ ải Chi Lăng đồng nghĩa mở toang cánh cửa duy nhất ngăn viện binh vào cứu Đông Quan. <strong>Đây là sai lầm chiến lược nghiêm trọng.</strong>
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s6C')">🔮 Nếu bỏ ải Chi Lăng rút lui thì sao?</button>
+    <div class="counterf-body" id="cf-s6C">Nếu bỏ ải hiểm yếu, viện binh Liễu Thăng sẽ dễ dàng tiến thẳng đến Đông Quan, giải vây cho Vương Thông và có thể khiến toàn bộ thế trận 10 năm kháng chiến đảo ngược.</div>
+  </div>
+  <div class="choices-label">⚡ Giữ vững cửa ải...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s6A',12)"><span class="c-letter">→</span><div>"Không thể bỏ Chi Lăng — phục kích ngay tại đây!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 7 — VÂY HÃM ĐÔNG QUAN (1427)
+═══════════════════════════════════ -->
+<div class="scene" id="s7">
+  <div class="chap">🏰 Chương 7 · Năm 1427 — Vây Hãm Đông Quan <span class="src-tag v" onclick="openSrcPopup('s7_dongquan')">📖 nguồn</span></div>
+  <img class="hero-img" src="images/dongquan.jpg" alt="Đông Quan" style="object-position:center;">
+
+  <div class="tl" id="tl7">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot done">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot done">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot current">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter7"></div></div>
+    <span class="spirit-pct" id="spiritPct7">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">🏛️ Đông Quan</span>
+      <strong>Đông Quan</strong> là tên quân Minh đặt cho Thăng Long (Hà Nội ngày nay). Sau khi mất viện binh tại Chi Lăng, đây là thành trì cuối cùng còn lại của quân Minh trên đất Đại Việt.
+    </div>
+    Sau chiến thắng Chi Lăng – Xương Giang, Vương Thông trong thành Đông Quan hoàn toàn tuyệt vọng — không còn viện binh, không còn đường lui, tinh thần quân lính sụp đổ.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Nguyễn Trãi — dâng kế</div>
+    "Thưa Bình Định Vương, ta không cần phá được thành nữa. Vương Thông đã mất hết hy vọng. Lúc này, ta đề nghị điều kiện cho chúng tự rút — không cần đổ thêm máu!"
+  </div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Sau khi thắng trận, Lê Lợi đã làm gì với hàng vạn quân Minh còn lại trong thành Đông Quan?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc7')">A. Tiêu diệt toàn bộ để trả thù 20 năm đô hộ</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc7')">B. Bắt làm tù binh và bán làm nô lệ</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc7')">C. Cho phép rút quân về nước trong danh dự, cấp lương thực và thuyền bè</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc7')">D. Giam giữ và đòi nhà Minh nộp tiền chuộc</button>
+    </div>
+    <div class="kc-fb" id="kc7-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Sau 20 năm chịu ách đô hộ, tha thứ cho kẻ thù đã đầu hàng là điều dễ hay khó với bạn?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+  </div>
+
+  <div class="choices-label">⚡ Vương Thông trong thành xin hàng. Bạn quyết định...</div>
+  <div class="choices" id="s7-choices">
+    <button class="c-btn" onclick="pickChoice('s7','s7A',25,true)">
+      <span class="c-letter">A</span>
+      <div>Cho phép toàn bộ quân Minh rút về nước trong danh dự — cấp lương thực, thuyền bè.
+        <div class="c-sub">Nhân nghĩa và tầm nhìn chính trị xa — đây chính là điều Lê Lợi đã làm!</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s7','s7B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Tiêu diệt toàn bộ để trả thù cho 20 năm đau khổ của dân tộc.
+        <div class="c-sub">Cảm xúc dễ hiểu, nhưng sẽ gây chiến tranh trả đũa từ nhà Minh...</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s7','s7C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Bắt làm tù binh, dùng để đàm phán ngoại giao với nhà Minh.
+        <div class="c-sub">Tính toán ngoại giao, nhưng phức tạp và tốn kém</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s7A">
+  <div class="chap">⭐ Lựa chọn A · Nhân Nghĩa Vượt Trên Hận Thù</div>
+  <img class="hero-img" src="images/le-loi-hero.png" alt="Lê Lợi đại thắng">
+  <div class="outcome good">
+    <span class="outcome-icon">🏆</span>
+    <strong>Quyết định vĩ đại nhất trong lịch sử!</strong> Lê Lợi cho phép hơn <em>10 vạn quân Minh rút về nước</em> — cấp đủ thuyền bè, lương thực. Đây là hành động nhân nghĩa hiếm có, ngăn chặn một cuộc chiến trả thù tốn kém và bảo vệ nền hoà bình lâu dài.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Nguyễn Trãi — trong Bình Ngô đại cáo</div>
+    "<em>Đem đại nghĩa để thắng hung tàn, lấy chí nhân để thay cường bạo...</em> Quân ta không đổ thêm một giọt máu không cần thiết. Đó là chiến thắng thực sự của nhân nghĩa!"
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Tầm nhìn lịch sử</span>
+    Quyết định của Lê Lợi không chỉ kết thúc chiến tranh, mà còn <strong>mở ra kỷ nguyên hoà bình với nhà Minh</strong>. Nhà Minh sau đó công nhận nhà Lê và nền độc lập của Đại Việt.
+  </div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s8',0)"><span class="c-letter">→</span><div>Năm 1428 — Bình Ngô đại cáo & Lê Lợi lên ngôi...</div></button></div>
+</div>
+
+<div class="scene" id="s7B">
+  <div class="chap">📍 Lựa chọn B · Cảm Xúc Dẫn Dắt</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    Tức giận hoàn toàn có thể hiểu được. Nhưng <strong>tiêu diệt tù binh đầu hàng sẽ khơi dậy sự trả thù — nhà Minh sẽ lại cử đại quân</strong>. Lê Lợi đã chọn con đường cao hơn: tha cho kẻ thù để có hoà bình lâu dài.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s7B')">🔮 Nếu tiêu diệt toàn bộ quân Minh thì sao?</button>
+    <div class="counterf-body" id="cf-s7B">Nếu tàn sát tù binh, nhà Minh gần như chắc chắn sẽ lấy cớ đó để phát động một cuộc chiến trả đũa quy mô lớn — Đại Việt vừa giành độc lập đã lại phải đối mặt với chiến tranh.</div>
+  </div>
+  <div class="choices-label">⚡ Suy nghĩ về tầm nhìn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s7A',12)"><span class="c-letter">→</span><div>"Dân ta đã đủ khổ rồi. Hoà bình lâu dài quan trọng hơn trả thù nhất thời."</div></button></div>
+</div>
+
+<div class="scene" id="s7C">
+  <div class="chap">📍 Lựa chọn C · Tính Toán Ngoại Giao</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Tư duy ngoại giao tốt, nhưng <strong>Lê Lợi chọn cách đơn giản và nhân đạo hơn</strong>: thả toàn bộ, không điều kiện.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s7C')">🔮 Nếu giữ tù binh làm con bài mặc cả thì sao?</button>
+    <div class="counterf-body" id="cf-s7C">Nếu giữ hàng vạn tù binh lại, Đại Việt sẽ phải gánh thêm chi phí nuôi giữ khổng lồ giữa lúc đất nước còn kiệt quệ sau chiến tranh.</div>
+  </div>
+  <div class="choices-label">⚡ Thể hiện nhân nghĩa...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s7A',12)"><span class="c-letter">→</span><div>"Thả hết — nhân nghĩa là vũ khí mạnh nhất!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     SCENE 8 — BÌNH NGÔ ĐẠI CÁO & LÊN NGÔI (1428) — MỚI
+═══════════════════════════════════ -->
+<div class="scene" id="s8">
+  <div class="chap">👑 Chương 8 · Năm 1428 — Bình Ngô Đại Cáo & Lên Ngôi <span class="src-tag v" onclick="openSrcPopup('s8_lenngoi')">📖 nguồn</span></div>
+  <!-- ẢNH MỚI CÓ THỂ THÊM: cảnh lên ngôi / Bình Ngô đại cáo, tạm dùng ảnh sẵn có -->
+  <img class="hero-img" src="images/le_nguyen2.jpg" alt="Bình Ngô đại cáo">
+
+  <div class="tl" id="tl8">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">1407</div><div class="tl-event">Nhà Minh xâm lược</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1419</div><div class="tl-event">Lê Lai hi sinh</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1424</div><div class="tl-event">Nguyễn Trãi gia nhập</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1424</div><div class="tl-event">Vào Nghệ An</div></div>
+    <div class="tl-item"><div class="tl-dot done">5</div><div class="tl-year">1426</div><div class="tl-event">Tốt Động</div></div>
+    <div class="tl-item"><div class="tl-dot done">6</div><div class="tl-year">1427</div><div class="tl-event">Chi Lăng</div></div>
+    <div class="tl-item"><div class="tl-dot done">7</div><div class="tl-year">1427</div><div class="tl-event">Đông Quan</div></div>
+    <div class="tl-item"><div class="tl-dot current">8</div><div class="tl-year">1428</div><div class="tl-event">Lập nhà Lê</div></div>
+  </div>
+
+  <div class="spirit-bar">
+    <span style="font-size:20px;">🔥</span>
+    <span class="spirit-label">Ý Chí</span>
+    <div class="spirit-track"><div class="spirit-fill" id="spiritMeter8"></div></div>
+    <span class="spirit-pct" id="spiritPct8">0%</span>
+  </div>
+
+  <div class="story">
+    <div class="edu-pill">
+      <span class="edu-tag">👑 Sau 10 năm</span>
+      Đầu năm 1428, quân Minh rút hoàn toàn khỏi Đại Việt. Nguyễn Trãi thay lời Lê Lợi soạn <strong>Bình Ngô đại cáo</strong>, tuyên bố nền độc lập sau 10 năm kháng chiến — được xem là bản tuyên ngôn độc lập thứ hai của dân tộc.
+    </div>
+    Lê Lợi lên ngôi Hoàng đế, lấy hiệu <strong>Lê Thái Tổ</strong>, đặt tên nước là Đại Việt, đóng đô tại Thăng Long. Đất nước hoang tàn sau 20 năm chiến tranh, ruộng đồng bỏ hoang, dân chúng ly tán.
+  </div>
+  <div class="dlg">
+    <div class="dlg-who">Một vị lão thần — tâu lên vua mới</div>
+    "Bệ hạ! Đất nước vừa giành lại, quân đội còn hùng mạnh. Nhân đà thắng lợi, sao không tiếp tục dùng binh mở rộng bờ cõi, để uy danh triều đại vang xa hơn nữa?"
+  </div>
+  <div class="story">Lê Lợi đứng trước một lựa chọn: tiếp tục dùng sức mạnh quân sự, hay dồn toàn lực hàn gắn vết thương chiến tranh cho muôn dân?</div>
+
+  <div class="kc">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Bình Ngô đại cáo (1428) được xem là văn kiện có ý nghĩa gì trong lịch sử Việt Nam?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc8')">A. Bộ luật đầu tiên của nhà Lê</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc8')">B. Bản tuyên ngôn độc lập thứ hai của dân tộc, sau bài thơ thần của Lý Thường Kiệt</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc8')">C. Thư xin lỗi gửi nhà Minh</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc8')">D. Chiếu chỉ dời đô</button>
+    </div>
+    <div class="kc-fb" id="kc8-fb"></div>
+  </div>
+
+  <div class="reflect">
+    <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+    <div class="reflect-q">Chiến thắng trong chiến tranh đã khó — nhưng xây dựng hoà bình sau chiến tranh có khi còn khó hơn. Bạn nghĩ điều gì cần thiết nhất lúc này?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+  </div>
+
+  <div class="choices-label">⚡ Trước lời tâu của lão thần, bạn quyết định...</div>
+  <div class="choices" id="s8-choices">
+    <button class="c-btn" onclick="pickChoice('s8','s8A',25,true)">
+      <span class="c-letter">A</span>
+      <div>Ngừng chinh chiến, dồn toàn lực khôi phục nông nghiệp, miễn giảm thuế khoá cho dân.
+        <div class="c-sub">Đúng con đường Lê Lợi đã chọn — dân trước, uy danh sau!</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s8','s8B',5,false)">
+      <span class="c-letter">B</span>
+      <div>Nghe lời lão thần, tiếp tục dùng binh mở rộng bờ cõi ngay.
+        <div class="c-sub">Đất nước vừa kiệt quệ sau 20 năm chiến tranh, dân chưa kịp hồi sức</div></div>
+    </button>
+    <button class="c-btn" onclick="pickChoice('s8','s8C',10,false)">
+      <span class="c-letter">C</span>
+      <div>Giữ nguyên bộ máy quân sự thời chiến, chưa vội thay đổi gì.
+        <div class="c-sub">An toàn nhưng không giải quyết được gốc rễ khó khăn của dân</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s8A">
+  <div class="chap">⭐ Lựa chọn A · Dân Trước, Uy Danh Sau</div>
+  <img class="hero-img" src="images/le-loi-hero.png" alt="Lê Thái Tổ">
+  <div class="outcome good">
+    <span class="outcome-icon">👑</span>
+    <strong>Đây chính là tầm vóc của một vị minh quân!</strong> Lê Thái Tổ ban lệnh miễn giảm thuế khoá, cho binh lính về quê cày cấy, khôi phục sản xuất. Đại Việt dần hồi sinh sau 20 năm chiến tranh liên miên.
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Di sản để lại</span>
+    Nhà Hậu Lê do Lê Lợi sáng lập trở thành <strong>triều đại tồn tại lâu nhất trong lịch sử phong kiến Việt Nam</strong> — gần 360 năm. Nền móng hoà bình và khôi phục kinh tế mà ông đặt ra chính là bệ phóng cho sự thịnh trị của các đời vua sau.
+  </div>
+  <button class="cont-btn" onclick="go('final',0)">Xem kết quả cuối cùng →</button>
+</div>
+
+<div class="scene" id="s8B">
+  <div class="chap">📍 Lựa chọn B · Vội Vàng Mở Rộng</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">⚠️</span>
+    Đất nước vừa trải qua 20 năm chiến tranh liên miên, dân chúng kiệt quệ. <strong>Tiếp tục dùng binh lúc này sẽ khiến vết thương chiến tranh không bao giờ lành.</strong>
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s8B')">🔮 Nếu tiếp tục dùng binh mở rộng bờ cõi ngay thì sao?</button>
+    <div class="counterf-body" id="cf-s8B">Nếu vội vàng dùng binh khi dân chưa kịp hồi sức, ruộng đồng còn hoang hoá, có thể dẫn đến bất ổn nội bộ và làm chậm quá trình phục hồi đất nước sau chiến tranh.</div>
+  </div>
+  <div class="choices-label">⚡ Nghĩ lại vì dân...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s8A',12)"><span class="c-letter">→</span><div>"Không. Dân ta cần được nghỉ ngơi trước đã."</div></button></div>
+</div>
+
+<div class="scene" id="s8C">
+  <div class="chap">📍 Lựa chọn C · Giữ Nguyên Hiện Trạng</div>
+  <div class="outcome bad">
+    <span class="outcome-icon">💭</span>
+    Không hành động gì cũng là một lựa chọn sai. <strong>Đất nước cần những chính sách cụ thể để hồi phục</strong>, chứ không chỉ là giữ nguyên bộ máy thời chiến.
+  </div>
+  <div class="counterf">
+    <button class="counterf-btn" onclick="toggleCounter('cf-s8C')">🔮 Nếu không có chính sách khôi phục cụ thể thì sao?</button>
+    <div class="counterf-body" id="cf-s8C">Nếu chỉ giữ nguyên bộ máy quân sự mà không chủ động miễn giảm thuế, khuyến khích sản xuất, ruộng đồng bỏ hoang có thể kéo dài, khiến nạn đói và bất ổn xã hội dễ nảy sinh ngay sau chiến thắng.</div>
+  </div>
+  <div class="choices-label">⚡ Chủ động khôi phục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s8A',12)"><span class="c-letter">→</span><div>"Phải chủ động miễn thuế, khuyến khích dân cày cấy ngay!"</div></button></div>
+</div>
+
+<!-- ══════════════════════════════
+     FINAL RESULT
+═══════════════════════════════════ -->
+<div class="scene" id="final">
+  <div class="final">
+    <div class="final-seal" id="finalSeal">⚔️</div>
+    <div class="final-h" id="finalH">Hành Trình Hoàn Thành!</div>
+    <div class="final-pts" id="finalPts">0</div>
+    <div class="final-rank" id="finalRank">—</div>
+    <div class="final-desc" id="finalDesc">...</div>
+
+    <div class="journal" id="journalBox">
+      <span class="journal-tag">📔 NHẬT KÝ HÀNH TRÌNH CỦA BẠN</span>
+      <div id="journalList"></div>
+      <button class="journal-copy" onclick="copyJournal()">📋 Sao chép nhật ký để chia sẻ</button>
+    </div>
+
+    <div class="final-lesson">
+      <span class="fl-tag">📚 Bài học lịch sử từ Lê Lợi</span>
+      <strong>10 năm kháng chiến Lam Sơn (1418–1428)</strong> dạy chúng ta bốn bài học vượt thời gian:<br><br>
+      <strong>1. Kiên trì vượt gian khổ:</strong> Có lúc chỉ còn vài trăm nghĩa quân, nhưng Lê Lợi không bao giờ từ bỏ.<br><br>
+      <strong>2. Dám thay đổi chiến lược:</strong> Nghe theo Nguyễn Chích chuyển hướng vào Nghệ An sau 6 năm bế tắc — không cố chấp với con đường cũ.<br><br>
+      <strong>3. Kết hợp trí tuệ và dũng cảm:</strong> Gươm của Lê Lợi + bút của Nguyễn Trãi = chiến thắng toàn diện.<br><br>
+      <strong>4. Nhân nghĩa là sức mạnh:</strong> Tha cho kẻ thù sau chiến thắng, rồi dồn sức chăm lo cho dân — đó là tầm vóc của một vị minh quân.
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-restart" onclick="restart()">🔄 Chơi lại</button>
+      <a href="cau-chuyen.html" class="btn-home">📖 Câu chuyện khác</a>
+    </div>
+  </div>
+</div>
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-modal">
+  <div class="ref-modal-head">
+    <span class="ref-page-title" style="margin-bottom:0;">📚 Nguồn Tham Khảo</span>
+    <button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button>
+  </div>
+  <div class="ref-page-sub">Các sự kiện, ngày tháng, số liệu trong trang này được đối chiếu từ các nguồn chính thống dưới đây. Các đoạn hội thoại (đánh dấu 🔵 dưới mỗi khung thoại) là <strong>dựng lại minh họa</strong> dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép. Bạn cũng có thể bấm nút "📖 nguồn" ở đầu mỗi chương để xem nguồn riêng cho sự kiện đó.</div>
+
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">Đại Việt sử ký toàn thư (Ngô Sĩ Liên và sử quan triều Lê)</div>
+    <div class="ref-item">Lam Sơn thực lục (tương truyền do Nguyễn Trãi biên soạn)</div>
+    <div class="ref-item">Bình Ngô đại cáo, Nguyễn Trãi (1428)</div>
+    <div class="ref-item">Khâm định Việt sử thông giám cương mục (Quốc sử quán triều Nguyễn)</div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-h">Ghi chú về phương pháp thể hiện</div>
+    <div class="ref-item">Ngày tháng, số liệu, kết quả trận đánh: dựa trên tư liệu đã kiểm chứng</div>
+    <div class="ref-item">Hội thoại giữa các nhân vật: dựng lại nhằm mục đích minh họa, không phải trích dẫn nguyên văn có ghi chép</div>
+    <div class="ref-item">Chi tiết gươm thần Thuận Thiên: mang tính huyền sử, không có ghi chép đồng thời xác nhận</div>
+  </div>
+</div>
+</div>
+</div><!-- end .wrap -->
+
+<script>
+var pts = 0;
+
+var sceneProgress = {
+  'cover':0,'s1':4,'s1A':10,'s1B':6,'s1C':7,
+  's2':16,'s2A':22,'s2B':18,'s2C':19,
+  's3':28,'s3A':34,'s3B':30,'s3C':31,
+  's4':40,'s4A':46,'s4B':42,'s4C':43,
+  's5':52,'s5A':58,'s5B':54,'s5C':55,
+  's6':64,'s6A':70,'s6B':66,'s6C':67,
+  's7':76,'s7A':84,'s7B':78,'s7C':79,
+  's8':90,'s8A':97,'s8B':92,'s8C':93,
+  'final':100
+};
+
+var chapterNames = {
+  s1:'I. Gươm thần Thuận Thiên (1407)',
+  s2:'II. Lê Lai liều mình cứu chúa (1419)',
+  s3:'III. Nguyễn Trãi & chiến lược công tâm (1424)',
+  s4:'IV. Bước ngoặt Nghệ An (1424)',
+  s5:'V. Trận Tốt Động – Chúc Động (1426)',
+  s6:'VI. Chi Lăng – Xương Giang (1427)',
+  s7:'VII. Đông Quan đại thắng (1427)',
+  s8:'VIII. Bình Ngô đại cáo & lên ngôi (1428)'
+};
+var choiceCorrect = {};
+function markCorrect(key){ choiceCorrect[key] = true; }
+var answered = {};
+function pickChoice(originId,target,points,correct){
+  if(answered[originId])return;
+  answered[originId]=true;
+  var cont=document.getElementById(originId+'-choices');
+  if(cont)cont.querySelectorAll('.c-btn').forEach(function(b){b.disabled=true;});
+  if(correct){markCorrect(originId);soundCorrect();addStreak();}
+  else{soundWrong();resetStreak();}
+  go(target,points);
+}
+
+var spiritIds = ['spiritMeter1','spiritMeter2','spiritMeter3','spiritMeter4','spiritMeter5','spiritMeter6','spiritMeter7','spiritMeter8'];
+var spiritPctIds = ['spiritPct1','spiritPct2','spiritPct3','spiritPct4','spiritPct5','spiritPct6','spiritPct7','spiritPct8'];
+
+var sceneHistory = ['cover'];
+var historyIndex = 0;
+var sceneRewarded = {};
+
+function go(id, addPts) {
+  if (addPts > 0 && !sceneRewarded[id]) {
+    sceneRewarded[id] = true;
+    pts += addPts;
+  }
+  updateScore();
+  updateSpirit();
+
+  sceneHistory = sceneHistory.slice(0, historyIndex + 1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if (historyIndex <= 0) return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if (historyIndex >= sceneHistory.length - 1) return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(function(s){ s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  var pct = sceneProgress[id] || 0;
+  document.getElementById('prog').style.width = pct + '%';
+
+  if (id === 'final') showFinal();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  var b = document.getElementById('backBtn');
+  var f = document.getElementById('fwdBtn');
+  if (b) b.style.display = historyIndex > 0 ? 'flex' : 'none';
+  if (f) f.style.display = historyIndex < sceneHistory.length - 1 ? 'flex' : 'none';
+}
+
+function updateScore() {
+  document.getElementById('scoreNum').textContent = pts;
+  var rank = getRank(pts);
+  document.getElementById('scoreRank').textContent = rank.label;
+}
+
+function updateSpirit(){
+  var pct = Math.min(100, Math.round((pts/180)*100));
+  spiritIds.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.width = pct+'%'; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+  });
+  spiritPctIds.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = pct+'%';
+  });
+}
+
+function getRank(p) {
+  if (p >= 150) return { label: '🏛️ Minh Quân', emoji: '👑', desc: 'Xuất sắc! Bạn có tư duy của một vị minh quân — kiên quyết, biết thay đổi chiến lược đúng lúc, nhân nghĩa và có tầm nhìn xa trông rộng. Xứng đáng là người kế thừa tinh thần Lê Lợi!' };
+  if (p >= 90) return { label: '⚔️ Dũng Tướng', emoji: '⚔️', desc: 'Tốt! Bạn có dũng khí và quyết đoán qua từng chặng đường. Hãy thêm một chút nhân nghĩa và tầm nhìn chiến lược — bạn sẽ trở thành vị tướng hoàn hảo!' };
+  return { label: '📚 Nghĩa Sĩ', emoji: '📜', desc: 'Bạn đã bắt đầu hành trình khám phá lịch sử! Hãy thử lại để trải nghiệm đầy đủ 10 năm kháng chiến hào hùng của Lê Lợi.' };
+}
+
+function renderJournal(){
+  var html = '';
+  for(var key in chapterNames){
+    var ok = !!choiceCorrect[key];
+    html += '<div class="journal-row"><span>'+chapterNames[key]+'</span><span class="journal-status '+(ok?'ok':'no')+'">'+(ok?'✅ Đúng lịch sử':'○ Khác lịch sử')+'</span></div>';
+  }
+  var el = document.getElementById('journalList');
+  if(el) el.innerHTML = html;
+}
+function copyJournal(){
+  var txt = '📔 NHẬT KÝ HÀNH TRÌNH — LÊ LỢI: GƯƠM THẦN KHÁNG CHIẾN\n\n';
+  for(var key in chapterNames) txt += (choiceCorrect[key] ? '✅ ' : '○ ') + chapterNames[key] + '\n';
+  txt += '\nTổng điểm: ' + pts + '\n';
+  navigator.clipboard.writeText(txt).then(function(){
+    var btn = document.querySelector('.journal-copy');
+    if(btn){ var old = btn.textContent; btn.textContent = '✅ Đã sao chép!'; setTimeout(function(){ btn.textContent = old; }, 1800); }
+  }).catch(function(){});
+}
+
+function showFinal() {
+  var rank = getRank(pts);
+  document.getElementById('finalSeal').textContent = rank.emoji;
+  document.getElementById('finalH').textContent = rank.label === '🏛️ Minh Quân' ? '🏛️ Bình Định Vương Lê Lợi!' : rank.label === '⚔️ Dũng Tướng' ? '⚔️ Dũng Tướng Lam Sơn!' : '📜 Nghĩa Sĩ Lam Sơn!';
+  document.getElementById('finalPts').textContent = pts + ' điểm';
+  document.getElementById('finalRank').textContent = rank.label;
+  document.getElementById('finalDesc').textContent = rank.desc;
+  renderJournal();
+  awardExp(pts, document.title);
+}
+
+function restart() {
+  pts = 0;
+  streakN = 0;
+  choiceCorrect = {};
+  answered = {};
+  sceneHistory = ['cover'];
+  historyIndex = 0;
+  sceneRewarded = {};
+  kcAnswered = {};
+  document.querySelectorAll('.c-btn').forEach(function(b){ b.disabled = false; });
+  document.querySelectorAll('.kc-opt').forEach(function(b){ b.classList.remove('correct','wrong'); b.disabled = false; });
+  document.querySelectorAll('.kc-fb').forEach(function(f){ f.className = 'kc-fb'; f.textContent=''; });
+  var sb = document.getElementById('streakBadge'); if(sb) sb.classList.remove('show','fire');
+  updateScore();
+  updateSpirit();
+  document.getElementById('prog').style.width = '0%';
+  document.querySelectorAll('.scene').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('cover').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateNavButtons();
+}
+
+var kcAnswered = {};
+
+function ansKC(btn, correct, id) {
+  if (kcAnswered[id]) return;
+  kcAnswered[id] = true;
+
+  var container = btn.parentElement;
+  container.querySelectorAll('.kc-opt').forEach(function(b){ b.disabled = true; });
+
+  var fb = document.getElementById(id + '-fb');
+  correct ? soundCorrect() : soundWrong();
+  correct ? addStreak() : resetStreak();
+
+  if (correct) {
+    btn.classList.add('correct');
+    pts += 5;
+    updateScore();
+    showPts('+5');
+    fb.textContent = '✅ Chính xác! +5 điểm. ' + getKCFeedback(id, true);
+    fb.className = 'kc-fb show ok';
+  } else {
+    btn.classList.add('wrong');
+    container.querySelectorAll('.kc-opt').forEach(function(b){
+      if (b.onclick && b.onclick.toString().indexOf('true') > -1) b.classList.add('correct');
+    });
+    fb.textContent = '❌ Chưa đúng. ' + getKCFeedback(id, false);
+    fb.className = 'kc-fb show no';
+  }
+}
+
+function getKCFeedback(id, correct) {
+  var fb = {
+    'kc1': { ok: 'Hồ Hoàn Kiếm (hồ Lục Thuỷ) gắn liền với truyền thuyết gươm thần Thuận Thiên và Rùa Vàng đòi lại gươm năm 1428.', no: 'Đáp án đúng là C — Hồ Hoàn Kiếm. Sau khi thắng giặc Minh, Lê Lợi trả gươm cho Rùa Vàng tại hồ này.' },
+    'kc2': { ok: 'Câu "Lê Lai thứ nhất, Lê Lợi thứ hai" phản ánh việc Lê Lợi tổ chức giỗ Lê Lai vào ngày 21/8 âm lịch, trước giỗ mình (22/8) một ngày.', no: 'Đáp án đúng là B. Đây là thành ngữ thể hiện lòng biết ơn sâu sắc của Lê Lợi với người đã liều chết cứu mình.' },
+    'kc3': { ok: 'Câu mở đầu Bình Ngô đại cáo "Việc nhân nghĩa cốt ở yên dân" thể hiện tư tưởng nhân nghĩa đặt nhân dân lên trên hết.', no: 'Đáp án đúng là B. Nguyễn Trãi đặt "yên dân" làm mục tiêu tối thượng — không phải quyền lực hay lãnh thổ.' },
+    'kc4': { ok: 'Nguyễn Chích — hào trưởng địa phương giàu kinh nghiệm — là người đề xuất kế sách chuyển hướng chiến lược quan trọng này.', no: 'Đáp án đúng là B — Nguyễn Chích. Ông là hào trưởng địa phương am hiểu địa bàn Nghệ An, đề xuất bước ngoặt chiến lược này.' },
+    'kc5': { ok: 'Quân Minh sa lầy tại đầm Tốt Động, hàng vạn bị diệt hoặc bắt sống, Vương Thông phải chạy về cố thủ Đông Quan — bước ngoặt đưa nghĩa quân sang thế tấn công.', no: 'Đáp án đúng là B. Đây là chiến thắng lớn, chuyển toàn bộ cục diện cuộc kháng chiến sang thế chủ động cho nghĩa quân Lam Sơn.' },
+    'kc6': { ok: 'Liễu Thăng đắc thắng đuổi theo quân nhử, lọt vào ải hẹp Chi Lăng và bị chém chết tại trận — chặt đứt hy vọng cứu viện cuối cùng của quân Minh.', no: 'Đáp án đúng là B. Liễu Thăng bị phục kích chém chết ngay tại ải Chi Lăng, làm sụp đổ hoàn toàn ý chí kháng cự của quân Minh.' },
+    'kc7': { ok: 'Lê Lợi cấp đủ thuyền bè và lương thực cho quân Minh rút về — một trong những ví dụ nhân đạo nhất trong lịch sử chiến tranh.', no: 'Đáp án đúng là C. Đây là quyết định đáng kinh ngạc — chiến thắng rồi vẫn tha cho kẻ thù, vì nhân nghĩa và hoà bình lâu dài.' },
+    'kc8': { ok: 'Bình Ngô đại cáo được xem là bản tuyên ngôn độc lập thứ hai của dân tộc Việt Nam, sau bài thơ thần Nam quốc sơn hà của Lý Thường Kiệt.', no: 'Đáp án đúng là B. Đây là áng văn chính luận vĩ đại nhất lịch sử Việt Nam, tuyên bố nền độc lập sau 10 năm kháng chiến.' }
+  };
+  return correct ? fb[id].ok : fb[id].no;
+}
+
+/* ===== CANVAS NỀN LẤP LÁNH + HẠT LỬA ===== */
+var bgC = document.getElementById('bgCanvas');
+var bgCtx = bgC.getContext('2d');
+function resizeBG(){ bgC.width = window.innerWidth; bgC.height = window.innerHeight; }
+resizeBG(); window.addEventListener('resize', resizeBG);
+var stars2 = [];
+for(var i=0;i<80;i++) stars2.push({x:Math.random(),y:Math.random(),r:Math.random()*1.5+.3,a:Math.random(),da:(Math.random()-.5)*.008});
+var embers = [];
+function randEdgeX(){ var side = Math.random()<0.5; return side ? Math.random()*0.16 : 0.84+Math.random()*0.16; }
+for(var j=0;j<10;j++) embers.push({x:randEdgeX(),y:Math.random(),size:1+Math.random()*1.8,speed:0.05+Math.random()*0.1,drift:(Math.random()-.5)*0.08,a:0.08+Math.random()*0.18,hue:Math.random()<0.5?'201,146,10':'139,0,0'});
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  stars2.forEach(function(s){
+    s.a = Math.max(.05,Math.min(.8,s.a+s.da));
+    if(s.a<=.06||s.a>=.79) s.da*=-1;
+    bgCtx.beginPath(); bgCtx.arc(s.x*bgC.width,s.y*bgC.height,s.r,0,Math.PI*2);
+    bgCtx.fillStyle = 'rgba(255,255,255,'+s.a+')'; bgCtx.fill();
+  });
+  embers.forEach(function(e){
+    e.y -= e.speed/bgC.height*60;
+    e.x += e.drift/bgC.width*60;
+    if(e.y<-0.02){ e.y=1.02; e.x=randEdgeX(); }
+    if(e.x<-0.03||e.x>1.03) e.x = randEdgeX();
+    var px = e.x*bgC.width, py = e.y*bgC.height;
+    var grad = bgCtx.createRadialGradient(px,py,0,px,py,e.size*4);
+    grad.addColorStop(0,'rgba('+e.hue+','+e.a+')');
+    grad.addColorStop(1,'rgba('+e.hue+',0)');
+    bgCtx.beginPath(); bgCtx.arc(px,py,e.size*4,0,Math.PI*2); bgCtx.fillStyle=grad; bgCtx.fill();
+    bgCtx.beginPath(); bgCtx.arc(px,py,e.size,0,Math.PI*2); bgCtx.fillStyle='rgba('+e.hue+','+Math.min(1,e.a*1.8)+')'; bgCtx.fill();
+  });
+  requestAnimationFrame(drawBG);
+}
+drawBG();
+
+/* ===== CURSOR TRAIL LỬA (chỉ desktop) ===== */
+var curC = document.getElementById('cursorCanvas');
+var curCtx = curC.getContext('2d');
+function resizeCur(){ curC.width = window.innerWidth; curC.height = window.innerHeight; }
+resizeCur(); window.addEventListener('resize', resizeCur);
+var trailPts = [];
+var isTouchDevice = 'ontouchstart' in window;
+if(!isTouchDevice){
+  var lastMove = 0;
+  window.addEventListener('mousemove', function(e){
+    var now = Date.now();
+    if(now-lastMove<28) return; lastMove = now;
+    trailPts.push({x:e.clientX,y:e.clientY,life:1,size:2+Math.random()*2.4});
+    if(trailPts.length>40) trailPts.shift();
+  });
+}
+function drawCursorTrail(){
+  curCtx.clearRect(0,0,curC.width,curC.height);
+  trailPts.forEach(function(p){
+    p.life -= 0.028;
+    var alpha = Math.max(0,p.life);
+    var grad = curCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*5);
+    grad.addColorStop(0,'rgba(244,197,66,'+(alpha*0.55)+')');
+    grad.addColorStop(1,'rgba(244,197,66,0)');
+    curCtx.beginPath(); curCtx.arc(p.x,p.y,p.size*5,0,Math.PI*2); curCtx.fillStyle=grad; curCtx.fill();
+  });
+  trailPts = trailPts.filter(function(p){ return p.life>0; });
+  requestAnimationFrame(drawCursorTrail);
+}
+drawCursorTrail();
+
+/* ===== ÂM THANH ===== */
+var soundOn = true, actx = null;
+function getActx(){ if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+function playTone(freq,dur,type,vol){
+  if(!soundOn) return;
+  type = type||'sine'; vol = vol===undefined?.12:vol;
+  try{
+    var ctx = getActx();
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = freq; g.gain.value = vol;
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
+    o.start(); o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function soundCorrect(){ playTone(660,.14,'sine',.13); setTimeout(function(){ playTone(880,.18,'sine',.11); },90); }
+function soundWrong(){ playTone(160,.28,'sawtooth',.10); }
+function soundCombo(){ playTone(440,.1,'sine',.1); setTimeout(function(){ playTone(550,.1,'sine',.11); },80); setTimeout(function(){ playTone(660,.2,'sine',.13); },160); }
+
+/* ===== STREAK / COMBO ===== */
+var streakN = 0;
+function addStreak(){
+  streakN++;
+  var b = document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent = streakN;
+  b.classList.add('show');
+  if(streakN>=3){ b.classList.add('fire'); showCombo(streakN); }
+  else b.classList.remove('fire');
+}
+function resetStreak(){
+  streakN = 0;
+  var b = document.getElementById('streakBadge');
+  if(b) b.classList.remove('show','fire');
+}
+function showCombo(n){
+  var labels = {3:'🔥 COMBO x3',4:'⚡ THẦN TỐC x4',5:'💥 CHIẾN CÔNG x5',6:'🇻🇳 BẤT KHUẤT x6'};
+  var bonus = {3:10,4:15,5:20,6:25}[n] || 30;
+  document.getElementById('comboLabel').textContent = labels[n] || ('🇻🇳 BẤT KHUẤT x'+n);
+  document.getElementById('comboSub').textContent = '+'+bonus+' điểm thưởng!';
+  var el = document.getElementById('comboBurst');
+  el.className = 'combo-burst'; void el.offsetWidth; el.className = 'combo-burst pop';
+  pts += bonus; updateScore(); showPts('+'+bonus+' COMBO!');
+  soundCombo();
+}
+function showPts(txt){
+  var p = document.getElementById('ptsPop');
+  if(!p) return;
+  p.textContent = txt; p.className = 'pts-pop'; void p.offsetWidth; p.className = 'pts-pop show';
+}
+
+/* ===== RIPPLE HIỆU ỨNG NÚT BẤM ===== */
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('.c-btn,.kc-opt,.cont-btn,.btn-restart,.btn-home');
+  if(!btn || btn.disabled) return;
+  var rect = btn.getBoundingClientRect();
+  var size = Math.max(rect.width, rect.height);
+  var rip = document.createElement('span');
+  rip.className = 'ripple-el';
+  rip.style.width = rip.style.height = size+'px';
+  rip.style.left = (e.clientX-rect.left-size/2)+'px';
+  rip.style.top = (e.clientY-rect.top-size/2)+'px';
+  btn.style.position = 'relative';
+  btn.appendChild(rip);
+  setTimeout(function(){ rip.remove(); }, 650);
+});
+
+/* ===== NGUỒN SỬ LIỆU (popup theo từng chương) ===== */
+var sourceDB = {
+  s1_guom: {title:'Truyền thuyết gươm thần Thuận Thiên', body:'Tương truyền Lê Lợi được trao gươm báu khắc chữ "Thuận Thiên" — biểu tượng thiên mệnh khởi nghĩa. Sự kiện mang tính huyền sử, gắn liền với truyền thuyết Hồ Gươm sau này, không có ghi chép đồng thời xác nhận chi tiết cụ thể.', cite:'Đại Việt sử ký toàn thư; Lam Sơn thực lục'},
+  s2_lelai: {title:'Lê Lai liều mình cứu chúa, năm 1419', body:'Tại núi Chí Linh, tướng Lê Lai xin đóng giả Lê Lợi để đánh lạc hướng quân Minh, hy sinh để chủ tướng và nghĩa quân thoát vây.', cite:'Đại Việt sử ký toàn thư; Lam Sơn thực lục'},
+  s3_nguyentrai: {title:'Nguyễn Trãi dâng Bình Ngô sách, năm 1424', body:'Nguyễn Trãi tìm đến Lam Sơn dâng kế sách đánh lâu dài kết hợp quân sự với vận động chiêu hàng — về sau trở thành quân sư số một của Lê Lợi.', cite:'Đại Việt sử ký toàn thư; Ức Trai thi tập'},
+  s4_nghean: {title:'Chuyển hướng chiến lược vào Nghệ An, năm 1424', body:'Theo kế sách của Nguyễn Chích, nghĩa quân Lam Sơn rời vùng núi Thanh Hoá chật hẹp, đánh chiếm Nghệ An làm căn cứ mới — bước ngoặt quyết định giúp nghĩa quân phát triển lực lượng vượt bậc.', cite:'Đại Việt sử ký toàn thư; Lam Sơn thực lục'},
+  s5_totdong: {title:'Trận Tốt Động – Chúc Động, năm 1426', body:'Nghĩa quân lợi dụng địa hình đầm lầy vùng Chương Mỹ (Hà Nội ngày nay) để phục kích, đánh bại đại quân Vương Thông, chuyển thế trận sang tấn công.', cite:'Đại Việt sử ký toàn thư'},
+  s6_chilang: {title:'Trận Chi Lăng – Xương Giang, năm 1427', body:'Nghĩa quân phục kích tại ải Chi Lăng, chém chết chủ tướng Liễu Thăng, tiêu diệt toàn bộ 10 vạn viện binh nhà Minh tại Xương Giang.', cite:'Đại Việt sử ký toàn thư; Bình Ngô đại cáo, Nguyễn Trãi'},
+  s7_dongquan: {title:'Vây hãm Đông Quan, năm 1427', body:'Sau khi mất viện binh, tướng Minh Vương Thông xin hoà. Lê Lợi cấp thuyền, lương cho hơn 10 vạn quân Minh rút về nước.', cite:'Đại Việt sử ký toàn thư; Bình Ngô đại cáo, Nguyễn Trãi'},
+  s8_lenngoi: {title:'Bình Ngô đại cáo & Lê Lợi lên ngôi, năm 1428', body:'Nguyễn Trãi soạn Bình Ngô đại cáo tuyên bố độc lập. Lê Lợi lên ngôi Hoàng đế, hiệu Lê Thái Tổ, lập ra nhà Hậu Lê — triều đại tồn tại gần 360 năm.', cite:'Đại Việt sử ký toàn thư; Bình Ngô đại cáo, Nguyễn Trãi (1428)'}
+};
+function openSrcPopup(key){
+  var d = sourceDB[key]; if(!d) return;
+  document.getElementById('srcTitle').textContent = d.title;
+  document.getElementById('srcBody').textContent = d.body;
+  document.getElementById('srcCite').textContent = '📎 ' + d.cite;
+  document.getElementById('srcOverlay').classList.add('show');
+  playTone(700,.08,'sine',.08);
+}
+function closeSrcPopup(){ document.getElementById('srcOverlay').classList.remove('show'); }
+function toggleRefPage(){ document.getElementById('refOverlay').classList.toggle('show'); }
+
+/* ===== GHI CHÚ HỘI THOẠI DỰNG LẠI ===== */
+function decorateSources(){
+  document.querySelectorAll('.dlg').forEach(function(el){
+    if(el.dataset.decorated) return;
+    el.dataset.decorated = '1';
+    var note = document.createElement('span');
+    note.className = 'src-note';
+    note.textContent = '🔵 Đoạn hội thoại được dựng lại dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.';
+    el.appendChild(note);
+  });
+}
+decorateSources();
+
+/* ===== "NẾU NHƯ..." PHẢN THỰC ===== */
+function toggleCounter(id){
+  var el = document.getElementById(id);
+  if(el) el.classList.toggle('show');
+}
+
+/* ===== KẾT NỐI BACKEND (EXP) ===== */
+var API = 'http://localhost:3000/api';
+async function awardExp(amount, storyTitle) {
+  var token = localStorage.getItem('token');
+  if (!token || !amount) return;
+  try {
+    await fetch(API + '/exp/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ amount: amount, source_type: 'GAME', note: storyTitle || '' })
+    });
+  } catch (err) { console.warn('Không thể cộng EXP:', err.message); }
+}
+</script>
+</body>
+</html>

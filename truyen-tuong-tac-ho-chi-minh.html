@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hồ Chí Minh — Hành Trình Cứu Nước | Sử Việt Tương Tác</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#d4a017;--gold-l:#f5c842;--gold-dim:#8a6810;--gold-faint:rgba(212,160,23,0.12);
+  --red:#c62828;--red-l:#ef5350;--red-dark:#7b0000;
+  --star:#f5ead6;--star-dim:rgba(245,234,214,0.72);--star-faint:rgba(245,234,214,0.38);
+  --bg:#04030a;--surface:rgba(12,9,22,0.97);
+  --teal:#0d6e6e;--teal-l:#19b2b2;
+  --ink:#030208;
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--star);min-height:100vh;overflow-x:hidden;cursor:default;}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#cursorCanvas{position:fixed;inset:0;z-index:250;pointer-events:none;}
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 55% 40% at 15% 20%,rgba(198,40,40,0.09) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 75%,rgba(212,160,23,0.07) 0%,transparent 55%);}
+.deco-line{position:fixed;inset:10px;pointer-events:none;z-index:1;border:1px solid rgba(198,40,40,0.06);}
+.corner{position:fixed;width:48px;height:48px;z-index:2;pointer-events:none;border-color:rgba(198,40,40,0.35);border-style:solid;}
+.corner.tl{top:18px;left:18px;border-width:2px 0 0 2px;}.corner.tr{top:18px;right:18px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:18px;left:18px;border-width:0 0 2px 2px;}.corner.br{bottom:18px;right:18px;border-width:0 2px 2px 0;}
+.top-stripe{position:fixed;top:0;left:0;right:0;height:4px;z-index:400;background:linear-gradient(90deg,var(--red) 0%,var(--red) 45%,var(--gold) 45%,var(--gold-l) 100%);}
+nav{position:fixed;top:4px;left:0;right:0;z-index:300;height:54px;background:rgba(4,3,10,0.98);border-bottom:1px solid rgba(198,40,40,0.18);display:flex;align-items:center;justify-content:space-between;padding:0 36px;backdrop-filter:blur(16px);}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold-l);letter-spacing:4px;text-decoration:none;display:flex;align-items:center;gap:9px;}
+.nav-brand span{font-size:15px;}
+.nav-subtitle{font-size:11px;color:var(--star-faint);letter-spacing:2px;font-family:'Space Mono',monospace;}
+.prog-rail{position:fixed;top:58px;left:0;right:0;z-index:299;height:3px;background:rgba(255,255,255,0.04);}
+.prog-fill{height:100%;width:0%;transition:width 1s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--red-dark),var(--red),var(--gold),var(--gold-l));}
+.hud{position:fixed;top:70px;right:20px;z-index:298;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.hud-card{background:rgba(4,3,10,0.94);border:1px solid rgba(198,40,40,0.28);border-radius:44px;padding:7px 18px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(14px);}
+.hud-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);font-family:'Space Mono',monospace;}
+.hud-val{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-l);font-weight:700;min-width:34px;text-align:center;transition:transform .25s;}
+.hud-val.bump{transform:scale(1.5);}
+.pts-pop{position:fixed;top:82px;right:100px;z-index:999;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 20px rgba(212,160,23,0.9);}
+.pts-pop.show{animation:popUp .85s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}35%{opacity:1;transform:translateY(-22px) scale(1.25);}72%{opacity:1;transform:translateY(-38px) scale(1);}100%{opacity:0;transform:translateY(-52px) scale(.9);}}
+.chapter-map{display:flex;align-items:center;gap:0;margin:28px 0;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);}
+.chapter-map::-webkit-scrollbar{display:none;}
+.cm-item{flex:1;min-width:72px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.cm-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(198,40,40,.28),rgba(198,40,40,.06));z-index:0;}
+.cm-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.cm-dot.done{background:var(--gold-dim);border:2px solid var(--gold);color:var(--ink);}
+.cm-dot.now{background:var(--red);border:2px solid var(--gold-l);color:#fff;animation:pulseNow 2s ease-in-out infinite;}
+.cm-dot.lock{background:rgba(245,234,214,.04);border:2px solid rgba(245,234,214,.1);color:var(--star-faint);}
+.cm-year{font-size:10px;color:var(--red-l);margin-top:5px;text-align:center;font-family:'Space Mono',monospace;}
+.cm-evt{font-size:9px;color:var(--star-faint);margin-top:2px;text-align:center;line-height:1.35;}
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(198,40,40,.4),rgba(4,3,10,.9));border:2px solid rgba(212,160,23,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(198,40,40,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(198,40,40,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(212,160,23,.5),0 0 130px rgba(198,40,40,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,56px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(198,40,40,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:540px;font-size:15.5px;line-height:1.85;color:var(--star-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--red),var(--red-dark));border:1px solid rgba(212,160,23,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(198,40,40,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(198,40,40,.5),0 0 40px rgba(212,160,23,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--star-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:820px;margin:0 auto;padding:82px 22px 80px;position:relative;z-index:2;perspective:1400px;}
+.scene{display:none;}
+.scene.active{display:block;animation:pageFlip .75s cubic-bezier(.22,1,.36,1);max-width:820px;margin:0 auto;padding:0 22px;transform-origin:top center;}
+@keyframes pageFlip{
+  0%{opacity:0;transform:rotateX(-8deg) translateY(26px) scale(.98);}
+  60%{opacity:1;}
+  100%{opacity:1;transform:rotateX(0) translateY(0) scale(1);}
+}
+.gold-burst{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--gold-l);pointer-events:none;z-index:9999;box-shadow:0 0 8px rgba(212,160,23,.9);}
+.streak-badge{position:fixed;top:70px;left:20px;z-index:298;background:rgba(4,3,10,0.94);border:1px solid rgba(198,40,40,0.32);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--star-dim);backdrop-filter:blur(12px);opacity:0;transform:translateX(-12px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(255,140,0,.65);box-shadow:0 0 18px rgba(255,110,0,.28);}
+.streak-num{font-family:'Playfair Display',serif;font-size:19px;color:#ffa040;font-weight:700;}
+.combo-burst{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-4deg);}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);}
+  70%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.08) rotate(0);}
+}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(198,40,40,0.85),rgba(4,3,10,0.95));border:2px solid var(--gold-l);border-radius:20px;padding:18px 34px;box-shadow:0 0 60px rgba(212,160,23,.4),0 0 110px rgba(198,40,40,.2);}
+.combo-title{font-size:12px;color:var(--gold-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:30px;color:#fff;font-family:'Playfair Display',serif;}
+.combo-sub{font-size:13px;color:rgba(245,234,214,0.6);margin-top:4px;}
+.ripple-el{position:absolute;border-radius:50%;background:rgba(245,200,66,0.45);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(2.6);opacity:0;}}
+.chap-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(198,40,40,0.1);border:1px solid rgba(198,40,40,0.32);border-radius:30px;padding:6px 20px;font-size:11px;color:#ef9a9a;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;font-family:'Space Mono',monospace;}
+.hero-art{width:100%;max-width:760px;margin-left:auto;margin-right:auto;height:280px;border-radius:16px;margin-bottom:26px;border:1px solid rgba(198,40,40,0.2);overflow:hidden;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.8);}
+.edu-pill{float:right;width:210px;margin:0 0 18px 22px;background:rgba(198,40,40,0.07);border:1px solid rgba(198,40,40,0.22);border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.7;color:var(--star-dim);}
+.edu-tag{font-size:10px;color:#ef9a9a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;font-family:'Space Mono',monospace;}
+.story{font-size:19px;line-height:1.95;color:rgba(245,234,214,.9);margin-bottom:14px;}
+.story em{color:#ef9a9a;font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+.dlg{background:rgba(198,40,40,0.07);border-left:3px solid rgba(198,40,40,0.5);border-radius:0 12px 12px 0;padding:16px 22px;margin:20px 0;font-style:italic;font-size:18px;line-height:1.78;color:var(--star);}
+.dlg-who{font-size:10px;font-style:normal;color:#ef9a9a;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;font-family:'Space Mono',monospace;}
+.fact{background:rgba(198,40,40,0.08);border:1px solid rgba(198,40,40,0.28);border-radius:12px;padding:17px 20px;margin:20px 0;font-size:15px;line-height:1.82;color:var(--star-dim);}
+.fact-tag{font-size:10px;color:#ef9a9a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;font-family:'Space Mono',monospace;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(198,40,40,0.12);border:1px solid rgba(198,40,40,0.22);border-radius:20px;padding:3px 11px;font-size:11px;color:#ef9a9a;margin:3px 3px 3px 0;}
+.outcome{border-radius:14px;padding:20px;margin:20px 0;font-size:17px;line-height:1.82;}
+.outcome.good{background:rgba(198,40,40,0.1);border:1px solid rgba(198,40,40,0.3);}
+.outcome.bad{background:rgba(100,10,10,0.18);border:1px solid rgba(139,0,0,0.32);}
+.outcome-icon{font-size:30px;display:block;margin-bottom:9px;}
+.quote-moment{text-align:center;padding:28px;background:rgba(198,40,40,0.07);border:1px solid rgba(198,40,40,0.22);border-radius:16px;margin:26px 0;font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);line-height:1.72;font-style:italic;}
+.quote-src{font-size:13px;color:rgba(245,234,214,0.45);font-style:normal;font-family:'Crimson Pro',serif;margin-top:12px;display:block;}
+.kc{background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.2);border-radius:14px;padding:19px 22px;margin:22px 0;}
+.kc-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.kc-q{font-size:17px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(245,234,214,.03);border:1px solid rgba(245,234,214,.1);border-radius:9px;padding:11px 16px;font-family:'Crimson Pro',serif;font-size:16px;color:var(--star);cursor:pointer;text-align:left;transition:all .22s;position:relative;overflow:hidden;}
+.kc-opt:hover:not(:disabled){background:rgba(212,160,23,.08);border-color:rgba(212,160,23,.3);transform:translateX(5px);}
+.kc-opt.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:11px;font-size:15px;line-height:1.72;display:none;padding:10px 14px;border-radius:9px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(30,90,25,.16);color:#a5d6a7;}
+.kc-fb.no{background:rgba(120,0,0,.16);color:#ef9a9a;}
+.choices-lbl{font-size:10px;color:var(--red-l);letter-spacing:2.5px;text-transform:uppercase;margin:32px 0 13px;display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;}
+.choices-lbl::before,.choices-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(198,40,40,.3),transparent);}
+.choices{display:flex;flex-direction:column;gap:11px;}
+.c-btn{background:rgba(245,234,214,.025);border:1px solid rgba(245,234,214,.1);border-radius:12px;padding:17px 21px;color:var(--star);font-family:'Crimson Pro',serif;font-size:17px;text-align:left;cursor:pointer;transition:all .28s;display:flex;align-items:flex-start;gap:13px;line-height:1.55;position:relative;overflow:hidden;}
+.c-btn:hover{background:rgba(198,40,40,0.1);border-color:rgba(198,40,40,.48);transform:translateX(7px);box-shadow:0 4px 22px rgba(0,0,0,.3);}
+.c-letter{width:30px;height:30px;min-width:30px;border-radius:50%;background:rgba(198,40,40,.1);border:1px solid rgba(198,40,40,.38);color:#ef9a9a;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;transition:all .28s;}
+.c-btn:hover .c-letter{background:rgba(198,40,40,.24);border-color:#ef9a9a;}
+.c-sub{font-size:12.5px;color:var(--star-faint);font-style:italic;margin-top:4px;}
+.gate{background:rgba(198,40,40,0.06);border:2px solid rgba(212,160,23,0.28);border-radius:16px;padding:22px 26px;margin:22px 0;text-align:center;}
+.gate-icon{font-size:46px;display:block;margin-bottom:11px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-l);margin-bottom:8px;}
+.gate-desc{font-size:15px;color:var(--star-dim);line-height:1.72;margin-bottom:16px;}
+.gate-req{display:inline-block;background:rgba(198,40,40,0.15);border:1px solid rgba(212,160,23,0.3);border-radius:22px;padding:5px 18px;font-size:12px;color:var(--gold-l);margin-bottom:18px;font-family:'Space Mono',monospace;letter-spacing:1px;}
+.unlock-btn{display:inline-flex;align-items:center;gap:9px;margin-top:14px;padding:12px 26px;background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.4);border-radius:12px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:17px;cursor:pointer;transition:all .3s;opacity:0.35;pointer-events:none;position:relative;overflow:hidden;}
+.unlock-btn.ready{opacity:1;pointer-events:auto;background:rgba(212,160,23,0.28);}
+.unlock-btn.ready:hover{background:rgba(212,160,23,0.45);transform:translateY(-2px);}
+.gate-locked{pointer-events:none;opacity:0.45;}
+.challenge{background:rgba(13,110,110,0.07);border:1px solid rgba(13,110,110,0.28);border-radius:14px;padding:19px 22px;margin:18px 0;text-align:left;}
+.ch-tag{font-size:10px;color:var(--teal-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.ch-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.ch-opts{display:flex;flex-direction:column;gap:8px;}
+.ch-opt{background:rgba(245,234,214,.03);border:1px solid rgba(245,234,214,.1);border-radius:9px;padding:11px 16px;font-family:'Crimson Pro',serif;font-size:16px;color:var(--star);cursor:pointer;text-align:left;transition:all .22s;position:relative;overflow:hidden;}
+.ch-opt:hover:not(:disabled){background:rgba(13,110,110,.12);border-color:rgba(212,160,23,.3);transform:translateX(4px);}
+.ch-opt.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.ch-opt.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.ch-opt:disabled{cursor:default;}
+.ch-fb{margin-top:10px;font-size:15px;line-height:1.7;display:none;padding:10px 14px;border-radius:9px;}
+.ch-fb.show{display:block;}
+.ch-fb.ok{background:rgba(30,90,25,.18);color:#a5d6a7;}
+.ch-fb.no{background:rgba(120,0,0,.18);color:#ef9a9a;}
+.mq-dots{display:flex;gap:7px;margin-bottom:14px;justify-content:center;}
+.mq-dot{width:11px;height:11px;border-radius:50%;border:1px solid rgba(212,160,23,.45);background:transparent;transition:all .3s;}
+.mq-dot.done{background:var(--gold-l);}
+.mq-dot.now{background:var(--teal-l);border-color:var(--teal-l);}
+.mq-dot.wrong-mark{background:rgba(198,40,40,.5);border-color:var(--red-l);}
+.final{text-align:center;padding:40px 0;}
+.final-seal{width:136px;height:136px;border-radius:50%;background:rgba(198,40,40,.09);border:2px solid rgba(198,40,40,.4);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:54px;animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(198,40,40,.2);}50%{box-shadow:0 0 80px rgba(198,40,40,.55),0 0 110px rgba(212,160,23,.15);}}
+.final-h{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold-l);margin-bottom:11px;line-height:1.3;}
+.final-pts{font-size:56px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:11px 0;text-shadow:0 0 32px rgba(212,160,23,.5);}
+.final-rank-badge{display:inline-block;background:rgba(198,40,40,.12);border:1px solid rgba(198,40,40,.35);border-radius:30px;padding:7px 26px;font-size:14px;color:#ef9a9a;margin-bottom:22px;letter-spacing:1px;}
+.final-desc{font-size:17px;color:var(--star-dim);line-height:1.92;max-width:540px;margin:0 auto 30px;}
+.final-achs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px;}
+.ach{background:rgba(212,160,23,.07);border:1px solid rgba(212,160,23,.26);border-radius:12px;padding:11px 14px;text-align:center;min-width:94px;animation:achIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+@keyframes achIn{from{opacity:0;transform:translateY(18px) scale(.8);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ach-icon{font-size:26px;display:block;margin-bottom:5px;}
+.ach-name{font-size:10px;color:var(--gold-l);letter-spacing:1px;font-family:'Space Mono',monospace;}
+.final-lesson{background:rgba(198,40,40,.06);border:1px solid rgba(198,40,40,.2);border-radius:14px;padding:22px 24px;text-align:left;margin:0 0 34px;font-size:16px;line-height:1.88;color:var(--star-dim);}
+.fl-tag{font-size:10px;color:#ef9a9a;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+.lb-modal{display:none;position:fixed;inset:0;background:rgba(4,3,10,0.75);z-index:9997;align-items:center;justify-content:center;}
+.lb-modal.show{display:flex;}
+.lb-box{background:#0c0916;border:1px solid rgba(212,160,23,0.3);border-radius:16px;width:90%;max-width:420px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.lb-header{background:var(--red-dark);color:var(--star);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+.lb-header h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);}
+.lb-close{cursor:pointer;font-size:18px;opacity:0.8;color:var(--star);}
+.lb-close:hover{opacity:1;}
+.lb-content{padding:16px 20px;overflow-y:auto;}
+.lb-loading,.lb-empty{text-align:center;color:var(--star-faint);padding:24px 0;font-size:14px;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(212,160,23,0.15);}
+.lb-rank{width:28px;text-align:center;font-weight:700;color:var(--gold-l);}
+.lb-name{flex:1;font-weight:600;color:var(--star);font-size:14px;}
+.lb-exp{font-size:13px;color:var(--gold-dim);font-weight:600;}
+.lb-myrank{margin-top:14px;padding:12px;background:rgba(212,160,23,0.08);border:1px solid var(--gold);border-radius:10px;text-align:center;font-size:14px;color:var(--star);}
+.btn-ghost{padding:12px 26px;background:transparent;border:1px solid rgba(198,40,40,.38);border-radius:10px;color:#ef9a9a;font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;position:relative;overflow:hidden;}
+.btn-ghost:hover{background:rgba(198,40,40,.14);}
+.btn-solid{padding:12px 26px;background:rgba(198,40,40,.5);border:1px solid rgba(198,40,40,.38);border-radius:10px;color:var(--star);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;position:relative;overflow:hidden;}
+.btn-solid:hover{background:var(--red);}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.spirit-bar{background:rgba(198,40,40,0.07);border:1px solid rgba(198,40,40,0.22);border-radius:11px;padding:13px 17px;margin:18px 0;display:flex;align-items:center;gap:13px;}
+.spirit-label{font-size:10px;color:#ef9a9a;letter-spacing:2px;text-transform:uppercase;min-width:68px;font-family:'Space Mono',monospace;}
+.spirit-track{flex:1;height:7px;background:rgba(245,234,214,0.06);border-radius:4px;overflow:hidden;}
+.spirit-fill{height:100%;border-radius:4px;width:0%;background:linear-gradient(90deg,var(--red),var(--gold),var(--gold-l));transition:width .9s cubic-bezier(.4,0,.2,1);}
+.spirit-pct{font-size:11px;color:var(--gold-l);min-width:28px;text-align:right;font-family:'Space Mono',monospace;}
+.spirit-fill.pulse{animation:spiritPulse .6s ease;}
+/* ===== NGUỒN SỬ LIỆU: viền màu + icon xác minh + popup ===== */
+.verified{border-left:3px solid #d4a017 !important;position:relative;}
+.dramatized{border-left:3px solid #19b2b2 !important;position:relative;}
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:10px;margin-left:8px;cursor:pointer;vertical-align:middle;transition:.2s;}
+.src-tag.v{background:rgba(212,160,23,.14);color:var(--gold-l);border:1px solid rgba(212,160,23,.35);}
+.src-tag.d{background:rgba(25,178,178,.12);color:var(--teal-l);border:1px solid rgba(25,178,178,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.src-note{display:block;font-size:11.5px;font-style:italic;color:var(--star-faint);margin-top:8px;opacity:.85;}
+
+.src-popup-overlay{position:fixed;inset:0;background:rgba(2,1,6,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--surface);border:1px solid rgba(212,160,23,.4);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;font-family:'Space Mono',monospace;}
+.src-popup-badge.v{background:rgba(212,160,23,.18);color:var(--gold-l);border:1px solid rgba(212,160,23,.4);}
+.src-popup-badge.d{background:rgba(25,178,178,.15);color:var(--teal-l);border:1px solid rgba(25,178,178,.4);}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:10px;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--star-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(245,234,214,.04);border-left:2px solid rgba(212,160,23,.4);padding:9px 13px;font-size:13px;color:var(--star-faint);font-family:'Crimson Pro',serif;font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.35);color:var(--gold-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;transition:.2s;}
+.src-popup-close:hover{background:rgba(212,160,23,.28);}
+
+.ref-page{background:rgba(198,40,40,0.05);border:1px solid rgba(198,40,40,0.2);border-radius:16px;padding:26px 28px;margin:30px 0 10px;}
+.ref-page-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);margin-bottom:6px;}
+.ref-page-sub{font-size:13px;color:var(--star-faint);margin-bottom:18px;line-height:1.6;}
+.ref-group{margin-bottom:16px;}
+.ref-group-h{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:#ef9a9a;margin-bottom:8px;font-family:'Space Mono',monospace;}
+.ref-item{font-size:14px;line-height:1.85;color:var(--star-dim);padding-left:16px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold-dim);}
+.ref-overlay{position:fixed;inset:0;background:rgba(2,1,6,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ref-overlay.show{display:flex;}
+.ref-modal{background:var(--surface);border:1px solid rgba(212,160,23,.34);border-radius:16px;padding:26px 28px;max-width:640px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.ref-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:14px;}
+.ref-modal-close{background:rgba(212,160,23,.14);border:1px solid rgba(212,160,23,.34);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.reflect{background:rgba(25,178,178,0.06);border:1px dashed rgba(25,178,178,0.35);border-radius:14px;padding:18px 22px;margin:22px 0;}
+.reflect-tag{font-size:10px;color:var(--teal-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.reflect-q{font-size:16.5px;font-style:italic;color:var(--star);line-height:1.7;margin-bottom:8px;}
+.reflect-note{font-size:12px;color:var(--star-faint);}
+.counterf{margin-top:14px;}
+.counterf-btn{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:10px 18px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px;}
+.counterf-btn:hover{background:rgba(212,160,23,.16);}
+.counterf-body{display:none;margin-top:12px;background:rgba(198,40,40,0.05);border-left:3px solid rgba(198,40,40,.4);border-radius:0 12px 12px 0;padding:15px 20px;font-size:14.5px;line-height:1.8;color:var(--star-dim);font-style:italic;}
+.counterf-body.show{display:block;animation:reflectIn .4s ease;}
+.journal{background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.25);border-radius:16px;padding:24px 26px;margin:0 0 30px;text-align:left;}
+.journal-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(245,234,214,.06);font-size:14.5px;color:var(--star-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11.5px;padding:2px 10px;border-radius:10px;font-family:'Space Mono',monospace;white-space:nowrap;}
+.journal-status.ok{background:rgba(30,90,25,.2);color:#a5d6a7;}
+.journal-status.no{background:rgba(120,0,0,.2);color:#ef9a9a;}
+.journal-copy{margin-top:16px;background:rgba(212,160,23,.14);border:1px solid rgba(212,160,23,.35);border-radius:10px;padding:10px 20px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.2s;}
+.journal-copy:hover{background:rgba(212,160,23,.24);}
+.jmap{background:radial-gradient(ellipse at 12% 88%,rgba(212,160,23,.1),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(198,40,40,.1),transparent 55%),rgba(4,3,10,0.6);border:1px solid rgba(198,40,40,0.25);border-radius:16px;padding:24px;margin:26px 0;}
+.jmap-tag{font-size:10px;color:#ef9a9a;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;display:block;font-family:'Space Mono',monospace;}
+.jmap-note{font-size:11.5px;color:var(--star-faint);margin-bottom:14px;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink);stroke-width:2;filter:drop-shadow(0 0 7px rgba(212,160,23,.75));}
+.jmap-lbl{fill:#f5ead6;font-size:12.5px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-yr{fill:#ffb74d;font-size:10.5px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-path{fill:none;stroke:rgba(212,160,23,0.55);stroke-width:2.5;stroke-dasharray:5 5;}
+.jmap-pt{transition:opacity .7s ease,r .3s ease;}
+.jmap-pt.locked{opacity:1;fill:rgba(245,234,214,.08);stroke:rgba(245,234,214,.35);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl.locked,.jmap-yr.locked{opacity:0.4;fill:var(--star-faint);font-weight:400;}
+.nav-map-btn{background:transparent;border:1px solid rgba(198,40,40,.32);border-radius:50%;width:34px;height:34px;color:#ef9a9a;cursor:pointer;font-size:15px;margin-right:8px;}
+.nav-back{font-size:12px;color:var(--star-faint);letter-spacing:1px;text-decoration:none;padding:6px 14px;border:1px solid rgba(198,40,40,.32);border-radius:20px;transition:all .25s;white-space:nowrap;}
+.nav-back:hover{color:var(--gold-l);border-color:var(--gold-l);background:rgba(198,40,40,.12);}
+.nav-left{display:flex;align-items:center;gap:16px;}
+.map-overlay{position:fixed;inset:0;background:rgba(2,1,6,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.map-overlay.show{display:flex;}
+.map-modal{background:radial-gradient(ellipse at 12% 88%,rgba(212,160,23,.09),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(198,40,40,.09),transparent 55%),var(--surface);border:1px solid rgba(212,160,23,.4);border-radius:16px;padding:24px 26px;max-width:820px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:14px;}
+.map-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);}
+.map-modal-close{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+@keyframes spiritPulse{
+  0%{filter:brightness(1);}
+  40%{filter:brightness(1.6);box-shadow:0 0 18px rgba(212,160,23,.8);}
+  100%{filter:brightness(1);}
+}
+@keyframes reflectIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+@media(max-width:640px){
+  nav{padding:0 14px;}
+  .wrap{padding:74px 12px 60px;}
+  .edu-pill{float:none;width:100%;margin:0 0 14px;}
+  .story{font-size:17px;}
+  .chapter-map{scroll-snap-type:x proximity;margin:20px -12px;padding:0 12px 10px;-webkit-overflow-scrolling:touch;}
+  .cm-item{scroll-snap-align:center;min-width:58px;}
+  .cm-dot{width:24px;height:24px;font-size:10px;}
+  .cm-year{font-size:9px;}
+  .cm-evt{font-size:8px;}
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<canvas id="cursorCanvas"></canvas>
+<div class="ambient"></div>
+<div class="deco-line"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="pts-pop" id="ptsPop">+0</div>
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:16px;bottom:24px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  border:2px solid rgba(212,160,23,.55);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(198,40,40,.45);
+  align-items:center;justify-content:center;transition:transform .2s;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:16px;bottom:24px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  border:2px solid rgba(212,160,23,.55);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(198,40,40,.45);
+  align-items:center;justify-content:center;transition:transform .2s;">➡</button>
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🗺️ Bản Đồ Hành Trình 58 Năm</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note" style="margin-bottom:14px;">Các điểm dừng chân mở khóa dần khi bạn đi qua từng chương. Sơ đồ cách điệu, không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 780 260" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M50,220 C110,160 130,110 150,120 S220,70 230,60 S300,95 310,90 S390,45 410,50 S480,150 500,140 S570,95 580,100 S640,170 660,160 S730,225 740,220"/>
+      <circle class="jmap-pt pt-saigon" cx="50" cy="220" r="6"/><text class="jmap-yr pt-saigon" x="50" y="240" text-anchor="middle">1911</text><text class="jmap-lbl pt-saigon" x="50" y="252" text-anchor="middle">🇻🇳 Sài Gòn</text>
+      <circle class="jmap-pt locked pt-marseille" cx="150" cy="120" r="6"/><text class="jmap-yr locked pt-marseille" x="150" y="105" text-anchor="middle">1911</text><text class="jmap-lbl locked pt-marseille" x="150" y="95" text-anchor="middle">🇫🇷 Marseille</text>
+      <circle class="jmap-pt locked pt-london" cx="230" cy="60" r="6"/><text class="jmap-yr locked pt-london" x="230" y="45" text-anchor="middle">1913</text><text class="jmap-lbl locked pt-london" x="230" y="35" text-anchor="middle">🇬🇧 London</text>
+      <circle class="jmap-pt locked pt-paris" cx="310" cy="90" r="6"/><text class="jmap-yr locked pt-paris" x="310" y="112" text-anchor="middle">1917</text><text class="jmap-lbl locked pt-paris" x="310" y="124" text-anchor="middle">🇫🇷 Paris</text>
+      <circle class="jmap-pt locked pt-moskva" cx="410" cy="50" r="6"/><text class="jmap-yr locked pt-moskva" x="410" y="35" text-anchor="middle">1923</text><text class="jmap-lbl locked pt-moskva" x="410" y="25" text-anchor="middle">🇷🇺 Moskva</text>
+      <circle class="jmap-pt locked pt-quangchau" cx="500" cy="140" r="6"/><text class="jmap-yr locked pt-quangchau" x="500" y="160" text-anchor="middle">1925</text><text class="jmap-lbl locked pt-quangchau" x="500" y="172" text-anchor="middle">🇨🇳 Quảng Châu</text>
+      <circle class="jmap-pt locked pt-pacbo" cx="580" cy="100" r="6"/><text class="jmap-yr locked pt-pacbo" x="580" y="85" text-anchor="middle">1941</text><text class="jmap-lbl locked pt-pacbo" x="580" y="75" text-anchor="middle">🇻🇳 Pác Bó</text>
+      <circle class="jmap-pt locked pt-hanoi" cx="660" cy="160" r="6"/><text class="jmap-yr locked pt-hanoi" x="660" y="180" text-anchor="middle">1945</text><text class="jmap-lbl locked pt-hanoi" x="660" y="192" text-anchor="middle">🇻🇳 Hà Nội</text>
+      <circle class="jmap-pt locked pt-dienbienphu" cx="740" cy="220" r="7"/><text class="jmap-yr locked pt-dienbienphu" x="740" y="240" text-anchor="middle">1954</text><text class="jmap-lbl locked pt-dienbienphu" x="730" y="252" text-anchor="middle">🇻🇳 Điện Biên Phủ</text>
+    </svg>
+  </div>
+</div>
+
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <div class="src-popup-head">
+      <span class="src-popup-badge" id="srcBadge">ĐÃ KIỂM CHỨNG</span>
+    </div>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+<div class="streak-badge" id="streakBadge">
+  <span>🔥</span>
+  <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);">Liên tiếp</div><div class="streak-num" id="streakNum">0</div></div>
+</div>
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Trả lời liên tiếp đúng!</div>
+    <div class="combo-label" id="comboLabel">🔥 COMBO x3</div>
+    <div class="combo-sub" id="comboSub">+10 điểm thưởng</div>
+  </div>
+</div>
+
+<div class="top-stripe"></div>
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=7">← Quay lại</a>
+    <a class="nav-brand" href="#"><span>⭐</span> SỬ VIỆT</a>
+  </div>
+  <div class="nav-subtitle">HỒ CHÍ MINH — HÀNH TRÌNH CỨU NƯỚC (9 Chương Đầy Đủ)</div>
+  <div class="nav-right">
+  <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+  <button class="nav-map-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình">🗺️</button>
+<button id="soundToggle" onclick="toggleSound()" style="background:transparent;border:1px solid rgba(198,40,40,.32);border-radius:50%;width:34px;height:34px;color:#ef9a9a;cursor:pointer;font-size:15px;">🔊</button>
+
+</div>
+</nav>
+<div class="prog-rail"><div class="prog-fill" id="prog"></div></div>
+<div class="hud">
+  <div class="hud-card">
+    <div><div class="hud-label">Điểm</div><div class="hud-val" id="scoreEl">0</div></div>
+    <div><div class="hud-label">Danh Hiệu</div><div style="font-size:10px;color:var(--red-l);" id="rankEl">—</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== COVER MỞ ĐẦU ===== -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">⭐</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">HỒ CHÍ MINH<br>Hành Trình Cứu Nước</div>
+    <div class="cover-sub">Năm 1911 — 1969 · 58 Năm Vì Độc Lập, Tự Do</div>
+    <div class="cover-desc">Ngươi là Nguyễn Tất Thành — chàng trai 21 tuổi rời bến cảng Sài Gòn không một đồng dính túi, bôn ba 30 năm khắp năm châu để tìm con đường cứu nước, rồi trở về dẫn dắt dân tộc qua Cách mạng Tháng Tám, bản Tuyên ngôn Độc lập, hai cuộc kháng chiến, đến những dòng Di chúc giản dị cuối đời. Một hành trình 9 chương về ý chí, kiên trì và một trái tim trọn đời vì dân.</div>
+    <div class="cover-chips">
+      <span class="chip">⭐ 9 chương</span>
+      <span class="chip">🎓 Kiến thức + Cửa ải</span>
+      <span class="chip">🗺️ Bản đồ hành trình</span>
+      <span class="chip">📔 Nhật ký hành trình</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">⭐ Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ===== CHƯƠNG I ===== -->
+<div class="scene" id="s1">
+<div class="chap-badge">⚓ CHƯƠNG I · 1911 — RỜI TỔ QUỐC RA ĐI <span class="src-tag v" onclick="openSrcPopup('s1_dep')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#04030f 0%,#0a0520 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img 
+    src="images/cangsaigon.jpg" 
+    alt="Cảng Sài Gòn 1911"
+    style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;"
+  />
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">🚢 CẢNG SÀI GÒN 1911</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot now">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="spirit-bar reveal">
+  <span style="font-size:20px;">🔥</span>
+  <span class="spirit-label">Ý Chí</span>
+  <div class="spirit-track"><div class="spirit-fill" id="spiritMeter"></div></div>
+  <span class="spirit-pct" id="spiritPct">0%</span>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 BỐI CẢNH LỊCH SỬ</span>
+    Năm 1911, Việt Nam chìm dưới ách thực dân Pháp hơn 50 năm. Dân chúng bị bóc lột, mất tự do. Mặc dù nhiều phong trào yêu nước (Đông Du, Đông Kinh Nghĩa Thục) nhưng đều thất bại. Nguyễn Tất Thành, 21 tuổi, quyết tâm tìm con đường mới để cứu nước.
+  </div>
+  
+  Nguyễn Tất Thành — con trai cụ phó bảng <strong>Nguyễn Sinh Sắc</strong> — đứng trên bến cảng Sài Gòn nhìn ra biển lớn mênh mang. Túi không một đồng tiền, nhưng lòng cháy bỏng khát vọng <em>cứu nước</em>.
+</div>
+
+<div class="story reveal">
+  Trước mắt là con tàu <strong>Latouche-Tréville</strong> chuẩn bị nhổ neo. Người bạn thân — Tư Lê — kéo tay lại nói:
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">TƯ LÊ — NGƯỜI BẠN THÂN</div>
+  "Thành ơi, đi làm gì? Không tiền, không biết tiếng, không quen ai bên đó... Thôi ở lại, tìm cách khác đi anh ơi!"
+</div>
+
+<div class="story reveal">
+  Nhưng Nguyễn Tất Thành đã có quyết định. Ngài nói rằng: <strong>"Muốn đánh Pháp thì phải biết Pháp. Muốn cứu nước phải hiểu thế giới."</strong>
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Nguyễn Tất Thành rời Sài Gòn trên tàu Latouche-Tréville vào ngày, tháng, năm nào? Và làm nghề gì để được đi?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1_1')">A. Ngày 3/5/1911 — Làm thợ máy tàu</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc1_1')">B. Ngày 5/6/1911 — Làm phụ bếp cào lò (công việc nặng nhất)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1_1')">C. Ngày 5/6/1911 — Làm thủy thủ ship</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc1_1')">D. Ngày 3/2/1911 — Trốn trên tàu bí mật</button>
+  </div>
+  <div class="kc-fb" id="kc1_1-fb"></div>
+</div>
+
+<div class="story reveal">
+  Sự thật chỉ ra rằng: Nguyễn Tất Thành dùng <strong>tên giả "Văn Ba"</strong>, xin làm <strong>phụ bếp cào lò</strong> — công việc nặng nhọc nhất trên tàu. Đó là điều kiện duy nhất để được lên tàu và rời Việt Nam.
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 SỰ THẬT ÍT BIẾT</span>
+  Tàu Latouche-Tréville chở Nguyễn Tất Thành tới <strong>Marseille (Pháp) vào tháng 7/1911</strong>. Sau đó, trong 30 năm tiếp theo, ngài sẽ:
+  <div style="margin-top:8px;"><span class="chip">🌍 Đi qua 30+ quốc gia</span><span class="chip">⚒️ Làm 30+ nghề khác nhau</span><span class="chip">📅 Bôn ba cả thế giới</span></div>
+</div>
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Nếu là bạn, 21 tuổi, không một đồng trong túi — điều gì khiến bạn dám bước lên con tàu xa lạ đó?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+</div>
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices">
+  <button class="c-btn" onclick="markCorrect('s1');go('s1A',15)"><span class="c-letter">A</span><div>"Tôi phải đi. Không bao giờ học được gì nếu chỉ ở một chỗ. Phải xem thế giới mới hiểu được."<div class="c-sub">⭐ ĐÚNG LỊCH SỬ! Đây là lời Nguyễn Tất Thành thật sự nói!</div></div></button>
+  <button class="c-btn" onclick="go('s1B',5)"><span class="c-letter">B</span><div>Nghe lời Tư Lê, ở lại tìm cách khác để đấu tranh.<div class="c-sub">An toàn hơn, nhưng sẽ bỏ lỡ cơ hội duy nhất...</div></div></button>
+  <button class="c-btn" onclick="go('s1C',8)"><span class="c-letter">C</span><div>Gia nhập một tổ chức yêu nước nội địa như Đông Du.<div class="c-sub">Tinh thần đáng quý, nhưng không đủ thay đổi lịch sử.</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s1A">
+<div class="chap-badge">✅ LỰA CHỌN A — ĐÚNG LỊCH SỬ!</div>
+<div class="outcome good"><span class="outcome-icon">🚢</span><strong>Chính xác!</strong> Nguyễn Tất Thành quyết định lên tàu. Dùng tên giả <em>"Văn Ba"</em>, làm phụ bếp cào lò, anh bắt đầu hành trình 30 năm bôn ba lịch sử.</div>
+<div class="fact reveal"><span class="fact-tag">💡 ĐIỀU THÚ VỊ</span>Ngài sẽ làm việc tại các nước như Anh, Pháp, Mỹ, Liên Xô, Trung Quốc, Thái Lan, Bỉ, Tây Ban Nha... Từ <em>ngoài biên chế tàu, người giặt đồ, người rửa chén</em> cho đến những giai đoạn làm việc chính trị ở các thủ đô lớn.</div>
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Nếu tin tình báo chưa chắc chắn 100%, bạn có dám ra quyết định thay đổi cả vận mệnh dân tộc trong vài giờ đồng hồ không?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s2',0)"><span class="c-letter">→</span><div>Chương II: 1920–1930 — Tìm Đường Cứu Nước (Tại Paris và Thế Giới)</div></button></div>
+</div>
+
+<div class="scene" id="s1B">
+<div class="chap-badge">❌ LỰA CHỌN B — KHÔNG PHẢI CON ĐƯỜNG</div>
+<div class="outcome bad"><span class="outcome-icon">⚠️</span>Nguyễn Tất Thành hiểu rõ: <strong>"Không thể cứu nước từ phía dưới mà không hiểu kẻ thù."</strong> Ở lại là giậm chân tại chỗ.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s1B')">🔮 Nếu Bác thật sự ở lại thì sao?</button>
+  <div class="counterf-body" id="cf-s1B">Nếu Nguyễn Tất Thành nghe theo lời khuyên ở lại năm 1911, rất có thể ông sẽ đi theo con đường của các phong trào yêu nước đương thời — vốn đều bị đàn áp trong vài năm sau đó. Không ai khác mang được lý luận giải phóng dân tộc gắn với phong trào cách mạng quốc tế về nước sớm như vậy. Có lẽ phải mất thêm hàng chục năm nữa, Việt Nam mới tìm ra con đường cứu nước phù hợp.</div>
+</div>
+<div class="choices-lbl">⚡ QUYẾT TÂM RA ĐI</div>
+<div class="choices"><button class="c-btn" onclick="go('s1A',8)"><span class="c-letter">→</span><div>"Không, tôi phải đi! Đây là lựa chọn duy nhất!"</div></button></div>
+</div>
+
+<div class="scene" id="s1C">
+<div class="chap-badge">❌ LỰA CHỌN C — KHÔNG ĐỦ TẦM</div>
+<div class="outcome bad"><span class="outcome-icon">💭</span>Các phong trào Đông Du (1905-1908) và Đông Kinh Nghĩa Thục (1907-1908) đều <strong>thất bại</strong>. Nguyễn Tất Thành nhận ra: <strong>cần con đường hoàn toàn mới, không phải những cách cũ.</strong></div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s1C')">🔮 Nếu chỉ theo Đông Du thì sao?</button>
+  <div class="counterf-body" id="cf-s1C">Nếu chọn tiếp tục con đường Đông Du, nhiều khả năng phong trào sẽ đi vào bế tắc như đã từng — thiếu một lý luận cách mạng triệt để để kết nối đấu tranh trong nước với xu thế giải phóng dân tộc toàn cầu đang hình thành. Việt Nam có thể sẽ chậm chân hơn nhiều nước thuộc địa khác trong việc tìm ra con đường độc lập.</div>
+</div>
+<div class="choices-lbl">⚡ TẦM NHÌN XA HƠN</div>
+<div class="choices"><button class="c-btn" onclick="go('s1A',8)"><span class="c-letter">→</span><div>"Phải tìm lý luận mới, phải học hỏi thế giới rộng lớn!"</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG II ===== -->
+<div class="scene" id="s2">
+<div class="chap-badge">🌍 CHƯƠNG II · 1920–1930 — TÌM ĐƯỜNG CỨU NƯỚC <span class="src-tag v" onclick="openSrcPopup('s2_tours')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#030210 0%,#080420 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/paris1920.jpg" alt="Paris 1920" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">⭐ PARIS 1920</div>
+</div>
+
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot now">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">🌍 HÀNH TRÌNH BÔN BA 1911–1920</span>
+    Từ 1911 đến 1920, Nguyễn Tất Thành làm việc ở <strong>Anh (như đầu bếp tại London, 1913–1917)</strong>, rồi chuyển sang <strong>Pháp (1917 trở đi)</strong>. Năm 1919, dùng tên <em>Nguyễn Ái Quốc</em>, ngài gửi <strong>"Yêu Sách 8 Điểm"</strong> đến Hội nghị Versailles — lần đầu tiên Nguyễn Ái Quốc vang danh ở Paris.
+  </div>
+  
+  Suốt gần một năm ở Paris, Nguyễn Ái Quốc đã đọc hàng chục tài liệu chính trị — của phái Xã hội cải lương, của những nhà tư tưởng tự do phương Tây... Tất cả đều nói về công bằng, về quyền con người. Nhưng có một câu hỏi không ai trả lời được cho ngài: <em>"Vậy thì dân tộc thuộc địa như chúng tôi phải làm gì?"</em>
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">NGUYỄN ÁI QUỐC — SUY NGHĨ TRƯỚC KHI ĐỌC LUẬN CƯƠNG</div>
+  "Các đồng chí ở đây bàn về quyền lợi giai cấp công nhân Pháp. Nhưng còn chúng tôi — những người dân mất nước — thì con đường nào?"
+</div>
+
+<div class="story reveal">
+  Rồi một ngày tháng 7/1920, ngài đọc được bản Luận cương của Lenin đăng trên báo L'Humanité. Đây là văn kiện <strong>đầu tiên</strong> ngài từng đọc trả lời thẳng vào câu hỏi đó — không phải bằng lòng thương hại, mà bằng một con đường cụ thể: <em>liên minh giữa vô sản chính quốc và các dân tộc thuộc địa.</em>
+</div>
+<div class="fact reveal">
+  <span class="fact-tag">📖 BƯỚC NGOẶT VĨ ĐẠI</span>
+  <strong>Tháng 12/1920</strong>, tại Đại hội Tours của Đảng Xã hội Pháp, Nguyễn Ái Quốc bỏ phiếu ủng hộ thành lập <strong>Đảng Cộng sản Pháp</strong> và gia nhập <strong>Quốc tế Cộng sản (Comintern)</strong> — trở thành người Cộng sản <strong>đầu tiên của Việt Nam.</strong>
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">PHAN — BẠN CÙNG KHU TRỌ, DU HỌC SINH LUẬT</div>
+  "Anh Quốc, đừng dại công khai đứng về phe Cộng sản! Mật thám Pháp đang để ý những người Đông Dương hoạt động chính trị lắm. Cứ âm thầm viết báo thôi, đừng lộ diện, để còn đường về nước sau này."
+</div>
+
+<div class="story reveal">
+  Nguyễn Ái Quốc im lặng một lúc. Con đường an toàn luôn có sẵn — nhưng an toàn có đồng nghĩa với đúng đắn?
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Công khai lập trường giữa lúc bị mật thám theo dõi — đó là dũng khí hay liều lĩnh? Ranh giới giữa hai điều này nằm ở đâu?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc2-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc2',15,'⭐ ĐÚNG LỊCH SỬ! Nguyễn Ái Quốc công khai bỏ phiếu tại Đại hội Tours, chấp nhận bị mật thám Pháp theo dõi suốt nhiều năm sau đó — vì tin rằng phải hành động công khai mới quy tụ được lực lượng.')"><span class="c-letter">A</span><div>Công khai tuyên bố lập trường, chấp nhận rủi ro bị theo dõi.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc2',5,'Đây không phải điều đã xảy ra. Nguyễn Ái Quốc chọn công khai đứng về phía Quốc tế Cộng sản ngay tại Đại hội — một quyết định táo bạo, không phải cách an toàn.')"><span class="c-letter">B</span><div>Nghe lời Phan, giữ kín lập trường để an toàn hơn.</div></button>
+</div>
+<div class="ch-fb" id="sc2-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc2" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc2')">🔮 Nếu Nguyễn Ái Quốc giữ kín lập trường thì sao?</button>
+  <div class="counterf-body" id="cf-sc2">Nếu chọn im lặng, có thể tránh được sự theo dõi của mật thám Pháp trong thời gian ngắn, nhưng phong trào khó quy tụ được lực lượng công khai ủng hộ Quốc tế Cộng sản sớm như vậy. Việc kết nối với Quốc tế Cộng sản có thể bị trì hoãn nhiều năm.</div>
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🎓 TEST KIẾN THỨC</span>
+  <div class="kc-q">Nguyễn Ái Quốc bỏ phiếu thành lập tổ chức nào tại Đại hội Tours 1920?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc2_1')">A. Đảng Xã hội Pháp độc lập</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc2_1')">B. Đảng Cộng sản Pháp — chi nhánh của Quốc tế Cộng sản III</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc2_1')">C. Liên minh Cách mạng Pháp–Anh</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc2_1')">D. Tổ chức Nhân quyền Quốc tế</button>
+  </div>
+  <div class="kc-fb" id="kc2_1-fb"></div>
+</div>
+
+<div class="gate reveal" id="gate2">
+  <span class="gate-icon">📜</span>
+  <div class="gate-title">CỬA ẢI KIẾN THỨC</div>
+  <div class="gate-desc">Trả lời đúng <strong>3 câu hỏi liên tiếp</strong> để mở cửa và tiếp tục chương!</div>
+  <div class="gate-req">📜 Cần đúng 4/4 câu hỏi</div>
+  <div class="mq-dots" id="mq2-dots">
+    <div class="mq-dot now" id="mq2d0"></div>
+    <div class="mq-dot" id="mq2d1"></div>
+    <div class="mq-dot" id="mq2d2"></div>
+    <div class="mq-dot" id="mq2d3"></div>
+  </div>
+  
+  <div class="challenge" id="mq2-0">
+    <span class="ch-tag">📜 CẦU HỎI 1/3</span>
+    <div class="ch-q">Vì sao "Yêu Sách Của Nhân Dân An Nam" gửi tới Hội nghị Versailles (1919) lại bị các cường quốc phớt lờ hoàn toàn?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,2,0)">A. Vì bản yêu sách viết sai ngữ pháp tiếng Pháp</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,2,0)">B. Vì các đế quốc họp Versailles chỉ chia lại quyền lợi giữa chính họ, không có ý định trao trả cho thuộc địa</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,0)">C. Vì Nguyễn Ái Quốc không có mặt trực tiếp tại hội nghị</button>
+    </div>
+    <div class="ch-fb" id="mq2fb-0"></div>
+  </div>
+
+  <div class="challenge" id="mq2-1" style="display:none">
+    <span class="ch-tag">📜 CẦU HỎI 2/3</span>
+    <div class="ch-q">Nguyễn Ái Quốc đã làm công việc gì tại Paris để kiếm sống từ 1917–1920?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,true,2,1)">A. Chuyên gia để bộ, quặng rửa giặt ảnh (photomontage), bán báo</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,1)">B. Giáo viên tiếng Việt cho người Pháp</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,1)">C. Thợ xây dựng và nhân công</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,1)">D. Nhân viên tại đại sứ quán Pháp</button>
+    </div>
+    <div class="ch-fb" id="mq2fb-1"></div>
+  </div>
+
+  <div class="challenge" id="mq2-2" style="display:none">
+    <span class="ch-tag">📜 CẦU HỎI 3/4</span>
+    <div class="ch-q">Khi đọc Luận cương của Lenin, Nguyễn Ái Quốc phản ứng thế nào?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,false,2,2)">A. Nghi ngờ — chỉ thích hợp với nước Nga</button>
+      <button class="ch-opt" onclick="ansMQ(this,true,2,2)">B. Vui mừng đến khóc — tìm thấy con đường giải phóng dân tộc thuộc địa</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,2)">C. Thất vọng vì không đề cập Đông Dương</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,2)">D. Bình thản, không bị ảnh hưởng nhiều</button>
+    </div>
+    <div class="ch-fb" id="mq2fb-2"></div>
+  </div>
+
+  <div class="challenge" id="mq2-3" style="display:none">
+    <span class="ch-tag">📜 CẦU HỎI 4/4 — BẤT NGỜ LỊCH SỬ</span>
+    <div class="ch-q">Năm 1922 tại Paris, Nguyễn Ái Quốc cùng nhóm nhà cách mạng thuộc địa sáng lập một tờ báo. Tên báo và ý nghĩa của nó là gì?</div>
+    <div class="ch-opts">
+      <button class="ch-opt" onclick="ansMQ(this,true,2,3)">A. "Le Paria" ("Người Cùng Khổ") — mượn tên tầng lớp bị ruồng bỏ ở Ấn Độ để nói lên tiếng nói chung của mọi dân tộc thuộc địa</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,3)">B. "Le Populaire" — cơ quan ngôn luận chính thức của Đảng Xã hội Pháp</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,3)">C. "L'Humanité" — tờ báo do ông trực tiếp sáng lập cùng Đảng Cộng sản Pháp</button>
+      <button class="ch-opt" onclick="ansMQ(this,false,2,3)">D. "Le Paysan" — tờ báo hư cấu, không tồn tại trong lịch sử</button>
+    </div>
+    <div class="ch-fb" id="mq2fb-3"></div>
+  </div>
+  
+  <button class="unlock-btn" id="gate2-btn" onclick="unlockGate('s2-body','gate2')">🌍 MỞ CỬA — TIẾP TỤC CHƯƠNG</button>
+</div>
+
+<div id="s2-body" class="gate-locked">
+<div class="story reveal">
+  <strong>1920–1930:</strong> Sau khi gia nhập Đảng Cộng sản, Nguyễn Ái Quốc tiếp tục hoạt động:
+  <div style="margin-top:10px;margin-bottom:10px;">
+    <span class="chip">📅 1923–1930: Hoạt động bí mật tại Liên Xô, Trung Quốc, Thái Lan</span>
+    <span class="chip">1925: Lập Việt Nam Thanh Niên Cách Mạng Đồng Chí Hội tại Quảng Châu</span>
+    <span class="chip">1930: Thành lập Đảng Cộng sản Việt Nam tại Hồng Kông</span>
+  </div>
+</div>
+
+<div class="quote-moment reveal">
+  <span style="font-size:44px;display:block;margin-bottom:10px;">💭</span>
+  "Đảng Cộng sản là con đường duy nhất để giải phóng dân tộc Việt Nam. Tôi sẽ dành toàn bộ cuộc đời cho sự nghiệp này."
+  <span class="quote-src">— Nguyễn Ái Quốc, 1920</span>
+</div>
+
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s3',20)"><span class="c-letter">→</span><div>Chương III: 1941 — Bí Mật Về Nước (Hang Pác Bó)</div></button></div>
+</div>
+</div>
+
+<!-- ===== CHƯƠNG III ===== -->
+<div class="scene" id="s3">
+<div class="chap-badge">🏔️ CHƯƠNG III · 1941 — BÍ MẬT VỀ NƯỚC <span class="src-tag v" onclick="openSrcPopup('s3_pacbo')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#020108 0%,#0a0620 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/pacpo1941.jpg" alt="Pác Bó 1941" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">⛰️ PAC BÓ — CAO BẰNG 1941</div>
+</div>
+
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot now">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">🏔️ PAC BÓ — 1941</span>
+    <strong>Tháng 2/1941:</strong> Sau 30 năm xa Tổ quốc, Nguyễn Ái Quốc bí mật vượt biên về <strong>hang Pác Bó, Cao Bằng</strong>. Ngài không có nhà, không có giường, sống trong hang đá lạnh giá, ăn cháo bắp rau măng. Nhưng tinh thần không bao giờ suy sụp.
+  </div>
+
+  Tại hang Pác Bó, Nguyễn Ái Quốc đặt lại tên cho con suối: <strong>"suối Lênin"</strong>, và đặt tên cho ngọn núi: <strong>"núi Mác"</strong> — để nhớ những ơn nhân tư tưởng đã giải phóng tâm hồn mình. Bàn làm việc của Ngài là một tảng đá bên suối.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">MỘT NGÀY Ở PÁC BÓ</div>
+  Sáng sớm, Bác ra suối rửa mặt, múc nước nấu cháo ngô. Không có bàn, ngài kê một phiến đá phẳng bên bờ suối làm bàn làm việc — dịch tài liệu, viết chỉ thị, đến khi trời tối mới quay vào hang nghỉ. Đá lạnh, gió núi thổi suốt đêm, nhưng không một lời than.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ LÂM — CÁN BỘ GIAO LIÊN</div>
+  "Bác ơi, vùng biên giới này mật thám Pháp và lính dõng đang lùng sục gắt lắm. Hội nghị Trung ương sắp tới, hay để đồng chí khác thay Bác chủ trì, Bác lui vào sâu trong rừng ẩn náu cho an toàn?"
+</div>
+
+<div class="story reveal">
+  Hội nghị Trung ương Đảng lần thứ 8 — nơi sẽ quyết định thành lập Mặt trận Việt Minh — là thời khắc quyết định. Nhưng an toàn cá nhân và trọng trách lịch sử, đâu là điều quan trọng hơn lúc này?
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Điều gì khiến một người sẵn sàng tự mình đứng ra gánh vác việc quan trọng nhất, ngay giữa lúc nguy hiểm rình rập nhất?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc3-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc3',15,'⭐ ĐÚNG LỊCH SỬ! Bác đích thân chủ trì Hội nghị Trung ương 8 (5/1941) ngay tại Pác Bó, trực tiếp đưa ra đường lối thành lập Việt Minh — không giao phó cho ai khác trong thời khắc quyết định này.')"><span class="c-letter">A</span><div>Đích thân chủ trì hội nghị, chấp nhận rủi ro bị phát hiện.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc3',5,'Đây không phải lựa chọn của Bác. Người tin rằng một quyết sách quan trọng như vậy cần chính mình trực tiếp dẫn dắt, không thể ủy quyền trong thời khắc bản lề của cách mạng.')"><span class="c-letter">B</span><div>Nghe lời khuyên, lui vào ẩn náu, để người khác thay mặt chủ trì.</div></button>
+</div>
+<div class="ch-fb" id="sc3-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc3" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc3')">🔮 Nếu Bác lui vào ẩn náu, để người khác chủ trì?</button>
+  <div class="counterf-body" id="cf-sc3">Nếu giao lại việc chủ trì cho người khác để an toàn hơn, đường lối thành lập Việt Minh có thể thiếu sự dẫn dắt nhất quán ngay từ đầu, làm chậm quá trình xây dựng lực lượng đoàn kết toàn dân trước Cách mạng Tháng Tám.</div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 THÁNG 5/1941 — THÀNH LẬP VIỆT MINH</span>
+  Tại hang Pác Bó, Hồ Chí Minh chủ trì <strong>Hội nghị Trung ương Đảng lần thứ 8 (5/1941)</strong> — quyết định thành lập <strong>Mặt trận Việt Nam Độc lập Đồng minh Hội (Việt Minh)</strong> — tổ chức đoàn kết toàn dân để kháng chiến chống Nhật, chống Pháp.
+</div>
+
+<div class="story reveal">
+  Năm 1942, khi tình hình Trung Quốc rối loạn, Hồ Chí Minh sang Trung Quốc để liên lạc, nhưng bị <strong>Tưởng Giới Thạch</strong> (tướng quốc dân đảng Trung Quốc) bắt giam <strong>14 tháng (1942–1943)</strong>.
+</div>
+
+<div class="quote-moment reveal">
+  <span style="font-size:44px;display:block;margin-bottom:10px;">🔗</span>
+  "Thân thể ở trong lao, nhưng tinh thần ở ngoài lao."
+  <span class="quote-src">— Hồ Chí Minh, trong tù Trung Quốc 1942–1943</span>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 NHẬT KÝ TRONG TÙ (1942–1943)</span>
+  Trong 14 tháng tù ở Trung Quốc, Hồ Chí Minh viết <strong>134 bài thơ chữ Hán</strong> — tập thơ nổi tiếng "<strong>Ngục Trung Nhật Ký</strong>" (Nhật ký trong tù). Những bài thơ này thể hiện <em>ý chí không bao giờ bị gã</em> giữa tù tội.
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🎓 TEST KIẾN THỨC</span>
+  <div class="kc-q">Mặt trận Việt Minh được thành lập vào năm nào và với mục đích chính nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3_1')">A. 1940, kháng chiến chống Pháp cô lập</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc3_1')">B. 1941, đoàn kết toàn dân chống Nhật (và sau này chống Pháp)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3_1')">C. 1943, sau khi Hồ Chí Minh được thả khỏi tù</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3_1')">D. 1945, chuẩn bị cho Tổng Khởi Nghĩa</button>
+  </div>
+  <div class="kc-fb" id="kc3_1-fb"></div>
+</div>
+
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s4',25)"><span class="c-letter">→</span><div>Chương IV: Tháng 8/1945 — Cách Mạng Tháng Tám (Tổng Khởi Nghĩa)</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG IV ===== -->
+<div class="scene" id="s4">
+<div class="chap-badge">🔥 CHƯƠNG IV · THÁNG 8/1945 — CÁCH MẠNG THÁNG TÁM <span class="src-tag v" onclick="openSrcPopup('s4_cmt8')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#060208 0%,#0a0418 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/tongkhoinghia1945.jpg" alt="Tổng Khởi Nghĩa 1945" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">⚡ TỔNG KHỞI NGHĨA 1945</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot now">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">⚡ THỜI CƠ VÀNG THÁNG 8/1945</span>
+    <strong>Ngày 6 và 9/8/1945:</strong> Mỹ thả hai quả bom nguyên tử xuống Hiroshima và Nagasaki. <strong>Ngày 14/8/1945:</strong> Nhật Bản công bố đầu hàng. Lịch sử mở ra một cơ hội kỳ diệu — <em>khoảng trống quyền lực dài chỉ vài tuần!</em>
+  </div>
+
+  Ngày 13/8/1945, tại Tân Trào, Tuyên Quang — Hồ Chí Minh đang ốm nặng sốt rét. Nhưng khi tin Nhật đầu hàng đến, ngài bật dậy, mặt xanh xao vì sốt, nhưng giọng nói vang như sấm:
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">HỒ CHÍ MINH — HỘI NGHỊ TÂN TRÀO, 13/8/1945</div>
+  "Dù phải đốt cháy cả dãy Trường Sơn cũng phải giành cho được độc lập! Đây là <strong>thời cơ ngàn năm có một</strong> — không thể bỏ lỡ một phút nào!"
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ KỲ — CÁN BỘ THAM MƯU</div>
+  "Thưa Bác, tin Nhật đầu hàng mới chỉ qua đài phát thanh nước ngoài, chưa có văn bản chính thức. Nếu phát lệnh khởi nghĩa mà tin sai thì cả phong trào sẽ bị tiêu diệt. Có nên chờ xác nhận chắc chắn rồi hãy hành động không ạ?"
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc4-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc4',15,'⭐ ĐÚNG LỊCH SỬ! Bác quyết không chờ xác nhận chính thức — vì thời cơ chỉ tồn tại trong vài ngày. Lệnh Tổng khởi nghĩa được phát ngay, và thực tế đã chứng minh quyết định này hoàn toàn chính xác.')"><span class="c-letter">A</span><div>Phát lệnh Tổng khởi nghĩa ngay, không chờ xác nhận chính thức.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc4',5,'Đây không phải điều đã xảy ra. Chờ xác nhận chính thức nghĩa là đánh mất những ngày quyết định — khi quân Đồng Minh vào Đông Dương, thời cơ sẽ vĩnh viễn khép lại.')"><span class="c-letter">B</span><div>Chờ có xác nhận chắc chắn rồi mới hành động.</div></button>
+</div>
+<div class="ch-fb" id="sc4-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc4" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc4')">🔮 Nếu chờ xác nhận chính thức rồi mới hành động?</button>
+  <div class="counterf-body" id="cf-sc4">Chờ văn bản đầu hàng chính thức của Nhật có thể mất thêm nhiều ngày quý giá. Trong lúc đó quân Đồng Minh tiến vào Đông Dương, khiến việc thành lập chính quyền cách mạng khó khăn hơn nhiều, có nguy cơ đánh mất "thời cơ ngàn năm có một" hoàn toàn.</div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 VÌ SAO PHẢI HÀNH ĐỘNG NGAY?</span>
+  <strong>Quân Anh</strong> sẽ vào <strong>Miền Nam (13/9/1945)</strong> để giải giáp Nhật, và sẽ <strong>giúp Pháp tái chiếm Đông Dương</strong>. <strong>Quân Tưởng</strong> sẽ vào <strong>Miền Bắc (9/9/1945)</strong> — và sẽ <strong>cướp bóc tài nguyên</strong>. Nếu Việt Minh không thành lập chính quyền trước đó, tất cả sẽ mất!
+</div>
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Nếu tin tình báo chưa chắc chắn 100%, bạn có dám ra quyết định thay đổi cả vận mệnh dân tộc trong vài giờ đồng hồ không?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🎓 TEST KIẾN THỨC</span>
+  <div class="kc-q">Cách mạng Tháng Tám 1945 hoàn thành trên phạm vi cả nước trong bao lâu?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4_1')">A. Đúng 1 tháng (13–13/9)</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc4_1')">B. Chỉ 15 ngày (14–28/8/1945)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4_1')">C. 2 tháng với nhiều giai đoạn khác nhau</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc4_1')">D. 6 tuần để kiểm soát toàn bộ Đông Dương</button>
+  </div>
+  <div class="kc-fb" id="kc4_1-fb"></div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 KẾT QUẢ KHÔI HỨng</span>
+  <div style="margin-top:8px;">
+    <span class="chip">📅 15 ngày (14–28/8/1945)</span>
+    <span class="chip">🏛️ Chính quyền cách mạng được thành lập ở 63 tỉnh thành</span>
+    <span class="chip">🏙️ Hà Nội 19/8 · Huế 23/8 · Sài Gòn 25/8</span>
+    <span class="chip">👑 Vua Bảo Đại thoái vị 25/8</span>
+  </div>
+  <p style="margin-top:10px;font-size:15px;color:var(--star-dim);">Đây là một trong những cuộc cách mạng <strong>nhanh nhất trong lịch sử nhân loại</strong> — trong vòng chỉ 15 ngày, toàn bộ chính quyền thực dân đã sụp đổ!</p>
+</div>
+
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s5',30)"><span class="c-letter">→</span><div>Chương V: 2/9/1945 — Tuyên Ngôn Độc Lập (Quảng Trường Ba Đình)</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG V ===== -->
+<div class="scene" id="s5">
+<div class="chap-badge">🇻🇳 CHƯƠNG V · 2/9/1945 — TUYÊN NGÔN ĐỘC LẬP <span class="src-tag v" onclick="openSrcPopup('s5_tndl')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#030108 0%,#08041a 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/tuyenngondl.jpg" alt="Quảng Trường Ba Đình 1945" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">🏛️ QUẢNG TRƯỜNG BA ĐÌNH — HÀ NỘI</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot now">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">🕐 SÁNG 2/9/1945</span>
+    <strong>Quảng trường Ba Đình</strong> — hàng chục vạn dân Hà Nội từ mọi nơi đổ về. Cờ đỏ sao vàng tung bay khắp nơi. Không ai bảo ai, nhưng tất cả đều cảm nhận: <em>Đây là khoảnh khắc lịch sử.</em>
+  </div>
+</div>
+
+ <div class="story reveal">
+  Bác Hồ Chí Minh bước lên lễ đài. 30 năm bôn ba, hàng trăm lần sinh tử, được bắt, bị bệnh, bị tù... tất cả dồn vào khoảnh khắc này.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ VŨ — THƯ KÝ BUỔI LỄ</div>
+  "Thưa Bác, bản Tuyên ngôn đã được duyệt kỹ từng câu chữ. Xin Bác cứ đọc đúng nguyên văn, đừng thêm bớt gì để giữ sự trang nghiêm tuyệt đối của buổi lễ."
+</div>
+
+<div class="story reveal">
+  Bác cầm bản thảo trên tay, nhìn xuống biển người đang đứng im phăng phắc chờ đợi.
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc5-choices">
+  <button class="c-btn" onclick="ansSC(this,true,'sc5',15,'⭐ ĐÚNG LỊCH SỬ! Trước khi đọc, Bác đã dừng lại hỏi thân tình ngoài văn bản chính thức — một chi tiết phá vỡ khoảng cách giữa lãnh tụ và nhân dân, trở thành khoảnh khắc được ghi nhớ nhất buổi lễ.')"><span class="c-letter">A</span><div>Dừng lại, hỏi thân tình một câu ngoài văn bản để gần gũi với đồng bào.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ!</div></div></button>
+  <button class="c-btn" onclick="ansSC(this,false,'sc5',5,'Đây không phải điều đã xảy ra. Bác đã phá lệ, hỏi thăm đồng bào một cách gần gũi trước khi vào nội dung chính — chi tiết nhỏ nhưng làm nên sự khác biệt của một lãnh tụ luôn gần dân.')"><span class="c-letter">B</span><div>Đọc đúng nguyên văn đã duyệt, giữ sự trang nghiêm tuyệt đối.</div></button>
+</div>
+<div class="ch-fb" id="sc5-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc5" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc5')">🔮 Nếu Bác chỉ đọc đúng nguyên văn, không hỏi thăm đồng bào?</button>
+  <div class="counterf-body" id="cf-sc5">Bản Tuyên ngôn vẫn sẽ là văn kiện lịch sử quan trọng, nhưng có lẽ sẽ thiếu đi chi tiết đời thường được người dân nhớ đến và truyền lại nhiều nhất — hình ảnh một vị lãnh tụ gần dân ngay trong thời khắc trọng đại nhất.</div>
+</div>
+
+<div class="story reveal">
+  Trước khi đọc Tuyên ngôn Độc lập, Bác dừng lại, nhìn xuống biển người hàng chục vạn, hỏi nhẹ nhàng:
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">HỒ CHÍ MINH — QUẢNG TRƯỜNG BA ĐÌNH, 2/9/1945</div>
+  "Tôi nói đồng bào nghe rõ không?"
+</div>
+
+<div class="story reveal">
+  Hàng chục vạn giọng vang lên như sấm: <strong>"Rõ! Rõ! Rõ!"</strong>
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🤔 THỬ ĐOÁN XEM</span>
+  <div class="kc-q">Nếu là bạn, mở đầu bản Tuyên ngôn Độc lập của một nước vừa thoát ách đô hộ, bạn sẽ chọn cách nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_0')">A. Kể lại tội ác của thực dân Pháp trước tiên</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc5_0')">B. Trích chính lý luận về quyền con người của Mỹ và Pháp — dùng lời họ để vạch trần họ</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_0')">C. Kêu gọi thế giới công nhận Việt Nam ngay lập tức</button>
+  </div>
+  <div class="kc-fb" id="kc5_0-fb"></div>
+</div>
+
+<div class="story reveal">
+  Đó chính xác là điều Bác đã làm — mở đầu bằng những lời trích từ Tuyên ngôn Độc lập Mỹ 1776 và Tuyên ngôn Nhân quyền Pháp 1789 (nội dung đầy đủ đã có trong bài đọc chính). Một chiến thuật ngoại giao sắc bén: dùng chính lý luận của họ để phản bác sự áp bức của họ.
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">💡 CHIẾN THUẬT NGOẠI GIAO</span>
+  Bác Hồ trích dẫn chính những <strong>tuyên ngôn của Mỹ và Pháp</strong> để dùng chính lý luận tự do, bình đẳng của họ để <strong>phản bác sự áp bức, xâm lược của chính họ</strong>. Đây là một <em>chiến công ngoại giao xuất sắc.</em>
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🎓 TEST KIẾN THỨC CUỐI</span>
+  <div class="kc-q">Tuyên ngôn Độc lập 2/9/1945 được gọi là "bản Tuyên ngôn Độc lập thứ ba" của nhân loại. Hai bản trước là của nước nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_1')">A. Liên Xô 1917 và Mỹ 1776</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc5_1')">B. Mỹ 1776 (Tuyên ngôn Độc lập) và Pháp 1789 (Tuyên ngôn Nhân quyền)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_1')">C. Anh 1688 và Mỹ 1776</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_1')">D. Pháp 1789 và Nga 1917</button>
+  </div>
+  <div class="kc-fb" id="kc5_1-fb"></div>
+</div>
+
+<div class="quote-moment reveal">
+  <span style="font-size:44px;display:block;margin-bottom:10px;">⭐</span>
+  Câu cuối cùng vang lên. Không ai trong biển người hàng chục vạn dám thở mạnh. Rồi một tiếng hô bắt đầu, lan ra như sóng: <em>"Độc lập muôn năm!"</em> — cho đến khi cả quảng trường Ba Đình rung chuyển.
+  <span class="quote-src">— Khoảnh khắc kết thúc bài diễn văn, 2/9/1945 (toàn văn Tuyên ngôn xem tại trang Câu chuyện)</span>
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Vì sao một câu hỏi giản dị như "Tôi nói đồng bào nghe rõ không?" giữa một bản Tuyên ngôn trang trọng lại là chi tiết được nhớ đến nhiều nhất?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s6',30)"><span class="c-letter">→</span><div>Chương VI: 1946 — Toàn Quốc Kháng Chiến</div></button></div>
+</div>
+<!-- ===== CHƯƠNG VI ===== -->
+<div class="scene" id="s6">
+<div class="chap-badge">⚔️ CHƯƠNG VI · 12/1946 — TOÀN QUỐC KHÁNG CHIẾN <span class="src-tag v" onclick="openSrcPopup('s6_tqkc')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#0a0208 0%,#1a0410 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/toanquockhangchien1946.jpg" alt="Toàn quốc kháng chiến 1946" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;" onerror="this.style.display='none'"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">🔥 HÀ NỘI, ĐÊM 19/12/1946</div>
+</div>
+
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot now">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 BỐI CẢNH</span>
+    Sau hơn 1 năm hòa hoãn (Hiệp định Sơ bộ 6/3/1946, Tạm ước 14/9/1946), Pháp liên tục vi phạm: nổ súng ở Hải Phòng (11/1946), gửi tối hậu thư đòi tước vũ khí tự vệ Hà Nội. Chỉ còn vài giờ để quyết định.
+  </div>
+
+  Đêm 19/12/1946, tại làng Vạn Phúc (Hà Đông), Chủ tịch Hồ Chí Minh cùng Thường vụ Trung ương họp khẩn. Một cán bộ trẻ lo lắng bước vào, đặt lên bàn bản tối hậu thư mới nhất của tướng Pháp Morlière.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ TRẦN — CÁN BỘ TRẺ, VỪA TỪ HÀ NỘI VỀ</div>
+  "Thưa Bác, quân Pháp ở Hà Nội đông và mạnh hơn ta gấp nhiều lần. Nếu đánh ngay bây giờ, ta sẽ mất Thủ đô trong vài ngày. Có nên xin thêm thời gian đàm phán không ạ?"
+</div>
+
+<div class="story reveal">
+  Bác trầm ngâm nhìn tấm bản đồ Hà Nội trải trên bàn. Đã một năm rưỡi kể từ ngày đọc Tuyên ngôn Độc lập — nhân dân vừa nếm được tự do chưa lâu. Nhưng nhượng bộ thêm một lần nữa, liệu có còn cơ hội nhượng bộ lần sau?
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Ranh giới giữa nhân nhượng để giữ hòa bình và nhân nhượng dẫn đến mất nước nằm ở đâu? Ai là người có quyền quyết định ranh giới đó?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Trước đêm 19/12/1946, Việt Nam và Pháp đã ký những văn kiện hòa hoãn nào để tránh chiến tranh?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc6_1')">A. Chỉ có Hiệp định Genève</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc6_1')">B. Hiệp định Sơ bộ (6/3/1946) và Tạm ước (14/9/1946)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc6_1')">C. Không có văn kiện nào, hai bên đánh nhau ngay từ 1945</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc6_1')">D. Hiệp ước Versailles 1919</button>
+  </div>
+  <div class="kc-fb" id="kc6_1-fb"></div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 VÌ SAO KHÔNG THỂ CHỜ THÊM?</span>
+  Tướng Pháp đã ra tối hậu thư: nếu Việt Nam không giao nộp vũ khí tự vệ trước sáng 20/12, quân Pháp sẽ chiếm quyền kiểm soát Hà Nội bằng vũ lực. Đây không còn là đàm phán — mà là tối hậu thư buộc đầu hàng trong danh nghĩa hòa bình.
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices">
+  <button class="c-btn" onclick="markCorrect('s6');go('s6A',20)"><span class="c-letter">A</span><div>Phát lệnh Toàn quốc kháng chiến ngay trong đêm — "Thà hy sinh tất cả chứ nhất định không chịu mất nước!"<div class="c-sub">⭐ ĐÚNG LỊCH SỬ! Đây là quyết định Bác đã đưa ra</div></div></button>
+  <button class="c-btn" onclick="go('s6B',5)"><span class="c-letter">B</span><div>Xin Pháp gia hạn thêm để đàm phán tiếp, tránh đổ máu trước mắt.<div class="c-sub">An toàn trước mắt, nhưng tối hậu thư không phải lời mời đàm phán...</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s6A">
+<div class="chap-badge">✅ LỰA CHỌN A — ĐÚNG LỊCH SỬ!</div>
+<div class="outcome good"><span class="outcome-icon">📢</span><strong>Chính xác!</strong> Đêm 19/12/1946, Chủ tịch Hồ Chí Minh ra Lời kêu gọi Toàn quốc kháng chiến, phát trên Đài Tiếng nói Việt Nam.</div>
+<div class="quote-moment reveal">
+  <span style="font-size:44px;display:block;margin-bottom:10px;">🔥</span>
+  Lời kêu gọi vang lên khắp cả nước đêm đó: mọi người dân đều phải đứng lên, ai có súng dùng súng, ai có gươm dùng gươm, không có gươm thì dùng cuốc, thuổng, gậy gộc — quyết tâm giữ vững nền độc lập vừa giành được.
+  <span class="quote-src">— Tinh thần Lời kêu gọi Toàn quốc kháng chiến, 19/12/1946</span>
+</div>
+<div class="fact reveal"><span class="fact-tag">💡 KẾT QUẢ</span>Cuộc kháng chiến kéo dài 9 năm (1946-1954), kết thúc bằng chiến thắng Điện Biên Phủ chấn động địa cầu.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s7',0)"><span class="c-letter">→</span><div>Chương VII: 1954 — Chiến Thắng Điện Biên Phủ</div></button></div>
+</div>
+
+<div class="scene" id="s6B">
+<div class="chap-badge">❌ LỰA CHỌN B — HIỂU SAI BẢN CHẤT</div>
+<div class="outcome bad"><span class="outcome-icon">⚠️</span>Tối hậu thư không phải lời mời đàm phán — <strong>đây là điều kiện đầu hàng trá hình.</strong> Nếu giao nộp vũ khí, Việt Nam sẽ mất khả năng tự vệ hoàn toàn, và Pháp sẽ tái chiếm không tốn một viên đạn.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s6B')">🔮 Nếu Việt Nam giao nộp vũ khí thì sao?</button>
+  <div class="counterf-body" id="cf-s6B">Nếu chấp nhận giao nộp vũ khí tự vệ, Pháp gần như chắc chắn sẽ tái chiếm hoàn toàn miền Bắc mà không cần giao tranh lớn. Chính quyền cách mạng non trẻ mới thành lập 1 năm sẽ sụp đổ, và Việt Nam có thể quay lại thân phận thuộc địa thêm nhiều thập kỷ nữa trước khi có cơ hội đấu tranh trở lại.</div>
+</div>
+<div class="choices-lbl">⚡ NHẬN RA SỰ THẬT</div>
+<div class="choices"><button class="c-btn" onclick="go('s6A',10)"><span class="c-letter">→</span><div>"Không thể chờ thêm nữa — phát lệnh kháng chiến ngay!"</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG VII ===== -->
+<div class="scene" id="s7">
+<div class="chap-badge">⭐ CHƯƠNG VII · 1954 — CHIẾN THẮNG ĐIỆN BIÊN PHỦ <span class="src-tag v" onclick="openSrcPopup('s7_dbp')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#050208 0%,#150816 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/dienbienphu1954.jpg" alt="Điện Biên Phủ 1954" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;" onerror="this.style.display='none'"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">⛰️ CHIẾN DỊCH ĐIỆN BIÊN PHỦ, ĐẦU 1954</div>
+</div>
+
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot now">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 BỐI CẢNH</span>
+    Cuối 1953, Pháp xây dựng tập đoàn cứ điểm Điện Biên Phủ, coi đây là "pháo đài bất khả xâm phạm". Bộ Chỉ huy chiến dịch ban đầu chọn phương án "đánh nhanh, thắng nhanh" — nổ súng ngay khi pháo đã kéo vào trận địa.
+  </div>
+
+  Đêm trước giờ dự định nổ súng, tại Sở Chỉ huy mặt trận, vị Tổng Tư lệnh chiến dịch trăn trở suốt đêm nhìn sa bàn trận địa. Cứ điểm địch đã củng cố mạnh hơn nhiều so với trinh sát ban đầu — đánh nhanh lúc này có nguy cơ tổn thất cực lớn.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ BẰNG — SĨ QUAN THAM MƯU MẶT TRẬN</div>
+  "Thưa Tổng Tư lệnh, pháo đã kéo vào trận địa, bộ đội đã sẵn sàng, kế hoạch đã báo cáo về Trung ương. Giờ đổi phương án sát giờ nổ súng sẽ gây xáo trộn lớn. Có nên cứ theo kế hoạch cũ mà đánh không ạ?"
+</div>
+
+<div class="story reveal">
+  Giữ đúng kế hoạch đã định để không mất thời cơ, hay đổi toàn bộ phương án ở phút chót — chấp nhận rủi ro chậm trễ — để bảo toàn lực lượng và chắc thắng?
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 ĐIỀU KHÔNG PHẢI AI CŨNG BIẾT</span>
+  Trước khi ra mặt trận, Hồ Chí Minh đã dặn dò vị Tổng Tư lệnh: <strong>"Trận này quan trọng, phải đánh cho thắng. Chắc thắng mới đánh, không chắc thắng không đánh"</strong> — trao toàn quyền quyết định chiến trường cho người chỉ huy trực tiếp.
+</div>
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Khi mọi thứ đã chuẩn bị xong, thay đổi kế hoạch ở phút cuối cần loại dũng khí nào — dũng khí xông lên, hay dũng khí thừa nhận cần chậm lại?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices">
+  <button class="c-btn" onclick="markCorrect('s7');go('s7A',20)"><span class="c-letter">A</span><div>Hạ quyết tâm thay đổi toàn bộ phương án: kéo pháo ra, chuyển sang "đánh chắc, tiến chắc", dời ngày nổ súng.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ! Quyết định đã thay đổi cục diện chiến dịch</div></div></button>
+  <button class="c-btn" onclick="go('s7B',5)"><span class="c-letter">B</span><div>Giữ nguyên kế hoạch "đánh nhanh, thắng nhanh" như đã định.<div class="c-sub">Đúng tiến độ, nhưng rủi ro tổn thất rất lớn...</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s7A">
+<div class="chap-badge">✅ LỰA CHỌN A — ĐÚNG LỊCH SỬ!</div>
+<div class="outcome good"><span class="outcome-icon">⛰️</span><strong>Chính xác!</strong> Quyết định "kéo pháo ra" nổi tiếng trong lịch sử quân sự — chiến dịch chuyển hẳn sang phương châm "đánh chắc, tiến chắc", chấp nhận kéo dài thời gian chuẩn bị.</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Chiến dịch Điện Biên Phủ (phương án "đánh chắc, tiến chắc") kéo dài bao lâu và kết thúc vào ngày nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7_1')">A. 30 ngày đêm, kết thúc 30/4/1954</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc7_1')">B. 56 ngày đêm, kết thúc 7/5/1954</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7_1')">C. 100 ngày đêm, kết thúc 2/9/1954</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7_1')">D. 20 ngày đêm, kết thúc 1/4/1954</button>
+  </div>
+  <div class="kc-fb" id="kc7_1-fb"></div>
+</div>
+<div class="fact reveal"><span class="fact-tag">💡 KẾT QUẢ</span>Chiến thắng Điện Biên Phủ "lừng lẫy năm châu, chấn động địa cầu" buộc Pháp phải ký Hiệp định Genève (7/1954), chấm dứt ách đô hộ gần 100 năm.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s8',0)"><span class="c-letter">→</span><div>Chương VIII: 1965–1969 — Viết Di Chúc</div></button></div>
+</div>
+
+<div class="scene" id="s7B">
+<div class="chap-badge">❌ LỰA CHỌN B — RỦI RO QUÁ LỚN</div>
+<div class="outcome bad"><span class="outcome-icon">⚠️</span>Cứ điểm địch mạnh hơn trinh sát ban đầu rất nhiều. Đánh nhanh trong tình huống này có nguy cơ <strong>thương vong cực lớn mà chưa chắc thắng</strong>.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s7B')">🔮 Nếu vẫn đánh nhanh thắng nhanh thì sao?</button>
+  <div class="counterf-body" id="cf-s7B">Theo phân tích của các nhà quân sự học sau này, nếu giữ nguyên phương án "đánh nhanh, thắng nhanh" khi cứ điểm địch đã củng cố mạnh hơn dự tính, bộ đội ta rất có thể sẽ chịu tổn thất nặng nề ngay từ những ngày đầu, mất đi ưu thế bất ngờ và có nguy cơ không giành được thắng lợi quyết định — làm kéo dài cuộc kháng chiến thêm nhiều năm.</div>
+</div>
+<div class="choices-lbl">⚡ NHÌN LẠI TRẬN ĐỊA</div>
+<div class="choices"><button class="c-btn" onclick="go('s7A',10)"><span class="c-letter">→</span><div>"Không thể mạo hiểm — phải đổi phương án ngay!"</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG VIII ===== -->
+<div class="scene" id="s8">
+<div class="chap-badge">📜 CHƯƠNG VIII · 1965–1969 — VIẾT DI CHÚC <span class="src-tag v" onclick="openSrcPopup('s8_dichuc')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#04030c 0%,#100418 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/dichuc1969.jpg" alt="Bác viết Di chúc" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;" onerror="this.style.display='none'"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">✍️ BÁC VIẾT DI CHÚC, HÀ NỘI 1965–1969</div>
+</div>
+
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot done">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot now">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 BỐI CẢNH</span>
+    Từ tháng 5/1965, giữa lúc chiến tranh chống Mỹ ác liệt nhất, Hồ Chí Minh bắt đầu viết và sửa đi sửa lại bản Di chúc — mỗi năm vào đúng dịp sinh nhật, Người lại dành thời gian chỉnh sửa thêm.
+  </div>
+
+  Một buổi sáng năm 1968, Bác gọi thư ký riêng vào, đưa bản thảo mới sửa. Trong đó có một đoạn khiến người thư ký sững lại: Bác viết rõ ý nguyện được hỏa táng sau khi mất — điều trái hẳn phong tục an táng truyền thống của người Việt lúc bấy giờ.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ THƯ — THƯ KÝ RIÊNG</div>
+  "Thưa Bác, dân mình từ xưa trọng chuyện mồ yên mả đẹp, sợ rằng nếu công bố ý nguyện hỏa táng sẽ khiến nhiều người băn khoăn. Hay Bác cứ để đó, sau này con cháu quyết định cũng được ạ?"
+</div>
+
+<div class="story reveal">
+  Giữa việc giữ trọn tâm nguyện cá nhân trong im lặng, và việc công khai một tư tưởng tiến bộ dù có thể gây tranh cãi — đâu là điều nên làm?
+</div>
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Vì sao một người sắp mất vẫn dành tâm trí nghĩ đến việc tiết kiệm đất đai, tiền bạc cho người dân?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices">
+  <button class="c-btn" onclick="markCorrect('s8');go('s8A',20)"><span class="c-letter">A</span><div>Viết rõ ràng ý nguyện hỏa táng vào Di chúc, công khai quan điểm tiến bộ, không mê tín.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ! Đây là điều Bác đã thực sự viết</div></div></button>
+  <button class="c-btn" onclick="go('s8B',5)"><span class="c-letter">B</span><div>Giữ kín ý nguyện, để việc an táng theo phong tục truyền thống.<div class="c-sub">An toàn hơn về mặt dư luận lúc bấy giờ...</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s8A">
+<div class="chap-badge">✅ LỰA CHỌN A — ĐÚNG LỊCH SỬ!</div>
+<div class="outcome good"><span class="outcome-icon">✍️</span><strong>Chính xác!</strong> Trong Di chúc, Bác viết rõ mong muốn được hỏa táng, coi đây vừa là vệ sinh, vừa đỡ tốn đất canh tác của dân — một tư tưởng vượt trước thời đại.</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Bản Di chúc của Hồ Chí Minh được Người bắt đầu viết và chỉnh sửa trong khoảng thời gian nào?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc8_1')">A. Chỉ viết một lần duy nhất năm 1969</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc8_1')">B. Viết và sửa nhiều lần từ 1965 đến 1969</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc8_1')">C. Viết từ những năm 1950, giữ bí mật suốt 20 năm</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc8_1')">D. Do người khác soạn thảo, Bác chỉ ký tên</button>
+  </div>
+  <div class="kc-fb" id="kc8_1-fb"></div>
+</div>
+<div class="fact reveal"><span class="fact-tag">💡 ĐIỀU CẢM ĐỘNG</span>Di chúc còn dặn: "chớ nên tổ chức điếu phúng linh đình, để khỏi lãng phí thì giờ và tiền bạc của nhân dân" — ngay trong những dòng cuối cùng, Bác vẫn nghĩ cho dân.</div>
+<div class="choices-lbl">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="c-btn" onclick="go('s9',0)"><span class="c-letter">→</span><div>Chương IX: 2/9/1969 — Bác Ra Đi, Di Sản Muôn Đời</div></button></div>
+</div>
+
+<div class="scene" id="s8B">
+<div class="chap-badge">❌ LỰA CHỌN B — KHÔNG PHẢI Ý NGUYỆN THẬT</div>
+<div class="outcome bad"><span class="outcome-icon">⚠️</span>Đây không phải điều đã xảy ra. Bác luôn tin rằng chính mình phải tiên phong thay đổi những quan niệm cũ, dù có thể gây tranh cãi ban đầu.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s8B')">🔮 Nếu giữ kín ý nguyện thì sao?</button>
+  <div class="counterf-body" id="cf-s8B">Nếu không công khai ý nguyện hỏa táng, có thể việc an táng sẽ theo phong tục truyền thống — nhưng Việt Nam sẽ mất đi một trong những minh chứng rõ ràng nhất về tư tưởng tiến bộ, không mê tín của Hồ Chí Minh, một tư tưởng về sau đã ảnh hưởng đến quan niệm về tang lễ giản dị, văn minh của nhiều thế hệ người Việt.</div>
+</div>
+<div class="choices-lbl">⚡ VIẾT LẠI THẲNG THẮN</div>
+<div class="choices"><button class="c-btn" onclick="go('s8A',10)"><span class="c-letter">→</span><div>"Không, phải viết rõ ràng — đây là điều tôi thực sự mong muốn."</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG IX ===== -->
+<div class="scene" id="s9">
+<div class="chap-badge">🕊️ CHƯƠNG IX · 2/9/1969 — DI SẢN MUÔN ĐỜI <span class="src-tag v" onclick="openSrcPopup('s9_qua_doi')">📖 nguồn</span></div>
+<div class="hero-art" style="background:linear-gradient(135deg,#03030a 0%,#0c0414 100%);display:flex;align-items:flex-end;justify-content:center;position:relative;overflow:hidden;">
+  <img src="images/tanglenoibac1969.jpg" alt="Lễ tang Bác Hồ 1969" style="width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;" onerror="this.style.display='none'"/>
+  <div style="position:relative;text-align:center;color:var(--gold-l);z-index:1;padding-bottom:16px;">🕊️ HÀ NỘI, THÁNG 9/1969</div>
+</div>
+
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1911</div><div class="cm-evt">Rời Quốc</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1920</div><div class="cm-evt">Tìm Đường</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1941</div><div class="cm-evt">Về Nước</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1945</div><div class="cm-evt">Khởi Nghĩa</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">2/9</div><div class="cm-evt">Độc Lập</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">1946</div><div class="cm-evt">Kháng Chiến</div></div>
+  <div class="cm-item"><div class="cm-dot done">7</div><div class="cm-year">1954</div><div class="cm-evt">Điện Biên</div></div>
+  <div class="cm-item"><div class="cm-dot done">8</div><div class="cm-year">1969</div><div class="cm-evt">Di Chúc</div></div>
+  <div class="cm-item"><div class="cm-dot now">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 BỐI CẢNH</span>
+    9 giờ 47 phút sáng ngày 2/9/1969 — đúng ngày kỷ niệm Tuyên ngôn Độc lập 24 năm trước — Chủ tịch Hồ Chí Minh qua đời tại Hà Nội, giữa lúc cuộc kháng chiến chống Mỹ đang cam go nhất.
+  </div>
+
+  Tin Bác mất được giữ kín vài ngày để không ảnh hưởng tinh thần chiến đấu, rồi công bố ngày 9/9. Cả dân tộc chìm trong nước mắt. Ban Tổ chức lễ tang họp khẩn để bàn cách tổ chức.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">ĐỒNG CHÍ HẠNH — CÁN BỘ TUYÊN TRUYỀN</div>
+  "Thưa các đồng chí, Bác là lãnh tụ vĩ đại của cả dân tộc. Nên tổ chức quốc tang thật long trọng, kéo dài nhiều ngày, để nhân dân cả nước có đủ thời gian bày tỏ lòng tiếc thương xứng đáng với công lao của Người."
+</div>
+
+<div class="story reveal">
+  Nhưng trong Di chúc, chính Bác đã dặn dò rất rõ ràng về việc này. Làm theo tình cảm của triệu người dân, hay làm đúng theo di nguyện giản dị của người đã khuất?
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Vì sao ngay cả trong những dòng cuối cùng của cuộc đời, một người vẫn dành tâm trí để nghĩ đến việc tiết kiệm thời gian, tiền bạc cho người khác?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-lbl">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices">
+  <button class="c-btn" onclick="markCorrect('s9');go('s9A',20)"><span class="c-letter">A</span><div>Tôn trọng di nguyện: tổ chức lễ tang trang nghiêm nhưng giản dị, không phô trương lãng phí.<div class="c-sub">⭐ ĐÚNG LỊCH SỬ! Đây là điều Đảng và Nhà nước đã thực hiện</div></div></button>
+  <button class="c-btn" onclick="go('s9B',5)"><span class="c-letter">B</span><div>Tổ chức quốc tang thật long trọng, kéo dài, đúng tầm vóc lãnh tụ.<div class="c-sub">Thể hiện lòng tiếc thương, nhưng đi ngược lại đúng ý nguyện đã viết...</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s9A">
+<div class="chap-badge">✅ LỰA CHỌN A — ĐÚNG LỊCH SỬ!</div>
+<div class="outcome good"><span class="outcome-icon">🕊️</span><strong>Chính xác!</strong> Lễ tang được tổ chức trang nghiêm, giản dị đúng theo di nguyện — dù hàng triệu người dân từ khắp mọi miền tự nguyện đổ về viếng trong niềm tiếc thương vô hạn.</div>
+<div class="kc reveal">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Hồ Chí Minh qua đời vào thời điểm nào, và điều đặc biệt gì về ngày mất của Người?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9_1')">A. 19/5/1969 — đúng ngày sinh nhật Bác</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc9_1')">B. 2/9/1969 — đúng ngày kỷ niệm Tuyên ngôn Độc lập</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9_1')">C. 7/5/1969 — đúng ngày kỷ niệm Điện Biên Phủ</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9_1')">D. 30/4/1969 — không trùng dịp kỷ niệm nào</button>
+  </div>
+  <div class="kc-fb" id="kc9_1-fb"></div>
+</div>
+<div class="quote-moment reveal">
+  <span style="font-size:44px;display:block;margin-bottom:10px;">🇻🇳</span>
+  Từ bến cảng Sài Gòn năm 21 tuổi không một đồng dính túi, đến giây phút cuối cùng vẫn nghĩ cho dân — 58 năm, một hành trình trọn vẹn vì độc lập, tự do của dân tộc.
+  <span class="quote-src">— Di sản Hồ Chí Minh, còn mãi với non sông</span>
+</div>
+<div class="choices-lbl">⚡ HOÀN THÀNH HÀNH TRÌNH</div>
+<div class="choices"><button class="c-btn" onclick="go('final',30)"><span class="c-letter">✓</span><div>🎉 <strong>HÀNH TRÌNH 58 NĂM HOẠT ĐỘNG CÁCH MẠNG HOÀN THÀNH!</strong></div></button></div>
+</div>
+
+<div class="scene" id="s9B">
+<div class="chap-badge">❌ LỰA CHỌN B — ĐI NGƯỢC DI NGUYỆN</div>
+<div class="outcome bad"><span class="outcome-icon">⚠️</span>Trong Di chúc, Bác đã dặn rất rõ: không tổ chức điếu phúng linh đình để tránh lãng phí thì giờ, tiền bạc của nhân dân. Làm ngược lại di nguyện là điều không nên.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s9B')">🔮 Nếu tổ chức quốc tang long trọng thì sao?</button>
+  <div class="counterf-body" id="cf-s9B">Nếu tổ chức tang lễ long trọng, kéo dài như đề xuất, sự kiện có thể sẽ tiêu tốn nhiều thời gian, công sức, tiền bạc của một đất nước đang trong chiến tranh ác liệt — đi ngược lại chính tinh thần giản dị, tiết kiệm mà Bác đã sống và viết trong Di chúc suốt cả cuộc đời.</div>
+</div>
+<div class="choices-lbl">⚡ TÔN TRỌNG DI NGUYỆN</div>
+<div class="choices"><button class="c-btn" onclick="go('s9A',10)"><span class="c-letter">→</span><div>"Phải làm đúng theo lời Bác dặn — giản dị, trang nghiêm."</div></button></div>
+</div>
+<!-- ===== FINAL ===== -->
+<div class="scene" id="final">
+<div class="final">
+  <div class="final-seal" id="finalSeal">🏆</div>
+  <div class="final-h" id="finalH">HÀNH TRÌNH HOÀN THÀNH!</div>
+  <div class="final-pts" id="finalPts">0 điểm</div>
+  <div class="final-rank-badge" id="finalRank">—</div>
+  <div class="final-desc" id="finalDesc">Bạn đã hoàn thành hành trình 30 năm cầu nước của Hồ Chí Minh!</div>
+
+  <div class="final-achs" id="finalAchs"></div>
+
+  <div class="jmap reveal">
+    <span class="jmap-tag">🗺️ HÀNH TRÌNH 58 NĂM</span>
+    <div class="jmap-note">Sơ đồ cách điệu các điểm dừng chân quan trọng — không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 780 260" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M50,220 C110,160 130,110 150,120 S220,70 230,60 S300,95 310,90 S390,45 410,50 S480,150 500,140 S570,95 580,100 S640,170 660,160 S730,225 740,220"/>
+      <circle class="jmap-pt" cx="50" cy="220" r="6"/><text class="jmap-yr" x="50" y="240" text-anchor="middle">1911</text><text class="jmap-lbl" x="50" y="252" text-anchor="middle">Sài Gòn</text>
+      <circle class="jmap-pt" cx="150" cy="120" r="6"/><text class="jmap-yr" x="150" y="105" text-anchor="middle">1911</text><text class="jmap-lbl" x="150" y="95" text-anchor="middle">Marseille</text>
+      <circle class="jmap-pt" cx="230" cy="60" r="6"/><text class="jmap-yr" x="230" y="45" text-anchor="middle">1913</text><text class="jmap-lbl" x="230" y="35" text-anchor="middle">London</text>
+      <circle class="jmap-pt" cx="310" cy="90" r="6"/><text class="jmap-yr" x="310" y="112" text-anchor="middle">1917</text><text class="jmap-lbl" x="310" y="124" text-anchor="middle">Paris</text>
+      <circle class="jmap-pt" cx="410" cy="50" r="6"/><text class="jmap-yr" x="410" y="35" text-anchor="middle">1923</text><text class="jmap-lbl" x="410" y="25" text-anchor="middle">Moskva</text>
+      <circle class="jmap-pt" cx="500" cy="140" r="6"/><text class="jmap-yr" x="500" y="160" text-anchor="middle">1925</text><text class="jmap-lbl" x="500" y="172" text-anchor="middle">Quảng Châu</text>
+      <circle class="jmap-pt" cx="580" cy="100" r="6"/><text class="jmap-yr" x="580" y="85" text-anchor="middle">1941</text><text class="jmap-lbl" x="580" y="75" text-anchor="middle">Pác Bó</text>
+      <circle class="jmap-pt" cx="660" cy="160" r="6"/><text class="jmap-yr" x="660" y="180" text-anchor="middle">1945</text><text class="jmap-lbl" x="660" y="192" text-anchor="middle">Hà Nội</text>
+      <circle class="jmap-pt" cx="740" cy="220" r="7"/><text class="jmap-yr" x="740" y="240" text-anchor="middle">1954</text><text class="jmap-lbl" x="730" y="252" text-anchor="middle">Điện Biên Phủ</text>
+    </svg>
+  </div>
+
+  <div class="journal reveal" id="journalBox">
+    <span class="journal-tag">📔 NHẬT KÝ HÀNH TRÌNH CỦA BẠN</span>
+    <div id="journalList"></div>
+    <button class="journal-copy" onclick="copyJournal()">📋 Sao chép nhật ký để chia sẻ</button>
+  </div>
+
+  <div class="final-lesson">
+    <span class="fl-tag">📚 BA BÀI HỌC VƯỢT THỜI GIAN</span>
+    
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">1. DÁM RA ĐI TÌM CON ĐƯỜNG MỚI</strong>
+    Khi các con đường cũ đều thất bại (Đông Du, Đông Kinh Nghĩa Thục), <strong>không sợ gian khổ, không sợ lạ lẫm, dũng khí thay đổi lịch sử.</strong> Nguyễn Tất Thành không chần chừ nắm lấy cơ hội để học hỏi thế giới.
+    
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">2. KIÊN TRÌ 30 NĂM KHÔNG TỪ BỎ</strong>
+    Bao lần bị bắt, bị bệnh, bị tù, bị lưu vong... nhưng không bao giờ từ bỏ. <em>"Gian nan rèn luyện mới anh hùng."</em> 30 năm bôn ba là chứng minh của sức mạnh tinh thần không phá hủy được.
+    
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">3. CHỚP THỜI CƠ KHI ĐẾN</strong>
+    <strong>Tháng 8/1945 chỉ có vài ngày vàng!</strong> Hồ Chí Minh nhận ra điều này tức thì và hành động mạnh dạn. <em>"Không có gì quý hơn độc lập, tự do."</em> Không chờ đợi, không thụ động — hành động ngay lập tức.
+    
+    <strong style="display:block;margin-top:15px;color:#ef9a9a;font-size:18px;">Những bài học này không chỉ dành cho lịch sử — chúng là những bài học cho cuộc sống hiện tại của chúng ta.</strong>
+  </div>
+
+  <div class="btn-row" style="margin-top:30px;">
+    <button class="btn-ghost" onclick="restart()">🔄 CHƠI LẠI</button>
+    <button class="btn-ghost" onclick="openLeaderboard()">🏆 BẢNG XẾP HẠNG</button>
+    <a href="#" class="btn-solid">📖 TÌM HIỂU THÊM VỀ HỒ CHÍ MINH</a>
+</div>
+</div>
+</div>
+</div><!-- .wrap -->
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-modal">
+  <div class="ref-modal-head">
+    <span class="ref-page-title" style="margin-bottom:0;">📚 Nguồn Tham Khảo</span>
+    <button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button>
+  </div>
+  <div class="ref-page-sub">Các sự kiện, ngày tháng, số liệu trong trang này được đối chiếu từ các nguồn chính thống dưới đây. Các đoạn hội thoại (đánh dấu viền xanh 🔵) là <strong>dựng lại minh họa</strong> dựa trên tinh thần lịch sử, không phải nguyên văn ghi âm/ghi chép.</div>
+
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">Hồ Chí Minh Toàn Tập (15 tập), NXB Chính trị Quốc gia Sự thật</div>
+    <div class="ref-item">Ban Nghiên cứu Lịch sử Đảng — Biên niên tiểu sử Hồ Chí Minh</div>
+    <div class="ref-item">Bảo tàng Hồ Chí Minh — Tư liệu, hiện vật trưng bày</div>
+    <div class="ref-item">Di chúc của Chủ tịch Hồ Chí Minh (bản công bố chính thức 1969)</div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-h">Ghi chú về phương pháp thể hiện</div>
+    <div class="ref-item">Ngày tháng, số liệu, kết quả sự kiện: dựa trên tư liệu đã kiểm chứng</div>
+    <div class="ref-item">Hội thoại giữa các nhân vật: dựng lại nhằm mục đích minh họa, giúp người học hình dung bối cảnh — không phải trích dẫn nguyên văn có ghi chép</div>
+    <div class="ref-item">Các câu nói lịch sử đặt trong dấu ngoặc kép đậm: trích dẫn có nguồn xác thực (xem icon 📖 bên cạnh)</div>
+  </div>
+</div>
+</div>
+
+<script>
+// ===== CANVAS & BACKGROUND =====
+const bgC=document.getElementById('bgCanvas');
+const bgCtx=bgC.getContext('2d');
+function resizeBG(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+resizeBG();window.addEventListener('resize',resizeBG);
+const stars2=[];
+for(let i=0;i<90;i++)stars2.push({x:Math.random(),y:Math.random(),r:Math.random()*1.5+.3,a:Math.random(),da:(Math.random()-.5)*.008});
+
+const embers=[];
+function randEdgeX(){
+  // chỉ sinh hạt ở 2 dải rìa trái/phải (mỗi dải rộng ~18% màn hình), tránh vùng chữ ở giữa
+  const side=Math.random()<0.5;
+  return side ? Math.random()*0.16 : 0.84+Math.random()*0.16;
+}
+for(let i=0;i<12;i++)embers.push({
+  x:randEdgeX(),y:Math.random(),
+  size:1+Math.random()*1.8,
+  speed:0.05+Math.random()*0.1,
+  drift:(Math.random()-.5)*0.08,
+  a:0.08+Math.random()*0.18,
+  hue:Math.random()<0.5?'212,160,23':'198,40,40'
+});
+
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  stars2.forEach(s=>{
+    s.a=Math.max(.05,Math.min(.8,s.a+s.da));
+    if(s.a<=.06||s.a>=.79)s.da*=-1;
+    bgCtx.beginPath();bgCtx.arc(s.x*bgC.width,s.y*bgC.height,s.r,0,Math.PI*2);
+    bgCtx.fillStyle=`rgba(255,255,255,${s.a})`;bgCtx.fill();
+  });
+  embers.forEach(e=>{
+    e.y-=e.speed/bgC.height*60;
+    e.x+=e.drift/bgC.width*60;
+    if(e.y<-0.02){e.y=1.02;e.x=randEdgeX();}
+    if(e.x<-0.03||e.x>1.03)e.x=randEdgeX();
+    const px=e.x*bgC.width,py=e.y*bgC.height;
+    const grad=bgCtx.createRadialGradient(px,py,0,px,py,e.size*4);
+    grad.addColorStop(0,`rgba(${e.hue},${e.a})`);
+    grad.addColorStop(1,`rgba(${e.hue},0)`);
+    bgCtx.beginPath();bgCtx.arc(px,py,e.size*4,0,Math.PI*2);
+    bgCtx.fillStyle=grad;bgCtx.fill();
+    bgCtx.beginPath();bgCtx.arc(px,py,e.size,0,Math.PI*2);
+    bgCtx.fillStyle=`rgba(${e.hue},${Math.min(1,e.a*1.8)})`;bgCtx.fill();
+  });
+  requestAnimationFrame(drawBG);
+}drawBG();
+
+// ===== CURSOR TRAIL (vệt lửa theo chuột, chỉ desktop) =====
+const curC=document.getElementById('cursorCanvas');
+const curCtx=curC.getContext('2d');
+function resizeCur(){curC.width=window.innerWidth;curC.height=window.innerHeight;}
+resizeCur();window.addEventListener('resize',resizeCur);
+let trailPts=[];
+const isTouchDevice='ontouchstart' in window;
+if(!isTouchDevice){
+  let lastMove=0;
+  window.addEventListener('mousemove',e=>{
+    const now=Date.now();
+    if(now-lastMove<28)return;lastMove=now;
+    trailPts.push({x:e.clientX,y:e.clientY,life:1,size:2+Math.random()*2.4});
+    if(trailPts.length>40)trailPts.shift();
+  });
+}
+function drawCursorTrail(){
+  curCtx.clearRect(0,0,curC.width,curC.height);
+  trailPts.forEach(p=>{
+    p.life-=0.028;
+    const alpha=Math.max(0,p.life);
+    const grad=curCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*5);
+    grad.addColorStop(0,`rgba(245,200,66,${alpha*0.55})`);
+    grad.addColorStop(1,'rgba(245,200,66,0)');
+    curCtx.beginPath();curCtx.arc(p.x,p.y,p.size*5,0,Math.PI*2);
+    curCtx.fillStyle=grad;curCtx.fill();
+  });
+  trailPts=trailPts.filter(p=>p.life>0);
+  requestAnimationFrame(drawCursorTrail);
+}drawCursorTrail();
+
+// ===== STATE =====
+let pts=0,streak=0,totalKC=0;
+let expAwarded=false;
+let sceneRewarded={};
+let answered={};
+let mq2ans=[false,false,false,false];
+let gateState={2:{done:false}};
+let choiceCorrect={s1:false,sc2:false,sc3:false,sc4:false,sc5:false,s6:false,s7:false,s8:false,s9:false};
+let kcCorrectCount=0,kcTotalCount=0;
+
+// ===== SOUND SYSTEM (tổng hợp trực tiếp, không cần file mp3) =====
+let soundOn=true,actx=null;
+function getActx(){if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();return actx;}
+function toggleSound(){soundOn=!soundOn;document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';}
+function playTone(freq,dur,type='sine',vol=.12){
+  if(!soundOn)return;
+  try{
+    const ctx=getActx();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=freq;g.gain.value=vol;
+    o.connect(g);g.connect(ctx.destination);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function soundCorrect(){playTone(660,.14,'sine',.13);setTimeout(()=>playTone(880,.18,'sine',.11),90);}
+function soundWrong(){playTone(160,.28,'sawtooth',.10);}
+function soundUnlock(){playTone(523,.12,'triangle',.12);setTimeout(()=>playTone(784,.22,'triangle',.12),110);}
+function soundCombo(){playTone(440,.1,'sine',.1);setTimeout(()=>playTone(550,.1,'sine',.11),80);setTimeout(()=>playTone(660,.2,'sine',.13),160);}
+
+// ===== STREAK & COMBO =====
+let streakN=0,maxStreak=0;
+function addStreak(){
+  streakN++;if(streakN>maxStreak)maxStreak=streakN;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent=streakN;
+  b.classList.add('show');
+  if(streakN>=3){b.classList.add('fire');showCombo(streakN);}
+  else b.classList.remove('fire');
+}
+function resetStreak(){streakN=0;const b=document.getElementById('streakBadge');if(b)b.classList.remove('show','fire');}
+function showCombo(n){
+  const labels={3:'🔥 COMBO x3',4:'⚡ THẦN TỐC x4',5:'💥 CHIẾN CÔNG x5',6:'🇻🇳 HUYỀN THOẠI x6'};
+  const bonus={3:10,4:15,5:20,6:30}[n]||30;
+  document.getElementById('comboLabel').textContent=labels[n]||('🇻🇳 BẤT KHUẤT x'+n);
+  document.getElementById('comboSub').textContent='+'+bonus+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bonus;updateScore();showPts('+'+bonus+' COMBO!');
+  soundCombo();
+  burstParticles(window.innerWidth/2,window.innerHeight*0.44);
+}
+
+// ===== REVEAL OBSERVER =====
+const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));}
+initReveal();
+
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.c-btn,.kc-opt,.ch-opt,.unlock-btn,.btn-solid,.btn-ghost');
+  if(!btn||btn.disabled)return;
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);
+  const rip=document.createElement('span');
+  rip.className='ripple-el';
+  rip.style.width=rip.style.height=size+'px';
+  rip.style.left=(e.clientX-rect.left-size/2)+'px';
+  rip.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(rip);
+  setTimeout(()=>rip.remove(),650);
+});
+
+// ===== SCORE & UI =====
+let lastMilestone=0;
+function updateScore(){
+  document.getElementById('scoreEl').textContent=pts;
+  document.getElementById('rankEl').textContent=pts>=300?'⚔️ Chủ Tịch':pts>=200?'⚔️ Chiến Sĩ':pts>=100?'📚 Học Sử':'🌱 Tìm Hiểu';
+  const pct=Math.min(100,Math.round((pts/400)*100));
+  const sf=document.getElementById('spiritMeter'),sp=document.getElementById('spiritPct');
+  if(sf)sf.style.width=pct+'%';if(sp)sp.textContent=pct+'%';
+  const milestone=Math.floor(pct/25);
+  if(sf&&milestone>lastMilestone){
+    sf.classList.remove('pulse');void sf.offsetWidth;sf.classList.add('pulse');
+    lastMilestone=milestone;
+  }
+}
+
+function showPts(txt){const p=document.getElementById('ptsPop');p.textContent=txt;p.className='pts-pop';void p.offsetWidth;p.className='pts-pop show';}
+let sceneHistory=['cover'];
+let historyIndex=0;
+
+function go(id,add){
+  if(add>0&&!sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPts('+'+add);
+    pts+=add;
+  }
+  updateScore();
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('active');
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const navOffset=62;
+        const y=el.getBoundingClientRect().top+window.scrollY-navOffset;
+        window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+        el.querySelectorAll('.reveal').forEach(r=>revObs.observe(r));
+      });
+    });
+  }
+  const progMap={cover:0,s1:8,s2:18,s3:30,s4:42,s5:54,s6:66,s7:78,s8:90,s9:96,final:100};
+  document.getElementById('prog').style.width=(progMap[id]||100)+'%';
+  updateJourneyMap(id);
+  if(id==='final')showFinal();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+const chapterNames={s1:'I. Rời Tổ Quốc (1911)',sc2:'II. Đại hội Tours (1920)',sc3:'III. Chủ trì Hội nghị TW8 (1941)',sc4:'IV. Tổng khởi nghĩa (1945)',sc5:'V. Tuyên ngôn Độc lập (1945)',s6:'VI. Toàn quốc kháng chiến (1946)',s7:'VII. Điện Biên Phủ (1954)',s8:'VIII. Viết Di chúc (1965-69)',s9:'IX. Lễ tang giản dị (1969)'};
+function renderJournal(){
+  let jHtml='';
+  for(const key in chapterNames){
+    const ok=choiceCorrect[key];
+    jHtml+=`<div class="journal-row"><span>${chapterNames[key]}</span><span class="journal-status ${ok?'ok':'no'}">${ok?'✅ Đúng lịch sử':'○ Khác lịch sử'}</span></div>`;
+  }
+  const el=document.getElementById('journalList');
+  if(el)el.innerHTML=jHtml;
+}
+function copyJournal(){
+  let txt='📔 NHẬT KÝ HÀNH TRÌNH — HỒ CHÍ MINH: HÀNH TRÌNH CỨU NƯỚC\n\n';
+  for(const key in chapterNames){
+    txt+=(choiceCorrect[key]?'✅ ':'○ ')+chapterNames[key]+'\n';
+  }
+  txt+=`\nTổng điểm: ${pts} — ${document.getElementById('rankEl').textContent}\n`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.journal-copy');
+    if(btn){const old=btn.textContent;btn.textContent='✅ Đã sao chép!';setTimeout(()=>btn.textContent=old,1800);}
+  }).catch(()=>{});
+}
+
+function showFinal(){
+  if(!expAwarded){awardExp(pts, document.title);expAwarded=true;}
+  const h=pts>=300?'⚔️ CHIẾN CÔNG VĨ ĐẠI!':pts>=200?'⚔️ CHIẾN SĨ CẢM HÓA!':pts>=100?'📚 KIẾN THỨC SÂU!':'🌱 HÀNH TRÌNH KHỞI ĐẦU!';
+  document.getElementById('finalH').textContent=h;
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=document.getElementById('rankEl').textContent;
+  renderJournal();
+
+  const descEl=document.getElementById('finalDesc');
+  if(pts>=300){
+    descEl.textContent='Bạn đã đi trọn hành trình cùng Hồ Chí Minh với sự thấu hiểu sâu sắc — không chỉ nhớ sự kiện, mà còn hiểu được vì sao mỗi quyết định lại quan trọng đến vậy.';
+  } else if(pts>=200){
+    descEl.textContent='Bạn đã hoàn thành hành trình với một nền tảng kiến thức vững chắc, nắm được những cột mốc quan trọng nhất trong cuộc đời hoạt động cách mạng của Hồ Chí Minh.';
+  } else if(pts>=100){
+    descEl.textContent='Bạn đã đi qua hành trình và nắm được những nét chính. Còn nhiều chi tiết thú vị đang chờ bạn khám phá thêm nếu chơi lại!';
+  } else {
+    descEl.textContent='Bạn vừa mới bắt đầu làm quen với hành trình cách mạng của Hồ Chí Minh. Hãy thử chơi lại để khám phá sâu hơn những khoảnh khắc lịch sử này!';
+  }
+
+  const achs=[
+    {icon:'🎓',name:'Học Giả',ok:kcTotalCount>0&&(kcCorrectCount/kcTotalCount)>=0.8},
+    {icon:'⚔️',name:'Ý Chí Sắt Đá',ok:choiceCorrect.s1&&choiceCorrect.sc2&&choiceCorrect.sc3&&choiceCorrect.sc4&&choiceCorrect.sc5&&choiceCorrect.s6&&choiceCorrect.s7&&choiceCorrect.s8&&choiceCorrect.s9},
+    {icon:'🌍',name:'Người Bôn Ba',ok:true},
+    {icon:'🕊️',name:'Nhà Ngoại Giao',ok:choiceCorrect.sc5},
+    {icon:'🔥',name:'Chiến Sĩ Kiên Cường',ok:choiceCorrect.s6},
+    {icon:'🌟',name:'Trái Tim Vì Dân',ok:pts>=300}
+  ];
+  document.getElementById('finalAchs').innerHTML=achs.map(a=>
+    `<div class="ach ${a.ok?'':'locked'}"><span class="ach-icon">${a.icon}</span><span class="ach-name">${a.name}</span></div>`
+  ).join('');
+}
+
+// ===== KNOWLEDGE CHECK =====
+const kcFB={
+  kc1_1:'Đúng! Ngày 5/6/1911, Nguyễn Tất Thành dùng tên "Văn Ba", làm phụ bếp cào lò — công việc nặng nhất để được lên tàu.',
+  kc2_1:'Đảng Cộng sản Pháp tại Đại hội Tours 1920 — bước ngoặt vĩ đại!',
+  kc3_1:'Mặt trận Việt Minh được thành lập 1941 để đoàn kết toàn dân chống Nhật và chống thực dân.',
+  kc4_1:'Chỉ 15 ngày (14–28/8/1945)! Một trong những cuộc cách mạng nhanh nhất trong lịch sử.',
+  kc5_0:'Chính xác! Đây là một chiến thuật ngoại giao xuất sắc — dùng chính lý luận của Mỹ và Pháp để phản bác sự áp bức của họ.',
+  kc5_1:'Mỹ 1776 và Pháp 1789 — tuyên ngôn Việt Nam là bản thứ ba có tầm vóc toàn cầu.',
+  kc7_1:'56 ngày đêm khoét núi, ngủ hầm, mưa dầm cơm vắt — kết thúc bằng lá cờ "Quyết chiến quyết thắng" tung bay trên nóc hầm Đờ Cát.',
+  kc8_1:'Suốt 4 năm, mỗi dịp sinh nhật Bác lại dành thời gian đọc và chỉnh sửa thêm — bản Di chúc là kết tinh tâm huyết nhiều năm, không phải viết vội một lần.',
+  kc9_1:'Một sự trùng hợp đầy ý nghĩa — Người ra đi đúng vào ngày đã đọc Tuyên ngôn Độc lập 24 năm trước.'
+};
+function markCorrect(id){choiceCorrect[id]=true;}
+
+function ansSC(btn,ok,id,points,text){
+  if(answered[id])return;answered[id]=true;
+  ok?soundCorrect():soundWrong();
+  ok?addStreak():resetStreak();
+  if(ok)choiceCorrect[id]=true;
+  const cont=document.getElementById(id+'-choices');
+  cont.querySelectorAll('.c-btn').forEach(b=>b.disabled=true);
+  pts+=points;updateScore();showPts('+'+points);
+  const fb=document.getElementById(id+'-fb');
+  fb.innerHTML=(ok?'✅ ':'❌ ')+text;
+  fb.className='ch-fb show '+(ok?'ok':'no');
+  if(!ok){
+    const cfWrap=document.getElementById('cfwrap-'+id);
+    if(cfWrap)cfWrap.style.display='block';
+  }
+}
+
+function ansKC(btn,ok,id){
+  if(answered[id])return;answered[id]=true;totalKC++;kcTotalCount++;
+  ok?soundCorrect():soundWrong();
+  ok?addStreak():resetStreak();
+  const cont=btn.parentElement;cont.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(ok){
+    btn.classList.add('correct');pts+=8;updateScore();showPts('+8');kcCorrectCount++;
+    if(fb){fb.textContent='✅ '+kcFB[id];fb.className='kc-fb show ok';}
+  } else {
+    btn.classList.add('wrong');cont.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(',true,'))b.classList.add('correct');});
+    if(fb){fb.textContent='❌ Xem lại đáp án đúng!';fb.className='kc-fb show no';}
+  }
+}
+
+// ===== MQ GATE 2 =====
+function ansMQ(btn,ok,gate,idx){
+  const key=`mq${gate}-${idx}`;if(answered[key])return;
+  const cont=btn.parentElement;
+  const fb=document.getElementById(`mq${gate}fb-${idx}`);
+  const dots=document.getElementById(`mq${gate}-dots`);
+  ok?soundCorrect():soundWrong();
+  ok?addStreak():resetStreak();
+  if(ok){
+    answered[key]=true;kcTotalCount++;kcCorrectCount++;
+    cont.querySelectorAll('.ch-opt').forEach(b=>b.disabled=true);
+    btn.classList.add('correct');pts+=8;updateScore();showPts('+8');
+    if(fb){fb.textContent='✅ Chính xác!';fb.className='ch-fb show ok';}
+    if(dots){document.getElementById(`mq${gate}d${idx}`).className='mq-dot done';}
+    const nextIdx=idx+1;
+    if(nextIdx<4){
+      const next=document.getElementById(`mq${gate}-${nextIdx}`);
+      if(next){
+        setTimeout(()=>{
+          next.style.display='block';
+          next.scrollIntoView({behavior:'smooth',block:'center'});
+          if(dots)document.getElementById(`mq${gate}d${nextIdx}`).className='mq-dot now';
+        },700);
+      }
+    }
+    if(gate===2){
+      mq2ans[idx]=true;
+      if(mq2ans.every(x=>x)){gateState[2].done=true;document.getElementById('gate2-btn').classList.add('ready');}
+    }
+  } else {
+    btn.classList.add('wrong');btn.disabled=true;
+    if(fb){fb.textContent='❌ Chưa đúng, thử lại nhé!';fb.className='ch-fb show no';}
+  }
+}
+
+// ===== PARTICLE BURST =====
+function burstParticles(x,y){
+  for(let i=0;i<22;i++){
+    const p=document.createElement('div');
+    p.className='gold-burst';
+    p.style.left=x+'px';p.style.top=y+'px';
+    document.body.appendChild(p);
+    const ang=Math.random()*Math.PI*2,dist=60+Math.random()*90;
+    const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist;
+    p.animate([
+      {transform:'translate(0,0) scale(1)',opacity:1},
+      {transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}
+    ],{duration:750+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'});
+    setTimeout(()=>p.remove(),1200);
+  }
+}
+
+// ===== UNLOCK GATE =====
+function unlockGate(contentId,gateId){
+  if(sceneRewarded['gate_'+gateId])return;
+  sceneRewarded['gate_'+gateId]=true;
+  soundUnlock();
+  const content=document.getElementById(contentId);if(content)content.classList.remove('gate-locked');
+  const gate=document.getElementById(gateId);
+  if(gate){
+    const r=gate.getBoundingClientRect();
+    burstParticles(r.left+r.width/2, r.top+r.height/2);
+    gate.style.transition='opacity .4s';gate.style.opacity='0';setTimeout(()=>gate.style.display='none',420);
+  }
+  pts+=10;updateScore();showPts('+10 MỞ CỬA!');
+}
+
+// ===== "NẾU TÔI LÀ..." — MÔ PHỎNG PHẢN THỰC =====
+function toggleCounter(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('show');
+}
+
+// ===== NGUỒN SỬ LIỆU: dữ liệu xác minh cho từng sự kiện =====
+const sourceDB={
+  s1_dep:{v:true,title:'Ngày rời cảng Sài Gòn, 5/6/1911',body:'Nguyễn Tất Thành lên tàu Latouche-Tréville, xin làm phụ bếp cào lò dưới tên "Văn Ba".',cite:'Hồ Chí Minh Toàn Tập, tập 1 — Biên niên tiểu sử Hồ Chí Minh, NXB CTQG'},
+  s2_tours:{v:true,title:'Đại hội Tours, tháng 12/1920',body:'Nguyễn Ái Quốc bỏ phiếu tán thành gia nhập Quốc tế Cộng sản III, trở thành người Việt Nam đầu tiên tham gia sáng lập Đảng Cộng sản Pháp.',cite:'Hồ Chí Minh Toàn Tập, tập 1, tr. 34–36'},
+  s3_pacbo:{v:true,title:'Về nước, Pác Bó — 2/1941',body:'Sau 30 năm hoạt động ở nước ngoài, Nguyễn Ái Quốc bí mật về nước, đặt căn cứ tại hang Pác Bó, Cao Bằng.',cite:'Biên niên tiểu sử Hồ Chí Minh, tập 2'},
+  s4_cmt8:{v:true,title:'Cách mạng Tháng Tám, 14–28/8/1945',body:'Tổng khởi nghĩa giành chính quyền trên cả nước chỉ trong 15 ngày, sau khi Nhật Bản tuyên bố đầu hàng Đồng Minh.',cite:'Lịch sử Việt Nam, Viện Sử học — NXB KHXH'},
+  s5_tndl:{v:true,title:'Tuyên ngôn Độc lập, 2/9/1945',body:'Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập tại Quảng trường Ba Đình, khai sinh nước Việt Nam Dân chủ Cộng hòa.',cite:'Toàn văn Tuyên ngôn Độc lập, 2/9/1945 — Hồ Chí Minh Toàn Tập, tập 4'},
+  s6_tqkc:{v:true,title:'Toàn quốc kháng chiến, đêm 19/12/1946',body:'Chủ tịch Hồ Chí Minh ra Lời kêu gọi Toàn quốc kháng chiến, phát trên Đài Tiếng nói Việt Nam.',cite:'Lời kêu gọi Toàn quốc kháng chiến — Hồ Chí Minh Toàn Tập, tập 4'},
+  s7_dbp:{v:true,title:'Chiến thắng Điện Biên Phủ, 7/5/1954',body:'Chiến dịch kéo dài 56 ngày đêm theo phương châm "đánh chắc, tiến chắc", kết thúc bằng thắng lợi hoàn toàn.',cite:'Lịch sử Việt Nam, Viện Sử học, tập chiến tranh 1945–1954'},
+  s8_dichuc:{v:true,title:'Di chúc, viết & sửa 1965–1969',body:'Chủ tịch Hồ Chí Minh viết và chỉnh sửa Di chúc trong 4 năm, dặn dò về việc hỏa táng và tổ chức tang lễ giản dị.',cite:'Di chúc của Chủ tịch Hồ Chí Minh, bản công bố chính thức 1969'},
+  s9_qua_doi:{v:true,title:'Chủ tịch Hồ Chí Minh qua đời, 2/9/1969',body:'Người qua đời lúc 9 giờ 47 phút, đúng ngày kỷ niệm Tuyên ngôn Độc lập 24 năm trước.',cite:'Biên niên tiểu sử Hồ Chí Minh, tập cuối'}
+};
+function openSrcPopup(key){
+  const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcBadge').textContent=d.v?'📖 ĐÃ KIỂM CHỨNG':'🔵 DỰNG LẠI MINH HỌA';
+  document.getElementById('srcBadge').className='src-popup-badge '+(d.v?'v':'d');
+  document.getElementById('srcTitle').textContent=d.title;
+  document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;
+  document.getElementById('srcOverlay').classList.add('show');
+  playTone(700,.08,'sine',.08);
+}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+// Tự động gắn viền màu + ghi chú cho mọi .fact và .dlg trong trang
+function decorateSources(){
+  document.querySelectorAll('.fact').forEach(el=>{
+    if(!el.classList.contains('verified'))el.classList.add('verified');
+  });
+  document.querySelectorAll('.dlg').forEach(el=>{
+    if(el.classList.contains('dramatized'))return;
+    el.classList.add('dramatized');
+    if(!el.querySelector('.src-note')){
+      const note=document.createElement('span');
+      note.className='src-note';
+      note.textContent='🔵 Đoạn hội thoại được dựng lại dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.';
+      el.appendChild(note);
+    }
+  });
+}
+decorateSources();
+// ===== BẢN ĐỒ HÀNH TRÌNH: mở khóa dần theo chương =====
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+const mapUnlockStages={
+  s2:['pt-marseille','pt-london','pt-paris'],
+  s3:['pt-moskva','pt-quangchau','pt-pacbo'],
+  s5:['pt-hanoi'],
+  s7:['pt-dienbienphu']
+};
+function updateJourneyMap(id){
+  const keys=mapUnlockStages[id];if(!keys)return;
+  let unlockedSomething=false;
+  keys.forEach(k=>{
+    document.querySelectorAll('.'+k).forEach(el=>{
+      if(el.classList.contains('locked')){el.classList.remove('locked');unlockedSomething=true;}
+    });
+  });
+  if(unlockedSomething)showPts('🗺️ Mở khóa địa điểm mới!');
+}
+// ===== RESTART =====
+const API = 'http://localhost:3000/api';
+async function awardExp(amount, storyTitle) {
+  const token = localStorage.getItem('token');
+  if (!token || !amount) return;
+  try {
+    await fetch(`${API}/exp/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ amount: amount, source_type: 'GAME', note: storyTitle || '' })
+    });
+  } catch (err) {
+    console.warn('Không thể cộng EXP:', err.message);
+  }
+}
+async function openLeaderboard() {
+  let modal = document.getElementById('leaderboard-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'leaderboard-modal';
+    modal.className = 'lb-modal';
+    modal.innerHTML = `
+      <div class="lb-box">
+        <div class="lb-header">
+          <h3>🏆 Bảng Xếp Hạng</h3>
+          <span class="lb-close" onclick="document.getElementById('leaderboard-modal').classList.remove('show')">✕</span>
+        </div>
+        <div id="lb-content" class="lb-content"><div class="lb-loading">Đang tải...</div></div>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.classList.add('show');
+  const content = document.getElementById('lb-content');
+  content.innerHTML = '<div class="lb-loading">Đang tải...</div>';
+
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API}/leaderboard`, {
+      headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Lỗi tải bảng xếp hạng');
+
+    const rows = data.data || [];
+    let html = '<div class="lb-list">';
+    if (rows.length === 0) {
+      html += '<div class="lb-empty">Chưa có dữ liệu xếp hạng.</div>';
+    } else {
+      rows.forEach((r, i) => {
+        const name = r.fullname || r.username || r.name || 'Ẩn danh';
+        const exp = r.exp ?? r.points ?? 0;
+        const level = r.level ?? '';
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+        html += `<div class="lb-row">
+          <div class="lb-rank">${medal}</div>
+          <div class="lb-name">${name}</div>
+          <div class="lb-exp">${exp} EXP${level ? ' · Lv.' + level : ''}</div>
+        </div>`;
+      });
+    }
+    html += '</div>';
+
+    if (data.myRank) {
+      const m = data.myRank;
+      html += `<div class="lb-myrank">
+        <strong>Hạng của bạn:</strong> #${m.rank_pos ?? '-'} — ${m.exp ?? m.points ?? 0} EXP
+      </div>`;
+    }
+    content.innerHTML = html;
+  } catch (err) {
+    content.innerHTML = `<div class="lb-empty">Không tải được bảng xếp hạng. (${err.message})</div>`;
+  }
+}
+function restart(){
+  pts=0;answered={};mq2ans=[false,false,false,false];gateState={2:{done:false}};totalKC=0;lastMilestone=0;
+    sceneHistory=['cover'];historyIndex=0;expAwarded=false;sceneRewarded={};updateNavButtons();
+  streakN=0;maxStreak=0;const sb=document.getElementById('streakBadge');if(sb)sb.classList.remove('show','fire');
+  choiceCorrect={s1:false,sc2:false,sc3:false,sc4:false,sc5:false,s6:false,s7:false,s8:false,s9:false};
+  kcCorrectCount=0;kcTotalCount=0;
+  ['sc2','sc3','sc4','sc5'].forEach(id=>{
+    const c=document.getElementById(id+'-choices');
+    if(c)c.querySelectorAll('.c-btn').forEach(b=>b.disabled=false);
+    const f=document.getElementById(id+'-fb');
+    if(f){f.className='ch-fb';f.innerHTML='';}
+  });
+  document.querySelectorAll('.ch-opt,.kc-opt').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+  document.querySelectorAll('.ch-fb,.kc-fb').forEach(f=>{f.className=f.classList.contains('ch-fb')?'ch-fb':'kc-fb';});
+  document.querySelectorAll('.counterf-body').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('[id^="cfwrap-"]').forEach(el=>el.style.display='none');
+  ['mq2-1','mq2-2','mq2-3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['gate2'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='';el.style.opacity='';}});
+  ['s2-body'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('gate-locked');});
+  ['gate2-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('ready');});
+  for(let i=0;i<4;i++){const d=document.getElementById('mq2d'+i);if(d)d.className='mq-dot'+(i===0?' now':'');}
+  updateScore();document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+</script>
+</body>
+</html>

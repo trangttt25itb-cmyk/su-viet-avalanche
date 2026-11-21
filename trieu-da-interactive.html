@@ -1,0 +1,1733 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triệu Đà — Kẻ Thôn Tính Phương Nam | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blood:#8b0000;
+  --blood-l:#c0392b;
+  --blood-dim:#5a0000;
+  --gold:#c9963a;
+  --gold-l:#f0c060;
+  --gold-dim:#7a5c1e;
+  --iron:#4a5568;
+  --ink:#04080a;
+  --parch:#f0ece0;
+  --parch-dim:rgba(240,236,224,0.75);
+  --parch-faint:rgba(240,236,224,0.4);
+  --bg:#060304;
+  --panel:rgba(6,3,4,0.96);
+  --teal:#0d6e6e;--teal-l:#19b2b2;
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--parch);min-height:100vh;overflow-x:hidden;}
+
+/* ── PARTICLES ── */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.ptcl{position:absolute;border-radius:50%;opacity:0;animation:drift linear infinite;}
+@keyframes drift{0%{opacity:0;transform:translateY(0) scale(0);}10%{opacity:.7;}90%{opacity:.2;}100%{opacity:0;transform:translateY(-120px) scale(1.5);}}
+
+/* ── BLOOD DRIP AMBIENT ── */
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 50% 40% at 10% 15%,rgba(139,0,0,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(201,150,58,0.06) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 60% at 50% 50%,rgba(20,5,5,0.15) 0%,transparent 70%);
+}
+
+/* ── DECO ── */
+.deco-border{position:fixed;inset:0;pointer-events:none;z-index:1;border:1px solid rgba(139,0,0,0.12);margin:8px;}
+.deco-corner{position:fixed;width:40px;height:40px;border-color:rgba(201,150,58,0.3);border-style:solid;z-index:2;pointer-events:none;}
+.deco-corner.tl{top:16px;left:16px;border-width:2px 0 0 2px;}
+.deco-corner.tr{top:16px;right:16px;border-width:2px 2px 0 0;}
+.deco-corner.bl{bottom:16px;left:16px;border-width:0 0 2px 2px;}
+.deco-corner.br{bottom:16px;right:16px;border-width:0 2px 2px 0;}
+
+/* ── FLAG STRIPE ── */
+.flag-stripe{position:fixed;top:0;left:0;right:0;height:3px;z-index:300;background:linear-gradient(90deg,#8b0000 0%,#c0392b 40%,#c9963a 75%,#f0c060 100%);opacity:.55;}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:3px;left:0;right:0;z-index:200;
+  background:rgba(6,3,4,0.97);
+  border-bottom:1px solid rgba(139,0,0,0.22);
+  padding:13px 36px;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(14px);
+}
+.nav-logo{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold-l);text-decoration:none;letter-spacing:3px;display:flex;align-items:center;gap:9px;}
+.nav-logo::before{content:'⚔️';font-size:15px;}
+.nav-back{font-size:13px;color:var(--parch-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;display:flex;align-items:center;gap:6px;}
+.nav-back:hover{color:var(--gold-l);}
+.nav-map-btn{background:transparent;border:1px solid rgba(201,150,58,.32);border-radius:50%;width:32px;height:32px;color:var(--gold-l);cursor:pointer;font-size:14px;margin-left:10px;}
+
+/* ── PROGRESS ── */
+.prog-bar{position:fixed;top:58px;left:0;right:0;z-index:199;height:3px;background:rgba(255,255,255,0.04);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blood),var(--gold),var(--gold-l));transition:width .9s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(139,0,0,0.5);}
+
+/* ── SCORE BADGE ── */
+.score-badge{
+  position:fixed;top:70px;right:20px;z-index:198;
+  background:rgba(6,3,4,0.93);
+  border:1px solid rgba(201,150,58,0.32);
+  border-radius:40px;padding:7px 16px;
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;color:var(--parch-dim);
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+.score-num{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);font-weight:700;min-width:30px;text-align:center;transition:transform .3s;}
+.score-num.bump{transform:scale(1.4);}
+.score-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);}
+
+/* ── STREAK ── */
+.streak-badge{
+  position:fixed;top:70px;left:20px;z-index:198;
+  background:rgba(6,3,4,0.93);
+  border:1px solid rgba(201,150,58,0.32);
+  border-radius:40px;padding:7px 16px;
+  display:flex;align-items:center;gap:8px;
+  backdrop-filter:blur(12px);
+  transition:all .4s;opacity:0;transform:translateX(-10px);
+}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(255,100,0,0.7);box-shadow:0 0 20px rgba(255,80,0,0.3);}
+.streak-num{font-family:'Playfair Display',serif;font-size:19px;color:#ff8040;font-weight:700;}
+
+/* ── SOURCE TAGS & POPUP (bổ sung) ── */
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:10px;margin-left:6px;cursor:pointer;vertical-align:middle;transition:.2s;}
+.src-tag.v{background:rgba(201,150,58,.14);color:var(--gold-l);border:1px solid rgba(201,150,58,.35);}
+.src-tag.d{background:rgba(25,178,178,.12);color:var(--teal-l);border:1px solid rgba(25,178,178,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.src-note{display:block;font-size:11.5px;font-style:italic;color:var(--parch-faint);margin-top:8px;opacity:.85;}
+.src-popup-overlay{position:fixed;inset:0;background:rgba(2,1,1,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--panel);border:1px solid rgba(201,150,58,.4);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;font-family:'Space Mono',monospace;}
+.src-popup-badge.v{background:rgba(201,150,58,.18);color:var(--gold-l);border:1px solid rgba(201,150,58,.4);}
+.src-popup-badge.d{background:rgba(25,178,178,.15);color:var(--teal-l);border:1px solid rgba(25,178,178,.4);}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:10px;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--parch-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(240,236,224,.04);border-left:2px solid rgba(201,150,58,.4);padding:9px 13px;font-size:13px;color:var(--parch-faint);font-family:'Crimson Pro',serif;font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(201,150,58,.15);border:1px solid rgba(201,150,58,.35);color:var(--gold-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;transition:.2s;}
+.src-popup-close:hover{background:rgba(201,150,58,.28);}
+
+/* ── JOURNEY MAP MODAL (bổ sung) ── */
+.map-overlay{position:fixed;inset:0;background:rgba(2,1,1,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.map-overlay.show{display:flex;}
+.map-modal{background:radial-gradient(ellipse at 12% 88%,rgba(201,150,58,.09),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(139,0,0,.09),transparent 55%),var(--panel);border:1px solid rgba(201,150,58,.4);border-radius:16px;padding:24px 26px;max-width:820px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:14px;}
+.map-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);}
+.map-modal-close{background:rgba(201,150,58,.15);border:1px solid rgba(201,150,58,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.jmap-note{font-size:11.5px;color:var(--parch-faint);margin-bottom:14px;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink);stroke-width:2;filter:drop-shadow(0 0 7px rgba(201,150,58,.75));transition:opacity .7s ease;}
+.jmap-lbl{fill:#f0ece0;font-size:12.5px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-yr{fill:#ffb74d;font-size:10.5px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-path{fill:none;stroke:rgba(201,150,58,0.55);stroke-width:2.5;stroke-dasharray:5 5;}
+.jmap-pt.locked{opacity:1;fill:rgba(240,236,224,.08);stroke:rgba(240,236,224,.35);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl.locked,.jmap-yr.locked{opacity:0.4;fill:var(--parch-faint);font-weight:400;}
+
+/* ── WRAP ── */
+.wrap{max-width:820px;margin:0 auto;padding:85px 22px 80px;position:relative;z-index:2;}
+
+/* ── SCENE ── */
+.scene{display:none;}
+.scene.active{display:block;animation:fadeUp .6s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── CHAPTER BADGE ── */
+.chap{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(139,0,0,0.13);border:1px solid rgba(139,0,0,0.35);border-radius:30px;padding:5px 16px;font-size:12px;color:#f08a8a;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;}
+
+/* ── HERO IMAGE ── */
+.hero-img{width:100%;height:380px;border-radius:14px;margin-bottom:26px;border:1px solid rgba(201,150,58,0.22);object-fit:cover;display:block;}
+.hero-placeholder{
+  width:100%;height:270px;border-radius:14px;margin-bottom:26px;
+  border:1px dashed rgba(201,150,58,0.3);
+  background:linear-gradient(135deg,rgba(139,0,0,0.1),rgba(201,150,58,0.07));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.hero-placeholder::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(201,150,58,0.03) 18px,rgba(201,150,58,0.03) 36px);}
+.hero-placeholder .ph-icon{font-size:52px;z-index:1;}
+.hero-placeholder .ph-label{font-size:11px;color:var(--gold-dim);letter-spacing:2px;text-transform:uppercase;z-index:1;}
+/* ── IMAGE COMMENT GUIDE ──
+   Mỗi hero-placeholder đều có id="" để bạn dễ tìm.
+   Khi có ảnh, xoá thẻ <div class="hero-placeholder"...>...</div>
+   và thay bằng: <img src="đường/dẫn/ảnh.jpg" class="hero-img" alt="mô tả">
+── */
+
+/* ── TIMELINE ── */
+.tl{display:flex;align-items:flex-start;gap:0;margin:24px 0;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}
+.tl::-webkit-scrollbar{display:none;}
+.tl-item{flex:1;min-width:80px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;top:12px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(139,0,0,.3),rgba(139,0,0,.1));z-index:0;}
+.tl-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.tl-dot.done{background:var(--blood-dim);border:2px solid var(--blood-l);color:#fff;}
+.tl-dot.current{background:var(--blood);border:2px solid var(--gold-l);color:#fff;box-shadow:0 0 20px rgba(139,0,0,.7);animation:pulsRed 2s infinite;}
+@keyframes pulsRed{0%,100%{box-shadow:0 0 20px rgba(139,0,0,.7);}50%{box-shadow:0 0 35px rgba(192,57,43,1),0 0 55px rgba(139,0,0,.4);}}
+.tl-dot.todo{background:rgba(240,236,224,.05);border:2px solid rgba(240,236,224,.14);color:var(--parch-faint);}
+.tl-year{font-size:10px;color:#f08a8a;margin-top:5px;text-align:center;letter-spacing:.5px;}
+.tl-event{font-size:9px;color:var(--parch-faint);margin-top:2px;text-align:center;line-height:1.3;padding:0 3px;}
+
+/* ── EDU PILL ── */
+.edu-pill{float:right;width:210px;margin:0 0 18px 22px;background:rgba(139,0,0,0.08);border:1px solid rgba(139,0,0,0.28);border-radius:11px;padding:13px 15px;font-size:13.5px;line-height:1.7;color:var(--parch-dim);}
+.edu-pill .edu-tag{font-size:10px;color:#f08a8a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;}
+
+/* ── STORY ── */
+.story{font-size:18.5px;line-height:1.95;color:rgba(240,236,224,.9);margin-bottom:14px;}
+.story em{color:#f0c060;font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+
+/* ── DIALOGUE ── */
+.dlg{background:rgba(139,0,0,0.08);border-left:3px solid rgba(201,150,58,0.55);border-radius:0 11px 11px 0;padding:14px 20px;margin:20px 0;font-style:italic;font-size:17.5px;line-height:1.75;color:var(--parch);position:relative;}
+.dlg::before{content:'"';position:absolute;top:-8px;left:12px;font-size:56px;color:rgba(201,150,58,.12);font-family:'Playfair Display',serif;line-height:1;}
+.dlg-who{font-size:10px;font-style:normal;color:#f0c060;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
+
+/* ── FACT BOX ── */
+.fact{background:rgba(201,150,58,0.07);border:1px solid rgba(201,150,58,0.28);border-radius:11px;padding:16px 20px;margin:20px 0;font-size:14.5px;line-height:1.8;color:var(--parch-dim);}
+.fact-tag{font-size:10px;color:#f0c060;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;}
+
+/* ── OUTCOME ── */
+.outcome{border-radius:13px;padding:20px;margin:20px 0;font-size:16.5px;line-height:1.8;}
+.outcome.bad{background:rgba(139,0,0,0.14);border:1px solid rgba(139,0,0,0.3);}
+.outcome.good{background:rgba(26,80,30,0.1);border:1px solid rgba(46,140,70,0.28);}
+.outcome.neutral{background:rgba(201,150,58,0.08);border:1px solid rgba(201,150,58,0.25);}
+.outcome-icon{font-size:30px;display:block;margin-bottom:9px;}
+
+/* ── TRIVIA CHIP ── */
+.trivia-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(201,150,58,0.1);border:1px solid rgba(201,150,58,0.22);border-radius:18px;padding:3px 11px;font-size:11px;color:#f0c060;margin:3px 3px 3px 0;animation:chipIn .4s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes chipIn{from{opacity:0;transform:scale(0.6);}to{opacity:1;transform:scale(1);}}
+
+/* ── CHOICES ── */
+.choices-label{font-size:11px;color:#f0c060;letter-spacing:2px;text-transform:uppercase;margin:30px 0 13px;display:flex;align-items:center;gap:9px;}
+.choices-label::before,.choices-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,150,58,.28),transparent);}
+.choices{display:flex;flex-direction:column;gap:11px;}
+.c-btn{background:rgba(240,236,224,.03);border:1px solid rgba(240,236,224,.12);border-radius:11px;padding:17px 20px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:16.5px;text-align:left;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:flex-start;gap:13px;line-height:1.55;position:relative;overflow:hidden;}
+.c-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,0,0,.08),transparent);opacity:0;transition:opacity .3s;}
+.c-btn:hover{background:rgba(139,0,0,0.12);border-color:rgba(201,150,58,.45);transform:translateX(7px);box-shadow:0 4px 18px rgba(0,0,0,.3),-4px 0 0 rgba(201,150,58,.45);}
+.c-btn:hover::before{opacity:1;}
+.c-letter{width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(201,150,58,.1);border:1px solid rgba(201,150,58,.38);color:#f0c060;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;transition:all .3s;}
+.c-btn:hover .c-letter{background:rgba(201,150,58,.22);border-color:#f0c060;}
+.c-sub{font-size:12.5px;color:var(--parch-faint);font-style:italic;margin-top:4px;}
+.c-btn:disabled{opacity:.4;pointer-events:none;}
+
+/* ── CONTINUE BTN ── */
+.cont-btn{display:inline-flex;align-items:center;gap:9px;margin-top:28px;padding:14px 30px;background:rgba(139,0,0,0.5);border:1px solid rgba(139,0,0,0.45);border-radius:11px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:16.5px;cursor:pointer;transition:all .3s;letter-spacing:.5px;}
+.cont-btn:hover{background:var(--blood);transform:translateY(-3px);box-shadow:0 10px 28px rgba(139,0,0,.4);}
+
+/* ── KNOWLEDGE CHECK ── */
+.kc{background:rgba(139,0,0,0.06);border:1px solid rgba(139,0,0,.22);border-radius:13px;padding:18px 22px;margin:22px 0;}
+.kc-tag{font-size:10px;color:#f08a8a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;}
+.kc-q{font-size:16.5px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:7px;}
+.kc-opt{background:rgba(240,236,224,.04);border:1px solid rgba(240,236,224,.11);border-radius:8px;padding:10px 15px;font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--parch);cursor:pointer;text-align:left;transition:all .25s;}
+.kc-opt:hover:not(:disabled){background:rgba(139,0,0,.12);border-color:rgba(201,150,58,.28);transform:translateX(4px);}
+.kc-opt.correct{background:rgba(30,90,30,.25)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(139,0,0,.25)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:11px;font-size:14px;line-height:1.7;display:none;padding:9px 13px;border-radius:8px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(30,90,30,.15);color:#a5d6a7;}
+.kc-fb.no{background:rgba(139,0,0,.15);color:#ef9a9a;}
+
+/* ── CHALLENGE BLOCK ── */
+.challenge{
+  background:rgba(201,150,58,0.07);
+  border:2px solid rgba(201,150,58,0.35);
+  border-radius:14px;padding:20px 24px;margin:26px 0;
+  position:relative;overflow:hidden;
+}
+.challenge::before{content:'⚔';position:absolute;top:-8px;right:16px;font-size:72px;opacity:.04;line-height:1;}
+.chal-tag{font-size:10px;color:#f0c060;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.chal-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;}
+.chal-desc{font-size:14.5px;color:var(--parch-dim);line-height:1.75;margin-bottom:16px;}
+.chal-input{width:100%;background:rgba(240,236,224,.06);border:1px solid rgba(201,150,58,.3);border-radius:8px;padding:10px 14px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:16px;outline:none;transition:border .3s;}
+.chal-input:focus{border-color:rgba(201,150,58,.7);}
+.chal-btn{margin-top:10px;padding:10px 24px;background:rgba(139,0,0,.5);border:1px solid rgba(139,0,0,.4);border-radius:8px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:all .3s;}
+.chal-btn:hover{background:var(--blood);}
+.chal-fb{margin-top:10px;font-size:14px;padding:9px 13px;border-radius:8px;display:none;}
+.chal-fb.show{display:block;}
+.chal-fb.ok{background:rgba(30,90,30,.15);color:#a5d6a7;}
+.chal-fb.no{background:rgba(139,0,0,.15);color:#ef9a9a;}
+
+/* ── DRAG MATCH ── */
+.drag-area{display:flex;gap:18px;margin:14px 0;flex-wrap:wrap;}
+.drag-col{flex:1;min-width:140px;}
+.drag-col-title{font-size:10px;color:var(--gold-dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.drag-item{
+  background:rgba(201,150,58,.08);border:1px solid rgba(201,150,58,.25);
+  border-radius:8px;padding:9px 12px;font-size:14px;color:var(--parch-dim);
+  cursor:grab;margin-bottom:7px;transition:all .2s;user-select:none;
+}
+.drag-item:hover{background:rgba(201,150,58,.15);border-color:rgba(201,150,58,.5);}
+.drag-item.dragging{opacity:.4;cursor:grabbing;}
+.drop-zone{
+  min-height:42px;border-radius:8px;border:2px dashed rgba(201,150,58,.2);
+  margin-bottom:7px;padding:7px 10px;font-size:13px;
+  color:var(--parch-faint);transition:all .2s;display:flex;align-items:center;
+}
+.drop-zone.over{border-color:rgba(201,150,58,.6);background:rgba(201,150,58,.06);}
+.drop-zone.filled{border-style:solid;border-color:rgba(201,150,58,.35);background:rgba(201,150,58,.07);color:var(--parch);}
+.drop-zone.correct-drop{border-color:#4caf50;background:rgba(30,90,30,.15);color:#a5d6a7;}
+.drop-zone.wrong-drop{border-color:#e53935;background:rgba(139,0,0,.15);color:#ef9a9a;}
+.drag-check-btn{margin-top:8px;padding:9px 22px;background:rgba(201,150,58,.25);border:1px solid rgba(201,150,58,.4);border-radius:8px;color:#f0c060;font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;transition:all .3s;}
+.drag-check-btn:hover{background:rgba(201,150,58,.4);}
+
+/* ── ORDER CHALLENGE ── */
+.order-list{display:flex;flex-direction:column;gap:8px;margin:12px 0;}
+.order-item{
+  background:rgba(240,236,224,.04);border:1px solid rgba(240,236,224,.12);
+  border-radius:8px;padding:10px 14px;font-size:14.5px;color:var(--parch-dim);
+  cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;transition:all .2s;
+}
+.order-item:hover{background:rgba(139,0,0,.1);border-color:rgba(201,150,58,.3);}
+.order-item.dragging{opacity:.3;}
+.order-item.over-top{border-top:2px solid var(--gold-l);}
+.order-item.over-bot{border-bottom:2px solid var(--gold-l);}
+.order-num{width:22px;height:22px;border-radius:50%;background:rgba(201,150,58,.15);border:1px solid rgba(201,150,58,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:#f0c060;flex-shrink:0;}
+.order-check-btn{margin-top:8px;padding:9px 22px;background:rgba(139,0,0,.4);border:1px solid rgba(139,0,0,.35);border-radius:8px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;transition:all .3s;}
+.order-check-btn:hover{background:var(--blood);}
+
+/* ── LEGEND MOMENT ── */
+.legend-moment{text-align:center;padding:28px;background:rgba(201,150,58,0.07);border:1px solid rgba(201,150,58,0.26);border-radius:15px;margin:26px 0;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);line-height:1.7;font-style:italic;}
+.legend-moment .legend-icon{font-size:46px;display:block;margin-bottom:11px;}
+
+/* ── +POINTS POPUP ── */
+.pts-popup{position:fixed;top:78px;right:86px;z-index:999;font-family:'Playfair Display',serif;font-size:21px;color:#f08a8a;font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 20px rgba(139,0,0,.8);}
+.pts-popup.show{animation:popUp .9s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}30%{opacity:1;transform:translateY(-20px) scale(1.2);}70%{opacity:1;transform:translateY(-34px) scale(1);}100%{opacity:0;transform:translateY(-48px) scale(.9);}}
+
+/* ── COMBO BURST ── */
+.combo-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;font-family:'Playfair Display',serif;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1);}}
+.combo-burst-inner{background:radial-gradient(ellipse at center,rgba(139,0,0,0.9),rgba(6,3,4,0.95));border:2px solid var(--gold-l);border-radius:18px;padding:18px 32px;box-shadow:0 0 60px rgba(192,57,43,.5);}
+.combo-title{font-size:12px;color:#f08a8a;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:30px;color:var(--gold-l);line-height:1.2;}
+.combo-pts{font-size:13px;color:rgba(240,236,224,0.5);margin-top:4px;}
+
+/* ── ADVISER TOOLTIP ── */
+#adviserBox{
+  position:fixed;bottom:22px;left:22px;z-index:500;max-width:272px;
+  background:rgba(6,3,4,0.95);border:1px solid rgba(139,0,0,0.45);
+  border-radius:14px 14px 14px 4px;padding:15px 17px 13px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(139,0,0,.12);
+  opacity:0;transform:translateY(18px) scale(0.95);
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+#adviserBox.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.adv-avatar{font-size:26px;display:block;margin-bottom:5px;}
+.adv-name{font-size:9px;color:#f08a8a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.adv-text{font-size:13.5px;line-height:1.6;color:var(--parch-dim);font-style:italic;}
+.adv-close{position:absolute;top:9px;right:11px;background:none;border:none;color:var(--parch-faint);font-size:14px;cursor:pointer;transition:color .2s;}
+.adv-close:hover{color:var(--parch);}
+
+/* ── POWER METER ── */
+.power-meter{background:rgba(139,0,0,0.06);border:1px solid rgba(139,0,0,0.2);border-radius:11px;padding:13px 17px;margin:18px 0;display:flex;align-items:center;gap:13px;}
+.pm-label{font-size:10px;color:#f08a8a;letter-spacing:1.5px;text-transform:uppercase;min-width:55px;}
+.pm-track{flex:1;height:7px;background:rgba(240,236,224,0.06);border-radius:4px;overflow:hidden;}
+.pm-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blood),var(--gold-l));transition:width .8s cubic-bezier(.4,0,.2,1);box-shadow:0 0 7px rgba(201,150,58,.4);}
+.pm-icon{font-size:18px;}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── FINAL ── */
+.final{text-align:center;padding:36px 0;}
+.final-seal{width:120px;height:120px;border-radius:50%;background:rgba(139,0,0,.1);border:2px solid rgba(201,150,58,.45);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:50px;color:var(--gold);box-shadow:0 0 40px rgba(139,0,0,.2);animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(139,0,0,.2);}50%{box-shadow:0 0 70px rgba(192,57,43,.5),0 0 100px rgba(201,150,58,.12);}}
+.final-h{font-family:'Playfair Display',serif;font-size:30px;color:var(--gold-l);margin-bottom:10px;line-height:1.3;}
+.final-pts{font-size:50px;font-weight:700;color:var(--blood-l);font-family:'Playfair Display',serif;margin:10px 0;text-shadow:0 0 28px rgba(192,57,43,.5);}
+.final-rank{display:inline-block;background:rgba(139,0,0,.12);border:1px solid rgba(201,150,58,.32);border-radius:28px;padding:6px 22px;font-size:13px;color:#f0c060;margin-bottom:22px;letter-spacing:1px;}
+.final-desc{font-size:16.5px;color:var(--parch-dim);line-height:1.9;max-width:520px;margin:0 auto 28px;}
+.final-lesson{background:rgba(139,0,0,.06);border:1px solid rgba(139,0,0,.2);border-radius:13px;padding:20px 24px;text-align:left;margin:0 0 32px;font-size:15.5px;line-height:1.85;color:var(--parch-dim);}
+.final-lesson .fl-tag{font-size:10px;color:#f08a8a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;}
+.achievements{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px;}
+.ach-card{background:rgba(139,0,0,0.08);border:1px solid rgba(139,0,0,.28);border-radius:11px;padding:11px 14px;text-align:center;min-width:90px;animation:achIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ach-card.locked{opacity:.25;filter:grayscale(1);}
+@keyframes achIn{from{opacity:0;transform:translateY(18px) scale(0.8);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ach-icon{font-size:26px;display:block;margin-bottom:5px;}
+.ach-name{font-size:10px;color:#f08a8a;letter-spacing:1px;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:6px;}
+.btn-restart{padding:12px 26px;background:transparent;border:1px solid rgba(201,150,58,.38);border-radius:9px;color:#f0c060;font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;}
+.btn-restart:hover{background:rgba(201,150,58,.15);}
+.btn-home{padding:12px 26px;background:rgba(139,0,0,.45);border:1px solid rgba(139,0,0,.4);border-radius:9px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:7px;}
+.btn-home:hover{background:var(--blood);}
+.sep{text-align:center;margin:28px 0 8px;font-size:17px;color:rgba(201,150,58,.28);letter-spacing:8px;}
+
+/* ── COVER MỞ ĐẦU (bổ sung) ── */
+.cover-scene{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;padding:20px 10px;}
+.cover-emblem{width:108px;height:108px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.35),rgba(6,3,4,.9));border:2px solid rgba(201,150,58,.5);display:flex;align-items:center;justify-content:center;font-size:46px;margin-bottom:26px;box-shadow:0 0 60px rgba(139,0,0,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(139,0,0,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(192,57,43,.55),0 0 130px rgba(201,150,58,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:#f0c060;text-transform:uppercase;margin-bottom:14px;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,58px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(139,0,0,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:520px;font-size:15.5px;line-height:1.85;color:var(--parch-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--blood),var(--blood-dim));border:1px solid rgba(201,150,58,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(139,0,0,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(139,0,0,.5),0 0 40px rgba(201,150,58,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--parch-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+.cover-embers{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+
+/* ── TRANG NGUỒN THAM KHẢO (bổ sung) ── */
+.ref-overlay{position:fixed;inset:0;background:rgba(2,1,1,.86);z-index:9980;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;backdrop-filter:blur(5px);overflow-y:auto;}
+.ref-overlay.show{display:flex;}
+.ref-panel{background:radial-gradient(ellipse at 10% 0%,rgba(139,0,0,.1),transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(201,150,58,.08),transparent 55%),var(--panel);border:1px solid rgba(201,150,58,.35);border-radius:20px;max-width:760px;width:100%;padding:34px 38px 40px;box-shadow:0 40px 100px rgba(0,0,0,.7);animation:srcPopIn .35s cubic-bezier(.34,1.56,.64,1);margin-bottom:40px;}
+.ref-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:8px;}
+.ref-title{font-family:'Playfair Display',serif;font-size:24px;color:var(--gold-l);display:flex;align-items:center;gap:10px;}
+.ref-close{background:rgba(201,150,58,.14);border:1px solid rgba(201,150,58,.35);color:var(--gold-l);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;flex-shrink:0;}
+.ref-intro{font-size:14.5px;line-height:1.8;color:var(--parch-dim);margin:14px 0 26px;}
+.ref-intro strong{color:#f08a8a;}
+.ref-section-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#f08a8a;margin:26px 0 14px;font-family:'Space Mono',monospace;}
+.ref-list{list-style:none;}
+.ref-list li{position:relative;padding:8px 0 8px 22px;font-size:14.5px;line-height:1.75;color:var(--parch-dim);}
+.ref-list li::before{content:'—';position:absolute;left:0;color:var(--gold-l);}
+.ref-list li strong{color:var(--parch);}
+
+/* ── LOCKED GATE ── */
+.locked-gate{
+  background:rgba(201,150,58,0.06);border:2px solid rgba(201,150,58,0.3);
+  border-radius:14px;padding:24px;text-align:center;margin:24px 0;
+}
+.lock-icon{font-size:44px;display:block;margin-bottom:10px;}
+.lock-text{font-size:16px;color:var(--parch-dim);margin-bottom:6px;}
+.lock-hint{font-size:13px;color:var(--gold-dim);font-style:italic;}
+
+@media(max-width:640px){
+  nav{padding:11px 14px;}
+  .wrap{padding:75px 13px 58px;}
+  .edu-pill{float:none;width:100%;margin:0 0 14px;}
+  .story{font-size:17px;}
+  #adviserBox{max-width:210px;}
+}
+</style>
+</head>
+<body>
+
+<div class="flag-stripe"></div>
+<div class="particles" id="particles"></div>
+<div class="ambient"></div>
+<div class="deco-border"></div>
+<div class="deco-corner tl"></div><div class="deco-corner tr"></div>
+<div class="deco-corner bl"></div><div class="deco-corner br"></div>
+<div class="pts-popup" id="ptsPopup">+0</div>
+
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blood-l),var(--blood-dim));
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(139,0,0,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blood-l),var(--blood-dim));
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(139,0,0,.45);
+  align-items:center;justify-content:center;">➡</button>
+
+<!-- POPUP NGUỒN SỬ LIỆU (bổ sung) -->
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <div class="src-popup-head"><span class="src-popup-badge" id="srcBadge">ĐÃ KIỂM CHỨNG</span></div>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<!-- BẢN ĐỒ HÀNH TRÌNH (bổ sung) -->
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🗺️ Bản Đồ Hành Trình Triệu Đà</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note">Các điểm dừng chân mở khóa dần theo từng chương. Sơ đồ cách điệu, không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,60 C120,40 160,90 220,100 S320,70 380,110 S470,150 540,120 S650,80 740,150"/>
+      <circle class="jmap-pt pt-hamduong" cx="40" cy="60" r="6"/><text class="jmap-yr pt-hamduong" x="40" y="45" text-anchor="middle">221 TCN</text><text class="jmap-lbl pt-hamduong" x="40" y="35" text-anchor="middle">🏯 Hàm Dương</text>
+      <circle class="jmap-pt locked pt-longxuyen" cx="220" cy="100" r="6"/><text class="jmap-yr locked pt-longxuyen" x="220" y="122" text-anchor="middle">214 TCN</text><text class="jmap-lbl locked pt-longxuyen" x="220" y="134" text-anchor="middle">🪖 Long Xuyên</text>
+      <circle class="jmap-pt locked pt-phienngung" cx="380" cy="110" r="7"/><text class="jmap-yr locked pt-phienngung" x="380" y="132" text-anchor="middle">204 TCN</text><text class="jmap-lbl locked pt-phienngung" x="380" y="144" text-anchor="middle">👑 Phiên Ngung</text>
+      <circle class="jmap-pt locked pt-coloa" cx="540" cy="120" r="6"/><text class="jmap-yr locked pt-coloa" x="540" y="142" text-anchor="middle">179 TCN</text><text class="jmap-lbl locked pt-coloa" x="540" y="154" text-anchor="middle">🏹 Cổ Loa</text>
+      <circle class="jmap-pt locked pt-bienhan" cx="650" cy="80" r="6"/><text class="jmap-yr locked pt-bienhan" x="650" y="62" text-anchor="middle">180 TCN</text><text class="jmap-lbl locked pt-bienhan" x="650" y="52" text-anchor="middle">⚔️ Biên Hán</text>
+      <circle class="jmap-pt locked pt-mo" cx="740" cy="150" r="7"/><text class="jmap-yr locked pt-mo" x="740" y="172" text-anchor="middle">137 TCN</text><text class="jmap-lbl locked pt-mo" x="720" y="184" text-anchor="middle">🏺 Quảng Châu</text>
+    </svg>
+  </div>
+</div>
+
+<!-- TRANG NGUỒN THAM KHẢO (bổ sung) -->
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+  <div class="ref-panel">
+    <div class="ref-head">
+      <div class="ref-title">📚 Nguồn Tham Khảo</div>
+      <button class="ref-close" onclick="toggleRefPage()">✕</button>
+    </div>
+    <div class="ref-intro">Các sự kiện, ngày tháng, kết quả trong trang này được đối chiếu từ các nguồn tư liệu, chính sử và khảo cổ đã công bố. Các đoạn hội thoại (đánh dấu viền hồng, tag <strong>🔵 dựng lại</strong>) là <strong>dựng lại minh họa</strong> dựa trên tinh thần lịch sử, không phải nguyên văn ghi âm/ghi chép.</div>
+
+    <div class="ref-section-title">Tài Liệu Chính Thống</div>
+    <ul class="ref-list">
+      <li><strong>Sử Ký Tư Mã Thiên</strong> — Nam Việt Úy Đà Liệt Truyện (quyển 113), nguồn chính sử sớm nhất và chi tiết nhất về Triệu Đà</li>
+      <li><strong>Đại Việt Sử Ký Toàn Thư</strong> — Ngoại kỷ, phần Triệu kỷ và An Dương Vương kỷ</li>
+      <li><strong>Hán Thư</strong> (Ban Cố) — chép về quan hệ ngoại giao Nam Việt – Hán triều qua ba đời vua</li>
+      <li><strong>Bảo tàng Nam Việt Vương, Quảng Châu</strong> — hồ sơ khai quật lăng mộ Triệu Muội (1983), hiện vật khảo cổ Nam Việt Quốc</li>
+      <li><strong>Khâm Định Việt Sử Thông Giám Cương Mục</strong> — đối chiếu niên biểu và các sự kiện liên quan đến Âu Lạc – Nam Việt</li>
+    </ul>
+
+    <div class="ref-section-title">Ghi Chú Về Phương Pháp Thể Hiện</div>
+    <ul class="ref-list">
+      <li>Ngày tháng, địa danh, kết quả các sự kiện chính (Nam tiến, lập Nam Việt, thôn tính Âu Lạc, đấu trí Hán triều, năm mất): dựa trên chính sử đã được công bố rộng rãi</li>
+      <li>Hội thoại giữa các nhân vật (Nhâm Ngao, Lục Giả, lời tự sự của Triệu Đà...): dựng lại nhằm mục đích minh họa, giúp người học hình dung bối cảnh — không phải trích dẫn nguyên văn có ghi chép</li>
+      <li>Chi tiết truyền thuyết Mỵ Châu — Trọng Thủy và nỏ thần Kim Quy: dựa theo Đại Việt Sử Ký Toàn Thư và truyền thuyết dân gian, mang tính biểu tượng — không phải sự kiện khảo chứng độc lập</li>
+      <li>Các con số như "50 vạn quân", "93 năm tồn tại" là số liệu được nhiều nguồn chính sử dẫn lại, có thể sai lệch theo cách ghi chép thời cổ đại</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ADVISER BOX (cố vấn Triệu Đà) -->
+<div id="adviserBox">
+  <button class="adv-close" onclick="closeAdviser()">✕</button>
+  <span class="adv-avatar">🪖</span>
+  <div class="adv-name">Lữ Gia — Cố vấn</div>
+  <div class="adv-text" id="adviserText">Đại vương, mưu lược còn quan trọng hơn binh lực!</div>
+</div>
+
+<!-- COMBO BURST -->
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-burst-inner">
+    <div class="combo-title">Liên tiếp đúng!</div>
+    <div class="combo-label" id="comboLabel">🔥 COMBO x3</div>
+    <div class="combo-pts" id="comboPtsLabel">+điểm thưởng!</div>
+  </div>
+</div>
+
+<!-- STREAK -->
+<div class="streak-badge" id="streakBadge">
+  <span>⚔️</span>
+  <div>
+    <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim)">Streak</div>
+    <div class="streak-num" id="streakNum">0</div>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">SỬ VIỆT</a>
+  <div style="display:flex;align-items:center;">
+    <a href="cau-chuyen.html" class="nav-back">← Câu chuyện khác</a>
+    <button class="nav-map-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình">🗺️</button>
+    <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+  </div>
+</nav>
+
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+
+<div class="score-badge">
+  <div><div class="score-title">Điểm</div><div class="score-num" id="scoreNum">0</div></div>
+  <div><div class="score-title">Danh hiệu</div><div id="scoreRank" style="font-size:11px;color:#f0c060;">—</div></div>
+</div>
+
+<div class="wrap">
+
+<!-- ═══════════════════════════════════════════════
+     COVER MỞ ĐẦU (bổ sung)
+════════════════════════════════════════════════ -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-embers" id="coverEmbers"></div>
+    <div class="cover-emblem">👑</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">TRIỆU ĐÀ<br>Kẻ Thôn Tính Phương Nam</div>
+    <div class="cover-sub">214 TCN — 137 TCN · Nam Việt Vũ Đế</div>
+    <div class="cover-desc">Ngươi là một viên quan trẻ nhà Tần, được lệnh dẫn quân xuống vùng đất người Việt. 67 năm sau, ngươi trở thành hoàng đế của một vương quốc tồn tại 93 năm — bằng gươm giáo, hôn nhân chính trị, và những nước cờ ngoại giao tinh vi bậc nhất lịch sử cổ đại.</div>
+    <div class="cover-chips">
+      <span class="trivia-chip">⚔️ 5 chương</span>
+      <span class="trivia-chip">🎯 5 thử thách tương tác</span>
+      <span class="trivia-chip">📖 Có nguồn sử liệu</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">⚔️ Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CHƯƠNG 1: TƯỚNG NHÀ TẦN
+════════════════════════════════════════════════ -->
+<div class="scene" id="s1">
+  <div class="chap">⚔️ Chương 1 · 214 TCN — Tướng Nhà Tần Viễn Chinh <span class="src-tag v" onclick="openSrcPopup('s1_namtien')">📖 nguồn</span></div>
+
+  <div class="hero-img-wrap" id="img-s1">
+  <!-- Gợi ý ảnh: "Qin army southern campaign ancient" -->
+  <img src="images/quantannamtien.jpg" alt="Quân Tần Nam Tiến" class="hero-img"
+       onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s1\'><span class=\'ph-icon\'>🪖</span><span class=\'ph-label\'>ẢNH 1 · Quân Tần Nam Tiến · 214 TCN</span></div>'">
+</div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot current">1</div><div class="tl-year">214 TCN</div><div class="tl-event">Tần sai Triệu Đà Nam tiến</div></div>
+    <div class="tl-item"><div class="tl-dot todo">2</div><div class="tl-year">208 TCN</div><div class="tl-event">Nhà Tần sụp đổ</div></div>
+    <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">204 TCN</div><div class="tl-event">Lập Nam Việt</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">179 TCN</div><div class="tl-event">Thôn tính Âu Lạc</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">137 TCN</div><div class="tl-event">Qua đời</div></div>
+  </div>
+
+  <div class="power-meter">
+    <span class="pm-icon">⚔️</span>
+    <span class="pm-label">Binh lực</span>
+    <div class="pm-track"><div class="pm-fill" id="powerMeter" style="width:10%"></div></div>
+    <span id="powerPct" style="font-size:11px;color:#f08a8a;min-width:28px;text-align:right;">10%</span>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">📚 Bối cảnh</span>
+      Năm 221 TCN, Tần Thủy Hoàng thống nhất Trung Hoa. Ba năm sau, ông sai <strong>50 vạn quân</strong> chia năm đường tiến xuống phương Nam chinh phục các tộc Bách Việt. Triệu Đà là một trong những tướng chỉ huy chiến dịch này.
+    </div>
+    Ngươi — <strong>Triệu Đà</strong> — 25 tuổi, xuất thân từ huyện Chân Định, nước Triệu cũ. Nay làm quan huyện lệnh Long Xuyên dưới trướng nhà Tần. Lệnh từ Hàm Dương đến: <em>dẫn quân tiến xuống vùng đất người Việt</em>, lập quận Tượng, quận Quế Lâm để cai trị.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Nhâm Ngao — Tổng đốc Nam Hải</div>
+    "Triệu Đà, ngươi đến cai quản huyện Long Xuyên. Vùng đất này hoang vu, người Việt khó trị. Nhưng nếu ngươi có tầm nhìn xa... đây có thể là cơ đồ của riêng ngươi."
+    <span class="src-note">🔵 Đoạn hội thoại được dựng lại dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.</span>
+  </div>
+
+  <!-- KC 1.1 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 1/2</span>
+    <div class="kc-q">Triệu Đà quê ở đâu và là tướng của triều đại nào trước khi lập Nam Việt?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1a')">A. Quê Hàm Dương, tướng nhà Tần từ đầu</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1a')">B. Quê huyện Chân Định nước Triệu cũ, làm quan cho nhà Tần</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1a')">C. Quê Sở, vốn là tướng Hạng Vũ</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1a')">D. Quê Tề, theo nhà Tần từ nhỏ</button>
+    </div>
+    <div class="kc-fb" id="kc1a-fb"></div>
+  </div>
+
+  <!-- KC 1.2 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 2/2</span>
+    <div class="kc-q">Nhà Tần phái bao nhiêu quân tiến xuống phương Nam để chinh phục Bách Việt năm 214 TCN?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1b')">A. 10 vạn quân</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1b')">B. 30 vạn quân</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1b')">C. 50 vạn quân, chia năm đường</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1b')">D. 100 vạn quân, bảy đường</button>
+    </div>
+    <div class="kc-fb" id="kc1b-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 1: Xác định đúng quận -->
+  <div class="challenge reveal" id="chal1">
+    <div class="chal-tag">🗺️ Thử Thách Chương 1 · Cần vượt qua để tiếp tục!</div>
+    <div class="chal-title">Ghi nhớ bản đồ hành chính</div>
+    <div class="chal-desc">Nhà Tần lập ra ba quận ở vùng Bách Việt sau chiến dịch Nam tiến. Điền tên <strong>quận còn thiếu</strong>: "Nam Hải, Quế Lâm và ___?"<br><span style="font-size:12px;color:var(--gold-dim);">Gợi ý: Tên quận gắn với con sông và con voi.</span></div>
+    <input class="chal-input" id="chal1-inp" placeholder="Nhập tên quận..." onkeydown="if(event.key==='Enter')checkChal1()">
+    <br><button class="chal-btn" onclick="checkChal1()">⚔️ Xác nhận</button>
+    <div class="chal-fb" id="chal1-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Nhâm Ngao ốm nặng, sắp mất — trao toàn quyền cho ngươi. Ngươi sẽ...</div>
+  <div class="choices" id="choices-s1">
+    <button class="c-btn" id="c1a" onclick="go('s1A',20)" disabled>
+      <span class="c-letter">A</span>
+      <div>Trung thành với nhà Tần — đợi lệnh từ Hàm Dương, dù Tần đang loạn.<div class="c-sub">⚠️ Hoàn thành thử thách bên trên để mở khóa lựa chọn!</div></div>
+    </button>
+    <button class="c-btn" id="c1b" onclick="go('s1B',30)" disabled>
+      <span class="c-letter">B</span>
+      <div>Nghe lời Nhâm Ngao — cắt đứt liên hệ với Trung Nguyên, tự xưng hùng phương Nam.<div class="c-sub">⚠️ Hoàn thành thử thách bên trên để mở khóa lựa chọn!</div></div>
+    </button>
+    <button class="c-btn" id="c1c" onclick="go('s1C',10)" disabled>
+      <span class="c-letter">C</span>
+      <div>Liên hệ với Lưu Bang hoặc Hạng Vũ — mượn thế lực Trung Nguyên để bảo vệ mình.<div class="c-sub">⚠️ Hoàn thành thử thách bên trên để mở khóa lựa chọn!</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- S1A: Trung thành Tần -->
+<div class="scene" id="s1A">
+  <div class="chap">📍 Lựa chọn A · Trung Nghĩa Nhưng Mù Quáng</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span><strong>Nguy hiểm!</strong> Nhà Tần sụp đổ năm 206 TCN. Các quan lại trung thành với Tần bị thanh trừng hoặc bị giết. Triệu Đà đã nhìn thấy điều này và quyết định khác.</div>
+  <div class="choices-label">⚡ Nhận ra thực tế...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1B',15)"><span class="c-letter">→</span><div>"Thiên hạ đang loạn — ta phải tự bảo vệ đất phương Nam này!"</div></button></div>
+</div>
+
+<!-- S1B: Tự lập -->
+<div class="scene" id="s1B">
+  <div class="chap">⭐ Lựa chọn B · Mầm Mống Của Một Đế Quốc</div>
+  <div class="hero-img-wrap" id="img-s1b">
+  <!-- Gợi ý ảnh: "Zhao Tuo Nanyue king ancient" -->
+  <img src="images/namviet-map.jpg" alt="Triệu Đà Tự Lập" class="hero-img"
+       onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s1b\'><span class=\'ph-icon\'>👑</span><span class=\'ph-label\'>ẢNH 2 · Triệu Đà Tự Lập · Phong trào độc lập</span></div>'">
+</div>
+  <div class="outcome good"><span class="outcome-icon">👑</span><strong>Tầm nhìn vượt thời đại!</strong> Triệu Đà nghe lời Nhâm Ngao: đóng cửa ải, giết các quan Tần cứng đầu, thu phục người Việt bằng chính sách "Hán Việt hòa đồng". Khi thiên hạ loạn, ông đứng ngoài chiến tranh — gìn giữ đất phương Nam.</div>
+  <div class="fact"><span class="fact-tag">📖 Chính sách thu phục người Việt</span>Triệu Đà lấy vợ người Việt, mặc y phục người Việt, cho người Việt và người Hán kết hôn với nhau — một chính sách hội nhập hiếm có ở thời cổ đại.<div style="margin-top:9px;"><span class="trivia-chip">🏠 Lấy vợ người Việt</span><span class="trivia-chip">👘 Mặc áo Việt</span><span class="trivia-chip">🤝 Hán-Việt thông hôn</span></div></div>
+  <div class="choices-label">⚡ Tiếp tục sang chương 2...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',0)"><span class="c-letter">→</span><div>204 TCN · Lập nước Nam Việt — đế quốc mới ra đời!</div></button></div>
+</div>
+
+<!-- S1C: Nhờ Hán -->
+<div class="scene" id="s1C">
+  <div class="chap">📍 Lựa chọn C · Phụ Thuộc Ngoại Bang</div>
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Dựa vào Hán hay Sở đều có nghĩa là mất quyền tự chủ. Triệu Đà hiểu rằng <strong>chỉ có tự lực mới có thể xây dựng một vương quốc thực sự</strong>.</div>
+  <div class="choices-label">⚡ Tự lập mới là con đường đúng...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1B',15)"><span class="c-letter">→</span><div>"Ta không cần dựa vào ai — đất Nam Việt là của người Nam Việt!"</div></button></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CHƯƠNG 2: LẬP NƯỚC NAM VIỆT
+════════════════════════════════════════════════ -->
+<div class="scene" id="s2">
+  <div class="chap">👑 Chương 2 · 204 TCN — Nam Việt Quốc Ra Đời <span class="src-tag v" onclick="openSrcPopup('s2_lapquoc')">📖 nguồn</span></div>
+
+  <div class="hero-img-wrap" id="img-s2">
+  <!-- Gợi ý ảnh: "Nanyue Kingdom Panyu Guangzhou ancient" -->
+  <img src="images/kinhdophienngung.jpg" alt="Kinh đô Phiên Ngung" class="hero-img"
+       onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s2\'><span class=\'ph-icon\'>🏛️</span><span class=\'ph-label\'>ẢNH 3 · Kinh đô Phiên Ngung · Nam Việt Quốc</span></div>'">
+</div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">214 TCN</div><div class="tl-event">Tần sai Triệu Đà Nam tiến</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">208 TCN</div><div class="tl-event">Nhà Tần sụp đổ</div></div>
+    <div class="tl-item"><div class="tl-dot current">3</div><div class="tl-year">204 TCN</div><div class="tl-event">Lập Nam Việt</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">179 TCN</div><div class="tl-event">Thôn tính Âu Lạc</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">137 TCN</div><div class="tl-event">Qua đời</div></div>
+  </div>
+
+  <div class="power-meter">
+    <span class="pm-icon">⚔️</span>
+    <span class="pm-label">Binh lực</span>
+    <div class="pm-track"><div class="pm-fill" id="powerMeter2" style="width:40%"></div></div>
+    <span style="font-size:11px;color:#f08a8a;min-width:28px;text-align:right;">40%</span>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">🗺️ Lãnh thổ</span>
+      Nam Việt kiểm soát vùng đất từ <strong>phía Nam sông Dương Tử đến Đèo Ngang</strong> — bao gồm Quảng Đông, Quảng Tây ngày nay và toàn bộ miền Bắc Việt Nam.
+    </div>
+    Năm 204 TCN, ngươi tự xưng <strong>Nam Việt Vũ Vương</strong> — Vũ Đế trong nội bộ, dù bề ngoài vẫn gọi là vương khi tiếp xúc với nhà Hán. Kinh đô đặt tại <em>Phiên Ngung</em> (Quảng Châu ngày nay). Lãnh thổ rộng lớn, dân số hỗn hợp Hán-Việt-Tày...
+  </div>
+
+  <!-- KC 2.1 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 1/3</span>
+    <div class="kc-q">Kinh đô của nước Nam Việt do Triệu Đà lập ra là thành phố nào ngày nay?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2a')">A. Hà Nội</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc2a')">B. Quảng Châu, Trung Quốc (Phiên Ngung cổ)</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2a')">C. Huế</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2a')">D. Nam Ninh, Quảng Tây</button>
+    </div>
+    <div class="kc-fb" id="kc2a-fb"></div>
+  </div>
+
+  <!-- KC 2.2 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 2/3</span>
+    <div class="kc-q">Triệu Đà xưng danh hiệu gì trong nội bộ Nam Việt, dù trước mặt nhà Hán chỉ nhận là vương?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2b')">A. Nam Việt Hoàng Đế</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc2b')">B. Nam Việt Vũ Đế (Vũ Vương bề ngoài)</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2b')">C. Nam Thiên Vương</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc2b')">D. Lĩnh Nam Thiên Tử</button>
+    </div>
+    <div class="kc-fb" id="kc2b-fb"></div>
+  </div>
+
+  <!-- KC 2.3: Kéo thả ghép đôi -->
+  <div class="kc reveal" id="kc2c-block">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 3/3 · Ghép đôi chính sách ↔ mục đích</span>
+    <div class="kc-q">Kéo thả từng chính sách của Triệu Đà vào đúng mục đích:</div>
+    <div class="drag-area" id="dragArea2c">
+      <div class="drag-col">
+        <div class="drag-col-title">Chính sách</div>
+        <div class="drag-item" draggable="true" id="di-a" data-val="A">Lấy vợ người Việt</div>
+        <div class="drag-item" draggable="true" id="di-b" data-val="B">Đóng cửa ải, giết quan Tần cứng đầu</div>
+        <div class="drag-item" draggable="true" id="di-c" data-val="C">Cho người Hán-Việt thông hôn</div>
+        <div class="drag-item" draggable="true" id="di-d" data-val="D">Dùng lễ nghi người Việt</div>
+      </div>
+      <div class="drag-col">
+        <div class="drag-col-title">Mục đích</div>
+        <div class="drop-zone" id="dz1" data-correct="A">Thu phục nhân tâm tầng lớp quý tộc Việt</div>
+        <div class="drop-zone" id="dz2" data-correct="B">Cô lập khỏi Trung Nguyên, tự chủ hoàn toàn</div>
+        <div class="drop-zone" id="dz3" data-correct="C">Tạo dân số hỗn hợp trung thành với Nam Việt</div>
+        <div class="drop-zone" id="dz4" data-correct="D">Được lòng đại đa số người Việt bản địa</div>
+      </div>
+    </div>
+    <button class="drag-check-btn" onclick="checkDrag2c()">Kiểm tra ghép đôi ✓</button>
+    <div class="chal-fb" id="kc2c-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 2 -->
+  <div class="challenge reveal" id="chal2">
+    <div class="chal-tag">🔐 Thử Thách Chương 2 · Mở khóa để tiến vào Chương 3!</div>
+    <div class="chal-title">Mật thư từ Hàm Dương</div>
+    <div class="chal-desc">Một sứ giả nhà Hán mang thư đến. Nội dung bị mã hóa bằng cách <strong>dịch chuyển mỗi chữ số sang số La Mã</strong> rồi cộng thêm 1. Thư ghi: "Lưu Bang đã thống nhất, năm nay là năm <span style="color:#f08a8a;font-family:monospace;">202 - 1</span> TCN". Đây là năm nào?</div>
+    <input class="chal-input" id="chal2-inp" placeholder="Nhập năm (chỉ số)..." type="number" onkeydown="if(event.key==='Enter')checkChal2()">
+    <br><button class="chal-btn" onclick="checkChal2()">🔓 Giải mã</button>
+    <div class="chal-fb" id="chal2-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Hán Cao Tổ Lưu Bang ra lệnh cho Triệu Đà phải quy phục. Ngươi trả lời...</div>
+  <div class="choices">
+    <button class="c-btn" id="c2a" onclick="go('s2A',10)" disabled>
+      <span class="c-letter">A</span><div>Thần phục nhà Hán — nhận ấn vương, đổi lấy hòa bình thương mại.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c2b" onclick="go('s2B',30)" disabled>
+      <span class="c-letter">B</span><div>Từ chối — xưng "Lão phu" với sứ Hán, khẳng định chủ quyền tuyệt đối.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c2c" onclick="go('s2C',20)" disabled>
+      <span class="c-letter">C</span><div>Giả vờ thần phục bề ngoài nhưng vẫn xưng Đế trong nội bộ — ngoại giao hai mặt.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- S2A -->
+<div class="scene" id="s2A">
+  <div class="chap">📍 Lựa chọn A · Quy Phục Hoàn Toàn</div>
+  <div class="outcome bad"><span class="outcome-icon">😓</span>Triệu Đà biết nhận ấn vương chỉ là <strong>bước đầu</strong>. Nhà Hán sẽ tiếp tục tăng áp lực. Ông đã dùng ngoại giao khéo léo hơn — thần phục bề ngoài mà vẫn giữ thực quyền bên trong.</div>
+  <div class="choices-label">⚡ Nghĩ lại chiến thuật...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2C',15)"><span class="c-letter">→</span><div>"Khôn ngoan hơn — ngoại giao hai mặt mới là thượng sách!"</div></button></div>
+</div>
+
+<!-- S2B -->
+<div class="scene" id="s2B">
+  <div class="chap">⭐ Lựa chọn B · Khí Phách Đế Vương</div>
+  <div class="outcome good"><span class="outcome-icon">🦁</span><strong>Khí phách!</strong> Khi sứ Hán Cao Tổ đến, Triệu Đà gặp mặt trong tư thế ngồi duỗi chân — thái độ ngang hàng chứ không phải bề tôi. Ông nói: <em>"Ta và Hán Cao Tổ đều từ một gốc — sao ta phải quỳ?"</em></div>
+  <div class="fact"><span class="fact-tag">💡 Chiến lược ngoại giao</span>Lữ Hậu (vợ Lưu Bang) sau đó cấm vận thương mại để trừng phạt. Triệu Đà lập tức <strong>xưng Hoàng Đế Nam Việt</strong>, phong vương cho các nước láng giềng như thiên tử — một tuyên bố chủ quyền mạnh mẽ nhất thời bấy giờ.</div>
+  <div class="choices-label">⚡ Tiếp tục chương 3...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',0)"><span class="c-letter">→</span><div>179 TCN · An Dương Vương và Âu Lạc — mục tiêu tiếp theo phía Nam!</div></button></div>
+</div>
+
+<!-- S2C -->
+<div class="scene" id="s2C">
+  <div class="chap">⭐ Lựa chọn C · Ngoại Giao Hai Mặt</div>
+  <div class="outcome good"><span class="outcome-icon">🎭</span><strong>Đây chính là nghệ thuật ngoại giao của Triệu Đà!</strong> Trước mặt nhà Hán: Vũ Vương thần phục. Bên trong Nam Việt: Vũ Đế — thiên tử thực sự. Ông duy trì thế cân bằng này trong nhiều thập kỷ.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',0)"><span class="c-letter">→</span><div>179 TCN · Giờ nhìn về phía Nam — Âu Lạc của An Dương Vương!</div></button></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CHƯƠNG 3: KẾ HÔN NHÂN VÀ THÔN TÍNH ÂU LẠC
+════════════════════════════════════════════════ -->
+<div class="scene" id="s3">
+  <div class="chap">🎯 Chương 3 · ~185 TCN — Kế Hôn Nhân Và Nỏ Thần <span class="src-tag d" onclick="openSrcPopup('s3_aulac')">🔵 dựng lại</span></div>
+
+  <div class="hero-img-wrap" id="img-s3">
+  <!-- Gợi ý ảnh: "My Chau Trong Thuy Vietnam legend ancient" -->
+  <img src="images/trieuda-cauhon.jpg" alt="Hôn nhân chính trị" class="hero-img"
+        onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s3\'><span class=\'ph-icon\'>💍</span><span class=\'ph-label\'>ẢNH 4 · Kế Hôn Nhân Chính Trị</span></div>'">
+</div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">214 TCN</div><div class="tl-event">Tần sai Nam tiến</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">204 TCN</div><div class="tl-event">Lập Nam Việt</div></div>
+    <div class="tl-item"><div class="tl-dot current">3</div><div class="tl-year">~185 TCN</div><div class="tl-event">Kế hôn nhân</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">179 TCN</div><div class="tl-event">Thôn tính Âu Lạc</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">137 TCN</div><div class="tl-event">Qua đời</div></div>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">⚔️ Đối thủ phương Nam</span>
+      Âu Lạc của An Dương Vương là rào cản cuối cùng ngăn Nam Việt mở rộng về phía Nam. Triệu Đà đã <strong>nhiều lần tấn công bằng quân sự nhưng đều thất bại</strong> vì nỏ thần Kim Quy.
+    </div>
+    Ngươi đã thử tấn công Âu Lạc — thất bại. Nỏ thần của An Dương Vương quá mạnh, quân ta thiệt hại nặng nề. Bây giờ ngươi có ba con bài trong tay: <em>sức mạnh quân sự, hôn nhân chính trị</em>, và <em>kiên nhẫn chờ thời</em>. Quan quân đều biết: <strong>đánh thẳng là con đường chết</strong>.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Triệu Đà — suy tính</div>
+    "Không thể phá thành bằng vũ lực. Nhưng nếu ta có thể đặt người của ta vào bên trong thành... Trọng Thủy — con trai ta — sẽ là mũi tên mà ta bắn vào lòng địch."
+    <span class="src-note">🔵 Đoạn hội thoại được dựng lại dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.</span>
+  </div>
+
+  <!-- KC 3.1 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 1/2</span>
+    <div class="kc-q">Tại sao Triệu Đà không thể đánh thẳng vào Âu Lạc bằng quân sự trong thời gian dài?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3a')">A. Quân Nam Việt quá yếu, không đủ người</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc3a')">B. Nỏ thần Kim Quy của An Dương Vương bắn hàng trăm mũi tên một lần, quân Triệu Đà đại bại</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3a')">C. Nhà Hán cấm Triệu Đà tấn công Âu Lạc</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3a')">D. Địa hình Âu Lạc quá hiểm trở, không thể vào</button>
+    </div>
+    <div class="kc-fb" id="kc3a-fb"></div>
+  </div>
+
+  <!-- KC 3.2 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 2/2</span>
+    <div class="kc-q">Ai là người chế tạo lẫy nỏ thần theo lệnh An Dương Vương?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3b')">A. Thần Kim Quy tự tay làm</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc3b')">B. Tướng Cao Lỗ, dùng móng vuốt Kim Quy làm lẫy</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3b')">C. Mỵ Châu chế tạo bí mật</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3b')">D. Thợ rèn người Hán di cư sang</button>
+    </div>
+    <div class="kc-fb" id="kc3b-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 3: Sắp xếp bước thực hiện kế hoạch -->
+  <div class="challenge reveal" id="chal3">
+    <div class="chal-tag">⚔️ Thử Thách Chương 3 · Sắp xếp đúng thứ tự kế hoạch!</div>
+    <div class="chal-title">Bàn cờ của Triệu Đà — Đặt các bước đúng thứ tự thực hiện</div>
+    <div class="chal-desc">Kéo thả để sắp xếp 5 bước thực hiện kế hoạch thôn tính Âu Lạc theo đúng trình tự lịch sử:</div>
+    <div class="order-list" id="orderList3" ondragover="event.preventDefault()">
+      <div class="order-item" draggable="true" data-id="E" data-correct="1">
+        <div class="order-num">?</div>Cử Trọng Thủy sang cầu hôn công chúa Mỵ Châu
+      </div>
+      <div class="order-item" draggable="true" data-id="A" data-correct="2">
+        <div class="order-num">?</div>An Dương Vương đồng ý — Trọng Thủy vào ở rể tại Cổ Loa
+      </div>
+      <div class="order-item" draggable="true" data-id="B" data-correct="3">
+        <div class="order-num">?</div>Trọng Thủy lân la, đánh tráo lẫy nỏ thần bằng lẫy giả
+      </div>
+      <div class="order-item" draggable="true" data-id="C" data-correct="4">
+        <div class="order-num">?</div>Trọng Thủy bí mật trốn về báo cho Triệu Đà
+      </div>
+      <div class="order-item" draggable="true" data-id="D" data-correct="5">
+        <div class="order-num">?</div>Triệu Đà tổng tấn công — nỏ thần hóa vô dụng, Cổ Loa thất thủ
+      </div>
+    </div>
+    <button class="order-check-btn" onclick="checkOrder3()">⚔️ Xác nhận thứ tự</button>
+    <div class="chal-fb" id="chal3-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Trọng Thủy đã vào Cổ Loa. Ngươi chờ được bao lâu thì ra tay?</div>
+  <div class="choices">
+    <button class="c-btn" id="c3a" onclick="go('s3A',10)" disabled>
+      <span class="c-letter">A</span>
+      <div>Ra tay ngay khi Trọng Thủy vào được Cổ Loa — không cần đợi.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c3b" onclick="go('s3B',30)" disabled>
+      <span class="c-letter">B</span>
+      <div>Kiên nhẫn chờ đến khi Trọng Thủy xác nhận đã đánh tráo được lẫy nỏ rồi mới tấn công.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c3c" onclick="go('s3C',15)" disabled>
+      <span class="c-letter">C</span>
+      <div>Giả vờ cầu thêm hòa bình, tặng vàng bạc, đợi An Dương Vương mất cảnh giác hoàn toàn.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- S3A -->
+<div class="scene" id="s3A">
+  <div class="chap">📍 Lựa chọn A · Nôn Nóng</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Nếu tấn công sớm khi nỏ thần còn nguyên vẹn, quân Triệu Đà sẽ thảm bại lần nữa. <strong>Kế hoạch cần thời gian</strong> — Trọng Thủy phải thực sự lấy được lòng tin của Mỵ Châu trước đã.</div>
+  <div class="choices-label">⚡ Nhẫn nại mới thắng...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3B',15)"><span class="c-letter">→</span><div>"Kiên nhẫn là vũ khí mạnh nhất của ta!"</div></button></div>
+</div>
+
+<!-- S3B -->
+<div class="scene" id="s3B">
+  <div class="chap">⭐ Lựa chọn B · Kiên Nhẫn Của Bậc Đế Vương</div>
+  <div class="hero-img-wrap" id="img-s3b">
+  <!-- Gợi ý ảnh: "Co Loa citadel Vietnam ancient battle" -->
+  <img src="images/trieuda-tancong.png" alt="Thành Cổ Loa thất thủ" class="hero-img"
+       onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s3b\'><span class=\'ph-icon\'>⚔️</span><span class=\'ph-label\'>ẢNH 5 · Thành Cổ Loa Thất Thủ · 179 TCN</span></div>'">
+</div>
+  <div class="outcome good"><span class="outcome-icon">🎯</span><strong>Chiến lược hoàn hảo!</strong> Đây chính xác là những gì Triệu Đà đã làm. Ông đợi tin từ Trọng Thủy: "Lẫy nỏ đã bị đánh tráo." Lập tức dẫn đại quân tổng tấn công — nỏ thần vô dụng, Cổ Loa thất thủ trong một đêm.</div>
+  <div class="fact"><span class="fact-tag">📖 Kết quả năm 179 TCN</span>An Dương Vương chạy về phương Nam, thần Kim Quy chỉ: "Kẻ thù ngồi sau lưng ngươi đó!" — ông rút kiếm giết Mỵ Châu rồi cầm sừng tê nhảy xuống biển. Âu Lạc bị thôn tính hoàn toàn vào đế quốc Nam Việt.<div style="margin-top:9px;"><span class="trivia-chip">📅 179 TCN</span><span class="trivia-chip">🏯 Cổ Loa thất thủ</span><span class="trivia-chip">⚡ Nỏ thần vô dụng</span><span class="trivia-chip">🌊 An Dương Vương ra biển</span></div></div>
+  <div class="choices-label">⚡ Tiếp tục sang chương 4...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4',0)"><span class="c-letter">→</span><div>Chương 4 · Đối đầu với nhà Hán — cuộc chiến sinh tử!</div></button></div>
+</div>
+
+<!-- S3C -->
+<div class="scene" id="s3C">
+  <div class="chap">📍 Lựa chọn C · Khôn Ngoan Nhưng...</div>
+  <div class="outcome neutral"><span class="outcome-icon">🤔</span>Chờ An Dương Vương mất cảnh giác là cần thiết — nhưng <strong>quan trọng hơn là đánh tráo được nỏ thần</strong>. Không có bí mật đó, dù An Dương Vương ngủ quên trên chiến thắng cũng không thể tấn công được.</div>
+  <div class="choices-label">⚡ Mũi tên quan trọng hơn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3B',15)"><span class="c-letter">→</span><div>"Lẫy nỏ! Đó mới là chìa khóa của mọi thứ."</div></button></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CHƯƠNG 4: ĐẤU TRÍ VỚI NHÀ HÁN
+════════════════════════════════════════════════ -->
+<div class="scene" id="s4">
+  <div class="chap">🏛️ Chương 4 · 196–180 TCN — Đấu Trí Với Hán Triều <span class="src-tag v" onclick="openSrcPopup('s4_hantrieu')">📖 nguồn</span></div>
+
+  <div class="hero-img-wrap" id="img-s4">
+  <!-- Gợi ý ảnh: "Han dynasty ambassador ancient diplomacy painting" -->
+  <img src="images/sugianhahan.jpg" alt="Sứ Giả Nhà Hán" class="hero-img"
+       onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s4\'><span class=\'ph-icon\'>🏛️</span><span class=\'ph-label\'>ẢNH 6 · Sứ Giả Nhà Hán</span></div>'">
+</div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">214 TCN</div><div class="tl-event">Nam tiến</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">204 TCN</div><div class="tl-event">Lập Nam Việt</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">179 TCN</div><div class="tl-event">Thôn tính Âu Lạc</div></div>
+    <div class="tl-item"><div class="tl-dot current">4</div><div class="tl-year">180 TCN</div><div class="tl-event">Đấu trí Hán triều</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">137 TCN</div><div class="tl-event">Qua đời</div></div>
+  </div>
+
+  <div class="power-meter">
+    <span class="pm-icon">⚔️</span>
+    <span class="pm-label">Uy thế</span>
+    <div class="pm-track"><div class="pm-fill" style="width:75%"></div></div>
+    <span style="font-size:11px;color:#f08a8a;min-width:28px;text-align:right;">75%</span>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">⚡ Căng thẳng</span>
+      Sau khi Lữ Hậu ra lệnh cấm vận thương mại, Triệu Đà <strong>xưng Hoàng Đế</strong> và tấn công các quận biên giới Hán. Đây là thách thức trực tiếp với thiên tử Trung Hoa.
+    </div>
+    Ngươi đang ngồi trong cung điện Phiên Ngung. Sứ giả nhà Hán tên <strong>Lục Giả</strong> — nhà hùng biện nổi tiếng — đến lần thứ hai. Lần trước ông ta đã thuyết phục ngươi nhận ấn vương. Nay ông ta quay lại sau khi Hán Văn Đế lên ngôi, mang theo thư và lời hòa giải.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Lục Giả — sứ giả nhà Hán</div>
+    "Đại vương, Hán Văn Đế lên ngôi, ông ấy là người nhân từ. Ông ấy đã cho mở lại các ải biên giới, trả lại họ hàng của đại vương tại Chân Định, sửa sang mộ phần tổ tiên ngài. Xin đại vương bỏ hiệu đế, quay về làm phên dậu của thiên triều."
+    <span class="src-note">🔵 Lời thoại dựng lại dựa trên tinh thần sử liệu, không phải nguyên văn.</span>
+  </div>
+
+  <!-- KC 4.1 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 1/3</span>
+    <div class="kc-q">Tại sao Triệu Đà quyết định bỏ hiệu Hoàng Đế và thần phục Hán Văn Đế?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4a')">A. Quân Hán mạnh hơn, Nam Việt không thể thắng trên chiến trường</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4a')">B. Triệu Đà sợ bị ám sát</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc4a')">C. Hán Văn Đế dùng ân nghĩa: mở ải, trả họ hàng, sửa mộ — khiến Triệu Đà không còn lý do chính đáng để đối kháng</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4a')">D. Lục Giả đe dọa sẽ tiêu diệt Nam Việt</button>
+    </div>
+    <div class="kc-fb" id="kc4a-fb"></div>
+  </div>
+
+  <!-- KC 4.2 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 2/3</span>
+    <div class="kc-q">Nam Việt tồn tại bao nhiêu năm từ khi Triệu Đà lập quốc đến khi nhà Hán diệt?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4b')">A. 50 năm (204–154 TCN)</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4b')">B. 80 năm (204–124 TCN)</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc4b')">C. 93 năm (204–111 TCN)</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4b')">D. 120 năm (204–84 TCN)</button>
+    </div>
+    <div class="kc-fb" id="kc4b-fb"></div>
+  </div>
+
+  <!-- KC 4.3: Điền vào chỗ trống -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 3/3 · Điền từ</span>
+    <div class="kc-q">Hoàn thành câu nói nổi tiếng của Triệu Đà với Lục Giả:</div>
+    <div style="font-size:16px;color:var(--parch-dim);line-height:1.8;margin-bottom:14px;font-style:italic;">"Ta ở đây đã lâu năm, nếu ta ở Trung Nguyên ta cũng không kém gì <span style="color:#f08a8a;">___</span>. Nhưng đây là đất phương Nam, ta là chúa của đất này."</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4c')">A. Hạng Vũ</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc4c')">B. Hán Cao Tổ (Lưu Bang)</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4c')">C. Tần Thủy Hoàng</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc4c')">D. Hán Văn Đế</button>
+    </div>
+    <div class="kc-fb" id="kc4c-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 4: Giải mã chiến lược -->
+  <div class="challenge reveal" id="chal4">
+    <div class="chal-tag">🧩 Thử Thách Chương 4 · Vận dụng tư duy chiến lược!</div>
+    <div class="chal-title">Bàn cờ ngoại giao — Chọn phản hồi khôn ngoan nhất</div>
+    <div class="chal-desc">Lục Giả đề nghị: mở lại thương mại biên giới đổi lấy việc bỏ hiệu Hoàng Đế. Với tư cách Triệu Đà, câu trả lời nào <strong>vừa giữ được thể diện, vừa bảo tồn thực lực, vừa không gây chiến không cần thiết</strong>?<br><br>Nhập <strong>chữ cái</strong> A, B hoặc C:<br><br><span style="color:var(--parch-dim);">A. "Không bao giờ! Ta là Hoàng Đế Nam Việt — không ai được ra lệnh cho ta!"<br>B. "Ta đồng ý — bỏ hiệu đế bề ngoài, nhận ấn vương của Hán, nhưng bên trong ta vẫn là chủ tuyệt đối của đất này."<br>C. "Ta sẽ xem xét nếu Hán trao cho ta thêm 5 quận nữa."</span></div>
+    <input class="chal-input" id="chal4-inp" placeholder="Nhập A, B hoặc C..." style="text-transform:uppercase;" onkeydown="if(event.key==='Enter')checkChal4()">
+    <br><button class="chal-btn" onclick="checkChal4()">🎯 Quyết định</button>
+    <div class="chal-fb" id="chal4-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Lục Giả ngồi chờ câu trả lời của ngươi...</div>
+  <div class="choices">
+    <button class="c-btn" id="c4a" onclick="go('s4A',15)" disabled>
+      <span class="c-letter">A</span><div>Từ chối hoàn toàn — tiếp tục xưng Đế, sẵn sàng chiến tranh với Hán.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c4b" onclick="go('s4B',35)" disabled>
+      <span class="c-letter">B</span><div>Chấp nhận điều kiện Lục Giả — bỏ hiệu Đế, nhận ấn Vương, đổi lấy quan hệ bình thường với Hán.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c4c" onclick="go('s4C',20)" disabled>
+      <span class="c-letter">C</span><div>Đàm phán thêm điều kiện — đòi quyền lợi thương mại lớn hơn trước khi đồng ý.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- S4A -->
+<div class="scene" id="s4A">
+  <div class="chap">📍 Lựa chọn A · Kiêu Hùng Nhưng Mạo Hiểm</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Hán Văn Đế là minh quân — ông không tấn công ngay nhưng sẽ tích lũy thực lực. <strong>Chiến tranh với nhà Hán là canh bạc mà ngay cả Triệu Đà không dám chắc thắng</strong>. Lịch sử chứng minh: 50 năm sau, Hán Vũ Đế đã diệt Nam Việt.</div>
+  <div class="choices-label">⚡ Cân nhắc lại...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4B',18)"><span class="c-letter">→</span><div>"Ta cần bảo tồn Nam Việt — không phải cái hiệu đế trên giấy."</div></button></div>
+</div>
+
+<!-- S4B -->
+<div class="scene" id="s4B">
+  <div class="chap">⭐ Lựa chọn B · Nghệ Thuật Ngoại Giao Tuyệt Đỉnh</div>
+  <div class="outcome good"><span class="outcome-icon">🎭</span><strong>Đây chính là nghệ thuật của Triệu Đà!</strong> Ông nhận ấn vương, viết thư xin lỗi Hán Văn Đế — nhưng ngay hôm đó vẫn tế trời bằng nghi lễ của thiên tử trong nội cung. Bề ngoài: thần; bên trong: vua.</div>
+  <div class="legend-moment"><span class="legend-icon">🎭</span>"Ta nhận ấn của thiên triều. Nhưng ta biết, và thiên triều cũng biết — đất phương Nam này là của ta. Đây là hòa bình thực dụng, không phải đầu hàng."<br><br><span style="font-size:14px;color:rgba(240,236,224,0.5);font-style:normal;font-family:'Crimson Pro',serif;">— Triệu Đà, theo sử sách Hán</span></div>
+  <div class="choices-label">⚡ Tiếp tục chương cuối...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5',0)"><span class="c-letter">→</span><div>Chương 5 · Di sản của Triệu Đà — Tranh luận ngàn năm!</div></button></div>
+</div>
+
+<!-- S4C -->
+<div class="scene" id="s4C">
+  <div class="chap">📍 Lựa chọn C · Đàm Phán Cứng</div>
+  <div class="outcome neutral"><span class="outcome-icon">🤝</span>Đòi thêm điều kiện cho thấy sức mạnh thương lượng — nhưng có thể làm Hán Văn Đế tự ái. Triệu Đà thực ra đã chọn cách <strong>thể hiện thiện chí trước, nhận thưởng sau</strong> — khôn khéo hơn.</div>
+  <div class="choices-label">⚡ Học nghệ thuật ngoại giao...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4B',18)"><span class="c-letter">→</span><div>"Thiện chí trước — lợi ích đến sau một cách tự nhiên hơn."</div></button></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CHƯƠNG 5: DI SẢN VÀ TRANH LUẬN
+════════════════════════════════════════════════ -->
+<div class="scene" id="s5">
+  <div class="chap">📜 Chương 5 · Di Sản Triệu Đà — Anh Hùng Hay Kẻ Xâm Lược? <span class="src-tag v" onclick="openSrcPopup('s5_disan')">📖 nguồn</span></div>
+
+  <div class="hero-img-wrap" id="img-s5">
+  <!-- Gợi ý ảnh: "Nanyue King Museum Guangzhou archaeological" -->
+  <img src="images/baotang.jpg" alt="Bảo Tàng Nam Việt Vương" class="hero-img"
+       onerror="this.parentElement.outerHTML='<div class=\'hero-placeholder\' id=\'img-s5\'><span class=\'ph-icon\'>🏺</span><span class=\'ph-label\'>ẢNH 7 · Bảo Tàng Nam Việt Vương</span></div>'">
+</div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">214 TCN</div><div class="tl-event">Nam tiến</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">204 TCN</div><div class="tl-event">Lập Nam Việt</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">179 TCN</div><div class="tl-event">Thôn tính Âu Lạc</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">~180 TCN</div><div class="tl-event">Đấu trí Hán triều</div></div>
+    <div class="tl-item"><div class="tl-dot current">5</div><div class="tl-year">137 TCN</div><div class="tl-event">Qua đời</div></div>
+  </div>
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">📚 Tranh luận lịch sử</span>
+      Triệu Đà trị vì Nam Việt <strong>67 năm</strong>, mất năm 137 TCN, thọ hơn 100 tuổi. Câu hỏi về vị trí của ông trong lịch sử Việt Nam vẫn còn <strong>gây tranh luận</strong> đến ngày nay.
+    </div>
+    Năm 137 TCN, ngươi — Triệu Đà — qua đời, thọ hơn 100 tuổi. Ngươi đã cai trị Nam Việt 67 năm. Đế quốc của ngươi tồn tại thêm 26 năm nữa trước khi bị Hán Vũ Đế tiêu diệt năm 111 TCN. Nhưng câu hỏi lịch sử quan trọng nhất vẫn còn đó: <em>Triệu Đà là người xây dựng hay phá hoại lịch sử Việt Nam?</em>
+  </div>
+
+  <!-- KC 5.1 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 1/3</span>
+    <div class="kc-q">Triệu Đà qua đời năm nào và thọ bao nhiêu tuổi (ước tính)?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5a')">A. Mất năm 150 TCN, thọ 80 tuổi</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc5a')">B. Mất năm 137 TCN, thọ hơn 100 tuổi</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5a')">C. Mất năm 111 TCN cùng lúc Nam Việt bị diệt</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5a')">D. Mất năm 120 TCN, thọ 90 tuổi</button>
+    </div>
+    <div class="kc-fb" id="kc5a-fb"></div>
+  </div>
+
+  <!-- KC 5.2 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 2/3</span>
+    <div class="kc-q">Nam Việt bị nhà Hán tiêu diệt năm nào, dưới triều vua nào của nhà Hán?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5b')">A. 120 TCN — Hán Cảnh Đế</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc5b')">B. 111 TCN — Hán Vũ Đế</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5b')">C. 100 TCN — Hán Chiêu Đế</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5b')">D. 90 TCN — Hán Tuyên Đế</button>
+    </div>
+    <div class="kc-fb" id="kc5b-fb"></div>
+  </div>
+
+  <!-- KC 5.3 -->
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức · 3/3</span>
+    <div class="kc-q">Lăng mộ của vua nào trong dòng họ Triệu tại Nam Việt được phát hiện và khai quật ở Quảng Châu năm 1983?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5c')">A. Triệu Đà — Vũ Đế</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc5c')">B. Triệu Muội — Văn Đế (cháu nội Triệu Đà)</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5c')">C. Triệu Hưng — Ai Đế</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5c')">D. Triệu Kiến Đức — Thuật Dương Vương</button>
+    </div>
+    <div class="kc-fb" id="kc5c-fb"></div>
+  </div>
+
+  <!-- CHALLENGE 5: THẢO LUẬN + LỰA CHỌN QUAN ĐIỂM -->
+  <div class="challenge reveal" id="chal5">
+    <div class="chal-tag">🏆 Thử Thách Cuối · Phán xét lịch sử — Câu hỏi khó nhất!</div>
+    <div class="chal-title">Triệu Đà: Anh hùng hay kẻ xâm lược?</div>
+    <div class="chal-desc">Trong lịch sử Việt Nam, có hai luồng quan điểm:<br><br>
+    <strong style="color:#f08a8a;">🔴 Phe "Xâm lược":</strong> Triệu Đà dùng mưu kế thôn tính Âu Lạc, áp đặt cai trị lên người Việt, mở đường cho 1000 năm Bắc thuộc.<br><br>
+    <strong style="color:#86e09a;">🟢 Phe "Xây dựng":</strong> Triệu Đà xây dựng nhà nước độc lập kháng Hán, hội nhập Hán-Việt, bảo tồn văn hóa địa phương — tốt hơn bị Hán trực tiếp thống trị.<br><br>
+    Bạn nghiêng về quan điểm nào? Nhập <strong>A</strong> (Xâm lược), <strong>B</strong> (Xây dựng), hoặc <strong>C</strong> (Cả hai — phức tạp hơn).</div>
+    <input class="chal-input" id="chal5-inp" placeholder="Nhập A, B hoặc C..." style="text-transform:uppercase;" onkeydown="if(event.key==='Enter')checkChal5()">
+    <br><button class="chal-btn" onclick="checkChal5()">⚖️ Phán xét</button>
+    <div class="chal-fb" id="chal5-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Nhìn lại toàn bộ hành trình — di sản quan trọng nhất của Triệu Đà là gì?</div>
+  <div class="choices">
+    <button class="c-btn" id="c5a" onclick="go('s5A',20)" disabled>
+      <span class="c-letter">A</span>
+      <div>Nghệ thuật ngoại giao — biết khi nào cứng, khi nào mềm, khi nào giả vờ để bảo toàn thực lực.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c5b" onclick="go('s5B',30)" disabled>
+      <span class="c-letter">B</span>
+      <div>Xây dựng nhà nước độc lập đầu tiên sau Văn Lang — một mô hình tự chủ chống lại sự đồng hóa của đế quốc phương Bắc.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+    <button class="c-btn" id="c5c" onclick="go('s5C',25)" disabled>
+      <span class="c-letter">C</span>
+      <div>Bài học về sự tự mãn của An Dương Vương — sức mạnh chỉ có giá trị khi đi kèm với cảnh giác và bí mật.<div class="c-sub">⚠️ Hoàn thành thử thách để mở khóa</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- S5A -->
+<div class="scene" id="s5A">
+  <div class="chap">⭐ Di sản A · Bậc Thầy Ngoại Giao</div>
+  <div class="outcome good"><span class="outcome-icon">🎭</span><strong>Triệu Đà là một trong những nhà ngoại giao xuất sắc nhất lịch sử cổ đại Đông Á.</strong> Đối mặt với ba đời vua Hán — Cao Tổ, Lữ Hậu, Văn Đế — ông không bao giờ bị khuất phục hoàn toàn, luôn tìm được thế cân bằng.</div>
+  <div class="choices-label">⚡ Xem kết quả cuối cùng...</div>
+  <div class="choices"><button class="c-btn" onclick="go('final',20)"><span class="c-letter">→</span><div>Xem điểm số và danh hiệu của bạn!</div></button></div>
+</div>
+
+<!-- S5B -->
+<div class="scene" id="s5B">
+  <div class="chap">⭐ Di sản B · Người Xây Dựng Nhà Nước</div>
+  <div class="outcome good"><span class="outcome-icon">🏛️</span><strong>Nam Việt Quốc là nhà nước cổ đại có tầm ảnh hưởng lớn</strong> — kết hợp văn hóa Hán và Việt, xây dựng thể chế độc lập, tồn tại 93 năm. Dù gây tranh cãi, đây là một thực thể chính trị đáng kể của lịch sử Đông Nam Á cổ đại.</div>
+  <div class="fact"><span class="fact-tag">📖 Lăng mộ Nam Việt Văn Đế</span>Năm 1983, Quảng Châu khai quật lăng mộ Triệu Muội (cháu Triệu Đà). Bên trong có hơn <strong>1000 hiện vật</strong>, bộ giáp ngọc bích — bằng chứng về một nền văn minh phong phú độc đáo.<div style="margin-top:9px;"><span class="trivia-chip">🏺 1000+ hiện vật</span><span class="trivia-chip">💚 Giáp ngọc bích</span><span class="trivia-chip">🏛️ Bảo tàng Nam Việt Vương</span></div></div>
+  <div class="choices-label">⚡ Xem kết quả...</div>
+  <div class="choices"><button class="c-btn" onclick="go('final',20)"><span class="c-letter">→</span><div>Xem điểm số và danh hiệu!</div></button></div>
+</div>
+
+<!-- S5C -->
+<div class="scene" id="s5C">
+  <div class="chap">⭐ Di sản C · Bài Học Từ An Dương Vương</div>
+  <div class="outcome good"><span class="outcome-icon">🎯</span><strong>Triệu Đà chiến thắng vì An Dương Vương thất bại.</strong> Câu chuyện này là gương soi ngàn đời: sức mạnh vũ khí vô ích nếu bí mật bị lộ, nếu lòng người bị mua chuộc. Triệu Đà không mạnh hơn — ông chỉ kiên nhẫn và khéo léo hơn.</div>
+  <div class="choices-label">⚡ Xem kết quả...</div>
+  <div class="choices"><button class="c-btn" onclick="go('final',20)"><span class="c-letter">→</span><div>Xem điểm số và danh hiệu!</div></button></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     FINAL
+════════════════════════════════════════════════ -->
+<div class="scene" id="final">
+  <div class="final">
+    <div class="final-seal" id="finalSeal">👑</div>
+    <div class="final-h" id="finalH">Hành Trình Hoàn Thành!</div>
+    <div class="final-pts" id="finalPts">0</div>
+    <div class="final-rank" id="finalRank">—</div>
+    <div class="final-desc" id="finalDesc">...</div>
+    <div class="achievements" id="achievements"></div>
+    <div class="final-lesson">
+      <span class="fl-tag">📚 Bài học từ Triệu Đà — 5 bài học chiến lược</span>
+      <strong>1. Tầm nhìn địa chính trị:</strong> Khi Tần sụp đổ, Triệu Đà ngay lập tức hành động — không chờ thiên hạ ổn định mới tính. Người thắng luôn đi trước một bước.<br><br>
+      <strong>2. Thu phục lòng người:</strong> Lấy vợ người Việt, mặc áo người Việt — không cai trị bằng súng ống mà bằng lòng tin. Đây là bí quyết giữ vùng đất rộng lớn hỗn hợp dân tộc.<br><br>
+      <strong>3. Ngoại giao thực dụng:</strong> Biết khi nào nên cứng, khi nào nên mềm. Bỏ cái hiệu đế trên giấy để giữ thực quyền — đây là đỉnh cao của tư duy chiến lược.<br><br>
+      <strong>4. Kiên nhẫn là vũ khí:</strong> Chờ 6+ năm để Trọng Thủy hoàn thành nhiệm vụ. Không vội vàng khi chưa đủ điều kiện.<br><br>
+      <strong>5. Di sản phức tạp:</strong> <em>Lịch sử không phải trắng đen — Triệu Đà là người xây dựng lẫn kẻ chinh phục. Hiểu được sự phức tạp đó mới là hiểu lịch sử thực sự.</em>
+    </div>
+    <div class="btn-row">
+      <button class="btn-restart" onclick="restart()">🔄 Chơi lại</button>
+      <a href="cau-chuyen.html" class="btn-home">📖 Câu chuyện khác</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .wrap -->
+
+<script>
+// ── PARTICLES ───────────────────────────────────
+(function(){
+  const c=document.getElementById('particles');
+  const colors=['rgba(139,0,0,0.6)','rgba(201,150,58,0.5)','rgba(192,57,43,0.4)'];
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');p.className='ptcl';
+    const sz=Math.random()*3+1;
+    p.style.cssText=`left:${Math.random()*100}%;top:${80+Math.random()*20}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*3)]};animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+    c.appendChild(p);
+  }
+})();
+
+// ── SCROLL REVEAL ────────────────────────────────
+const ro=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));}
+initReveal();
+
+// ── AUDIO ────────────────────────────────────────
+let actx=null;
+function getCtx(){if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return actx;}
+function tone(f,t,d,v){const c=getCtx();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||0.07,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+(d||0.4));o.start();o.stop(c.currentTime+(d||0.4));}
+function playOk(){tone(550,'sine',0.12,0.09);setTimeout(()=>tone(770,'sine',0.18,0.09),100);}
+function playFail(){tone(200,'sine',0.28,0.06);}
+function playComboSound(){tone(400,'sine',0.08,0.08);setTimeout(()=>tone(500,'sine',0.08,0.1),70);setTimeout(()=>tone(620,'sine',0.18,0.12),140);}
+function playChallengeOpen(){tone(330,'triangle',0.2,0.07);setTimeout(()=>tone(440,'triangle',0.2,0.09),150);}
+
+// ── STATE ────────────────────────────────────────
+let pts=0,streak=0,maxStreak=0,totalCorrect=0,totalKC=0;
+let kcAnswered={},challDone={};
+
+// ── SCENE NAV ────────────────────────────────────
+const sceneProg={
+  'cover':0,
+  's1':4,'s1A':8,'s1B':18,'s1C':9,
+  's2':22,'s2A':26,'s2B':38,'s2C':35,
+  's3':45,'s3A':48,'s3B':62,'s3C':52,
+  's4':68,'s4A':72,'s4B':84,'s4C':76,
+  's5':88,'s5A':96,'s5B':96,'s5C':96,
+  'final':100
+};
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+let sceneRewarded={};
+
+function go(id,addPts){
+  if((addPts||0)>0 && !sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    pts+=addPts;
+    showPtsPopup('+'+addPts);
+  }
+  updateScore();
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{el.querySelectorAll('.reveal').forEach(r=>ro.observe(r));},80);}
+  document.getElementById('prog').style.width=(sceneProg[id]||0)+'%';
+  if(id==='final')showFinal();
+  updateJourneyMap(id);
+  if(id==='s1'&&pts===0&&!challDone['c1']&&!sceneRewarded['s1_greet']){
+    sceneRewarded['s1_greet']=true;
+    setTimeout(()=>showAdviser("Chào hậu thế! Ta — Triệu Đà — sẽ dẫn ngươi qua hành trình xây dựng Nam Việt Quốc. Hãy suy nghĩ kỹ từng quyết định!"),900);
+  } else {
+    maybeAdviser();
+  }
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+function showPtsPopup(txt){
+  const p=document.getElementById('ptsPopup');
+  p.textContent=txt;p.className='pts-popup';
+  void p.offsetWidth;p.className='pts-popup show';
+}
+
+function updateScore(){
+  const el=document.getElementById('scoreNum');
+  el.textContent=pts;el.classList.add('bump');
+  setTimeout(()=>el.classList.remove('bump'),300);
+  document.getElementById('scoreRank').textContent=getRank(pts).label;
+  updatePower();
+}
+
+function updatePower(){
+  const pct=Math.min(100,Math.round((pts/150)*100));
+  ['powerMeter','powerMeter2'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.width=pct+'%';});
+}
+
+function getRank(p){
+  if(p>=120)return{label:'👑 Vũ Đế Nam Việt',emoji:'👑',desc:'Xuất sắc tuyệt đối! Bạn có tầm nhìn và trí tuệ chiến lược của Triệu Đà — vừa biết xây dựng vừa biết bảo vệ, vừa cứng rắn vừa mềm mỏng đúng lúc. Đúng là bậc đế vương!'};
+  if(p>=80)return{label:'⚔️ Đại Tướng Phiên Ngung',emoji:'⚔️',desc:'Rất tốt! Bạn hiểu nghệ thuật chiến lược và ngoại giao của Triệu Đà. Thêm chút kiên nhẫn và bạn sẽ là vua thực sự của phương Nam!'};
+  if(p>=45)return{label:'🪖 Quan Huyện Long Xuyên',emoji:'🪖',desc:'Khá tốt! Bạn đã nắm được những bài học cơ bản từ hành trình Triệu Đà. Hãy đọc thêm về Nam Việt Quốc để hiểu sâu hơn!'};
+  return{label:'📜 Thư Sinh Tìm Sử',emoji:'📜',desc:'Bạn mới bắt đầu khám phá lịch sử Nam Việt Quốc. Hãy thử lại — mỗi lần chơi là một bài học lịch sử mới!'};
+}
+
+// ── STREAK & COMBO ───────────────────────────────
+function addStreak(){
+  streak++;if(streak>maxStreak)maxStreak=streak;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent=streak;
+  b.classList.add('show');
+  if(streak>=3){b.classList.add('fire');showCombo(streak);}
+  else b.classList.remove('fire');
+}
+function resetStreak(){streak=0;document.getElementById('streakBadge').classList.remove('show','fire');}
+function showCombo(n){
+  const labels={3:'🔥 COMBO x3',4:'⚡ THẦN TỐC x4',5:'💥 VÔ ĐỊCH x5',6:'👑 VŨ ĐẾ x6'};
+  const bonus={3:12,4:18,5:25,6:35};
+  const lbl=labels[n]||('⚔️ HUYỀN THOẠI x'+n);
+  const bns=bonus[n]||35;
+  document.getElementById('comboLabel').textContent=lbl;
+  document.getElementById('comboPtsLabel').textContent='+'+bns+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bns;updateScore();showPtsPopup('+'+bns+' COMBO!');
+  playComboSound();
+}
+
+// ── ADVISER BOX ──────────────────────────────────
+const advMsgs=[
+  "Đại vương, kẻ thù chưa bại trận là kẻ thù vẫn còn nguy hiểm!",
+  "Đất phương Nam này rộng lớn — cần người trị, không phải chỉ cần kiếm.",
+  "Trung Nguyên loạn — thời cơ của ta đã đến rồi!",
+  "Nỏ thần chưa phá được bằng sức mạnh — hãy thử bằng trí tuệ.",
+  "Nhà Hán mạnh nhưng ta có cái họ không có: lòng người phương Nam.",
+  "Kiên nhẫn là chiến thuật đầu tiên của người chiến thắng.",
+];
+let advCount=0,advTimeout=null;
+function showAdviser(msg){
+  document.getElementById('adviserText').textContent=msg||advMsgs[Math.floor(Math.random()*advMsgs.length)];
+  document.getElementById('adviserBox').classList.add('show');
+  if(advTimeout)clearTimeout(advTimeout);
+  advTimeout=setTimeout(closeAdviser,6500);
+}
+function closeAdviser(){document.getElementById('adviserBox').classList.remove('show');}
+function maybeAdviser(){advCount++;if(advCount%3===0)setTimeout(()=>showAdviser(),700);}
+
+// ── KC FEEDBACK ──────────────────────────────────
+const kcFB={
+  'kc1a':{ok:'Đúng! Triệu Đà gốc Chân Định (Hà Bắc, Trung Quốc ngày nay), thuộc nước Triệu cũ bị Tần tiêu diệt. Ông phục vụ nhà Tần như một quan lại địa phương.',no:'Đáp án đúng là B. Triệu Đà quê Chân Định, nước Triệu cũ — không phải người Tần gốc. Ông làm quan huyện lệnh Long Xuyên cho nhà Tần.'},
+  'kc1b':{ok:'Chính xác! Tần Thủy Hoàng phái 50 vạn quân chia năm đường tiến xuống chinh phục Bách Việt năm 214 TCN — đây là chiến dịch quân sự lớn nhất thời cổ đại Đông Á.',no:'50 vạn quân chia năm đường — đây là chiến dịch khổng lồ của Tần Thủy Hoàng, một trong những chiến dịch quân sự lớn nhất lịch sử cổ đại.'},
+  'kc2a':{ok:'Đúng! Phiên Ngung (Panyu) chính là Quảng Châu ngày nay — kinh đô của Nam Việt Quốc suốt 93 năm tồn tại.',no:'Kinh đô Nam Việt là Phiên Ngung — Quảng Châu ngày nay, không phải Hà Nội hay các thành phố Việt Nam hiện tại.'},
+  'kc2b':{ok:'Đúng! Triệu Đà dùng chiến thuật "hai mặt": với nhà Hán là Vũ Vương, nhưng bên trong nội bộ tự xưng Vũ Đế. Ông tế trời theo nghi lễ thiên tử trong nội cung.',no:'Đáp án là Vũ Đế — trong nội bộ ông xưng Hoàng Đế nhưng khi giao tiếp với nhà Hán chỉ dám nhận là Vũ Vương.'},
+  'kc3a':{ok:'Chính xác! Nỏ thần Kim Quy bắn một lần hàng trăm mũi — quân Triệu Đà thảm bại nhiều lần trước vũ khí này. Đó là lý do ông phải chuyển sang dùng mưu kế.',no:'Nỏ thần Kim Quy là nguyên nhân chính — vũ khí bất đối xứng khiến tấn công thẳng là tự sát. Triệu Đà buộc phải nghĩ đến kế khác.'},
+  'kc3b':{ok:'Đúng! Tướng Cao Lỗ dùng móng vuốt Kim Quy làm lẫy nỏ — đây là chi tiết rõ ràng trong sử và truyền thuyết.',no:'Tướng Cao Lỗ là người chế tạo. Thần Kim Quy cho móng vuốt — Cao Lỗ dùng đó làm lẫy thần. Hai người, một vũ khí.'},
+  'kc4a':{ok:'Sâu sắc! Hán Văn Đế dùng "tâm công" thay vì dùng binh. Sửa mộ tổ tiên, trả họ hàng — đánh vào điểm yếu tình cảm của Triệu Đà, làm ông không còn lý do chính đáng để đối địch.',no:'Đáp án C. Hán Văn Đế không ép bằng vũ lực mà dùng ân tình: sửa mộ tổ tiên Triệu Đà tại Chân Định, thả họ hàng — đây là "tâm công" tinh tế nhất.'},
+  'kc4b':{ok:'Đúng! Nam Việt Quốc tồn tại 93 năm (204–111 TCN) — một kỳ tích độc lập hiếm có trước làn sóng bành trướng của Hán triều.',no:'93 năm (204–111 TCN). Từ khi Triệu Đà tự lập đến khi Hán Vũ Đế sai quân tiêu diệt — một trong những nhà nước độc lập lâu nhất Đông Nam Á cổ đại.'},
+  'kc4c':{ok:'Đúng! Triệu Đà so sánh mình với Hán Cao Tổ — ông nói đại ý: ta cũng là anh hùng như Lưu Bang, chỉ khác là ta ở phương Nam.',no:'Đáp án B — Hán Cao Tổ (Lưu Bang). Đây là tuyên bố tự tôn kiêu hãnh nhất của Triệu Đà: nếu ta ở Trung Nguyên, ta cũng không kém Lưu Bang.'},
+  'kc5a':{ok:'Đúng! Triệu Đà mất năm 137 TCN, thọ hơn 100 tuổi — một trong những người cai trị sống lâu nhất lịch sử cổ đại. Ông trị vì 67 năm liên tục.',no:'Triệu Đà mất năm 137 TCN. Ông thọ hơn 100 tuổi và trị vì 67 năm — kỷ lục hiếm có thời cổ đại.'},
+  'kc5b':{ok:'Chính xác! Năm 111 TCN, Hán Vũ Đế sai hai đạo quân (10 vạn) tiêu diệt Nam Việt. Vua cuối là Triệu Kiến Đức bị bắt, đất chia thành 9 quận Hán.',no:'111 TCN — Hán Vũ Đế. Đây là vị hoàng đế mở rộng Hán triều mạnh nhất, cũng tiêu diệt Hung Nô ở phía Bắc trong cùng thời kỳ.'},
+  'kc5c':{ok:'Đúng! Lăng mộ Triệu Muội (Văn Đế) phát hiện năm 1983 tại Quảng Châu là một trong những khám phá khảo cổ quan trọng nhất thế kỷ 20 — hơn 1000 hiện vật, bộ giáp ngọc bích hoàn chỉnh.',no:'Đáp án B — Triệu Muội (Văn Đế), cháu nội Triệu Đà. Lăng mộ phát hiện 1983 tại Quảng Châu — nay là Bảo tàng Nam Việt Vương nổi tiếng.'},
+};
+
+function ansKC(btn,correct,id){
+  if(kcAnswered[id])return;
+  kcAnswered[id]=true;totalKC++;
+  const container=btn.parentElement;
+  container.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(correct){
+    btn.classList.add('correct');
+    pts+=6;totalCorrect++;updateScore();showPtsPopup('+6');
+    fb.textContent='✅ Chính xác! +6 điểm. '+(kcFB[id]?.ok||'');
+    fb.className='kc-fb show ok';
+    addStreak();playOk();
+  } else {
+    btn.classList.add('wrong');
+    container.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf('true')>-1)b.classList.add('correct');});
+    fb.textContent='❌ Chưa đúng. '+(kcFB[id]?.no||'');
+    fb.className='kc-fb show no';
+    resetStreak();playFail();
+    setTimeout(()=>showAdviser(),500);
+  }
+}
+
+// ── CHALLENGE 1: Tên quận ────────────────────────
+function checkChal1(){
+  if(challDone['c1'])return;
+  const v=document.getElementById('chal1-inp').value.trim().toLowerCase();
+  const fb=document.getElementById('chal1-fb');
+  const answers=['tượng','tuong','quận tượng','quan tuong'];
+  if(answers.some(a=>v.includes(a))){
+    fb.textContent='✅ Chính xác! Ba quận là Nam Hải, Quế Lâm và Tượng Quận — vùng đất Triệu Đà cai quản. +15 điểm!';
+    fb.className='chal-fb show ok';
+    pts+=15;updateScore();showPtsPopup('+15');
+    challDone['c1']=true;playOk();
+    unlockChoices(['c1a','c1b','c1c']);
+    playChallengeOpen();
+  } else {
+    fb.textContent='❌ Chưa đúng. Gợi ý: tên quận đó liên quan đến con voi (象 = tượng). Ba quận: Nam Hải, Quế Lâm và... ?';
+    fb.className='chal-fb show no';
+    playFail();
+  }
+}
+
+// ── CHALLENGE 2: Giải mã năm ─────────────────────
+function checkChal2(){
+  if(challDone['c2'])return;
+  const v=parseInt(document.getElementById('chal2-inp').value.trim());
+  const fb=document.getElementById('chal2-fb');
+  if(v===201){
+    fb.textContent='✅ Đúng! 202 - 1 = 201 TCN. Lưu Bang thống nhất Trung Hoa sau trận Cai Hạ. +10 điểm!';
+    fb.className='chal-fb show ok';
+    pts+=10;updateScore();showPtsPopup('+10');
+    challDone['c2']=true;playOk();
+    unlockChoices(['c2a','c2b','c2c']);
+    playChallengeOpen();
+  } else {
+    fb.textContent='❌ Chưa đúng. Bài toán đơn giản: 202 trừ 1 = ? (năm Lưu Bang thống nhất)';
+    fb.className='chal-fb show no';
+    playFail();
+  }
+}
+
+// ── CHALLENGE 3: Sắp xếp thứ tự ─────────────────
+let dragSrc3=null;
+document.addEventListener('DOMContentLoaded',()=>{
+  initOrderDrag('orderList3');
+  initDragMatch('dragArea2c');
+});
+
+function initOrderDrag(listId){
+  const list=document.getElementById(listId);
+  if(!list)return;
+  list.querySelectorAll('.order-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{dragSrc3=item;item.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    item.addEventListener('dragend',()=>{dragSrc3=null;list.querySelectorAll('.order-item').forEach(i=>i.classList.remove('dragging','over-top','over-bot'));});
+    item.addEventListener('dragover',e=>{e.preventDefault();if(dragSrc3&&dragSrc3!==item){const rect=item.getBoundingClientRect();const mid=rect.top+rect.height/2;list.querySelectorAll('.order-item').forEach(i=>i.classList.remove('over-top','over-bot'));item.classList.add(e.clientY<mid?'over-top':'over-bot');}});
+    item.addEventListener('drop',e=>{e.preventDefault();if(dragSrc3&&dragSrc3!==item){const rect=item.getBoundingClientRect();const mid=rect.top+rect.height/2;if(e.clientY<mid)list.insertBefore(dragSrc3,item);else list.insertBefore(dragSrc3,item.nextSibling);list.querySelectorAll('.order-item').forEach(i=>i.classList.remove('over-top','over-bot'));}});
+  });
+}
+
+function checkOrder3(){
+  if(challDone['c3'])return;
+  const list=document.getElementById('orderList3');
+  const items=[...list.querySelectorAll('.order-item')];
+  const order=items.map(i=>i.getAttribute('data-id'));
+  // correct: E A B C D
+  const correct=['E','A','B','C','D'];
+  const fb=document.getElementById('chal3-fb');
+  if(JSON.stringify(order)===JSON.stringify(correct)){
+    fb.textContent='✅ Hoàn hảo! Bạn xác định đúng toàn bộ trình tự 5 bước kế hoạch của Triệu Đà. +20 điểm!';
+    fb.className='chal-fb show ok';
+    pts+=20;updateScore();showPtsPopup('+20');
+    challDone['c3']=true;playOk();
+    unlockChoices(['c3a','c3b','c3c']);
+    playChallengeOpen();
+    items.forEach((item,i)=>{item.querySelector('.order-num').textContent=i+1;item.style.borderColor='rgba(76,175,80,0.5)';item.style.background='rgba(30,90,30,0.15)';});
+  } else {
+    fb.textContent='❌ Thứ tự chưa đúng. Hãy nghĩ lại: bước đầu tiên phải là lời cầu hôn, cuối cùng là tổng tấn công. Kéo thả lại và thử nữa!';
+    fb.className='chal-fb show no';
+    playFail();
+  }
+}
+
+// ── DRAG MATCH (KC 2c) ───────────────────────────
+let draggedItem=null;
+function initDragMatch(areaId){
+  const area=document.getElementById(areaId);
+  if(!area)return;
+  area.querySelectorAll('.drag-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{draggedItem=item;item.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    item.addEventListener('dragend',()=>{if(draggedItem)draggedItem.classList.remove('dragging');draggedItem=null;});
+  });
+  area.querySelectorAll('.drop-zone').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over');});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('over');
+      if(draggedItem){
+        document.querySelectorAll('.drop-zone').forEach(z=>{if(z.getAttribute('data-dropped')===draggedItem.getAttribute('data-val')){z.removeAttribute('data-dropped');z.textContent=z.getAttribute('data-original')||z.textContent;z.classList.remove('filled');}});
+        if(!zone.getAttribute('data-original'))zone.setAttribute('data-original',zone.textContent);
+        zone.textContent=draggedItem.textContent;
+        zone.setAttribute('data-dropped',draggedItem.getAttribute('data-val'));
+        zone.classList.add('filled');
+      }
+    });
+  });
+}
+
+function checkDrag2c(){
+  if(challDone['c2c'])return;
+  const zones=document.querySelectorAll('#dragArea2c .drop-zone');
+  let allCorrect=true;
+  zones.forEach(z=>{
+    const dropped=z.getAttribute('data-dropped');
+    const correct=z.getAttribute('data-correct');
+    z.classList.remove('correct-drop','wrong-drop');
+    if(dropped===correct)z.classList.add('correct-drop');
+    else{z.classList.add('wrong-drop');allCorrect=false;}
+  });
+  const fb=document.getElementById('kc2c-fb');
+  if(allCorrect){
+    challDone['c2c']=true;
+    fb.textContent='✅ Ghép đôi hoàn hảo! +8 điểm. Triệu Đà dùng mọi công cụ — từ hôn nhân đến chính trị — để gắn kết dân hai sắc tộc.';
+    fb.className='chal-fb show ok';
+    pts+=8;updateScore();showPtsPopup('+8');
+    playOk();addStreak();
+  } else {
+    fb.textContent='❌ Có vài chỗ chưa khớp. Hãy kéo lại và thử khớp từng chính sách với mục đích logic nhất!';
+    fb.className='chal-fb show no';
+    playFail();resetStreak();
+  }
+}
+
+// ── CHALLENGE 4: Lựa chọn chiến lược ────────────
+function checkChal4(){
+  if(challDone['c4'])return;
+  const v=document.getElementById('chal4-inp').value.trim().toUpperCase();
+  const fb=document.getElementById('chal4-fb');
+  if(v==='B'){
+    fb.textContent='✅ Xuất sắc! Đây chính xác là điều Triệu Đà đã làm — ngoại giao hai mặt là nghệ thuật sinh tồn cao nhất của ông. +15 điểm!';
+    fb.className='chal-fb show ok';
+    pts+=15;updateScore();showPtsPopup('+15');
+    challDone['c4']=true;playOk();
+    unlockChoices(['c4a','c4b','c4c']);
+    playChallengeOpen();
+  } else if(v==='A'){
+    fb.textContent='❌ Từ chối cứng nhắc sẽ dẫn đến chiến tranh không cần thiết. Triệu Đà khôn ngoan hơn — ông biết khi nào nên "nhún" để giữ thực quyền.';
+    fb.className='chal-fb show no';
+    playFail();
+  } else if(v==='C'){
+    fb.textContent='❌ Đòi thêm điều kiện có thể phá vỡ đàm phán. Hán Văn Đế đã cho rất nhiều — đòi thêm là tham lam mà không cần thiết.';
+    fb.className='chal-fb show no';
+    playFail();
+  } else {
+    fb.textContent='❌ Nhập A, B hoặc C.';
+    fb.className='chal-fb show no';
+  }
+}
+
+// ── CHALLENGE 5: Phán xét lịch sử ───────────────
+function checkChal5(){
+  if(challDone['c5'])return;
+  const v=document.getElementById('chal5-inp').value.trim().toUpperCase();
+  const fb=document.getElementById('chal5-fb');
+  const msgs={
+    'A':'Quan điểm có cơ sở! Triệu Đà thực sự đã dùng mưu kế thôn tính Âu Lạc và mở đường cho giai đoạn Bắc thuộc. +12 điểm — bạn có tư duy phê phán lịch sử!',
+    'B':'Quan điểm thú vị! Nam Việt Quốc quả thực là rào cản độc lập trước khi nhà Hán trực tiếp cai trị. +12 điểm — bạn nhìn thấy mặt tích cực của lịch sử!',
+    'C':'Đây là cách nhìn lịch sử chín chắn nhất! Triệu Đà vừa là người xây dựng vừa là kẻ chinh phục — lịch sử không bao giờ đơn giản. +18 điểm — tư duy sử học sâu sắc!'
+  };
+  if(['A','B','C'].includes(v)){
+    const bonus=v==='C'?18:12;
+    fb.textContent='✅ '+msgs[v];
+    fb.className='chal-fb show ok';
+    pts+=bonus;updateScore();showPtsPopup('+'+bonus);
+    challDone['c5']=true;playOk();
+    unlockChoices(['c5a','c5b','c5c']);
+    playChallengeOpen();
+  } else {
+    fb.textContent='❌ Nhập A, B hoặc C để đưa ra phán xét lịch sử của bạn!';
+    fb.className='chal-fb show no';
+  }
+}
+
+// ── UNLOCK HELPERS ───────────────────────────────
+function unlockChoices(ids){
+  ids.forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn){
+      btn.disabled=false;
+      btn.querySelectorAll('.c-sub').forEach(sub=>{if(sub.textContent.includes('Hoàn thành'))sub.textContent='';});
+    }
+  });
+}
+
+// ── NGUỒN SỬ LIỆU (bổ sung) ──────────────────────
+const sourceDB={
+  s1_namtien:{v:true,title:'Chiến dịch Nam chinh của Tần Thủy Hoàng, 214 TCN',body:'Nhà Tần sai 50 vạn quân chia năm đường tiến xuống chinh phục Bách Việt. Triệu Đà là một trong những tướng chỉ huy, giữ chức huyện lệnh Long Xuyên thuộc quận Nam Hải mới lập.',cite:'Sử Ký Tư Mã Thiên — Nam Việt Úy Đà Liệt Truyện'},
+  s2_lapquoc:{v:true,title:'Triệu Đà lập nước Nam Việt, 204 TCN',body:'Sau khi nhà Tần sụp đổ, Triệu Đà tự xưng Nam Việt Vũ Vương (Vũ Đế trong nội bộ), đóng đô tại Phiên Ngung — Quảng Châu ngày nay.',cite:'Sử Ký Tư Mã Thiên; Đại Việt Sử Ký Toàn Thư'},
+  s3_aulac:{v:false,title:'Kế hôn nhân và thôn tính Âu Lạc, ~185–179 TCN',body:'Chi tiết Trọng Thủy — Mỵ Châu và lẫy nỏ thần chủ yếu đến từ truyền thuyết dân gian Việt Nam, được Đại Việt Sử Ký Toàn Thư ghi lại; sự kiện Âu Lạc bị sáp nhập vào Nam Việt năm 179 TCN thì có cơ sở sử liệu.',cite:'Đại Việt Sử Ký Toàn Thư — truyền thuyết An Dương Vương'},
+  s4_hantrieu:{v:true,title:'Triệu Đà và ba đời vua Hán, 196–180 TCN',body:'Triệu Đà nhận sắc phong của Hán Cao Tổ, xưng đế khi bị Lữ Hậu cấm vận, rồi thần phục trở lại trước sự khôn khéo (dùng ân nghĩa) của Hán Văn Đế qua sứ giả Lục Giả.',cite:'Sử Ký Tư Mã Thiên — Nam Việt Úy Đà Liệt Truyện'},
+  s5_disan:{v:true,title:'Nam Việt Quốc sụp đổ, 111 TCN',body:'Sau khi Triệu Đà mất năm 137 TCN, Nam Việt Quốc tồn tại thêm 26 năm trước khi bị Hán Vũ Đế tiêu diệt, sáp nhập thành các quận của nhà Hán. Lăng mộ Triệu Muội — cháu nội Triệu Đà — được khai quật năm 1983 tại Quảng Châu.',cite:'Sử Ký Tư Mã Thiên; khảo cổ Bảo tàng Nam Việt Vương, Quảng Châu'}
+};
+function openSrcPopup(key){
+  const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcBadge').textContent=d.v?'📖 ĐÃ KIỂM CHỨNG':'🔵 DỰNG LẠI MINH HỌA';
+  document.getElementById('srcBadge').className='src-popup-badge '+(d.v?'v':'d');
+  document.getElementById('srcTitle').textContent=d.title;
+  document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;
+  document.getElementById('srcOverlay').classList.add('show');
+  tone(700,'sine',0.08,0.08);
+}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+// ── BẢN ĐỒ HÀNH TRÌNH (bổ sung) ──────────────────
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+const mapUnlockStages={s2:['pt-longxuyen'],s3:['pt-phienngung'],s4:['pt-coloa'],s5:['pt-bienhan','pt-mo']};
+function updateJourneyMap(id){
+  const keys=mapUnlockStages[id];if(!keys)return;
+  let unlockedSomething=false;
+  keys.forEach(k=>{document.querySelectorAll('.'+k).forEach(el=>{if(el.classList.contains('locked')){el.classList.remove('locked');unlockedSomething=true;}});});
+  if(unlockedSomething)showPtsPopup('🗺️ Mở khóa!');
+}
+
+// ── ACHIEVEMENTS ─────────────────────────────────
+const allAch=[
+  {id:'historian',icon:'📜',name:'Sử Gia',cond:()=>totalCorrect>=5},
+  {id:'strategist',icon:'🎯',name:'Chiến Lược Gia',cond:()=>pts>=80},
+  {id:'emperor',icon:'👑',name:'Vũ Đế',cond:()=>pts>=120},
+  {id:'streak',icon:'🔥',name:'Liên Hoàn',cond:()=>maxStreak>=3},
+  {id:'perfect',icon:'⭐',name:'Toàn Diện',cond:()=>totalCorrect>=8},
+  {id:'challenger',icon:'⚔️',name:'Chiến Binh',cond:()=>Object.keys(challDone).length>=4},
+];
+function buildAch(){
+  const w=document.getElementById('achievements');
+  if(!w)return;w.innerHTML='';
+  allAch.forEach((a,i)=>{
+    const locked=!a.cond();
+    const d=document.createElement('div');
+    d.className='ach-card'+(locked?' locked':'');
+    d.style.animationDelay=(i*0.1)+'s';
+    d.innerHTML=`<span class="ach-icon">${a.icon}</span><div class="ach-name">${locked?'???':a.name}</div>`;
+    w.appendChild(d);
+  });
+}
+
+function showFinal(){
+  const r=getRank(pts);
+  document.getElementById('finalSeal').textContent=r.emoji;
+  document.getElementById('finalH').textContent=r.label==='👑 Vũ Đế Nam Việt'?'🏆 Vũ Đế Nam Việt Bất Thế!':r.label==='⚔️ Đại Tướng Phiên Ngung'?'⚔️ Đại Tướng Bách Chiến!':r.label==='🪖 Quan Huyện Long Xuyên'?'🪖 Quan Huyện Vươn Lên!':'📜 Hành Trình Bắt Đầu!';
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=r.label;
+  document.getElementById('finalDesc').textContent=r.desc;
+  buildAch();
+  setTimeout(()=>showAdviser("Hành trình Triệu Đà đã kết thúc. Nhưng bài học về chiến lược và ngoại giao của ông còn mãi. Hậu thế hãy học lấy!"),1200);
+}
+
+function restart(){
+  pts=0;streak=0;maxStreak=0;totalCorrect=0;totalKC=0;
+  kcAnswered={};challDone={};
+  sceneHistory=['cover'];historyIndex=0;sceneRewarded={};
+  updateScore();
+  document.getElementById('prog').style.width='4%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  document.getElementById('streakBadge').classList.remove('show','fire');
+  ['c1a','c1b','c1c','c2a','c2b','c2c','c3a','c3b','c3c','c4a','c4b','c4c','c5a','c5b','c5c'].forEach(id=>{
+    const btn=document.getElementById(id);
+    if(btn){btn.disabled=true;const sub=btn.querySelector('.c-sub');if(sub&&!sub.textContent.includes('Hoàn thành'))sub.textContent='⚠️ Hoàn thành thử thách để mở khóa';}
+  });
+  document.querySelectorAll('.jmap-pt,.jmap-lbl,.jmap-yr').forEach(el=>{if(!el.classList.contains('pt-hamduong'))el.classList.add('locked');});
+  window.scrollTo({top:0,behavior:'smooth'});
+  closeAdviser();
+  updateNavButtons();
+}
+
+// ── HIỆU ỨNG HẠT LỬA MÀN COVER (bổ sung) ──────────
+(function(){
+  const c=document.getElementById('coverEmbers');
+  if(!c)return;
+  const colors=['rgba(139,0,0,0.7)','rgba(201,150,58,0.6)','rgba(192,57,43,0.5)'];
+  for(let i=0;i<22;i++){
+    const p=document.createElement('div');p.className='ptcl';
+    const sz=Math.random()*3+1.5;
+    p.style.cssText=`left:${Math.random()*100}%;top:${70+Math.random()*30}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*3)]};animation-duration:${7+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;
+    c.appendChild(p);
+  }
+})();
+
+// ── INIT ─────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  initOrderDrag('orderList3');
+  initDragMatch('dragArea2c');
+  advCount=0; // không hiện cố vấn ở màn cover, chỉ hiện từ Chương 1 trở đi
+});
+</script>
+</body>
+</html>

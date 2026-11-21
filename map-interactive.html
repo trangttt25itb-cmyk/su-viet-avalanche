@@ -1,0 +1,2298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bản Đồ Lịch Sử Việt Nam - Nâng Cấp</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ════ HEADER ════ */
+        .map-header {
+            position: relative;
+            background:
+                radial-gradient(ellipse 80% 140% at 15% 0%, rgba(243,156,18,0.16) 0%, transparent 55%),
+                linear-gradient(135deg, #14142a 0%, #1a1a2e 55%, #16213e 100%);
+            color: white;
+            padding: 14px 22px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+            z-index: 10;
+            border-bottom: 2px solid #f39c12;
+            overflow: hidden;
+        }
+
+        .map-header::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -30%;
+            width: 30%; height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.06), transparent);
+            animation: headerShimmer 6s ease-in-out infinite;
+        }
+
+        @keyframes headerShimmer {
+            0% { left: -30%; }
+            50% { left: 110%; }
+            100% { left: 110%; }
+        }
+
+        .map-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .header-stat-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(243,156,18,0.35);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #f6c877;
+            white-space: nowrap;
+        }
+
+        .header-stat-chip b {
+            color: #fff;
+            font-size: 0.8rem;
+        }
+
+        /* ════ MAIN CONTENT ════ */
+        .content {
+            display: flex;
+            flex: 1;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        /* ════ SIDEBAR ════ */
+        .sidebar {
+            width: 300px;
+            background: #fdfdfd;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 3px 0 14px rgba(0,0,0,0.12);
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .sidebar-section {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .sidebar-title::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 28px; height: 3px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #f39c12, #d4a500);
+        }
+
+        /* ════ FILTER ════ */
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-tag {
+            padding: 6px 12px 6px 10px;
+            border: 2px solid #e2e2e2;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            color: #1a1a2e;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-tag .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 22%, transparent);
+        }
+
+        .filter-tag:hover {
+            border-color: var(--color);
+            color: var(--color);
+            transform: translateY(-1px);
+        }
+
+        .filter-tag.active {
+            background: var(--color);
+            border-color: var(--color);
+            color: white;
+        }
+
+        .filter-tag.active .dot {
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.35);
+        }
+
+        /* ════ EVENTS LIST ════ */
+        .events-list {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #f9f9f9;
+            border-left: 4px solid #f39c12;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .event-item:hover {
+            background: #fff;
+            transform: translateX(4px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .event-item.active {
+            background: #fff3cd;
+            border-left-color: #d4a500;
+            box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.3);
+        }
+
+        .event-year {
+            font-size: 0.75rem;
+            color: #f39c12;
+            font-weight: 700;
+        }
+
+        .event-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .event-location {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* ════ MAP ════ */
+        .map-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #0f0f1a;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            filter: saturate(0.85) contrast(1.03);
+        }
+
+        /* Viền trong khung bản đồ + vignette nhẹ để bản đồ hòa với tông màu trang, đỡ "chỏi" */
+        .map-vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 400;
+            box-shadow: inset 0 0 90px rgba(15,15,26,0.45), inset 0 0 0 3px rgba(243,156,18,0.25);
+        }
+
+        /* ════ LEGEND (chú thích giai đoạn nổi trên bản đồ) ════ */
+        .map-legend {
+            position: absolute;
+            right: 12px;
+            bottom: 16px;
+            z-index: 999;
+            background: rgba(26,26,46,0.92);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(243,156,18,0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.72rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            max-width: 190px;
+        }
+
+        .map-legend-title {
+            font-weight: 800;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #f6c877;
+            margin-bottom: 8px;
+        }
+
+        .map-legend-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 2px 0;
+            opacity: 0.92;
+        }
+
+        .map-legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        @media (max-width: 768px) {
+            .map-legend {
+                bottom: 10px;
+                right: 8px;
+                max-width: 150px;
+                padding: 8px 10px;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ════ TIMELINE BOTTOM ════ */
+        .timeline-bottom {
+            height: 100px;
+            background: white;
+            border-top: 2px solid #eee;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .timeline-item {
+            flex-shrink: 0;
+            padding: 8px 12px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .timeline-item:hover {
+            background: #eff3f5;
+            transform: translateY(-2px);
+        }
+
+        .timeline-item.active {
+            background: #f39c12;
+            color: white;
+        }
+
+        .timeline-year {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #f39c12;
+        }
+
+        .timeline-item.active .timeline-year {
+            color: white;
+        }
+
+        .timeline-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .timeline-item.active .timeline-name {
+            color: white;
+        }
+
+        /* ════ POPUP ════ */
+        .leaflet-popup-content {
+            font-family: 'Poppins', sans-serif;
+            margin: 0 !important;
+        }
+        .leaflet-popup-content-wrapper {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .popup-box {
+            padding: 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .popup-header {
+            background: linear-gradient(135deg, #f39c12, #d4a500);
+            padding: 12px;
+            color: #1a1a2e;
+        }
+
+        .popup-title {
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .popup-body {
+            padding: 12px;
+        }
+
+        .popup-year {
+            font-size: 0.8rem;
+            color: #f39c12;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .popup-desc {
+            font-size: 0.85rem;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .popup-character {
+            font-size: 0.8rem;
+            background: #f9f9f9;
+            padding: 6px;
+            border-radius: 4px;
+            color: #666;
+        }
+
+        /* ════ TOOLTIP (nhãn nổi khi phát lại) ════ */
+        .leaflet-tooltip.event-tooltip {
+            background: #1a1a2e;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+        .leaflet-tooltip.event-tooltip::before {
+            border-top-color: #1a1a2e;
+        }
+
+        /* ════ CUSTOM MARKER ════ */
+        .custom-marker {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 3px solid var(--pcolor, #f39c12);
+            border-radius: 50%;
+            font-size: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 4px var(--pcolor-soft, rgba(243,156,18,0.25));
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            transition: transform 0.3s;
+        }
+
+        .custom-marker::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 2px solid var(--pcolor, #f39c12);
+            opacity: 0;
+            animation: markerRipple 2.6s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes markerRipple {
+            0% { transform: scale(0.7); opacity: 0.55; }
+            80% { transform: scale(1.35); opacity: 0; }
+            100% { transform: scale(1.35); opacity: 0; }
+        }
+
+        .marker-order-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #1a1a2e;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+        }
+
+        .custom-marker:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+        }
+
+        .custom-marker.marker-arrived {
+            animation: arrive 0.6s ease-out, pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 4px var(--pcolor-soft, rgba(243,156,18,0.25)); }
+            50% { box-shadow: 0 2px 16px rgba(0,0,0,0.3), 0 0 0 7px var(--pcolor-glow, rgba(243,156,18,0.4)); }
+        }
+
+        @keyframes arrive {
+            0% { transform: scale(0.3); }
+            60% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+
+        /* ════ TRAVELER ICON (di chuyển trên đường) ════ */
+        .traveler-icon {
+            font-size: 22px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+            animation: bob 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes bob {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        /* ════ PERIOD COLORS ════ */
+        .period-hung { color: #3498db; }
+        .period-ly { color: #9b59b6; }
+        .period-tran { color: #e74c3c; }
+        .period-le-nguyen { color: #1abc9c; }
+        .period-tay-son { color: #f39c12; }
+        .period-khang-phap { color: #34495e; }
+        .period-khang-my { color: #c0392b; }
+
+        /* ════ SCROLLBAR ════ */
+        .events-list::-webkit-scrollbar,
+        .timeline-bottom::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .events-list::-webkit-scrollbar-thumb,
+        .timeline-bottom::-webkit-scrollbar-thumb {
+            background: #f39c12;
+            border-radius: 3px;
+        }
+
+        /* ════ PLAYBACK PANEL ════ */
+        .playback-panel {
+            position: absolute;
+            top: 100px;
+            left: 10px;
+            z-index: 999;
+            background: rgba(26,26,46,0.92);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(243,156,18,0.3);
+            padding: 12px 14px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            width: 230px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .playback-label {
+            color: #fff !important;
+        }
+
+        .progress-track {
+            background: rgba(255,255,255,0.12) !important;
+        }
+
+        .stop-btn {
+            background: rgba(255,255,255,0.12) !important;
+            color: #fff !important;
+        }
+
+        .stop-btn:hover { background: rgba(255,255,255,0.22) !important; }
+
+        .speed-select {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            color: #fff !important;
+        }
+
+        .insight-caption {
+            background: rgba(243,156,18,0.12) !important;
+            color: #f1e6d0 !important;
+        }
+
+        #yearGapText { color: #ddd !important; }
+
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .play-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .play-btn:hover { background: #d4a500; transform: scale(1.05); }
+
+        .stop-btn {
+            background: #eee;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .stop-btn:hover { background: #ddd; }
+
+        .speed-select {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .playback-label {
+            font-size: 0.72rem;
+            color: #1a1a2e;
+            font-weight: 700;
+            margin-bottom: 6px;
+            min-height: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f39c12, #d4a500);
+            transition: width 0.4s linear;
+        }
+
+        .insight-caption {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.72rem;
+            color: #555;
+            line-height: 1.35;
+            background: #fef6e7;
+            border-left: 3px solid #f39c12;
+            padding: 7px 9px;
+            border-radius: 6px;
+        }
+
+        .insight-caption.show {
+            display: block;
+            animation: fadeInCaption 0.4s ease;
+        }
+
+        @keyframes fadeInCaption {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════ QUIZ ÔN LẠI SAU KHI PHÁT LẠI ════ */
+        .quiz-box {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .quiz-box.show {
+            display: block;
+            animation: fadeInCaption 0.4s ease;
+        }
+
+        .quiz-progress {
+            font-size: 0.68rem;
+            color: #999;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .quiz-q {
+            font-size: 0.75rem;
+            color: #1a1a2e;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .quiz-answers {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .quiz-btn {
+            flex: 1;
+            padding: 7px 4px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .quiz-btn:hover:not(:disabled) {
+            border-color: #f39c12;
+        }
+
+        .quiz-btn:disabled {
+            cursor: default;
+        }
+
+        .quiz-btn.correct {
+            background: #eafaf1;
+            border-color: #2ecc71;
+            color: #1e8449;
+        }
+
+        .quiz-btn.wrong {
+            background: #fdecea;
+            border-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        .quiz-fb {
+            font-size: 0.68rem;
+            color: #555;
+            line-height: 1.4;
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-top: 4px;
+        }
+
+        .quiz-result {
+            text-align: center;
+        }
+
+        .quiz-result-score {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #f39c12;
+            margin-bottom: 8px;
+        }
+
+        .quiz-again-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-weight: 700;
+            font-size: 0.72rem;
+            cursor: pointer;
+        }
+
+        .quiz-again-btn:hover {
+            background: #d4a500;
+        }
+
+        /* ════ CHAPTER TRANSITION (chuyển cảnh chương phim) ════ */
+        .chapter-transition {
+            position: fixed;
+            inset: 0;
+            z-index: 2500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 42%, color-mix(in srgb, var(--chapter-color) 16%, transparent) 0%, transparent 70%),
+                radial-gradient(ellipse at center, #1c1c30 0%, #0a0a12 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            isolation: isolate;
+            --chapter-color: #f39c12;
+        }
+
+        .chapter-transition.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .chapter-transition::before,
+        .chapter-transition::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 15%;
+            background: #000;
+        }
+
+        .chapter-transition::before { top: 0; }
+        .chapter-transition::after { bottom: 0; }
+
+        /* Chấm đánh dấu thứ tự chương, kiểu "chapter markers" */
+        .chapter-dots {
+            position: absolute;
+            top: calc(15% + 18px);
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .chapter-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            transition: all 0.3s ease;
+        }
+
+        .chapter-dot.done {
+            background: var(--chapter-color);
+            opacity: 0.55;
+        }
+
+        .chapter-dot.current {
+            background: var(--chapter-color);
+            width: 20px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--chapter-color);
+        }
+
+        .chapter-transition-inner {
+            text-align: center;
+            color: #fff;
+            padding: 24px 30px;
+            max-width: 480px;
+            max-height: 92vh;
+            overflow-y: auto;
+            transform: translateY(16px) scale(0.96);
+            opacity: 0;
+            transition: transform 0.6s cubic-bezier(.19,1,.22,1), opacity 0.6s ease;
+        }
+
+        .chapter-transition.show .chapter-transition-inner {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            transition-delay: 0.15s;
+        }
+
+        .chapter-icon-badge {
+            width: 74px;
+            height: 74px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: color-mix(in srgb, var(--chapter-color) 18%, #12121e);
+            border: 1.5px solid color-mix(in srgb, var(--chapter-color) 55%, transparent);
+            box-shadow: 0 0 0 6px color-mix(in srgb, var(--chapter-color) 10%, transparent), 0 6px 20px rgba(0,0,0,0.45);
+            animation: chapterIconPulse 2.6s ease-in-out infinite;
+        }
+
+        @keyframes chapterIconPulse {
+            0%, 100% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--chapter-color) 10%, transparent), 0 6px 20px rgba(0,0,0,0.45); }
+            50% { box-shadow: 0 0 0 12px color-mix(in srgb, var(--chapter-color) 16%, transparent), 0 6px 24px rgba(0,0,0,0.5); }
+        }
+
+        .chapter-number {
+            font-size: 0.72rem;
+            letter-spacing: 4px;
+            font-weight: 700;
+            color: var(--chapter-color);
+            margin-bottom: 10px;
+        }
+
+        .chapter-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .chapter-title::after {
+            content: '';
+            display: block;
+            width: 56px;
+            height: 3px;
+            background: var(--chapter-color);
+            margin: 16px auto 0;
+        }
+
+        .chapter-desc {
+            font-size: 0.85rem;
+            color: #ccc;
+            line-height: 1.6;
+            margin-top: 18px;
+        }
+
+        .chapter-meta {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .chapter-chip {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: #eee;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .chapter-chip.solid {
+            background: var(--chapter-color);
+            border-color: var(--chapter-color);
+            color: #1a1a2e;
+        }
+
+        .chapter-events-preview {
+            margin-top: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .chapter-event-row {
+            font-size: 0.72rem;
+            color: #999;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .chapter-event-row .yr {
+            color: var(--chapter-color);
+            font-weight: 700;
+            min-width: 46px;
+            text-align: right;
+        }
+
+        .chapter-event-row.more {
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Thanh đếm giờ tự động chuyển tiếp + nút điều khiển */
+        .chapter-controls {
+            margin-top: 26px;
+        }
+
+        .chapter-progress-track {
+            width: 100%;
+            max-width: 220px;
+            height: 3px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 2px;
+            margin: 0 auto 14px;
+            overflow: hidden;
+        }
+
+        .chapter-progress-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--chapter-color);
+            border-radius: 2px;
+        }
+
+        .chapter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .chapter-btn {
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chapter-btn.ghost {
+            background: transparent;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            color: #eee;
+        }
+
+        .chapter-btn.ghost:hover {
+            border-color: var(--chapter-color);
+            color: var(--chapter-color);
+        }
+
+        .chapter-btn.solid {
+            background: var(--chapter-color);
+            border: 1.5px solid var(--chapter-color);
+            color: #1a1a2e;
+        }
+
+        .chapter-btn.solid:hover {
+            filter: brightness(1.1);
+        }
+
+        /* ════ RESPONSIVE ════ */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 30%;
+            }
+
+            .map-wrapper {
+                flex: 1;
+            }
+
+            .timeline-bottom {
+                height: 80px;
+            }
+
+            .playback-panel {
+                width: 190px;
+                top: 90px;
+            }
+
+            .chapter-title {
+                font-size: 1.4rem;
+            }
+
+            .chapter-desc {
+                font-size: 0.78rem;
+            }
+
+            .chapter-icon-badge {
+                width: 58px;
+                height: 58px;
+                font-size: 1.6rem;
+            }
+
+            .chapter-dots {
+                top: calc(15% + 12px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="map-header" style="display:flex; align-items:center; justify-content:space-between;">
+            <div>
+                <h1>🗺️ Bản Đồ Lịch Sử Việt Nam</h1>
+                <p style="font-size: 0.85rem; opacity: 0.75;">Hành trình 2000+ năm dựng nước và giữ nước, trên nền bản đồ thật</p>
+                <div class="header-stats" id="headerStats"></div>
+            </div>
+            <a href="index.html" style="display:flex; align-items:center; gap:6px; padding:10px 18px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.3); border-radius:8px; color:#fff; text-decoration:none; font-size:0.85rem; font-weight:600; white-space:nowrap; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                ← Trang chủ
+            </a>
+        </div>
+
+        <!-- MAIN -->
+        <div class="content">
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <!-- FILTER -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">⏰ Lọc theo giai đoạn</div>
+                    <div class="filter-tags" id="periodFilters"></div>
+                </div>
+
+                <!-- EVENTS LIST -->
+                <div class="sidebar-section" style="flex: 1; padding: 0;">
+                    <div style="padding: 16px; border-bottom: 1px solid #eee;">
+                        <div class="sidebar-title">📌 Sự Kiện (<span id="eventCount">20</span>)</div>
+                    </div>
+                    <div class="events-list" id="eventsList"></div>
+                </div>
+            </div>
+
+            <!-- MAP WRAPPER -->
+            <div class="map-wrapper">
+                <div id="map"></div>
+                <div class="map-vignette"></div>
+                <div class="map-legend" id="mapLegend"></div>
+
+                <!-- CHAPTER TRANSITION OVERLAY -->
+                <div class="chapter-transition" id="chapterTransition">
+                    <div class="chapter-dots" id="chapterDots"></div>
+                    <div class="chapter-transition-inner">
+                        <div class="chapter-icon-badge" id="chapterIcon"></div>
+                        <div class="chapter-number" id="chapterNumber">GIAI ĐOẠN</div>
+                        <div class="chapter-title" id="chapterTitle"></div>
+                        <div class="chapter-meta" id="chapterMeta"></div>
+                        <div class="chapter-desc" id="chapterDesc"></div>
+                        <div class="chapter-events-preview" id="chapterEventsPreview"></div>
+                        <div class="chapter-controls">
+                            <div class="chapter-progress-track">
+                                <div class="chapter-progress-fill" id="chapterProgressFill"></div>
+                            </div>
+                            <div class="chapter-buttons">
+                                <button class="chapter-btn ghost" id="chapterPauseBtn" onclick="toggleChapterPause()">⏸ Tạm dừng</button>
+                                <button class="chapter-btn solid" onclick="skipChapterNow()">Tiếp tục ▶</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLAYBACK PANEL -->
+                <div class="playback-panel">
+                    <div class="playback-label" id="playbackLabel">Sẵn sàng phát lại hành trình</div>
+                    <div class="playback-controls">
+                        <button class="play-btn" id="playBtn" onclick="togglePlayback()" title="Phát / Tạm dừng">▶</button>
+                        <button class="stop-btn" onclick="resetPlayback()" title="Về đầu">⏮</button>
+                        <select class="speed-select" id="speedSelect" onchange="setPlaybackSpeed(this.value)">
+                            <option value="1">1x</option>
+                            <option value="1.8">1.8x</option>
+                            <option value="0.5">0.5x</option>
+                        </select>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="insight-caption" id="insightCaption">
+                        <div id="periodInsightText"></div>
+                        <div id="yearGapText" style="margin-top: 4px; color:#444;"></div>
+                    </div>
+                    <div class="quiz-box" id="quizBox"></div>
+                </div>
+
+                <button id="fullscreenBtn" style="position:absolute; top:10px; right:10px; z-index:999; padding:9px 18px; background:linear-gradient(135deg,#f39c12,#d4a500); color:#1a1a2e; border:none; border-radius:22px; font-weight:800; cursor:pointer; font-size:0.85rem; box-shadow:0 4px 14px rgba(243,156,18,0.4); letter-spacing:0.3px;">⛶ Toàn màn hình</button>
+            </div>
+        </div>
+
+        <!-- TIMELINE BOTTOM -->
+        <div class="timeline-bottom" id="timelineBottom"></div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.umd.js"></script>
+
+    <script>
+        // ════ DATA (đã rà soát & thống nhất lại số liệu giữa các bản trước) ════
+        const events = [
+            {
+                id: 1, title: 'Trận Bạch Đằng', year: 938, location: 'Hải Phòng', lat: 20.8517, lng: 106.9197,
+                character: 'Ngô Quyền', desc: 'Ngô Quyền đánh bại quân Nam Hán, lập nước Đại Việt độc lập.', icon: '⚔️', period: 'ly',
+                detailedDesc: 'Ngô Quyền tập hợp lực lượng, lợi dụng thủy triều sông Bạch Đằng để bố trí trận địa cọc ngầm, tiêu diệt hoàn toàn thủy quân Nam Hán.',
+                causes: 'Nam Hán lợi dụng loạn 12 sứ quân để xâm lược, dân ta cần một trận quyết chiến để giành độc lập.',
+                result: 'Quân Nam Hán đại bại, tướng Hoằng Tháo tử trận.',
+                impact: 'Chấm dứt hơn 1000 năm Bắc thuộc, mở ra thời kỳ độc lập tự chủ lâu dài cho dân tộc.',
+                funFacts: ['Ngô Quyền cho đóng cọc gỗ đầu bịt sắt dưới lòng sông, lợi dụng thủy triều lên xuống để nhử địch.', 'Đây được xem là trận thủy chiến kinh điển đầu tiên trong sử Việt.'],
+                timeline: [{date:'937', event:'Ngô Quyền chuẩn bị lực lượng'}, {date:'938', event:'Trận Bạch Đằng diễn ra và toàn thắng'}, {date:'939', event:'Ngô Quyền xưng vương, lập triều đình'}],
+                keyFigures: [{name:'Ngô Quyền', role:'Chủ tướng chỉ huy trận đánh'}, {name:'Hoằng Tháo', role:'Tướng chỉ huy quân Nam Hán'}],
+                major: true
+            },
+            {
+                id: 2, title: 'Thành Cổ Loa', year: -210, location: 'Hà Nội', lat: 21.0285, lng: 105.8581,
+                character: 'An Dương Vương', desc: 'An Dương Vương xây dựng thành Cổ Loa.', icon: '🏰', period: 'hung',
+                detailedDesc: 'An Dương Vương Thục Phán xây dựng kinh đô Cổ Loa với cấu trúc 9 vòng thành xoáy trôn ốc, một công trình quân sự - kiến trúc độc đáo thời cổ.',
+                causes: 'Cần một kinh đô kiên cố để phòng thủ trước nguy cơ xâm lược từ phương Bắc.',
+                result: 'Thành Cổ Loa trở thành kinh đô của nước Âu Lạc.',
+                impact: 'Là minh chứng cho trình độ kỹ thuật quân sự và kiến trúc phát triển của người Việt cổ.',
+                funFacts: ['Thành có cấu trúc xoáy ốc độc đáo, hiếm có trong kiến trúc cổ đại thế giới.', 'Gắn liền với truyền thuyết nỏ thần và chuyện tình Mỵ Châu - Trọng Thủy.'],
+                timeline: [{date:'257 TCN', event:'Thục Phán lập nước Âu Lạc'}, {date:'~210 TCN', event:'Xây dựng thành Cổ Loa'}],
+                keyFigures: [{name:'An Dương Vương (Thục Phán)', role:'Vua sáng lập, người xây thành'}],
+                major: true
+            },
+            {
+                id: 3, title: 'Khởi nghĩa Hai Bà Trưng', year: 40, location: 'Hà Nội', lat: 21.0285, lng: 105.8581,
+                character: 'Hai Bà Trưng', desc: 'Hai chị em Trưng Trắc và Trưng Nhị khởi nghĩa.', icon: '👸', period: 'hung',
+                detailedDesc: 'Trưng Trắc và Trưng Nhị dấy binh khởi nghĩa chống lại ách đô hộ tàn bạo của nhà Hán, giành lại quyền tự chủ trong 3 năm.',
+                causes: 'Chính sách cai trị hà khắc của Thái thú Tô Định và cái chết của Thi Sách (chồng Trưng Trắc).',
+                result: 'Đánh đuổi quân Hán, Trưng Trắc lên ngôi vua, đóng đô ở Mê Linh.',
+                impact: 'Là cuộc khởi nghĩa lớn đầu tiên của phụ nữ Việt Nam chống ngoại xâm, biểu tượng bất khuất dân tộc.',
+                funFacts: ['Đây là lần đầu tiên phụ nữ Việt Nam lãnh đạo một cuộc khởi nghĩa quy mô lớn.', 'Nhiều nữ tướng khác cũng tham gia như Bát Nàn, Lê Chân.'],
+                timeline: [{date:'40', event:'Hai Bà Trưng phất cờ khởi nghĩa'}, {date:'40-43', event:'Trưng Trắc xưng vương, cai trị đất nước'}, {date:'43', event:'Mã Viện đàn áp, khởi nghĩa thất bại'}],
+                keyFigures: [{name:'Trưng Trắc', role:'Lãnh đạo khởi nghĩa, xưng vương'}, {name:'Trưng Nhị', role:'Đồng lãnh đạo khởi nghĩa'}],
+                major: true
+            },
+            {
+                id: 4, title: 'Trận Tây Kết', year: 1258, location: 'Hưng Yên', lat: 20.7623, lng: 106.0503,
+                character: 'Trần Hưng Đạo', desc: 'Trần Hưng Đạo đánh tan quân Mông Nguyên.', icon: '🏹', period: 'tran',
+                detailedDesc: 'Trong cuộc kháng chiến chống Mông Nguyên lần thứ nhất, quân Trần phản công quyết liệt tại Tây Kết, đánh bật quân xâm lược.',
+                causes: 'Quân Mông Cổ tiến đánh Đại Việt trên đường bành trướng xuống phía Nam.',
+                result: 'Quân Mông Cổ phải rút chạy khỏi Thăng Long.',
+                impact: 'Là chiến thắng mở đầu cho truyền thống 3 lần đại thắng quân Nguyên Mông của nhà Trần.',
+                funFacts: ['Đây là lần đầu tiên quân Mông Cổ - đội quân từng bất bại ở châu Âu và châu Á - phải nếm mùi thất bại tại Đại Việt.'],
+                timeline: [{date:'1257', event:'Quân Mông Cổ tiến vào Đại Việt'}, {date:'1258', event:'Trận Tây Kết, quân Mông Cổ rút lui'}],
+                keyFigures: [{name:'Trần Thái Tông', role:'Vua chỉ huy kháng chiến'}, {name:'Trần Hưng Đạo', role:'Tướng lĩnh chủ chốt'}]
+            },
+            {
+                id: 5, title: 'Dời đô Thăng Long', year: 1010, location: 'Hà Nội', lat: 21.0285, lng: 105.8581,
+                character: 'Lý Thái Tổ', desc: 'Lý Thái Tổ dời đô đến Thăng Long.', icon: '🏛️', period: 'ly',
+                detailedDesc: 'Lý Thái Tổ ban "Chiếu dời đô", chuyển kinh đô từ Hoa Lư về thành Đại La, đổi tên thành Thăng Long với ý nghĩa "rồng bay lên".',
+                causes: 'Hoa Lư địa thế chật hẹp, không thuận lợi cho phát triển lâu dài của đất nước.',
+                result: 'Thăng Long trở thành kinh đô, trung tâm chính trị - kinh tế - văn hóa của Đại Việt.',
+                impact: 'Đặt nền móng cho sự phát triển rực rỡ hơn 1000 năm của Hà Nội ngày nay.',
+                funFacts: ['Tương truyền khi thuyền vua đến Đại La, có rồng vàng bay lên nên đặt tên là Thăng Long.'],
+                timeline: [{date:'1009', event:'Lý Công Uẩn lên ngôi, lập nhà Lý'}, {date:'1010', event:'Ban Chiếu dời đô, dời về Thăng Long'}],
+                keyFigures: [{name:'Lý Thái Tổ (Lý Công Uẩn)', role:'Vua sáng lập nhà Lý, người dời đô'}],
+                major: true
+            },
+            {
+                id: 6, title: 'Trận Như Nguyệt', year: 1077, location: 'Bắc Ninh', lat: 21.25, lng: 106.05,
+                character: 'Lý Thường Kiệt', desc: 'Lý Thường Kiệt đánh bại quân Tống trên phòng tuyến sông Như Nguyệt.', icon: '🗺️', period: 'ly',
+                detailedDesc: 'Lý Thường Kiệt lập phòng tuyến trên sông Như Nguyệt, chặn đứng và đánh bại đại quân nhà Tống xâm lược.',
+                causes: 'Nhà Tống muốn thôn tính Đại Việt sau khi bị Lý Thường Kiệt chủ động tấn công trước (phạt Tống).',
+                result: 'Quân Tống đại bại, phải giảng hòa và rút quân.',
+                impact: 'Bài thơ "Nam quốc sơn hà" được xem là bản Tuyên ngôn độc lập đầu tiên của Việt Nam, ra đời trong trận này.',
+                funFacts: ['Lý Thường Kiệt cho ngâm bài thơ thần "Nam quốc sơn hà" trong đền để khích lệ tinh thần quân sĩ.'],
+                timeline: [{date:'1075', event:'Lý Thường Kiệt chủ động tấn công đất Tống'}, {date:'1077', event:'Trận Như Nguyệt, đánh bại quân Tống'}],
+                keyFigures: [{name:'Lý Thường Kiệt', role:'Tổng chỉ huy quân đội Đại Việt'}]
+            },
+            {
+                id: 7, title: 'Bình Ngô Đại Cáo', year: 1428, location: 'Hà Nội', lat: 21.0285, lng: 105.8581,
+                character: 'Nguyễn Trãi', desc: 'Nguyễn Trãi soạn Bình Ngô Đại Cáo.', icon: '📜', period: 'le-nguyen',
+                detailedDesc: 'Sau khi đánh thắng quân Minh, Nguyễn Trãi thay lời Lê Lợi viết "Bình Ngô Đại Cáo" tuyên bố nền độc lập của Đại Việt.',
+                causes: 'Kết thúc thắng lợi cuộc khởi nghĩa Lam Sơn chống quân Minh xâm lược 10 năm.',
+                result: 'Bản cáo được công bố rộng rãi, chính thức khẳng định chủ quyền quốc gia.',
+                impact: 'Được coi là bản Tuyên ngôn độc lập thứ hai của dân tộc Việt Nam, áng văn chính luận bất hủ.',
+                funFacts: ['Áng văn mở đầu bằng câu nổi tiếng khẳng định "núi sông bờ cõi đã chia, phong tục Bắc Nam cũng khác".'],
+                timeline: [{date:'1427', event:'Chiến thắng Chi Lăng - Xương Giang'}, {date:'1428', event:'Lê Lợi lên ngôi, Nguyễn Trãi soạn Bình Ngô Đại Cáo'}],
+                keyFigures: [{name:'Nguyễn Trãi', role:'Tác giả, quân sư của Lê Lợi'}, {name:'Lê Lợi', role:'Lãnh đạo khởi nghĩa Lam Sơn'}],
+                major: true
+            },
+            {
+                id: 8, title: 'Lê Lợi lập nhà Lê', year: 1428, location: 'Hà Nội', lat: 21.03, lng: 105.86,
+                character: 'Lê Lợi', desc: 'Lê Lợi lập nhà Lê Sơ.', icon: '👑', period: 'le-nguyen',
+                detailedDesc: 'Sau 10 năm kháng chiến gian khổ (khởi nghĩa Lam Sơn), Lê Lợi lên ngôi hoàng đế, lập ra triều Lê Sơ.',
+                causes: 'Thắng lợi của cuộc khởi nghĩa Lam Sơn chống quân Minh xâm lược.',
+                result: 'Nhà Lê Sơ được thành lập, mở ra giai đoạn thịnh trị của Đại Việt.',
+                impact: 'Đặt nền tảng cho một trong những triều đại thịnh vượng và tồn tại lâu dài nhất trong lịch sử Việt Nam.',
+                funFacts: ['Lê Lợi khởi nghĩa từ vùng núi Lam Sơn (Thanh Hóa) với lực lượng ban đầu rất nhỏ.'],
+                timeline: [{date:'1418', event:'Lê Lợi dựng cờ khởi nghĩa tại Lam Sơn'}, {date:'1428', event:'Lê Lợi lên ngôi, lập nhà Lê Sơ'}],
+                keyFigures: [{name:'Lê Lợi (Lê Thái Tổ)', role:'Người sáng lập nhà Lê Sơ'}]
+            },
+            {
+                id: 9, title: 'Nguyễn Hoàng vào Nam', year: 1558, location: 'Thuận Hóa', lat: 16.4637, lng: 107.5909,
+                character: 'Nguyễn Hoàng', desc: 'Nguyễn Hoàng vào trấn thủ Thuận Hóa, mở đầu công cuộc Nam tiến.', icon: '🌾', period: 'le-nguyen',
+                detailedDesc: 'Nguyễn Hoàng xin vào trấn thủ vùng Thuận Hóa để tránh sự tranh giành quyền lực với họ Trịnh, từ đó gây dựng cơ nghiệp chúa Nguyễn ở Đàng Trong.',
+                causes: 'Mâu thuẫn quyền lực giữa các dòng họ Trịnh - Nguyễn trong triều Lê.',
+                result: 'Hình thành thế lực chúa Nguyễn cai quản vùng Đàng Trong, dẫn tới thời kỳ Trịnh - Nguyễn phân tranh.',
+                impact: 'Mở đầu cho công cuộc khai phá, mở rộng lãnh thổ về phía Nam của dân tộc Việt Nam.',
+                funFacts: ['Nguyễn Hoàng được xem là người đặt nền móng đầu tiên cho vùng đất Đàng Trong sau này.'],
+                timeline: [{date:'1558', event:'Nguyễn Hoàng vào trấn thủ Thuận Hóa'}, {date:'1600s', event:'Các chúa Nguyễn tiếp tục mở rộng về phương Nam'}],
+                keyFigures: [{name:'Nguyễn Hoàng', role:'Chúa Nguyễn đầu tiên'}]
+            },
+            {
+                id: 10, title: 'Khởi nghĩa Tây Sơn', year: 1771, location: 'Bình Định', lat: 13.7794, lng: 109.2261,
+                character: 'Ba anh em Tây Sơn', desc: 'Phong trào Tây Sơn nổi dậy.', icon: '🎭', period: 'tay-son',
+                detailedDesc: 'Ba anh em Nguyễn Nhạc, Nguyễn Huệ, Nguyễn Lữ dựng cờ khởi nghĩa tại ấp Tây Sơn, mở đầu phong trào nông dân lớn nhất lịch sử.',
+                causes: 'Chế độ phong kiến mục nát, đời sống nhân dân cực khổ dưới thời chúa Nguyễn ở Đàng Trong.',
+                result: 'Phong trào phát triển mạnh, lần lượt đánh đổ chúa Nguyễn, chúa Trịnh và quân Xiêm, Thanh xâm lược.',
+                impact: 'Là cuộc khởi nghĩa nông dân quy mô lớn nhất, tạm thời thống nhất đất nước sau nhiều thế kỷ chia cắt.',
+                funFacts: ['Ba anh em Tây Sơn xuất thân từ một gia đình buôn bán nhỏ ở vùng Bình Định.'],
+                timeline: [{date:'1771', event:'Ba anh em Tây Sơn dựng cờ khởi nghĩa'}, {date:'1777', event:'Lật đổ chúa Nguyễn ở Đàng Trong'}],
+                keyFigures: [{name:'Nguyễn Nhạc', role:'Anh cả, người khởi xướng phong trào'}, {name:'Nguyễn Huệ', role:'Em thứ, sau này là vua Quang Trung'}, {name:'Nguyễn Lữ', role:'Em út, tham gia chỉ huy'}]
+            },
+            {
+                id: 11, title: 'Đại phá quân Thanh', year: 1789, location: 'Hà Nội', lat: 21.0285, lng: 105.8581,
+                character: 'Quang Trung', desc: 'Quang Trung đánh bại 20 vạn quân Thanh.', icon: '⚡', period: 'tay-son',
+                detailedDesc: 'Nguyễn Huệ lên ngôi hoàng đế lấy hiệu Quang Trung, thần tốc hành quân ra Bắc, đánh tan 20 vạn quân Thanh chỉ trong 5 ngày Tết Kỷ Dậu.',
+                causes: 'Vua Lê Chiêu Thống cầu viện nhà Thanh đưa quân sang xâm lược Đại Việt.',
+                result: 'Quân Thanh đại bại, Tôn Sĩ Nghị bỏ chạy về nước.',
+                impact: 'Là một trong những chiến công quân sự lừng lẫy nhất lịch sử Việt Nam, thể hiện thiên tài quân sự của Quang Trung.',
+                funFacts: ['Quân Tây Sơn hành quân thần tốc từ Phú Xuân ra Thăng Long chỉ trong khoảng thời gian rất ngắn để đánh úp bất ngờ.', 'Trận đánh diễn ra đúng dịp Tết Nguyên Đán khiến quân Thanh không kịp trở tay.'],
+                timeline: [{date:'25/11/1788 (âm lịch)', event:'Nguyễn Huệ lên ngôi hoàng đế, hiệu Quang Trung'}, {date:'Tết Kỷ Dậu 1789', event:'Đại phá 20 vạn quân Thanh'}],
+                keyFigures: [{name:'Quang Trung (Nguyễn Huệ)', role:'Hoàng đế, tổng chỉ huy chiến dịch'}, {name:'Tôn Sĩ Nghị', role:'Tướng chỉ huy quân Thanh'}],
+                major: true
+            },
+            {
+                id: 12, title: 'Nguyễn Ánh thống nhất', year: 1802, location: 'Huế', lat: 16.4673, lng: 107.5898,
+                character: 'Nguyễn Ánh', desc: 'Nguyễn Ánh lập nhà Nguyễn.', icon: '🏯', period: 'le-nguyen',
+                detailedDesc: 'Sau khi đánh bại nhà Tây Sơn, Nguyễn Ánh lên ngôi hoàng đế lấy hiệu Gia Long, thống nhất đất nước, đóng đô tại Huế.',
+                causes: 'Cuộc chiến tranh kéo dài giữa nhà Tây Sơn và lực lượng Nguyễn Ánh.',
+                result: 'Nhà Nguyễn được thành lập, lãnh thổ Việt Nam được thống nhất trải dài từ Bắc vào Nam.',
+                impact: 'Là triều đại phong kiến cuối cùng trong lịch sử Việt Nam, tồn tại đến năm 1945.',
+                funFacts: ['Đây là lần đầu tiên lãnh thổ Việt Nam có hình dạng gần giống với bản đồ hiện đại ngày nay.'],
+                timeline: [{date:'1802', event:'Nguyễn Ánh lên ngôi, lấy hiệu Gia Long'}, {date:'1802', event:'Đóng đô tại Huế, đặt quốc hiệu Việt Nam'}],
+                keyFigures: [{name:'Nguyễn Ánh (Gia Long)', role:'Vua sáng lập nhà Nguyễn'}]
+            },
+            {
+                id: 13, title: 'Pháp tấn công Đà Nẵng', year: 1858, location: 'Đà Nẵng', lat: 16.0544, lng: 108.2022,
+                character: 'Tự Đức', desc: 'Pháp nổ súng tấn công Đà Nẵng, mở đầu cuộc xâm lược Việt Nam.', icon: '🔫', period: 'khang-phap',
+                detailedDesc: 'Liên quân Pháp - Tây Ban Nha nổ súng tấn công bán đảo Sơn Trà, Đà Nẵng, chính thức mở đầu cuộc chiến tranh xâm lược Việt Nam.',
+                causes: 'Pháp lấy cớ triều Nguyễn cấm đạo, giết giáo sĩ để tiến hành xâm lược, thực chất nhằm mở rộng thuộc địa.',
+                result: 'Quân dân ta chống trả quyết liệt khiến Pháp sa lầy nhiều tháng tại Đà Nẵng.',
+                impact: 'Mở đầu thời kỳ Pháp thuộc kéo dài gần 100 năm ở Việt Nam.',
+                funFacts: ['Dù có vũ khí hiện đại, quân Pháp vẫn bị cầm chân tại Đà Nẵng nhiều tháng do sự kháng cự của quân dân ta.'],
+                timeline: [{date:'1/9/1858', event:'Pháp nổ súng tấn công Đà Nẵng'}, {date:'1859', event:'Pháp chuyển hướng đánh vào Gia Định'}],
+                keyFigures: [{name:'Vua Tự Đức', role:'Hoàng đế nhà Nguyễn đương thời'}, {name:'Nguyễn Tri Phương', role:'Tướng chỉ huy chống Pháp tại Đà Nẵng'}]
+            },
+            {
+                id: 14, title: 'Khởi nghĩa Yên Thế', year: 1884, location: 'Bắc Giang', lat: 21.4167, lng: 106.1833,
+                character: 'Hoàng Hoa Thám', desc: 'Hoàng Hoa Thám lãnh đạo khởi nghĩa nông dân Yên Thế.', icon: '🏔️', period: 'khang-phap',
+                detailedDesc: 'Hoàng Hoa Thám lãnh đạo cuộc khởi nghĩa nông dân kéo dài gần 30 năm tại vùng rừng núi Yên Thế, chống lại thực dân Pháp.',
+                causes: 'Pháp mở rộng chiếm đóng, cướp đất, áp bức nông dân vùng trung du Bắc Kỳ.',
+                result: 'Nghĩa quân cầm cự được rất lâu nhờ địa hình hiểm trở, gây nhiều tổn thất cho Pháp.',
+                impact: 'Là cuộc khởi nghĩa nông dân kéo dài nhất trong phong trào chống Pháp, thể hiện ý chí bất khuất.',
+                funFacts: ['Hoàng Hoa Thám được mệnh danh là "Hùm thiêng Yên Thế" vì tài dùng binh và sự bền bỉ chống Pháp gần 30 năm.'],
+                timeline: [{date:'1884', event:'Bắt đầu cuộc khởi nghĩa Yên Thế'}, {date:'1913', event:'Hoàng Hoa Thám hy sinh, khởi nghĩa kết thúc'}],
+                keyFigures: [{name:'Hoàng Hoa Thám (Đề Thám)', role:'Lãnh đạo cuộc khởi nghĩa'}]
+            },
+            {
+                id: 15, title: 'Phong trào Đông Du', year: 1905, location: 'Nghệ An', lat: 18.6667, lng: 105.6667,
+                character: 'Phan Bội Châu', desc: 'Phan Bội Châu khởi xướng phong trào Đông Du.', icon: '✈️', period: 'khang-phap',
+                detailedDesc: 'Phan Bội Châu vận động thanh niên Việt Nam sang Nhật Bản du học nhằm học hỏi tư tưởng và kỹ thuật để về cứu nước.',
+                causes: 'Ảnh hưởng của công cuộc Duy Tân ở Nhật Bản và mong muốn tìm con đường cứu nước mới.',
+                result: 'Hàng trăm thanh niên Việt Nam sang Nhật học tập trước khi phong trào bị Pháp - Nhật cấu kết dập tắt.',
+                impact: 'Đánh dấu bước chuyển trong tư tưởng cứu nước Việt Nam, từ đấu tranh vũ trang truyền thống sang tìm kiếm con đường duy tân.',
+                funFacts: ['Đây là phong trào du học có tổ chức đầu tiên của thanh niên Việt Nam ra nước ngoài.'],
+                timeline: [{date:'1904', event:'Phan Bội Châu lập Duy Tân Hội'}, {date:'1905-1908', event:'Phong trào Đông Du đưa thanh niên sang Nhật'}, {date:'1909', event:'Pháp - Nhật cấu kết, phong trào tan rã'}],
+                keyFigures: [{name:'Phan Bội Châu', role:'Người khởi xướng phong trào'}]
+            },
+            {
+                id: 16, title: 'Đảng Cộng sản Việt Nam thành lập', year: 1930, location: 'Hồng Kông', lat: 22.3193, lng: 114.1694,
+                character: 'Hồ Chí Minh', desc: 'Hồ Chí Minh chủ trì hội nghị thành lập Đảng Cộng sản Việt Nam.', icon: '🚩', period: 'khang-phap',
+                detailedDesc: 'Nguyễn Ái Quốc (Hồ Chí Minh) chủ trì hội nghị hợp nhất ba tổ chức cộng sản, thành lập Đảng Cộng sản Việt Nam tại Hồng Kông.',
+                causes: 'Phong trào cách mạng Việt Nam cần một chính đảng thống nhất để lãnh đạo đấu tranh giành độc lập.',
+                result: 'Đảng Cộng sản Việt Nam ra đời, thống nhất đường lối cách mạng cả nước.',
+                impact: 'Là bước ngoặt quan trọng, mở ra giai đoạn cách mạng Việt Nam có sự lãnh đạo thống nhất của một chính đảng.',
+                funFacts: ['Hội nghị thành lập Đảng được tổ chức bí mật tại Cửu Long, Hồng Kông.'],
+                timeline: [{date:'3/2/1930', event:'Hội nghị hợp nhất thành lập Đảng Cộng sản Việt Nam'}],
+                keyFigures: [{name:'Nguyễn Ái Quốc (Hồ Chí Minh)', role:'Người chủ trì thành lập Đảng'}],
+                major: true
+            },
+            {
+                id: 17, title: 'Cách mạng Tháng Tám', year: 1945, location: 'Hà Nội', lat: 21.0285, lng: 105.8581,
+                character: 'Hồ Chí Minh', desc: 'Hồ Chí Minh đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa.', icon: '⭐', period: 'khang-my',
+                detailedDesc: 'Nhân dân cả nước tổng khởi nghĩa giành chính quyền; ngày 2/9/1945 Hồ Chí Minh đọc Tuyên ngôn Độc lập tại quảng trường Ba Đình.',
+                causes: 'Thời cơ thuận lợi khi phát xít Nhật đầu hàng Đồng Minh, khoảng trống quyền lực tại Đông Dương.',
+                result: 'Nước Việt Nam Dân chủ Cộng hòa ra đời, chấm dứt chế độ quân chủ và ách đô hộ thực dân - phát xít.',
+                impact: 'Là bước ngoặt vĩ đại của lịch sử dân tộc, mở ra kỷ nguyên độc lập, tự do.',
+                funFacts: ['Bản Tuyên ngôn Độc lập trích dẫn cả Tuyên ngôn Độc lập Mỹ (1776) và Tuyên ngôn Nhân quyền Pháp (1789).'],
+                timeline: [{date:'14-8/1945', event:'Tổng khởi nghĩa giành chính quyền trên cả nước'}, {date:'2/9/1945', event:'Hồ Chí Minh đọc Tuyên ngôn Độc lập'}],
+                keyFigures: [{name:'Hồ Chí Minh', role:'Chủ tịch nước, người đọc Tuyên ngôn Độc lập'}],
+                major: true
+            },
+            {
+                id: 18, title: 'Chiến dịch Điện Biên Phủ', year: 1954, location: 'Điện Biên Phủ', lat: 21.3924, lng: 103.0188,
+                character: 'Võ Nguyên Giáp', desc: 'Chiến dịch Điện Biên Phủ kết thúc, quân Pháp đầu hàng.', icon: '🎖️', period: 'khang-phap',
+                detailedDesc: 'Đại tướng Võ Nguyên Giáp chỉ huy quân đội ta bao vây, tấn công tập đoàn cứ điểm Điện Biên Phủ, buộc quân Pháp phải đầu hàng.',
+                causes: 'Pháp xây dựng Điện Biên Phủ thành tập đoàn cứ điểm mạnh nhất Đông Dương nhằm nghiền nát chủ lực Việt Minh.',
+                result: 'Toàn bộ tập đoàn cứ điểm Pháp bị tiêu diệt, tướng De Castries cùng toàn bộ binh lính đầu hàng.',
+                impact: 'Chiến thắng "lừng lẫy năm châu, chấn động địa cầu", buộc Pháp ký Hiệp định Genève, chấm dứt chiến tranh Đông Dương.',
+                funFacts: ['Tướng Giáp đã thay đổi phương án tác chiến từ "đánh nhanh, thắng nhanh" sang "đánh chắc, tiến chắc" ngay trước giờ nổ súng.', 'Bộ đội ta kéo pháo bằng tay qua địa hình núi rừng hiểm trở để bao vây cứ điểm.'],
+                timeline: [{date:'13/3/1954', event:'Quân ta nổ súng mở màn chiến dịch'}, {date:'7/5/1954', event:'Tập đoàn cứ điểm Điện Biên Phủ thất thủ'}],
+                keyFigures: [{name:'Võ Nguyên Giáp', role:'Đại tướng, Tổng chỉ huy chiến dịch'}, {name:'De Castries', role:'Tướng chỉ huy quân Pháp tại Điện Biên Phủ'}],
+                major: true
+            },
+            {
+                id: 19, title: 'Tổng tiến công Tết Mậu Thân', year: 1968, location: 'Miền Nam', lat: 16.0, lng: 108.0,
+                character: 'Bộ Chỉ huy Miền', desc: 'Quân Giải phóng tổng tiến công và nổi dậy đồng loạt trên toàn miền Nam.', icon: '💥', period: 'khang-my',
+                detailedDesc: 'Quân Giải phóng bất ngờ tổng tiến công vào hầu hết các đô thị miền Nam đúng dịp Tết, gây chấn động dư luận Mỹ.',
+                causes: 'Cần tạo bước ngoặt chiến lược, làm lung lay ý chí xâm lược của Mỹ và chính quyền Sài Gòn.',
+                result: 'Về quân sự chưa đạt mục tiêu đề ra, nhưng gây chấn động chính trị to lớn tại Mỹ.',
+                impact: 'Buộc Mỹ phải xuống thang chiến tranh, ngồi vào bàn đàm phán Paris, là bước ngoặt quan trọng của cuộc kháng chiến.',
+                funFacts: ['Sự kiện được phát sóng trực tiếp trên truyền hình Mỹ, làm thay đổi mạnh mẽ dư luận phản đối chiến tranh tại Mỹ.'],
+                timeline: [{date:'30/1/1968', event:'Tổng tiến công đồng loạt nổ ra tại nhiều đô thị'}, {date:'1968', event:'Mỹ tuyên bố ngừng ném bom miền Bắc, chấp nhận đàm phán'}],
+                keyFigures: [{name:'Võ Nguyên Giáp', role:'Người chỉ đạo chiến lược quân sự'}]
+            },
+            {
+                id: 20, title: 'Giải phóng Sài Gòn', year: 1975, location: 'Sài Gòn', lat: 10.7769, lng: 106.7009,
+                character: 'Văn Tiến Dũng', desc: 'Chiến dịch Hồ Chí Minh toàn thắng, đất nước thống nhất.', icon: '🏁', period: 'khang-my',
+                detailedDesc: 'Chiến dịch Hồ Chí Minh lịch sử kết thúc bằng việc xe tăng quân Giải phóng tiến vào Dinh Độc Lập, chính quyền Sài Gòn tuyên bố đầu hàng.',
+                causes: 'Sau Hiệp định Paris, quân đội Sài Gòn suy yếu nghiêm trọng, thời cơ giải phóng hoàn toàn miền Nam đã chín muồi.',
+                result: 'Miền Nam hoàn toàn giải phóng, đất nước thống nhất sau 21 năm chia cắt.',
+                impact: 'Kết thúc cuộc kháng chiến chống Mỹ, mở ra thời kỳ xây dựng và thống nhất đất nước.',
+                funFacts: ['Xe tăng số hiệu 390 là một trong những chiếc đầu tiên húc đổ cổng Dinh Độc Lập ngày 30/4/1975.'],
+                timeline: [{date:'26/4/1975', event:'Chiến dịch Hồ Chí Minh chính thức mở màn'}, {date:'30/4/1975', event:'Sài Gòn hoàn toàn giải phóng'}],
+                keyFigures: [{name:'Văn Tiến Dũng', role:'Tư lệnh chiến dịch Hồ Chí Minh'}, {name:'Dương Văn Minh', role:'Tổng thống cuối cùng chính quyền Sài Gòn, người tuyên bố đầu hàng'}],
+                major: true
+            }
+        ];
+
+        const periods = [
+            { value: 'hung', label: 'Hùng Vương', color: '#3498db' },
+            { value: 'ly', label: 'Triều Lý', color: '#9b59b6' },
+            { value: 'tran', label: 'Triều Trần', color: '#e74c3c' },
+            { value: 'le-nguyen', label: 'Lê-Nguyễn', color: '#1abc9c' },
+            { value: 'tay-son', label: 'Tây Sơn', color: '#f39c12' },
+            { value: 'khang-phap', label: 'Kháng Pháp', color: '#34495e' },
+            { value: 'khang-my', label: 'Kháng Mỹ', color: '#c0392b' }
+        ];
+
+        const periodInsights = {
+            'hung': 'Giai đoạn hình thành nhà nước đầu tiên, đặt nền móng bản sắc dân tộc.',
+            'ly': 'Kinh đô dời về Thăng Long, mở đầu thời kỳ độc lập ổn định lâu dài.',
+            'tran': 'Ba lần đánh bại quân Nguyên Mông - đội quân từng bất bại ở châu Á và châu Âu.',
+            'le-nguyen': 'Từ kháng chiến chống Minh đến công cuộc Nam tiến - lãnh thổ dần mở rộng về phía Nam.',
+            'tay-son': 'Phong trào nông dân lớn nhất lịch sử, tạm thời thống nhất đất nước sau nhiều thế kỷ chia cắt.',
+            'khang-phap': 'Gần 100 năm đấu tranh liên tục dưới nhiều hình thức, từ vũ trang đến tìm đường cứu nước mới.',
+            'khang-my': '21 năm kháng chiến, kết thúc bằng thống nhất đất nước năm 1975.'
+        };
+
+        let lastShownPeriod = null;
+        let lastChapterPeriod = null;
+
+        let filteredEvents = [...events];
+        let selectedPeriods = [];
+        let map;
+        let markers = [];
+        let routes = [];
+
+        // ════ PLAYBACK STATE ════
+        let isPlaying = false;
+        let playbackIndex = 0;
+        let playbackSpeed = 1;
+        let playbackTimeout = null;
+        let travelerLayer = null;
+        let trailSegments = [];
+        let chapterTimeout1 = null;
+        let chapterTimeout2 = null;
+
+        // ════ HELPERS: MÀU & PHÂN CẤP THEO GIAI ĐOẠN ════
+        function getPeriod(periodValue) {
+            return periods.find(p => p.value === periodValue) || periods[0];
+        }
+
+        function hexToRgb(hex) {
+            const h = hex.replace('#', '');
+            const bigint = parseInt(h, 16);
+            return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+        }
+
+        function rgba(hex, alpha) {
+            const c = hexToRgb(hex);
+            return `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})`;
+        }
+
+        // ════ HEADER STATS ════
+        function renderHeaderStats() {
+            const el = document.getElementById('headerStats');
+            if (!el) return;
+            const years = events.map(e => e.year);
+            const minY = Math.min(...years), maxY = Math.max(...years);
+            const fmtY = (y) => y < 0 ? `${Math.abs(y)} TCN` : `${y}`;
+            const periodCount = new Set(events.map(e => e.period)).size;
+            el.innerHTML = `
+                <div class="header-stat-chip">📌 <b>${events.length}</b> sự kiện</div>
+                <div class="header-stat-chip">⏳ <b>${fmtY(minY)} – ${fmtY(maxY)}</b></div>
+                <div class="header-stat-chip">📖 <b>${periodCount}</b> giai đoạn</div>
+            `;
+        }
+
+        // ════ INIT ════
+        function init() {
+            renderHeaderStats();
+            initMap();
+            renderFilters();
+            renderLegend();
+            renderTimeline();
+            renderEvents();
+            renderMarkers();
+            renderRoutes();
+        }
+
+        // ════ INIT MAP (với fallback nhiều nguồn tile) ════
+        function initMap() {
+            map = L.map('map').setView([16, 105.5], 6);
+
+            const tileSources = [
+              
+                {
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+                    options: { attribution: 'Tiles © Esri — Source: Esri, HERE, Garmin, FAO, NOAA, USGS', maxZoom: 19 }
+                },
+                {
+                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    options: { attribution: '© OpenStreetMap contributors', maxZoom: 19 }
+                },
+                {
+                    url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
+                    options: { attribution: '© Stadia Maps © OpenStreetMap contributors', maxZoom: 19 }
+                }
+            ];
+
+            let sourceIndex = 0;
+            let currentLayer = null;
+
+            function attachTileLayer(idx) {
+                if (currentLayer) {
+                    map.removeLayer(currentLayer);
+                }
+                const src = tileSources[idx];
+                currentLayer = L.tileLayer(src.url, Object.assign({ className: 'historical-tiles' }, src.options));
+
+                let failedTiles = 0;
+                currentLayer.on('tileerror', function() {
+                    failedTiles++;
+                    // Nếu quá nhiều tile lỗi ngay từ đầu, chuyển sang nguồn kế tiếp
+                    if (failedTiles > 6 && idx < tileSources.length - 1) {
+                        console.warn('Nguồn bản đồ "' + src.url + '" không tải được, đang chuyển sang nguồn dự phòng...');
+                        attachTileLayer(idx + 1);
+                    }
+                });
+
+                currentLayer.addTo(map);
+            }
+
+            attachTileLayer(sourceIndex);
+
+            renderHeatMap();
+        }
+
+        // ════ HEAT MAP (mật độ) ════
+        function renderHeatMap() {
+            events.forEach(event => {
+                const p = getPeriod(event.period);
+                L.circleMarker([event.lat, event.lng], {
+                    radius: 26,
+                    fillColor: p.color,
+                    color: 'transparent',
+                    weight: 0,
+                    fillOpacity: 0.07
+                }).addTo(map);
+            });
+        }
+
+        // ════ RENDER FILTERS ════
+        function renderFilters() {
+            const html = periods.map(p => `
+                <div class="filter-tag" onclick="togglePeriod('${p.value}')" style="--color: ${p.color};">
+                    <span class="dot"></span>${p.label}
+                </div>
+            `).join('');
+
+            document.getElementById('periodFilters').innerHTML = html;
+        }
+
+        // ════ LEGEND TRÊN BẢN ĐỒ ════
+        function renderLegend() {
+            const el = document.getElementById('mapLegend');
+            if (!el) return;
+            el.innerHTML = `
+                <div class="map-legend-title">🗝️ Chú thích</div>
+                ${periods.map(p => `
+                    <div class="map-legend-row" style="color:${p.color};">
+                        <span class="map-legend-dot" style="background:${p.color};"></span>
+                        <span style="color:#eee;">${p.label}</span>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // ════ TOGGLE PERIOD ════
+        function togglePeriod(period) {
+            if (selectedPeriods.includes(period)) {
+                selectedPeriods = selectedPeriods.filter(p => p !== period);
+            } else {
+                selectedPeriods.push(period);
+            }
+
+            const tags = document.querySelectorAll('.filter-tag');
+            tags.forEach(tag => {
+                const text = tag.textContent.trim();
+                const p = periods.find(x => x.label === text);
+                if (selectedPeriods.includes(p.value)) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+
+            filterEvents();
+        }
+
+        // ════ FILTER EVENTS ════
+        function filterEvents() {
+            stopPlayback();
+
+            if (selectedPeriods.length === 0) {
+                filteredEvents = [...events];
+            } else {
+                filteredEvents = events.filter(e => selectedPeriods.includes(e.period));
+            }
+
+            renderEvents();
+            renderMarkers();
+            renderRoutes();
+            renderTimeline();
+        }
+
+        // ════ RENDER EVENTS ════
+        function renderEvents() {
+            const list = document.getElementById('eventsList');
+            document.getElementById('eventCount').textContent = filteredEvents.length;
+
+            list.innerHTML = filteredEvents
+                .sort((a, b) => a.year - b.year)
+                .map(e => {
+                    const p = getPeriod(e.period);
+                    return `
+                    <div class="event-item" data-id="${e.id}" style="border-left-color:${p.color};" onclick="selectEvent(${e.id})">
+                        <div class="event-year" style="color:${p.color};">${e.year}</div>
+                        <div class="event-title">${e.title}</div>
+                        <div class="event-location">📍 ${e.location}</div>
+                    </div>
+                `;
+                }).join('');
+        }
+
+        // ════ RENDER MARKERS ════
+        function renderMarkers() {
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            const orderMap = {};
+            [...filteredEvents].sort((a, b) => a.year - b.year)
+                .forEach((e, idx) => { orderMap[e.id] = idx + 1; });
+
+            filteredEvents.forEach(event => {
+                const p = getPeriod(event.period);
+                const html = `
+                    <div class="popup-box">
+                        <div class="popup-header" style="background: linear-gradient(135deg, ${p.color}, ${rgba(p.color, 0.72)});">
+                            <span class="popup-period-tag">${p.label}</span>
+                            <span style="font-size:24px; margin-right:8px;">${event.icon}</span>
+                            <span class="popup-title">${event.title}</span>
+                        </div>
+                        <div class="popup-body">
+                            <div class="popup-year" style="color:${p.color};">Năm: ${event.year}</div>
+                            <div class="popup-desc"><strong>📖 Mô tả:</strong> ${event.detailedDesc}</div>
+                            <div style="font-size:0.8rem; color:#333; margin-top:8px;">
+                                <strong>🎯 Nguyên nhân:</strong> ${event.causes}<br>
+                                <strong>✅ Kết quả:</strong> ${event.result}<br>
+                                <strong>⭐ Ảnh hưởng:</strong> ${event.impact}
+                            </div>
+                            <div class="popup-character">👤 ${event.character}</div>
+
+                            ${event.funFacts ? `<div style="margin-top:12px; border-top:1px solid #eee; padding-top:8px;">
+                                <strong style="font-size:0.85rem; color:#1a1a2e;">🎯 Sự thật thú vị:</strong>
+                                <ul style="font-size:0.75rem; color:#666; margin:6px 0 0 18px; padding:0;">
+                                    ${event.funFacts.map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+                            </div>` : ''}
+
+                            ${event.timeline ? `<div style="margin-top:12px; border-top:1px solid #eee; padding-top:8px;">
+                                <strong style="font-size:0.85rem; color:#1a1a2e;">📅 Timeline:</strong>
+                                <div style="font-size:0.75rem; color:#666; margin:6px 0;">
+                                    ${event.timeline.map(t => `<div>• <strong>${t.date}:</strong> ${t.event}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+
+                            ${event.keyFigures ? `<div style="margin-top:12px; border-top:1px solid #eee; padding-top:8px;">
+                                <strong style="font-size:0.85rem; color:#1a1a2e;">👥 Nhân vật chính:</strong>
+                                <div style="font-size:0.75rem; color:#666; margin:6px 0;">
+                                    ${event.keyFigures.map(f => `<div>• <strong>${f.name}</strong> - ${f.role}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                const isMajor = !!event.major;
+                const size = isMajor ? 50 : 40;
+                const iconFontSize = isMajor ? 24 : 20;
+
+                const marker = L.marker([event.lat, event.lng], {
+                    icon: L.divIcon({
+                        html: `<div class="custom-marker${isMajor ? ' marker-major' : ''}" style="--pcolor:${p.color}; --pcolor-soft:${rgba(p.color, 0.35)}; --pcolor-glow:${rgba(p.color, 0.55)}; width:${size}px; height:${size}px; font-size:${iconFontSize}px;">${event.icon}<span class="marker-order-badge" style="background:${p.color};">${orderMap[event.id]}</span></div>`,
+                        className: 'marker-wrapper',
+                        iconSize: [size, size],
+                        iconAnchor: [size / 2, size / 2]
+                    })
+                }).addTo(map)
+                  .bindPopup(html, { maxWidth: 320 })
+                  .bindTooltip(`<b>${event.year}</b> — ${event.title}`, {
+                      className: 'event-tooltip',
+                      direction: 'top',
+                      offset: [0, -22]
+                  });
+
+                marker.eventId = event.id;
+                marker.periodColor = p.color;
+                markers.push(marker);
+            });
+        }
+
+        // ════ RENDER ROUTES (đã tắt đường tĩnh — chỉ giữ cờ 🚩 chạy khi bấm Play) ════
+        function renderRoutes() {
+            routes.forEach(r => map.removeLayer(r));
+            routes = [];
+        }
+
+        // Vẽ đường bằng hiệu ứng stroke-dashoffset (giống nét bút chạy dần)
+        function animateRouteLine(polyline, delay) {
+            const path = polyline._path;
+            if (!path) return;
+
+            let length = 0;
+            try { length = path.getTotalLength(); } catch (e) { return; }
+
+            path.style.transition = 'none';
+            path.style.strokeDasharray = length + ' ' + length;
+            path.style.strokeDashoffset = length;
+            path.getBoundingClientRect(); // buộc reflow
+
+            setTimeout(() => {
+                path.style.transition = 'stroke-dashoffset 1.3s ease-in-out';
+                path.style.strokeDashoffset = '0';
+            }, delay);
+        }
+
+        // ════ RENDER TIMELINE BOTTOM ════
+        function renderTimeline() {
+            const timeline = document.getElementById('timelineBottom');
+
+            const uniquePeriods = [...new Set(filteredEvents.map(e => e.period))];
+            const sortedPeriods = periods.filter(p => uniquePeriods.includes(p.value));
+
+            timeline.innerHTML = sortedPeriods.map(p => {
+                const eventsInPeriod = filteredEvents.filter(e => e.period === p.value);
+                return `
+                    <div class="timeline-item" style="--color:${p.color};" onclick="selectPeriodTimeline('${p.value}')">
+                        <div class="timeline-year" style="color:${p.color};">${eventsInPeriod.length} sự kiện</div>
+                        <div class="timeline-name">${p.label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ════ SELECT EVENT ════
+        function selectEvent(id) {
+            stopPlayback();
+            const event = events.find(e => e.id === id);
+            if (event) {
+                map.setView([event.lat, event.lng], 9);
+                const marker = markers.find(m => m.eventId === id);
+                if (marker) {
+                    marker.openPopup();
+                    bounceMarker(marker);
+                }
+                highlightEventInList(id);
+            }
+        }
+
+        function bounceMarker(marker) {
+            const el = marker.getElement();
+            if (!el) return;
+            const icon = el.querySelector('.custom-marker');
+            if (!icon) return;
+            icon.classList.remove('marker-arrived');
+            void icon.offsetWidth; // reflow để restart animation
+            icon.classList.add('marker-arrived');
+        }
+
+        function highlightEventInList(id) {
+            document.querySelectorAll('.event-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.id === String(id));
+            });
+            const activeEl = document.querySelector(`.event-item[data-id="${id}"]`);
+            if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ════ SELECT PERIOD TIMELINE ════
+        function selectPeriodTimeline(period) {
+            selectedPeriods = [period];
+
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                const text = tag.textContent.trim();
+                const p = periods.find(x => x.label === text);
+                if (p.value === period) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+
+            filterEvents();
+        }
+
+        // ════════════════════════════════════════
+        // ════ PHÁT LẠI HÀNH TRÌNH LỊCH SỬ ════
+        // ════════════════════════════════════════
+
+        function togglePlayback() {
+            if (isPlaying) {
+                pausePlayback();
+            } else {
+                startPlayback();
+            }
+        }
+
+        function startPlayback() {
+            if (filteredEvents.length === 0) return;
+            if (playbackIndex >= filteredEvents.length) playbackIndex = 0;
+
+            // Dọn quiz/caption còn sót lại từ lần phát trước để không lộ phía sau chuyển cảnh
+            const quizBox = document.getElementById('quizBox');
+            if (quizBox) { quizBox.classList.remove('show'); quizBox.innerHTML = ''; }
+            document.getElementById('insightCaption').classList.remove('show');
+
+            isPlaying = true;
+            document.getElementById('playBtn').textContent = '⏸';
+            runPlaybackStep();
+        }
+
+        function pausePlayback() {
+            isPlaying = false;
+            clearTimeout(playbackTimeout);
+            hideChapterTransition();
+            document.getElementById('playBtn').textContent = '▶';
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            clearTimeout(playbackTimeout);
+            hideChapterTransition();
+            lastChapterPeriod = null;
+            const btn = document.getElementById('playBtn');
+            if (btn) btn.textContent = '▶';
+            if (travelerLayer) { map.removeLayer(travelerLayer); travelerLayer = null; }
+            const quizBox = document.getElementById('quizBox');
+            if (quizBox) { quizBox.classList.remove('show'); quizBox.innerHTML = ''; }
+        }
+
+       function resetPlayback() {
+    stopPlayback();
+    playbackIndex = 0;
+    lastShownPeriod = null;
+    trailSegments.forEach(seg => { if (map.hasLayer(seg)) map.removeLayer(seg); });
+    trailSegments = [];
+            const quizBox = document.getElementById('quizBox');
+            if (quizBox) { quizBox.classList.remove('show'); quizBox.innerHTML = ''; }
+            updatePlaybackUI(0, filteredEvents.length, null);
+            document.querySelectorAll('.event-item').forEach(el => el.classList.remove('active'));
+        }
+
+        function setPlaybackSpeed(val) {
+            playbackSpeed = parseFloat(val);
+        }
+
+        function runPlaybackStep() {
+            if (!isPlaying) return;
+
+            const sorted = [...filteredEvents].sort((a, b) => a.year - b.year);
+            if (playbackIndex >= sorted.length) {
+                stopPlayback();
+                playbackIndex = 0;
+                startReviewQuiz(sorted);
+                return;
+            }
+
+            const event = sorted[playbackIndex];
+            const prevEvent = playbackIndex > 0 ? sorted[playbackIndex - 1] : null;
+
+            // Nếu bước sang một giai đoạn lịch sử mới → chèn cảnh chuyển chương kiểu phim trước khi chạy tiếp
+            if (event.period !== lastChapterPeriod) {
+                lastChapterPeriod = event.period;
+                showChapterTransition(event.period, () => {
+                    if (!isPlaying) return; // người dùng có thể đã tạm dừng trong lúc chuyển cảnh
+                    executePlaybackStep(event, prevEvent, sorted);
+                });
+            } else {
+                executePlaybackStep(event, prevEvent, sorted);
+            }
+        }
+
+        function executePlaybackStep(event, prevEvent, sorted) {
+            const stepDuration = 2300 / playbackSpeed;
+
+            updatePlaybackUI(playbackIndex, sorted.length, event, prevEvent);
+            highlightEventInList(event.id);
+
+            map.flyTo([event.lat, event.lng], 8, { duration: 1.0 });
+
+            if (prevEvent) {
+                animateTraveler(prevEvent, event, Math.max(700, stepDuration * 0.55));
+                drawTrailSegment(prevEvent, event, Math.max(700, stepDuration * 0.55));
+            }
+
+            const marker = markers.find(m => m.eventId === event.id);
+            if (marker) {
+                setTimeout(() => {
+                    bounceMarker(marker);
+                    marker.openTooltip();
+                }, prevEvent ? 500 : 100);
+                setTimeout(() => marker.closeTooltip(), stepDuration - 300);
+            }
+
+            playbackTimeout = setTimeout(() => {
+                playbackIndex++;
+                runPlaybackStep();
+            }, stepDuration);
+        }
+
+        // ════════════════════════════════════════
+        // ════ CHUYỂN CẢNH CHƯƠNG PHIM (giữa các giai đoạn lịch sử) ════
+        // ════════════════════════════════════════
+
+        const chapterIcons = {
+            'hung': '🌾',
+            'ly': '🏯',
+            'tran': '🏹',
+            'le-nguyen': '👑',
+            'tay-son': '⚡',
+            'khang-phap': '⚔️',
+            'khang-my': '⭐'
+        };
+
+        let chapterPaused = false;
+        let chapterRemaining = 0;
+        let chapterDeadline = 0;
+        let chapterTotalDuration = 0;
+        let chapterCallback = null;
+        let chapterProgressRAF = null;
+
+        function showChapterTransition(periodValue, callback) {
+            const overlay = document.getElementById('chapterTransition');
+            const iconEl = document.getElementById('chapterIcon');
+            const numberEl = document.getElementById('chapterNumber');
+            const titleEl = document.getElementById('chapterTitle');
+            const metaEl = document.getElementById('chapterMeta');
+            const descEl = document.getElementById('chapterDesc');
+            const previewEl = document.getElementById('chapterEventsPreview');
+            const dotsEl = document.getElementById('chapterDots');
+            const pauseBtn = document.getElementById('chapterPauseBtn');
+
+            const p = periods.find(x => x.value === periodValue);
+
+            // Đánh số chương dựa trên các giai đoạn THỰC SỰ đang xuất hiện trong danh sách đã lọc
+            // (để khi người dùng lọc chỉ 2 giai đoạn thì hiện đúng "01/02" thay vì số cố định 1-7)
+            const sortedAll = [...filteredEvents].sort((a, b) => a.year - b.year);
+            const periodOrderList = [...new Set(sortedAll.map(e => e.period))];
+            const orderIdx = periodOrderList.indexOf(periodValue) + 1;
+            const totalChapters = periodOrderList.length;
+
+            const periodEvents = sortedAll.filter(e => e.period === periodValue);
+            const fmtYear = (y) => y < 0 ? `${Math.abs(y)} TCN` : `${y}`;
+            const yearRange = periodEvents.length
+                ? (periodEvents[0].year === periodEvents[periodEvents.length - 1].year
+                    ? fmtYear(periodEvents[0].year)
+                    : `${fmtYear(periodEvents[0].year)} – ${fmtYear(periodEvents[periodEvents.length - 1].year)}`)
+                : '';
+
+            iconEl.textContent = chapterIcons[periodValue] || '📖';
+            numberEl.textContent = `GIAI ĐOẠN ${String(orderIdx).padStart(2, '0')} / ${String(totalChapters).padStart(2, '0')}`;
+            titleEl.textContent = p ? p.label : '';
+            descEl.textContent = periodInsights[periodValue] || '';
+            overlay.style.setProperty('--chapter-color', p ? p.color : '#f39c12');
+
+            metaEl.innerHTML = `
+                <span class="chapter-chip solid">${periodEvents.length} sự kiện</span>
+                ${yearRange ? `<span class="chapter-chip">${yearRange}</span>` : ''}
+            `;
+
+            const MAX_PREVIEW = 3;
+            const previewRows = periodEvents.slice(0, MAX_PREVIEW).map(e => `
+                <div class="chapter-event-row">
+                    <span class="yr">${fmtYear(e.year)}</span>
+                    <span>${e.title}</span>
+                </div>
+            `).join('');
+            const extra = periodEvents.length - MAX_PREVIEW;
+            previewEl.innerHTML = previewRows + (extra > 0
+                ? `<div class="chapter-event-row more">… và ${extra} sự kiện khác</div>`
+                : '');
+
+            dotsEl.innerHTML = periodOrderList.map((pv, idx) => {
+                const cls = idx + 1 === orderIdx ? 'current' : (idx + 1 < orderIdx ? 'done' : '');
+                return `<span class="chapter-dot ${cls}"></span>`;
+            }).join('');
+
+            chapterCallback = callback;
+            chapterPaused = false;
+            pauseBtn.textContent = '⏸ Tạm dừng';
+
+            clearTimeout(chapterTimeout1);
+            clearTimeout(chapterTimeout2);
+            cancelAnimationFrame(chapterProgressRAF);
+
+            overlay.classList.add('show');
+
+            const showDuration = Math.max(2200, 3400 / playbackSpeed);
+            startChapterCountdown(showDuration);
+        }
+
+        function startChapterCountdown(duration) {
+            chapterTotalDuration = duration;
+            chapterRemaining = duration;
+            chapterDeadline = performance.now() + duration;
+            document.getElementById('chapterProgressFill').style.width = '100%';
+            chapterTimeout1 = setTimeout(finishChapterTransition, duration);
+            animateChapterProgress();
+        }
+
+        function animateChapterProgress() {
+            if (chapterPaused) return;
+            const fill = document.getElementById('chapterProgressFill');
+            const remaining = Math.max(0, chapterDeadline - performance.now());
+            const pct = chapterTotalDuration > 0 ? (remaining / chapterTotalDuration) * 100 : 0;
+            if (fill) fill.style.width = pct + '%';
+            if (remaining > 0) {
+                chapterProgressRAF = requestAnimationFrame(animateChapterProgress);
+            }
+        }
+
+        function toggleChapterPause() {
+            const pauseBtn = document.getElementById('chapterPauseBtn');
+            if (!chapterPaused) {
+                chapterPaused = true;
+                clearTimeout(chapterTimeout1);
+                cancelAnimationFrame(chapterProgressRAF);
+                chapterRemaining = Math.max(0, chapterDeadline - performance.now());
+                pauseBtn.textContent = '▶ Tiếp tục';
+            } else {
+                chapterPaused = false;
+                chapterDeadline = performance.now() + chapterRemaining;
+                chapterTotalDuration = chapterRemaining;
+                chapterTimeout1 = setTimeout(finishChapterTransition, chapterRemaining);
+                animateChapterProgress();
+                pauseBtn.textContent = '⏸ Tạm dừng';
+            }
+        }
+
+        function skipChapterNow() {
+            clearTimeout(chapterTimeout1);
+            cancelAnimationFrame(chapterProgressRAF);
+            finishChapterTransition();
+        }
+
+        function finishChapterTransition() {
+            clearTimeout(chapterTimeout1);
+            clearTimeout(chapterTimeout2);
+            cancelAnimationFrame(chapterProgressRAF);
+            const overlay = document.getElementById('chapterTransition');
+            overlay.classList.remove('show');
+            const cb = chapterCallback;
+            chapterCallback = null;
+            chapterTimeout2 = setTimeout(() => {
+                if (cb) cb();
+            }, 500); // khớp với thời gian transition opacity trong CSS
+        }
+
+        function hideChapterTransition() {
+            clearTimeout(chapterTimeout1);
+            clearTimeout(chapterTimeout2);
+            cancelAnimationFrame(chapterProgressRAF);
+            chapterCallback = null;
+            chapterPaused = false;
+            const overlay = document.getElementById('chapterTransition');
+            if (overlay) overlay.classList.remove('show');
+        }
+
+        function drawTrailSegment(from, to, duration) {
+  const trailColor = getPeriod(to.period).color;
+  const newLine = L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
+    color: trailColor,
+    weight: 3,
+    opacity: 0.85,
+    lineCap: 'round'
+  }).addTo(map);
+
+  trailSegments.push(newLine);
+  animateRouteLine(newLine, 100);
+
+  const MAX_BRIGHT = 3;
+  trailSegments.forEach((seg, idx) => {
+    const distFromEnd = trailSegments.length - 1 - idx;
+    if (distFromEnd >= MAX_BRIGHT) {
+      seg.setStyle({ opacity: 0.12, weight: 1.5 });
+      if (distFromEnd >= MAX_BRIGHT + 2) {
+        map.removeLayer(seg);
+      }
+    } else if (distFromEnd > 0) {
+      seg.setStyle({ opacity: 0.85 - distFromEnd * 0.22, weight: 2.5 });
+    }
+  });
+
+  if (trailSegments.length > MAX_BRIGHT + 3) {
+    const removed = trailSegments.shift();
+    if (map.hasLayer(removed)) map.removeLayer(removed);
+  }
+}
+
+function animateTraveler(from, to, duration) {
+    if (travelerLayer) { map.removeLayer(travelerLayer); travelerLayer = null; }
+
+    const icon = L.divIcon({
+        html: '<div class="traveler-icon">🚩</div>',
+        className: 'traveler-wrapper',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+    });
+
+    travelerLayer = L.marker([from.lat, from.lng], { icon, interactive: false }).addTo(map);
+
+    const start = performance.now();
+
+    function frame(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const lat = from.lat + (to.lat - from.lat) * t;
+        const lng = from.lng + (to.lng - from.lng) * t;
+        if (travelerLayer) travelerLayer.setLatLng([lat, lng]);
+
+        if (t < 1) {
+            requestAnimationFrame(frame);
+        } else if (travelerLayer) {
+            map.removeLayer(travelerLayer);
+            travelerLayer = null;
+        }
+    }
+    requestAnimationFrame(frame);
+}
+
+        // ════════════════════════════════════════
+        // ════ QUIZ ÔN LẠI SAU KHI PHÁT LẠI ════
+        // ════════════════════════════════════════
+
+        let quizQuestions = [];
+        let quizIndex = 0;
+        let quizScore = 0;
+
+        function startReviewQuiz(sorted) {
+            if (sorted.length < 2) return; // cần ít nhất 2 sự kiện để hỏi "cái nào trước"
+
+            quizQuestions = buildQuizQuestions(sorted);
+            quizIndex = 0;
+            quizScore = 0;
+
+            document.getElementById('insightCaption').classList.remove('show');
+
+            const box = document.getElementById('quizBox');
+            box.classList.add('show');
+            renderQuizQuestion();
+        }
+
+        function buildQuizQuestions(sorted) {
+            // Chọn ngẫu nhiên tối đa 3 cặp sự kiện KHÔNG trùng năm để hỏi "cái nào diễn ra trước"
+            const candidatePairs = [];
+            for (let i = 0; i < sorted.length; i++) {
+                for (let j = i + 1; j < sorted.length; j++) {
+                    if (sorted[i].year !== sorted[j].year) {
+                        candidatePairs.push([sorted[i], sorted[j]]);
+                    }
+                }
+            }
+
+            // Xáo trộn
+            for (let i = candidatePairs.length - 1; i > 0; i--) {
+                const k = Math.floor(Math.random() * (i + 1));
+                [candidatePairs[i], candidatePairs[k]] = [candidatePairs[k], candidatePairs[i]];
+            }
+
+            const chosen = candidatePairs.slice(0, 3);
+            const fmtYear = (y) => y < 0 ? `${Math.abs(y)} TCN` : `${y}`;
+
+            return chosen.map(([a, b]) => {
+                // Xáo trộn thứ tự hiển thị A/B để câu hỏi không luôn theo thứ tự thời gian
+                const [x, y] = Math.random() < 0.5 ? [a, b] : [b, a];
+                const xFirst = x.year < y.year;
+                return {
+                    prompt: `"${x.title}" diễn ra trước "${y.title}" — Đúng hay Sai?`,
+                    correct: xFirst,
+                    explain: `${xFirst ? '✅ Đúng' : '❌ Sai'} — "${x.title}" (${fmtYear(x.year)}) và "${y.title}" (${fmtYear(y.year)}), cách nhau ${Math.abs(x.year - y.year)} năm.`
+                };
+            });
+        }
+
+        function renderQuizQuestion() {
+            const box = document.getElementById('quizBox');
+
+            if (quizIndex >= quizQuestions.length) {
+                box.innerHTML = `
+                    <div class="quiz-result">
+                        <div class="quiz-result-score">🎓 Bạn đúng ${quizScore}/${quizQuestions.length} câu</div>
+                        <button class="quiz-again-btn" onclick="closeQuizAndReset()">🔄 Xem lại hành trình</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = quizQuestions[quizIndex];
+            box.innerHTML = `
+                <div class="quiz-progress">📝 Ôn lại kiến thức — Câu ${quizIndex + 1}/${quizQuestions.length}</div>
+                <div class="quiz-q">${q.prompt}</div>
+                <div class="quiz-answers">
+                    <button class="quiz-btn" onclick="answerQuiz(true, this)">✔ ĐÚNG</button>
+                    <button class="quiz-btn" onclick="answerQuiz(false, this)">✘ SAI</button>
+                </div>
+                <div class="quiz-fb" id="quizFb" style="display:none;"></div>
+            `;
+        }
+
+        function answerQuiz(val, btn) {
+            const q = quizQuestions[quizIndex];
+            const ok = (val === q.correct);
+            if (ok) quizScore++;
+
+            document.querySelectorAll('.quiz-btn').forEach(b => b.disabled = true);
+            btn.classList.add(ok ? 'correct' : 'wrong');
+
+            const fb = document.getElementById('quizFb');
+            fb.textContent = q.explain;
+            fb.style.display = 'block';
+
+            quizIndex++;
+            setTimeout(renderQuizQuestion, 1600);
+        }
+
+        function closeQuizAndReset() {
+            document.getElementById('quizBox').classList.remove('show');
+            document.getElementById('quizBox').innerHTML = '';
+            resetPlayback();
+        }
+
+        function updatePlaybackUI(index, total, event, prevEvent) {
+            const fill = document.getElementById('progressFill');
+            const label = document.getElementById('playbackLabel');
+            const caption = document.getElementById('insightCaption');
+            const periodText = document.getElementById('periodInsightText');
+            const gapText = document.getElementById('yearGapText');
+            const pct = total > 0 ? Math.round((index / total) * 100) : 0;
+            fill.style.width = pct + '%';
+            label.textContent = event ? `${event.year} — ${event.title}` : 'Sẵn sàng phát lại hành trình';
+
+            if (!event) {
+                caption.classList.remove('show');
+                lastShownPeriod = null;
+                return;
+            }
+
+            const pColor = getPeriod(event.period).color;
+            fill.style.background = `linear-gradient(90deg, ${pColor}, ${rgba(pColor, 0.7)})`;
+
+            if (event.period !== lastShownPeriod) {
+                lastShownPeriod = event.period;
+                const text = periodInsights[event.period];
+                periodText.textContent = text ? ('💡 ' + text) : '';
+            }
+
+            const fmtYear = (y) => y < 0 ? `${Math.abs(y)} TCN` : `${y}`;
+
+            if (prevEvent) {
+                const diff = Math.abs(event.year - prevEvent.year);
+                if (diff === 0) {
+                    gapText.textContent = `⏳ Cùng diễn ra năm ${fmtYear(event.year)} — "${prevEvent.title}" và "${event.title}".`;
+                } else {
+                    gapText.textContent = `⏳ Cách sự kiện trước ${diff} năm — từ "${prevEvent.title}" (${fmtYear(prevEvent.year)}) đến "${event.title}" (${fmtYear(event.year)}).`;
+                }
+            } else {
+                gapText.textContent = '';
+            }
+
+            caption.classList.remove('show');
+            void caption.offsetWidth;
+            caption.classList.add('show');
+        }
+
+        // ════ FULLSCREEN ════
+        document.getElementById('fullscreenBtn').addEventListener('click', function() {
+
+            
+            const container = document.querySelector('.container') || document.body;
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => alert('Cannot fullscreen'));
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Init
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nguyễn Trãi — Sao Khuê Giữa Cõi Nhân Gian | Sử Việt Tương Tác</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --jade:#1a6b4a;--jade-l:#3fae7c;--jade-dim:#0f4530;
+  --paper:#c9a876;--paper-l:#e6d3a3;--paper-dim:#8a744f;
+  --seal:#9c2b3e;--seal-l:#c94456;
+  --ink-bg:#050a09;--surface:rgba(7,13,12,0.97);
+  --text:#e8e4d4;--text-dim:rgba(232,228,212,0.76);--text-faint:rgba(232,228,212,0.38);
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--ink-bg);color:var(--text);min-height:100vh;overflow-x:hidden;cursor:default;}
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 55% 35% at 15% 15%,rgba(26,107,74,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 45% at 85% 80%,rgba(201,168,118,0.06) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 50% at 50% 50%,rgba(156,43,62,0.03) 0%,transparent 70%);}
+.ink-container{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.ink-p{position:absolute;border-radius:50%;opacity:0;animation:inkFall linear infinite;}
+@keyframes inkFall{0%{opacity:0;transform:translateY(0) scale(0.6);}12%{opacity:0.55;}85%{opacity:0.15;}100%{opacity:0;transform:translateY(140px) scale(1.1) translateX(var(--fx));}}
+#cursorCanvas{position:fixed;inset:0;z-index:250;pointer-events:none;}
+.deco-c{position:fixed;width:40px;height:40px;border-color:rgba(201,168,118,0.3);border-style:solid;z-index:2;pointer-events:none;}
+.deco-c.tl{top:14px;left:14px;border-width:2px 0 0 2px;}
+.deco-c.tr{top:14px;right:14px;border-width:2px 2px 0 0;}
+.deco-c.bl{bottom:14px;left:14px;border-width:0 0 2px 2px;}
+.deco-c.br{bottom:14px;right:14px;border-width:0 2px 2px 0;}
+.flag-stripe{position:fixed;top:0;left:0;right:0;height:3px;z-index:300;background:linear-gradient(90deg,var(--jade-dim) 0%,var(--jade-l) 35%,var(--paper) 70%,var(--seal-l) 100%);opacity:.6;}
+nav{position:fixed;top:3px;left:0;right:0;z-index:200;background:rgba(5,10,9,0.97);border-bottom:1px solid rgba(201,168,118,0.18);padding:13px 40px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px);gap:14px;}
+.nav-left{display:flex;align-items:center;gap:14px;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:18px;color:var(--paper-l);text-decoration:none;letter-spacing:3px;display:flex;align-items:center;gap:10px;white-space:nowrap;}
+.nav-logo::before{content:'筆';font-size:16px;color:var(--jade-l);}
+.nav-sub{font-size:10.5px;color:var(--text-faint);letter-spacing:1.5px;display:none;}
+.nav-back{font-size:13px;color:var(--text-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;white-space:nowrap;}
+.nav-back:hover{color:var(--paper-l);}
+.nav-map-btn{background:transparent;border:1px solid rgba(201,168,118,.35);border-radius:50%;width:34px;height:34px;color:var(--paper-l);cursor:pointer;font-size:15px;flex-shrink:0;}
+@media(min-width:900px){.nav-sub{display:block;}}
+.prog-bar{position:fixed;top:59px;left:0;right:0;z-index:199;height:3px;background:rgba(255,255,255,0.04);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--jade-dim),var(--jade-l),var(--paper));transition:width .8s cubic-bezier(.4,0,.2,1);}
+.score-badge{position:fixed;top:70px;right:22px;z-index:198;background:rgba(5,10,9,0.94);border:1px solid rgba(201,168,118,0.3);border-radius:40px;padding:8px 18px;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text-dim);backdrop-filter:blur(12px);}
+.score-num{font-family:'Playfair Display',serif;font-size:22px;color:var(--paper-l);font-weight:700;min-width:30px;text-align:center;transition:transform .3s;}
+.score-num.bump{transform:scale(1.4);}
+.score-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--paper-dim);}
+.streak-badge{position:fixed;top:70px;left:22px;z-index:198;background:rgba(5,10,9,0.94);border:1px solid rgba(201,168,118,0.3);border-radius:40px;padding:8px 18px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);backdrop-filter:blur(12px);transition:all .4s;opacity:0;transform:translateX(-10px);}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(63,174,124,0.7);}
+.streak-num{font-family:'Playfair Display',serif;font-size:20px;color:var(--jade-l);font-weight:700;}
+.combo-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;font-family:'Playfair Display',serif;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-5deg);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(2deg);}70%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1);}}
+.combo-inner{background:rgba(5,10,9,0.97);border:2px solid var(--paper);border-radius:18px;padding:18px 34px;}
+.combo-title{font-size:12px;color:var(--jade-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:28px;color:var(--paper-l);line-height:1.2;}
+.combo-pts{font-size:13px;color:var(--text-faint);margin-top:4px;}
+.pts-popup{position:fixed;top:82px;right:90px;z-index:999;font-family:'Playfair Display',serif;font-size:22px;color:var(--paper-l);font-weight:700;pointer-events:none;opacity:0;}
+.pts-popup.show{animation:popUp .9s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}30%{opacity:1;transform:translateY(-20px) scale(1.2);}70%{opacity:1;transform:translateY(-35px) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(.9);}}
+#oracle{position:fixed;bottom:24px;left:24px;z-index:500;max-width:290px;background:rgba(5,10,9,0.96);border:1px solid rgba(201,168,118,0.4);border-radius:16px 16px 16px 4px;padding:15px 18px 14px;opacity:0;transform:translateY(20px) scale(0.95);transition:all .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+#oracle.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.oracle-icon{font-size:24px;display:block;margin-bottom:6px;}
+.oracle-name{font-size:10px;color:var(--paper-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.oracle-text{font-size:14px;line-height:1.65;color:var(--text-dim);font-style:italic;}
+.oracle-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer;padding:2px 6px;transition:color .2s;}
+.oracle-close:hover{color:var(--text);}
+#fxCanvas{position:fixed;inset:0;pointer-events:none;z-index:997;}
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:84vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(26,107,74,.4),rgba(5,10,9,.9));border:2px solid rgba(201,168,118,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(26,107,74,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(26,107,74,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(201,168,118,.5),0 0 130px rgba(26,107,74,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--paper-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,56px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(26,107,74,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--paper-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:540px;font-size:15.5px;line-height:1.85;color:var(--text-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--jade-l),var(--jade-dim));border:1px solid rgba(201,168,118,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(26,107,74,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(26,107,74,.5),0 0 40px rgba(201,168,118,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--text-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:820px;margin:0 auto;padding:90px 24px 80px;position:relative;z-index:2;}
+.scene{display:none;}
+.scene.active{display:block;animation:fadeUp .65s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+.chap{display:inline-flex;align-items:center;gap:8px;background:rgba(26,107,74,0.12);border:1px solid rgba(63,174,124,0.3);border-radius:30px;padding:6px 18px;font-size:12px;color:var(--jade-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;flex-wrap:wrap;}
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:10px;margin-left:6px;cursor:pointer;transition:.2s;background:rgba(201,168,118,.14);color:var(--paper-l);border:1px solid rgba(201,168,118,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.hero-svg{width:100%;height:280px;border-radius:16px;margin-bottom:14px;border:1px solid rgba(201,168,118,0.2);overflow:hidden;background:linear-gradient(180deg,#020605 0%,#061009 60%,#0a1410 100%);}
+.hero-svg svg{width:100%;height:100%;}
+.scene-img{width:100%;height:300px;object-fit:cover;border-radius:16px;margin-bottom:14px;border:1px solid rgba(201,168,118,0.2);box-shadow:0 18px 55px rgba(0,0,0,0.75);filter:sepia(0.15) contrast(1.05) saturate(0.9);}
+.img-note{display:block;font-size:11.5px;color:var(--text-faint);font-style:italic;margin:0 0 26px;text-align:center;opacity:.75;}
+.tl{display:flex;align-items:flex-start;gap:0;margin:26px 0;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}
+.tl::-webkit-scrollbar{display:none;}
+.tl-item{flex:1;min-width:58px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(201,168,118,.28),rgba(201,168,118,.06));z-index:0;}
+.tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.tl-dot.done{background:var(--paper-dim);border:2px solid var(--paper);color:#05100c;}
+.tl-dot.current{background:var(--jade-dim);border:2px solid var(--jade-l);color:#fff;animation:pulseDot 2s infinite;}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 18px rgba(63,174,124,.45);}50%{box-shadow:0 0 32px rgba(63,174,124,.9),0 0 55px rgba(201,168,118,.35);}}
+.tl-dot.todo{background:rgba(232,228,212,.05);border:2px solid rgba(232,228,212,.15);color:var(--text-faint);}
+.tl-year{font-size:10px;color:var(--paper-l);margin-top:6px;text-align:center;letter-spacing:.5px;}
+.tl-event{font-size:9px;color:var(--text-faint);margin-top:3px;text-align:center;line-height:1.3;padding:0 2px;}
+.nghia-meter{background:rgba(26,107,74,0.08);border:1px solid rgba(26,107,74,0.28);border-radius:12px;padding:13px 18px;margin:18px 0;display:flex;align-items:center;gap:14px;}
+.meter-label{font-size:11px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;min-width:96px;}
+.meter-track{flex:1;height:8px;background:rgba(232,228,212,0.06);border-radius:4px;overflow:hidden;}
+.meter-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--jade-dim),var(--jade-l),var(--paper));transition:width .8s cubic-bezier(.4,0,.2,1);}
+.info-pill{float:right;width:210px;margin:0 0 18px 22px;background:rgba(201,168,118,0.06);border:1px solid rgba(201,168,118,0.22);border-radius:12px;padding:13px 15px;font-size:14px;line-height:1.7;color:var(--text-dim);}
+.info-pill .ip-tag{font-size:11px;color:var(--paper-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.story{font-size:19px;line-height:1.95;color:rgba(232,228,212,.9);margin-bottom:16px;}
+.story em{color:var(--paper-l);font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+.dlg{background:rgba(201,168,118,0.06);border-left:3px solid rgba(201,168,118,0.5);border-radius:0 12px 12px 0;padding:16px 22px;margin:22px 0;font-style:italic;font-size:18px;line-height:1.75;color:var(--text);position:relative;}
+.dlg::before{content:'"';position:absolute;top:-10px;left:14px;font-size:58px;color:rgba(201,168,118,.1);font-family:'Playfair Display',serif;line-height:1;}
+.dlg-who{font-size:11px;font-style:normal;color:var(--paper-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.fact{background:rgba(26,107,74,0.07);border:1px solid rgba(26,107,74,0.26);border-radius:12px;padding:18px 22px;margin:22px 0;font-size:15px;line-height:1.8;color:var(--text-dim);}
+.fact-tag{font-size:11px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.chip{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,118,0.1);border:1px solid rgba(201,168,118,0.22);border-radius:20px;padding:3px 11px;font-size:12px;color:var(--paper-l);margin:4px 3px 4px 0;}
+.legend{text-align:center;padding:28px;background:rgba(201,168,118,0.06);border:1px solid rgba(201,168,118,0.22);border-radius:16px;margin:26px 0;font-family:'Playfair Display',serif;font-size:19px;color:var(--paper-l);line-height:1.7;font-style:italic;}
+.legend-icon{font-size:44px;display:block;margin-bottom:12px;}
+.reflect{background:rgba(201,168,118,0.05);border:1px dashed rgba(201,168,118,0.35);border-radius:14px;padding:18px 22px;margin:22px 0;}
+.reflect-tag{font-size:11px;color:var(--paper-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;}
+.reflect-q{font-size:16.5px;font-style:italic;color:var(--text);line-height:1.7;margin-bottom:8px;}
+.reflect-note{font-size:12px;color:var(--text-faint);}
+.outcome{border-radius:14px;padding:22px;margin:22px 0;font-size:17px;line-height:1.8;}
+.outcome.bad{background:rgba(156,43,62,0.14);border:1px solid rgba(156,43,62,0.32);}
+.outcome.good{background:rgba(26,107,74,0.1);border:1px solid rgba(26,107,74,0.3);}
+.outcome.gold{background:rgba(201,168,118,0.08);border:1px solid rgba(201,168,118,0.3);}
+.outcome-icon{font-size:32px;display:block;margin-bottom:10px;}
+.choices-label{font-size:11px;color:var(--paper-l);letter-spacing:2px;text-transform:uppercase;margin:34px 0 14px;display:flex;align-items:center;gap:10px;}
+.choices-label::before,.choices-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,118,.28),transparent);}
+.choices{display:flex;flex-direction:column;gap:12px;}
+.c-btn{background:rgba(232,228,212,.03);border:1px solid rgba(232,228,212,.12);border-radius:12px;padding:17px 22px;color:var(--text);font-family:'Crimson Pro',serif;font-size:17px;text-align:left;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:flex-start;gap:14px;line-height:1.55;position:relative;overflow:hidden;}
+.c-btn:hover{background:rgba(26,107,74,0.1);border-color:rgba(63,174,124,.4);transform:translateX(8px);box-shadow:0 4px 20px rgba(0,0,0,.3),-4px 0 0 rgba(63,174,124,.4);}
+.c-letter{width:30px;height:30px;min-width:30px;border-radius:50%;background:rgba(201,168,118,.1);border:1px solid rgba(201,168,118,.35);color:var(--paper-l);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;transition:all .3s;}
+.c-btn:hover .c-letter{background:rgba(63,174,124,.2);border-color:var(--jade-l);}
+.c-sub{font-size:13px;color:var(--text-faint);font-style:italic;margin-top:4px;}
+.gate{background:rgba(156,43,62,0.07);border:2px solid rgba(201,168,118,0.3);border-radius:16px;padding:24px 28px;margin:24px 0;text-align:center;}
+.gate-icon{font-size:44px;display:block;margin-bottom:12px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--paper-l);margin-bottom:8px;}
+.gate-desc{font-size:15px;color:var(--text-dim);line-height:1.7;margin-bottom:16px;}
+.gate-req{display:inline-block;background:rgba(156,43,62,0.16);border:1px solid rgba(201,168,118,0.3);border-radius:20px;padding:5px 16px;font-size:13px;color:var(--paper-l);margin-bottom:18px;}
+.challenge{background:rgba(26,107,74,0.06);border:1px solid rgba(26,107,74,.2);border-radius:14px;padding:20px 24px;margin:18px 0;text-align:left;}
+.ch-tag{font-size:11px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.ch-q{font-size:17px;font-weight:600;color:#fff;margin-bottom:14px;line-height:1.5;}
+.ch-opts{display:flex;flex-direction:column;gap:8px;}
+.ch-opt{background:rgba(232,228,212,.04);border:1px solid rgba(232,228,212,.12);border-radius:8px;padding:11px 16px;font-family:'Crimson Pro',serif;font-size:16px;color:var(--text);cursor:pointer;text-align:left;transition:all .25s;}
+.ch-opt:hover:not(:disabled){background:rgba(26,107,74,.1);border-color:rgba(63,174,124,.3);transform:translateX(4px);}
+.ch-opt.correct{background:rgba(20,80,20,.3)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.ch-opt.wrong{background:rgba(156,43,62,.3)!important;border-color:var(--seal-l)!important;color:#f0a5ae!important;}
+.ch-opt:disabled{cursor:default;}
+.ch-fb{margin-top:10px;font-size:15px;line-height:1.7;display:none;padding:10px 14px;border-radius:8px;}
+.ch-fb.show{display:block;}
+.ch-fb.ok{background:rgba(20,80,20,.2);color:#a5d6a7;}
+.ch-fb.no{background:rgba(156,43,62,.2);color:#f0a5ae;}
+.mq-prog{display:flex;gap:6px;margin-bottom:16px;justify-content:center;}
+.mq-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(201,168,118,0.45);background:transparent;transition:all .3s;}
+.mq-dot.done{background:var(--paper-l);}
+.mq-dot.current{background:var(--jade-l);border-color:var(--jade-l);}
+/* Con dấu (seal) unlock button */
+.seal-btn{display:inline-flex;align-items:center;gap:10px;margin-top:14px;padding:13px 30px;background:rgba(156,43,62,0.12);border:2px solid rgba(156,43,62,0.4);border-radius:50px;color:var(--seal-l);font-family:'Playfair Display',serif;font-size:16px;cursor:pointer;transition:all .3s;opacity:0.4;pointer-events:none;letter-spacing:1px;}
+.seal-btn.ready{opacity:1;pointer-events:auto;background:rgba(156,43,62,0.22);box-shadow:0 0 0 0 rgba(156,43,62,.4);}
+.seal-btn.ready:hover{background:rgba(156,43,62,0.35);transform:translateY(-2px) scale(1.02);}
+.gate-locked{pointer-events:none;opacity:0.45;}
+.kc{background:rgba(26,107,74,0.05);border:1px solid rgba(26,107,74,.2);border-radius:14px;padding:20px 24px;margin:24px 0;}
+.kc-tag{font-size:11px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.kc-q{font-size:17px;font-weight:600;color:#fff;margin-bottom:14px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(232,228,212,.04);border:1px solid rgba(232,228,212,.12);border-radius:8px;padding:11px 16px;font-family:'Crimson Pro',serif;font-size:16px;color:var(--text);cursor:pointer;text-align:left;transition:all .25s;}
+.kc-opt:hover:not(:disabled){background:rgba(26,107,74,.1);border-color:rgba(63,174,124,.3);transform:translateX(4px);}
+.kc-opt.correct{background:rgba(20,80,20,.25)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(156,43,62,.25)!important;border-color:var(--seal-l)!important;color:#f0a5ae!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:12px;font-size:15px;line-height:1.7;display:none;padding:10px 14px;border-radius:8px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(20,80,20,.15);color:#a5d6a7;}
+.kc-fb.no{background:rgba(156,43,62,.15);color:#f0a5ae;}
+/* Đối câu (couplet matching) - re-skin of matching mechanic */
+.duoi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.duoi-col{display:flex;flex-direction:column;gap:8px;}
+.duoi-item{padding:10px 14px;border-radius:6px;font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;cursor:pointer;transition:all .25s;border:1px solid rgba(232,228,212,.1);background:linear-gradient(180deg,rgba(201,168,118,.04),rgba(232,228,212,.02));color:var(--text);border-left:3px solid rgba(201,168,118,.3);}
+.duoi-item:hover{background:rgba(26,107,74,.09);border-left-color:var(--jade-l);}
+.duoi-item.selected{background:rgba(201,168,118,.16);border-left-color:var(--paper-l);color:var(--paper-l);}
+.duoi-item.matched-ok{background:rgba(20,80,20,.18);border-left-color:#4caf50;color:#a5d6a7;pointer-events:none;}
+.duoi-item.matched-no{background:rgba(156,43,62,.18);border-left-color:var(--seal-l);color:#f0a5ae;}
+.duoi-check{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:11px 22px;background:rgba(26,107,74,0.22);border:1px solid rgba(26,107,74,0.45);border-radius:10px;color:var(--jade-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.duoi-check:hover{background:rgba(26,107,74,0.4);}
+/* Mật lệnh (secret dispatch order) - re-skin of arrange */
+.scroll-zone{display:flex;flex-direction:column;gap:8px;min-height:60px;margin:12px 0;}
+.scroll-item{background:linear-gradient(90deg,rgba(201,168,118,.09),rgba(201,168,118,.03));border:1px solid rgba(201,168,118,0.28);border-left:3px solid var(--paper);border-radius:4px;padding:11px 14px;font-family:'Crimson Pro',serif;font-size:15px;color:var(--text);cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;transition:all .2s;}
+.scroll-item:hover{background:rgba(201,168,118,0.16);transform:translateX(4px);}
+.scroll-item.dragging{opacity:0.5;cursor:grabbing;}
+.scroll-handle{color:var(--paper-dim);font-size:12px;letter-spacing:1px;}
+.scroll-check-btn{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:11px 22px;background:rgba(156,43,62,0.18);border:1px solid rgba(156,43,62,0.4);border-radius:10px;color:#f0a5ae;font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.scroll-check-btn:hover{background:rgba(156,43,62,0.32);}
+/* Soạn thư tâm công (letter builder) - flagship mechanic */
+.letter-frame{background:linear-gradient(180deg,rgba(201,168,118,.05),rgba(201,168,118,.015));border:1px solid rgba(201,168,118,.3);border-radius:4px;padding:22px 24px;margin:18px 0;position:relative;}
+.letter-frame::before{content:'尺牘';position:absolute;top:10px;right:16px;font-size:22px;color:rgba(201,168,118,.15);font-family:serif;}
+.letter-head{font-size:12px;color:var(--paper-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;border-bottom:1px dashed rgba(201,168,118,.3);padding-bottom:10px;}
+.letter-zone{display:flex;flex-direction:column;gap:8px;min-height:60px;margin:10px 0 16px;}
+.letter-item{background:rgba(232,228,212,.03);border:1px solid rgba(232,228,212,.14);border-radius:6px;padding:12px 16px;font-family:'Crimson Pro',serif;font-style:italic;font-size:15px;color:var(--text);cursor:grab;display:flex;align-items:center;gap:10px;user-select:none;transition:all .2s;}
+.letter-item:hover{background:rgba(201,168,118,0.1);transform:translateX(4px);}
+.letter-item.dragging{opacity:0.5;}
+.letter-num{width:24px;height:24px;min-width:24px;border-radius:50%;background:rgba(201,168,118,.14);border:1px solid rgba(201,168,118,.4);color:var(--paper-l);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;}
+.tone-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+.tone-chip{padding:9px 16px;border-radius:20px;border:1px solid rgba(232,228,212,.16);background:rgba(232,228,212,.03);color:var(--text);font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;transition:.25s;}
+.tone-chip:hover:not(:disabled){border-color:rgba(63,174,124,.4);background:rgba(26,107,74,.08);}
+.tone-chip.correct{background:rgba(20,80,20,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.tone-chip.wrong{background:rgba(156,43,62,.28)!important;border-color:var(--seal-l)!important;color:#f0a5ae!important;}
+.letter-check-btn{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:11px 24px;background:rgba(26,107,74,0.2);border:1px solid rgba(26,107,74,0.45);border-radius:8px;color:var(--jade-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.letter-check-btn:hover{background:rgba(26,107,74,0.38);}
+/* Poem completion */
+.poem-box{background:linear-gradient(180deg,rgba(201,168,118,.05),transparent);border:1px solid rgba(201,168,118,.26);border-radius:12px;padding:22px 26px;margin:20px 0;text-align:center;}
+.poem-line{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--paper-l);line-height:1.85;}
+.poem-blank-input{background:rgba(232,228,212,.06);border:1px solid rgba(201,168,118,.4);border-radius:6px;padding:5px 12px;font-family:'Playfair Display',serif;font-style:italic;font-size:18px;color:var(--paper-l);width:180px;text-align:center;outline:none;}
+.poem-blank-input:focus{border-color:var(--jade-l);}
+.poem-submit{margin-top:16px;padding:10px 22px;background:rgba(201,168,118,0.16);border:1px solid rgba(201,168,118,0.4);border-radius:8px;color:var(--paper-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.3s;}
+.poem-submit:hover{background:rgba(201,168,118,0.28);}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.final{text-align:center;padding:36px 0;}
+.final-seal{width:130px;height:130px;border-radius:50%;background:rgba(156,43,62,.1);border:2px solid rgba(201,168,118,.5);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative;animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(63,174,124,.18);}50%{box-shadow:0 0 70px rgba(201,168,118,.4);}}
+.star-twinkle{position:absolute;inset:0;pointer-events:none;}
+.final-h{font-family:'Playfair Display',serif;font-size:30px;color:var(--paper-l);margin-bottom:10px;line-height:1.3;}
+.final-pts{font-size:50px;font-weight:700;color:var(--paper);font-family:'Playfair Display',serif;margin:10px 0;}
+.final-rank{display:inline-block;background:rgba(201,168,118,.1);border:1px solid rgba(201,168,118,.32);border-radius:30px;padding:6px 22px;font-size:14px;color:var(--paper-l);margin-bottom:22px;letter-spacing:1px;}
+.final-desc{font-size:17px;color:var(--text-dim);line-height:1.9;max-width:540px;margin:0 auto 28px;}
+.final-lesson{background:rgba(26,107,74,.05);border:1px solid rgba(26,107,74,.18);border-radius:14px;padding:22px 26px;text-align:left;margin:0 0 32px;font-size:16px;line-height:1.85;color:var(--text-dim);}
+.final-lesson .fl-tag{font-size:11px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.achievements{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:20px 0 26px;}
+.ach-card{background:rgba(201,168,118,0.06);border:1px solid rgba(201,168,118,0.24);border-radius:12px;padding:12px 16px;text-align:center;min-width:100px;animation:achIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ach-card.locked{opacity:0.3;filter:grayscale(1);}
+@keyframes achIn{from{opacity:0;transform:translateY(20px) scale(0.8);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ach-icon{font-size:28px;display:block;margin-bottom:6px;}
+.ach-name{font-size:11px;color:var(--paper-l);letter-spacing:1px;}
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+.btn-restart{padding:13px 26px;background:transparent;border:1px solid rgba(201,168,118,.35);border-radius:10px;color:var(--paper-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.btn-restart:hover{background:rgba(201,168,118,.12);}
+.btn-home{padding:13px 26px;background:rgba(26,107,74,.28);border:1px solid rgba(26,107,74,.4);border-radius:10px;color:var(--text);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-home:hover{background:rgba(26,107,74,.5);}
+.ref-overlay{position:fixed;inset:0;background:rgba(2,5,4,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ref-overlay.show{display:flex;}
+.ref-modal{background:var(--surface);border:1px solid rgba(201,168,118,.34);border-radius:16px;padding:26px 28px;max-width:640px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.ref-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:14px;}
+.ref-modal-close{background:rgba(201,168,118,.14);border:1px solid rgba(201,168,118,.34);color:var(--paper-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.ref-page{background:rgba(26,107,74,0.04);border:1px solid rgba(201,168,118,0.18);border-radius:16px;padding:26px 28px;margin:30px 0 10px;}
+.ref-page-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--paper-l);margin-bottom:6px;}
+.ref-page-sub{font-size:13px;color:var(--text-faint);margin-bottom:18px;line-height:1.6;}
+.ref-group{margin-bottom:16px;}
+.ref-group-h{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--paper-l);margin-bottom:8px;}
+.ref-item{font-size:14px;line-height:1.85;color:var(--text-dim);padding-left:16px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--paper-dim);}
+/* map modal */
+.map-overlay{position:fixed;inset:0;background:rgba(2,5,4,.82);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.map-overlay.show{display:flex;}
+.map-modal{background:radial-gradient(ellipse at 12% 88%,rgba(26,107,74,.1),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(201,168,118,.08),transparent 55%),var(--surface);border:1px solid rgba(201,168,118,.32);border-radius:16px;padding:24px 26px;max-width:840px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:14px;}
+.map-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--paper-l);}
+.map-modal-close{background:rgba(201,168,118,.12);border:1px solid rgba(201,168,118,.3);color:var(--paper-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.jmap-note{font-size:11.5px;color:var(--text-faint);margin-bottom:14px;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--paper-l);stroke:#050a09;stroke-width:2;filter:drop-shadow(0 0 6px rgba(201,168,118,.65));transition:opacity .7s ease,r .3s ease;}
+.jmap-lbl{fill:#e8e4d4;font-size:11.5px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-yr{fill:var(--jade-l);font-size:9.5px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-path{fill:none;stroke:rgba(201,168,118,0.42);stroke-width:2.2;stroke-dasharray:4 5;}
+.jmap-pt.locked{opacity:1;fill:rgba(232,228,212,.08);stroke:rgba(232,228,212,.3);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl.locked,.jmap-yr.locked{opacity:0.4;fill:var(--text-faint);font-weight:400;}
+/* source popup */
+.src-popup-overlay{position:fixed;inset:0;background:rgba(2,5,4,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--surface);border:1px solid rgba(201,168,118,.34);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;font-family:'Space Mono',monospace;display:inline-block;margin-bottom:12px;background:rgba(201,168,118,.16);color:var(--paper-l);border:1px solid rgba(201,168,118,.36);}
+.src-popup-badge.d{background:rgba(26,107,74,.13);color:var(--jade-l);border:1px solid rgba(26,107,74,.4);}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:10px;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--text-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(232,228,212,.04);border-left:2px solid rgba(201,168,118,.36);padding:9px 13px;font-size:13px;color:var(--text-faint);font-family:'Crimson Pro',serif;font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(201,168,118,.13);border:1px solid rgba(201,168,118,.32);color:var(--paper-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;transition:.2s;}
+.src-popup-close:hover{background:rgba(201,168,118,.24);}
+@media(max-width:640px){nav{padding:12px 16px;}.wrap{padding:76px 14px 60px;}.info-pill{float:none;width:100%;margin:0 0 16px;}.hero-svg{height:190px;}.story{font-size:17px;}.duoi-wrap{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<canvas id="fxCanvas"></canvas>
+<canvas id="cursorCanvas"></canvas>
+<div class="flag-stripe"></div>
+<div class="ink-container" id="inkCont"></div>
+<div class="ambient"></div>
+<div class="deco-c tl"></div><div class="deco-c tr"></div>
+<div class="deco-c bl"></div><div class="deco-c br"></div>
+<div class="pts-popup" id="ptsPopup">+0</div>
+
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--jade-l),var(--jade-dim));
+  border:2px solid var(--paper);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(26,107,74,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--jade-l),var(--jade-dim));
+  border:2px solid var(--paper);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(26,107,74,.45);
+  align-items:center;justify-content:center;">➡</button>
+
+<!-- MAP MODAL -->
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🖋️ Hành Trình Ức Trai (1400–1442)</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note">Các điểm dừng mở khóa dần theo từng chương. Sơ đồ cách điệu, không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M50,150 C110,110 140,90 180,100 S250,150 290,140 S350,80 400,85 S460,140 500,130 S560,80 610,90 S670,150 730,140"/>
+      <circle class="jmap-pt pt-thanglong1" cx="50" cy="150" r="6"/><text class="jmap-yr pt-thanglong1" x="50" y="170" text-anchor="middle">~1385</text><text class="jmap-lbl pt-thanglong1" x="50" y="182" text-anchor="middle">Thăng Long</text>
+      <circle class="jmap-pt locked pt-namquan" cx="180" cy="100" r="6"/><text class="jmap-yr locked pt-namquan" x="180" y="85" text-anchor="middle">1407</text><text class="jmap-lbl locked pt-namquan" x="180" y="75" text-anchor="middle">Ải Nam Quan</text>
+      <circle class="jmap-pt locked pt-dongquan1" cx="290" cy="140" r="6"/><text class="jmap-yr locked pt-dongquan1" x="290" y="160" text-anchor="middle">1407–17</text><text class="jmap-lbl locked pt-dongquan1" x="290" y="172" text-anchor="middle">Đông Quan</text>
+      <circle class="jmap-pt locked pt-loigiang" cx="400" cy="85" r="6"/><text class="jmap-yr locked pt-loigiang" x="400" y="70" text-anchor="middle">1418</text><text class="jmap-lbl locked pt-loigiang" x="400" y="60" text-anchor="middle">Lỗi Giang</text>
+      <circle class="jmap-pt locked pt-dongquan2" cx="500" cy="130" r="6"/><text class="jmap-yr locked pt-dongquan2" x="500" y="150" text-anchor="middle">1426–27</text><text class="jmap-lbl locked pt-dongquan2" x="500" y="162" text-anchor="middle">Vây Đông Quan</text>
+      <circle class="jmap-pt locked pt-thanglong2" cx="610" cy="90" r="6"/><text class="jmap-yr locked pt-thanglong2" x="610" y="75" text-anchor="middle">1428</text><text class="jmap-lbl locked pt-thanglong2" x="610" y="65" text-anchor="middle">Bình Ngô Đại Cáo</text>
+      <circle class="jmap-pt locked pt-consơn" cx="730" cy="140" r="7"/><text class="jmap-yr locked pt-consơn" x="730" y="160" text-anchor="middle">1442</text><text class="jmap-lbl locked pt-consơn" x="720" y="172" text-anchor="middle">Côn Sơn — Lệ Chi Viên</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SOURCE POPUP -->
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <span class="src-popup-badge" id="srcBadge">ĐÃ KIỂM CHỨNG</span>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<div id="oracle">
+  <button class="oracle-close" onclick="closeOracle()">✕</button>
+  <span class="oracle-icon">🖋️</span>
+  <div class="oracle-name">Nguyễn Trãi — Hiệu Ức Trai</div>
+  <div class="oracle-text" id="oracleText">Việc nhân nghĩa cốt ở yên dân — đó là gốc rễ của mọi mưu lược ta bày ra.</div>
+</div>
+
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Nét Bút Vững Vàng!</div>
+    <div class="combo-label" id="comboLabel">🖋️ COMBO x3</div>
+    <div class="combo-pts" id="comboPtsLabel">+điểm thưởng!</div>
+  </div>
+</div>
+
+<div class="streak-badge" id="streakBadge">
+  <span>🖋️</span>
+  <div><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--paper-dim)">Streak</div><div class="streak-num" id="streakNum">0</div></div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <a href="cau-chuyen-detail.html?id=15" class="nav-back">← Quay lại</a>
+    <a href="index.html" class="nav-logo">SỬ VIỆT</a>
+  </div>
+  <div class="nav-sub">NGUYỄN TRÃI — SAO KHUÊ GIỮA CÕI NHÂN GIAN · 8 CHƯƠNG</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+    <button class="nav-map-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình">🖋️</button>
+  </div>
+</nav>
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+<div class="score-badge">
+  <div><div class="score-title">Điểm</div><div class="score-num" id="scoreNum">0</div></div>
+  <div><div class="score-title">Danh hiệu</div><div id="scoreRank" style="font-size:12px;color:var(--paper-l);">—</div></div>
+</div>
+
+<div class="wrap">
+
+<!-- ══════════ COVER MỞ ĐẦU ══════════ -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">🖋️</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">NGUYỄN TRÃI<br>Sao Khuê Giữa Cõi Nhân Gian</div>
+    <div class="cover-sub">Năm ~1385 — 1442 · Mưu Sĩ, Thi Nhân, Anh Hùng Dân Tộc</div>
+    <div class="cover-desc">Ngươi là Nguyễn Trãi — từ cậu bé lớn lên giữa hai dòng máu ở Thăng Long, buông tay cha nơi ải Nam Quan, mười năm ẩn nhẫn chờ thời, đến khi dâng Bình Ngô sách cho Lê Lợi và viết nên áng thiên cổ hùng văn Bình Ngô Đại Cáo. Nhưng vinh quang ấy rồi cũng dẫn đến một oan án tàn khốc bậc nhất sử Việt. Một hành trình 8 chương về trí tuệ, lòng nhân và một tấc lòng không bao giờ tắt.</div>
+    <div class="cover-chips">
+      <span class="chip">🖋️ 8 chương</span>
+      <span class="chip">🎓 Kiến thức + Thử thách</span>
+      <span class="chip">🗺️ Bản đồ hành trình</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">🖋️ Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ══════════ CHƯƠNG 1 — THĂNG LONG, ĐỨA TRẺ GIỮA HAI DÒNG MÁU ══════════ -->
+<div class="scene" id="s1">
+  <div class="chap">📜 Chương 1 · ~1385–1400 — Thăng Long, Giữa Hai Dòng Máu <span class="src-tag" onclick="openSrcPopup('s1_thanglong')">📖 nguồn</span></div>
+
+  
+  <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/thang-long.jpg" alt="Thăng Long thời thơ ấu" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">🏯 THĂNG LONG THỜI THƠ ẤU</div>
+</div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot current">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+    <div class="tl-item"><div class="tl-dot todo">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+    <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+    <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+  </div>
+
+  <div class="nghia-meter reveal">
+    <span style="font-size:20px;">🖋️</span><span class="meter-label">Tấc Lòng Ưu Ái</span>
+    <div class="meter-track"><div class="meter-fill" id="nghiaMeter" style="width:0%"></div></div>
+    <span id="nghiaPct" style="font-size:12px;color:var(--paper-l);min-width:30px;text-align:right;">0%</span>
+  </div>
+
+  <div class="story reveal">
+    <div class="info-pill">
+      <span class="ip-tag">📚 Hai dòng máu, một mái nhà</span>
+      Cha là Nguyễn Phi Khanh — nhà nho tài giỏi nhưng nghèo khó. Mẹ là Trần Thị Thái — con gái quan Tư đồ Trần Nguyên Đán, một học giả uyên bác từng là đại thần triều Trần, thông thạo cả thiên văn, lịch pháp lẫn kinh sử.
+    </div>
+    Cậu bé Nguyễn Trãi lớn lên giữa hai thế giới: một bên là người cha dạy chữ nghĩa bằng sự cần cù của kẻ sĩ áo vải, một bên là người ông ngoại dạy cháu nhìn sao trời, đọc thiên văn, và kể những câu chuyện về vận nước thịnh suy — thứ tri thức chỉ dòng dõi hoàng tộc mới được truyền thụ.
+  </div>
+  <div class="story reveal">
+    Mẹ mất khi Nguyễn Trãi còn rất nhỏ. Trần Nguyên Đán đón cháu ngoại về nuôi dạy, không phải để cậu bé quên cha, mà để bù đắp cho cậu những gì một gia đình nho sĩ nghèo khó không thể cho được: sách quý, thầy giỏi, và một tầm nhìn vượt xa lũy tre làng.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Trần Nguyên Đán, dạy cháu ngoại nhìn sao</div>
+    "Con thấy chăng, sao Khuê kia sáng nhất trong nhị thập bát tú, chủ về văn chương học vấn. Người xưa tin rằng khi một bậc hiền tài ra đời, sao Khuê sẽ chiếu rọi. Ta không biết đời con sau này thế nào — nhưng ta mong con giữ được cái sáng ấy trong lòng, dù đời có tối tăm đến đâu."
+  </div>
+
+  <div class="story reveal">
+    Câu nói ấy, cậu bé khi đó chưa hiểu hết. Nhưng nó sẽ trở lại với ông — không phải trong sách vở, mà trong một câu đối đầy ẩn ý mà đời sau khắc lên bia đá để tưởng nhớ ông, hàng chục năm sau khi ông đã không còn.
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Câu hỏi khởi đầu</span>
+    <div class="kc-q">Ông ngoại của Nguyễn Trãi — người có ảnh hưởng lớn đến tri thức thời thơ ấu của ông — là ai?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">A. Nguyễn Phi Khanh</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1')">B. Trần Nguyên Đán — quan Tư đồ triều Trần</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">C. Lê Lợi</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">D. Hồ Quý Ly</button>
+    </div>
+    <div class="kc-fb" id="kc1-fb"></div>
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Lớn lên giữa một người cha cần cù nghèo khó và một người ông quyền quý uyên bác, bạn nghĩ điều gì trong Nguyễn Trãi được định hình bởi sự "giữa hai thế giới" ấy?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — đây là câu hỏi để bạn tự suy ngẫm trước khi bước vào hành trình.</div>
+  </div>
+
+  <div class="choices-label">⚡ Năm 1400, nhà Hồ mở khoa thi. Nguyễn Trãi, chàng trai 20 tuổi, đứng trước lựa chọn...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s2',16)"><span class="c-letter">A</span><div>Ứng thí, đỗ Thái học sinh, ra làm quan — mang những gì đã học phụng sự đất nước, dù triều đại còn nhiều tranh cãi.<div class="c-sub">Đây chính là con đường lịch sử ông đã chọn.</div></div></button>
+    <button class="c-btn" onclick="go('s1B',6)"><span class="c-letter">B</span><div>Từ chối thi cử, ở ẩn chờ một triều đại "chính danh" hơn.<div class="c-sub">Một lựa chọn thanh cao, nhưng sẽ khiến tài năng bị bỏ phí đúng lúc đất nước cần nhất...</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s1B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Chờ đợi một triều đại "hoàn hảo" là một giấc mơ xa xỉ giữa thời loạn. <strong>Nguyễn Trãi hiểu rằng tri thức chỉ có ý nghĩa khi được đem ra dùng — không phải cất giữ chờ thời cơ không bao giờ đến.</strong></div>
+  <div class="choices-label">⚡ Bước ra khỏi thư phòng...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',8)"><span class="c-letter">→</span><div>"Ta không thể chờ một thời đại hoàn hảo — ta phải sống trong thời đại mình có."</div></button></div>
+</div>
+
+<!-- ══════════ CHƯƠNG 2 — ẢI NAM QUAN ══════════ -->
+<div class="scene" id="s2">
+  <div class="chap">🏔️ Chương 2 · Năm 1407 — Ải Nam Quan, Lời Cha Dặn <span class="src-tag" onclick="openSrcPopup('s2_namquan')">📖 nguồn</span></div>
+
+  <div class="gate" id="gate2">
+    <span class="gate-icon">📝</span>
+    <div class="gate-title">Đối Câu — Thử Thách Ghép Vế</div>
+    <div class="gate-desc">Trước khi bước vào đêm chia ly, hãy ghép đúng cả 4 cặp để mở khóa chương này!</div>
+    <div class="gate-req">🔗 Ghép đúng 4/4 cặp</div>
+    <div class="challenge">
+      <span class="ch-tag">🖋 Ghép: Nhân vật / Sự kiện ↔ Vai trò</span>
+      <div class="ch-q" style="font-size:15px;color:var(--text-dim);">Nhấn một vế bên trái, sau đó nhấn vế bên phải để ghép đôi.</div>
+      <div class="duoi-wrap" id="duoiWrap">
+        <div class="duoi-col" id="duoiLeft">
+          <div class="duoi-item" data-id="L1" data-pair="1" onclick="selectDuoi(this,'left')">Nguyễn Phi Khanh</div>
+          <div class="duoi-item" data-id="L2" data-pair="2" onclick="selectDuoi(this,'left')">Nhà Hồ</div>
+          <div class="duoi-item" data-id="L3" data-pair="3" onclick="selectDuoi(this,'left')">Nhà Minh</div>
+          <div class="duoi-item" data-id="L4" data-pair="4" onclick="selectDuoi(this,'left')">Ải Nam Quan</div>
+        </div>
+        <div class="duoi-col" id="duoiRight">
+          <div class="duoi-item" data-id="R3" data-pair="3" onclick="selectDuoi(this,'right')">Triều đại phương Bắc đưa quân xâm lược năm 1407</div>
+          <div class="duoi-item" data-id="R1" data-pair="1" onclick="selectDuoi(this,'right')">Cha của Nguyễn Trãi, bị giặc Minh bắt giải về Trung Quốc</div>
+          <div class="duoi-item" data-id="R4" data-pair="4" onclick="selectDuoi(this,'right')">Nơi diễn ra cuộc chia ly giữa cha và con năm 1407</div>
+          <div class="duoi-item" data-id="R2" data-pair="2" onclick="selectDuoi(this,'right')">Triều đại vừa thất bại trước quân Minh xâm lược</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+        <button class="duoi-check" onclick="checkDuoi()">🔗 Kiểm tra kết quả</button>
+        <span id="duoiScore" style="font-size:14px;color:var(--paper-l);">0/4 đúng</span>
+      </div>
+      <div class="ch-fb" id="duoi-fb"></div>
+    </div>
+    <button class="seal-btn" id="gate2-unlock" onclick="unlockGate('s2-content','gate2')">🔴 Đóng Ấn — Mở Chương 2</button>
+  </div>
+
+  <div id="s2-content" class="gate-locked">
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+      <div class="tl-item"><div class="tl-dot current">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+      <div class="tl-item"><div class="tl-dot todo">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+      <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+      <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+      <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+      <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+      <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+    </div>
+
+    <!-- 🖼️ CẦN ẢNH: "ải Nam Quan biên giới Việt Trung cổ" / EN: "Nam Quan Pass historic border Vietnam China" -->
+    <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/ai-namquan.jpg" alt="Ải Nam Quan" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">🏔️ ẢI NAM QUAN</div>
+</div>
+
+    <div class="story reveal">
+      <div class="info-pill">
+        <span class="ip-tag">🏔️ 1407 — Đất nước sụp đổ</span>
+        Nhà Hồ thất bại trước cuộc xâm lược của nhà Minh. Cha con Hồ Quý Ly bị bắt. Cùng lúc đó, Nguyễn Phi Khanh — cha của Nguyễn Trãi, người từng làm quan dưới triều Hồ — cũng nằm trong danh sách bị áp giải về phương Bắc.
+      </div>
+      Nguyễn Trãi đi theo tiễn cha đến tận ải Nam Quan, biên giới cuối cùng trước khi cha ông rời khỏi đất Việt, có lẽ mãi mãi. Đây không chỉ là một cuộc chia ly cha con — đó là khoảnh khắc một chàng trai 27 tuổi phải quyết định: khóc lóc đi theo, hay quay về mang theo một lời trăn trối.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Nguyễn Phi Khanh, tại ải Nam Quan</div>
+      "Con là người có học, có chí. Con phải trở về lo trả thù cho nước, rửa hận cho cha — như thế mới là đại hiếu. Đừng cứ đi theo khóc lóc như đàn bà mà làm gì!"
+    </div>
+
+    <div class="story reveal">
+      Đó là một mệnh lệnh tàn nhẫn với một người con — buông tay cha giữa đường biên giới lạnh lẽo, quay lưng bước về một đất nước đang bị giày xéo. Nhưng Nguyễn Trãi hiểu: nước mắt không cứu được cha. Chỉ có hành động mới có thể biến nỗi đau này thành điều gì đó lớn lao hơn.
+    </div>
+
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Sự thật lịch sử</span>
+      Nguyễn Trãi nghe lời cha, quay về. Nhưng con đường phía trước không phải một cuộc khởi nghĩa ngay lập tức — đó là mười năm ròng rã sống dưới ách đô hộ nhà Minh, âm thầm quan sát, chờ đợi, và tìm kiếm một minh chủ xứng đáng để phò tá.
+    </div>
+
+    <div class="kc reveal">
+      <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+      <div class="kc-q">Tại ải Nam Quan năm 1407, Nguyễn Phi Khanh dặn con điều gì?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="ansKC(this,false,'kc2')">A. Hãy đi theo cha sang Trung Quốc để phụng dưỡng</button>
+        <button class="kc-opt" onclick="ansKC(this,true,'kc2')">B. Hãy trở về lo trả thù cho nước, rửa hận cho cha — đó mới là đại hiếu</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc2')">C. Hãy từ bỏ con đường học vấn, đi làm ruộng</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc2')">D. Hãy ra đầu hàng nhà Minh để được trọng dụng</button>
+      </div>
+      <div class="kc-fb" id="kc2-fb"></div>
+    </div>
+
+    <div class="choices-label">⚡ Buông tay cha, Nguyễn Trãi quay về Thăng Long. Bước đầu tiên của ông là...</div>
+    <div class="choices">
+      <button class="c-btn" onclick="go('s2A',20)"><span class="c-letter">A</span><div>Ẩn danh giữa dân chúng, quan sát cách quân Minh cai trị, ghi nhớ từng điểm yếu trong bộ máy đô hộ.<div class="c-sub">⭐ Kiên nhẫn thu thập hiểu biết — nền tảng cho mọi mưu lược sau này.</div></div></button>
+      <button class="c-btn" onclick="go('s2B',6)"><span class="c-letter">B</span><div>Lập tức tìm cách vượt biên sang gặp cha, bất chấp lời dặn.<div class="c-sub">Sẽ khiến cả hai cha con cùng gặp họa, và lời trăn trối trở nên vô nghĩa...</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s2A">
+  <div class="chap">⭐ Lựa chọn A · Quan Sát Trong Im Lặng!</div>
+  <div class="outcome good"><span class="outcome-icon">👁️</span><strong>Một quyết định đau đớn nhưng khôn ngoan.</strong> Nguyễn Trãi không hành động vội vàng. Ông dành thời gian hiểu rõ kẻ thù — điều mà rất ít người có đủ kiên nhẫn để làm giữa nỗi đau mất cha.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',0)"><span class="c-letter">→</span><div>Chương 3 — Mười năm ẩn nhẫn dưới ách đô hộ!</div></button></div>
+</div>
+<div class="scene" id="s2B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Vượt biên trái phép giữa lúc quân Minh đang kiểm soát gắt gao gần như chắc chắn sẽ bị bắt — và khiến chính cha ông đau lòng hơn khi biết con trai không nghe lời trăn trối cuối cùng. <strong>Sự kiên nhẫn mới là điều cha ông thực sự mong đợi.</strong></div>
+  <div class="choices-label">⚡ Nghe theo lời cha...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2A',10)"><span class="c-letter">→</span><div>"Cha đã dặn — ta phải sống để làm điều lớn hơn nước mắt."</div></button></div>
+</div>
+
+<!-- ══════════ CHƯƠNG 3 — MƯỜI NĂM ẨN NHẪN ══════════ -->
+<div class="scene" id="s3">
+  <div class="chap">🌑 Chương 3 · 1407–1417 — Mười Năm Ẩn Nhẫn Ở Đông Quan <span class="src-tag" onclick="openSrcPopup('s3_anhan')">📖 nguồn</span></div>
+
+  <div class="gate" id="gate3">
+    <span class="gate-icon">📜</span>
+    <div class="gate-title">Sắp Xếp Mật Lệnh</div>
+    <div class="gate-desc">Kéo thả để sắp xếp 4 sự kiện của mười năm ẩn nhẫn theo đúng thứ tự!</div>
+    <div class="gate-req">📜 Sắp xếp đúng thứ tự</div>
+    <div class="challenge">
+      <span class="ch-tag">🖋 Sắp xếp thứ tự thời gian</span>
+      <div class="scroll-zone" id="scroll-zone3">
+        <div class="scroll-item" draggable="true" data-val="2"><span class="scroll-handle">≡</span>Tướng Minh Trương Phụ để ý tài năng, tìm cách chiêu dụ Nguyễn Trãi ra làm quan</div>
+        <div class="scroll-item" draggable="true" data-val="1"><span class="scroll-handle">≡</span>Nguyễn Trãi quay về Thăng Long, sống ẩn danh giữa dân chúng</div>
+        <div class="scroll-item" draggable="true" data-val="4"><span class="scroll-handle">≡</span>Nghe tin Lê Lợi dấy binh ở Lam Sơn, quyết định tìm đường vào Thanh Hóa</div>
+        <div class="scroll-item" draggable="true" data-val="3"><span class="scroll-handle">≡</span>Nguyễn Trãi khéo léo từ chối, tiếp tục ẩn mình chờ thời cơ</div>
+      </div>
+      <button class="scroll-check-btn" onclick="checkArr3()">🖋 Kiểm tra thứ tự</button>
+      <div class="ch-fb" id="arr3-fb"></div>
+    </div>
+    <button class="seal-btn" id="gate3-unlock" onclick="unlockGate('s3-content','gate3')">🔴 Đóng Ấn — Mở Chương 3</button>
+  </div>
+
+  <div id="s3-content" class="gate-locked">
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+      <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+      <div class="tl-item"><div class="tl-dot current">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+      <div class="tl-item"><div class="tl-dot todo">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+      <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+      <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+      <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+      <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+    </div>
+
+    <!-- 🖼️ CẦN ẢNH: "phố cổ Hà Nội đêm sương" / EN: "old Hanoi quarter misty night historical" -->
+    <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/dong-quan-anhan.jpg" alt="Đông Quan thời ẩn nhẫn" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">🌙 ĐÔNG QUAN THỜI ẨN NHẪN</div>
+</div>
+
+    <div class="story reveal">
+      <div class="info-pill">
+        <span class="ip-tag">🌑 Thập niên bị lãng quên</span>
+        Đây là quãng thời gian ít được kể nhất trong cuộc đời Nguyễn Trãi — mười năm sống ngay dưới mũi giáo của kẻ thù, tại Đông Quan (Thăng Long lúc bấy giờ đã đổi tên dưới ách đô hộ), không có sử thi nào ca tụng, chỉ có sự chờ đợi lặng lẽ.
+      </div>
+      Theo một số ghi chép, viên tướng Minh Trương Phụ — vốn cũng là người có học, biết trọng nhân tài — để ý đến kiến thức uyên bác của Nguyễn Trãi và nhiều lần tìm cách mời ông ra hợp tác, hứa hẹn quan tước, bổng lộc.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Trương Phụ, trong một lần gặp gỡ</div>
+      "Ta biết ông là người có tài. Nhà Minh không thiếu chỗ cho người tài giỏi. Sao ông cứ mãi ẩn mình, sống như một kẻ vô danh giữa chợ đời?"
+    </div>
+
+    <div class="story reveal">
+      Nguyễn Trãi không đáp lại bằng sự phản kháng công khai — điều đó sẽ khiến ông mất mạng ngay lập tức mà chẳng đổi được gì. Ông khéo léo thoái thác, viện cớ sức khỏe, tài hèn đức mọn, để tiếp tục sống ẩn mình — chờ đợi một điều duy nhất: một minh chủ xứng đáng để phò tá.
+    </div>
+
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Ghi chú về nguồn sử liệu</span>
+      Chi tiết về việc Trương Phụ chiêu dụ Nguyễn Trãi được một số sử liệu và giai thoại dân gian nhắc đến, nhưng không phải mọi chi tiết đều được ghi chép đầy đủ và thống nhất — nhiều phần mang tính dựng lại minh họa dựa trên bối cảnh lịch sử được xác nhận rộng rãi hơn: đó là mười năm Nguyễn Trãi thực sự sống ẩn nhẫn trước khi tìm đến Lê Lợi.
+    </div>
+
+    <div class="kc reveal">
+      <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+      <div class="kc-q">Trong suốt mười năm ẩn nhẫn dưới ách đô hộ nhà Minh, Nguyễn Trãi chủ yếu làm gì?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="ansKC(this,false,'kc3')">A. Ra làm quan cho nhà Minh để chờ thời cơ phản</button>
+        <button class="kc-opt" onclick="ansKC(this,true,'kc3')">B. Sống ẩn danh, quan sát, chờ đợi một minh chủ xứng đáng để phò tá</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc3')">C. Tự mình tổ chức một cuộc khởi nghĩa nhỏ</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc3')">D. Rời khỏi Đại Việt sang sống ở nước ngoài</button>
+      </div>
+      <div class="kc-fb" id="kc3-fb"></div>
+    </div>
+
+    <div class="reflect reveal">
+      <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+      <div class="reflect-q">Mười năm chờ đợi trong im lặng, không hành động công khai — đó là hèn nhát hay là một dạng can đảm khác, ít được ca tụng hơn?</div>
+      <div class="reflect-note">Không có đáp án đúng/sai — đây là câu hỏi để bạn tự suy ngẫm.</div>
+    </div>
+
+    <div class="choices-label">⚡ Năm 1416, tin tức về một hào trưởng đất Lam Sơn dấy binh dần lan đến tai Nguyễn Trãi. Ông...</div>
+    <div class="choices">
+      <button class="c-btn" onclick="go('s3A',20)"><span class="c-letter">A</span><div>Âm thầm chuẩn bị hành trang, tìm đường vào Thanh Hóa để tận mắt xem xét con người này trước khi dâng cả một đời tâm huyết.<div class="c-sub">⭐ Thận trọng đến phút cuối — không đặt cược mù quáng.</div></div></button>
+      <button class="c-btn" onclick="go('s3B',7)"><span class="c-letter">B</span><div>Lập tức viết thư xin gia nhập ngay, không cần tìm hiểu thêm.<div class="c-sub">Nóng vội — mười năm kiên nhẫn không phải để rồi hành động hấp tấp ở bước cuối...</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s3A">
+  <div class="chap">⭐ Lựa chọn A · Thận Trọng Đến Phút Cuối!</div>
+  <div class="outcome good"><span class="outcome-icon">🧭</span><strong>Đúng phong cách của một mưu sĩ thực thụ.</strong> Nguyễn Trãi không đặt cược cả sự nghiệp vào một cái tên nghe qua lời đồn — ông cần tận mắt nhìn thấy khí phách của người mình sắp phò tá.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4',0)"><span class="c-letter">→</span><div>Chương 4 — Lỗi Giang, dâng Bình Ngô Sách!</div></button></div>
+</div>
+<div class="scene" id="s3B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Sau mười năm kiên nhẫn quan sát, hành động vội vàng ở bước cuối cùng có thể phá hỏng tất cả — dâng mình cho một minh chủ chưa được kiểm chứng là quá mạo hiểm. <strong>Sự thận trọng đã theo ông suốt một thập kỷ, không có lý do gì để bỏ nó lúc này.</strong></div>
+  <div class="choices-label">⚡ Giữ vững sự thận trọng...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3A',10)"><span class="c-letter">→</span><div>"Ta sẽ đến tận nơi, nhìn tận mắt trước khi quyết định."</div></button></div>
+</div>
+
+<!-- ══════════ CHƯƠNG 4 — LỖI GIANG ══════════ -->
+<div class="scene" id="s4">
+  <div class="chap">⛰️ Chương 4 · Năm 1418 — Lỗi Giang, Dâng Bình Ngô Sách <span class="src-tag" onclick="openSrcPopup('s4_loigiang')">📖 nguồn</span></div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+    <div class="tl-item"><div class="tl-dot current">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+    <div class="tl-item"><div class="tl-dot todo">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+    <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+    <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+  </div>
+
+  <!-- 🖼️ CẦN ẢNH: "núi rừng Thanh Hóa Lam Sơn" / EN: "Lam Son mountains Thanh Hoa Vietnam" -->
+  <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/nguyentraileloi.jpg" alt="Lỗi Giang" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">⛰️ LỖI GIANG</div>
+</div>
+
+  <div class="story reveal">
+    <div class="info-pill">
+      <span class="ip-tag">⛰️ Cuộc gặp định mệnh</span>
+      Nguyễn Trãi tìm đến căn cứ nghĩa quân Lam Sơn tại Lỗi Giang. Trong tay ông không phải gươm giáo, mà là một tập bản thảo mang tên "Bình Ngô sách" — kế sách đánh giặc bằng cả mưu trí, quân sự lẫn tâm lý chiến.
+    </div>
+    Lê Lợi khi ấy còn là một hào trưởng đất Lam Sơn, quân số ít, vũ khí thô sơ. Nhiều người có học từng đến rồi bỏ đi vì thất vọng. Nguyễn Trãi đến với một câu hỏi trong đầu: liệu người này có đủ khí phách và sự khiêm nhường để lắng nghe một kẻ sĩ chưa từng cầm quân?
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Lê Lợi, sau khi đọc xong Bình Ngô sách</div>
+    "Ta chỉ là một hào trưởng đất Lam Sơn, chưa từng học sách thánh hiền như ông. Sao ông tin rằng ta xứng đáng để ông dâng cả đời tâm huyết này?"
+  </div>
+
+  <div class="story reveal">
+    Đó không phải một câu hỏi khiêm tốn giả tạo — đó là phép thử. Nguyễn Trãi phải trả lời sao cho vừa chân thành, vừa không phải là lời nịnh bợ trống rỗng.
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Bình Ngô Sách</span>
+    Cốt lõi của Bình Ngô sách là chiến lược đánh lâu dài bằng mưu trí kết hợp quân sự, ngoại giao và tâm lý chiến, chủ trương "lấy đại nghĩa thắng hung tàn, lấy chí nhân thay cường bạo" — một tư tưởng hoàn toàn khác với lối đánh dựa thuần vào sức mạnh quân sự.
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Điều gì khiến một người sẵn sàng tin tưởng và dâng trọn tài năng cho một thủ lĩnh còn chưa được kiểm chứng bằng chiến thắng nào?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — mọi cuộc khởi nghĩa lớn đều bắt đầu từ một niềm tin như vậy.</div>
+  </div>
+
+  <div class="choices-label">⚡ Trước câu hỏi thử thách của Lê Lợi, Nguyễn Trãi đáp lại...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s4A',20)"><span class="c-letter">A</span><div>"Ta không tin vào sách vở ngài đã đọc, mà tin vào ánh mắt của ngài khi nhắc đến nỗi khổ của dân — đó là thứ không thể giả được."<div class="c-sub">⭐ Nhìn vào nhân cách, không phải danh xưng hay xuất thân.</div></div></button>
+    <button class="c-btn" onclick="go('s4B',7)"><span class="c-letter">B</span><div>Rút lui, tìm kiếm một minh chủ khác có xuất thân danh giá hơn.<div class="c-sub">Đánh mất chính người sẽ làm nên lịch sử vì một tiêu chuẩn hình thức...</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s4A">
+  <div class="chap">⭐ Lựa chọn A · Nhìn Người Bằng Tấm Lòng!</div>
+  <div class="outcome good"><span class="outcome-icon">🤝</span><strong>Câu trả lời chạm đến điều Lê Lợi cần nghe nhất — không phải sự tâng bốc, mà sự thấu hiểu chân thành.</strong> Từ giây phút đó, Nguyễn Trãi trở thành quân sư số một bên cạnh Lê Lợi.</div>
+  <div class="fact"><span class="fact-tag">💡 Mười năm kháng chiến bắt đầu</span>Suốt 10 năm sau đó, Nguyễn Trãi soạn thảo hịch văn, thư từ dụ hàng, hoạch định chiến lược — trở thành bộ óc chiến lược đứng sau gần như mọi quyết định lớn của cuộc khởi nghĩa Lam Sơn.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5',0)"><span class="c-letter">→</span><div>Chương 5 — Tâm công, những bức thư không cần gươm giáo!</div></button></div>
+</div>
+<div class="scene" id="s4B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Đánh giá một người qua xuất thân thay vì nhân cách và khí phách thực sự là điều trái ngược hoàn toàn với triết lý mà Nguyễn Trãi theo đuổi suốt đời. <strong>Chính sự khiêm nhường và lòng thương dân của Lê Lợi mới là điều đáng để dâng trọn tâm huyết.</strong></div>
+  <div class="choices-label">⚡ Nhận ra giá trị thật sự...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4A',10)"><span class="c-letter">→</span><div>"Ta đã nhìn nhầm — chính con người này mới là minh chủ ta tìm kiếm."</div></button></div>
+</div>
+
+<!-- ══════════ CHƯƠNG 5 — TÂM CÔNG ══════════ -->
+<div class="scene" id="s5">
+  <div class="chap">✉️ Chương 5 · 1426–1427 — Tâm Công, Những Bức Thư Không Cần Gươm Giáo <span class="src-tag" onclick="openSrcPopup('s5_tamcong')">📖 nguồn</span></div>
+
+  <div class="gate" id="gate5">
+    <span class="gate-icon">✉️</span>
+    <div class="gate-title">Soạn Thư Tâm Công</div>
+    <div class="gate-desc">Đây là bức thư gửi tướng giặc Vương Thông đang bị vây khốn trong thành Đông Quan. Hãy sắp xếp đúng thứ tự các luận điểm để lá thư có sức thuyết phục cao nhất, rồi chọn giọng điệu phù hợp!</div>
+    <div class="gate-req">✉️ Sắp xếp 4 luận điểm + chọn đúng giọng điệu</div>
+
+    <div class="letter-frame">
+      <div class="letter-head">🖋 Bức thư gửi Vương Thông, thành Đông Quan bị vây</div>
+      <div class="letter-zone" id="letter-zone">
+        <div class="letter-item" draggable="true" data-val="2"><span class="letter-num">?</span>Nhắc lại lẽ thịnh suy của trời đất: không một đế chế nào cai trị mãi bằng vũ lực trên đất người khác</div>
+        <div class="letter-item" draggable="true" data-val="1"><span class="letter-num">?</span>Phân tích rõ thế cùng đường của quân Minh trong thành: lương cạn, viện binh xa, lòng quân dao động</div>
+        <div class="letter-item" draggable="true" data-val="4"><span class="letter-num">?</span>Cảnh báo: nếu tiếp tục ngoan cố, viện binh có đến cũng khó tránh khỏi số phận thảm bại</div>
+        <div class="letter-item" draggable="true" data-val="3"><span class="letter-num">?</span>Hứa hẹn đường lui an toàn, danh dự: rút quân về nước sẽ được cấp thuyền, ngựa, lương thực</div>
+      </div>
+      <button class="scroll-check-btn" onclick="checkLetterOrder()">🖋 Kiểm tra thứ tự lập luận</button>
+      <div class="ch-fb" id="letter-fb"></div>
+
+      <div id="letter-tone-wrap" style="display:none;margin-top:18px;">
+        <div class="letter-head" style="border-top:1px dashed rgba(201,168,118,.3);padding-top:14px;border-bottom:none;">🖋 Chọn giọng điệu khép lại bức thư</div>
+        <div class="tone-row">
+          <button class="tone-chip" onclick="chooseTone(this,false)">Van xin quân Minh rủ lòng thương</button>
+          <button class="tone-chip" onclick="chooseTone(this,true)">Điềm tĩnh, cương quyết nhưng vẫn để ngỏ đường lui trong danh dự</button>
+          <button class="tone-chip" onclick="chooseTone(this,false)">Đe dọa gay gắt, sỉ nhục đối phương</button>
+        </div>
+        <div class="ch-fb" id="tone-fb"></div>
+      </div>
+    </div>
+
+    <button class="seal-btn" id="gate5-unlock" onclick="unlockGate('s5-content','gate5')">🔴 Đóng Ấn — Gửi Thư, Mở Chương 5</button>
+  </div>
+
+  <div id="s5-content" class="gate-locked">
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+      <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+      <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+      <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+      <div class="tl-item"><div class="tl-dot current">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+      <div class="tl-item"><div class="tl-dot todo">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+      <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+      <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+    </div>
+
+    <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+      <img src="images/NguyenTraisoan.jpg" alt="Nguyễn Trãi soạn thư tâm công" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+      <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">✉️ SOẠN THƯ TÂM CÔNG</div>
+    </div>
+
+    <div class="story reveal">
+      <div class="info-pill">
+        <span class="ip-tag">✉️ Vũ khí không phải gươm giáo</span>
+        Trong khi nhiều tướng lĩnh khác chỉ nghĩ đến việc hạ thành bằng công phá, Nguyễn Trãi tin rằng: đánh vào lòng người, làm lung lay ý chí đối phương từ bên trong, đôi khi hiệu quả hơn cả một trận đại thắng đẫm máu.
+      </div>
+      Ông đích thân soạn hàng chục bức thư gửi tướng Minh Vương Thông và các tướng lĩnh khác đang cố thủ trong các thành trì bị vây — không chỉ để dụ hàng, mà để từng bước làm tan rã tinh thần chiến đấu của cả một đội quân.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Một tướng dưới quyền Lê Lợi, hoài nghi</div>
+      "Chúng ta đang thắng thế trên chiến trường, sao còn phải nhọc công viết thư dụ dỗ? Cứ đánh thẳng cho xong!"
+    </div>
+
+    <div class="story reveal">
+      Nguyễn Trãi giải thích: mỗi trận đánh, dù thắng, đều đổi bằng máu của cả hai bên. Nếu một lá thư có thể khiến một thành trì đầu hàng mà không cần một mũi tên nào bắn ra, đó mới là chiến thắng trọn vẹn nhất — chiến thắng "không đánh mà khuất phục được người".
+    </div>
+
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Hiệu quả của tâm công</span>
+      Chiến lược tâm công góp phần quan trọng làm lung lay tinh thần quân Minh trong nhiều thành trì, khiến một số tướng lĩnh mất ý chí chiến đấu ngay cả khi quân số vẫn còn đông đảo — một hình thức "chiến tranh tâm lý" vượt trước thời đại rất xa so với các cuộc chiến cùng thời.
+    </div>
+
+    <div class="kc reveal">
+      <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+      <div class="kc-q">Chiến lược "tâm công" mà Nguyễn Trãi áp dụng có nghĩa là gì?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="ansKC(this,false,'kc5')">A. Tấn công bất ngờ vào ban đêm</button>
+        <button class="kc-opt" onclick="ansKC(this,true,'kc5')">B. Đánh vào lòng người, làm lung lay tinh thần và ý chí chiến đấu của đối phương trước khi hoặc thay vì dùng vũ lực</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc5')">C. Tấn công vào trung tâm chỉ huy của địch</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc5')">D. Một loại vũ khí mới được chế tạo thời Lam Sơn</button>
+      </div>
+      <div class="kc-fb" id="kc5-fb"></div>
+    </div>
+
+    <div class="choices-label">⚡ Trước khi ký gửi bức thư, Nguyễn Trãi cân nhắc giữa hai cách viết...</div>
+    <div class="choices">
+      <button class="c-btn" onclick="go('s5A',20)"><span class="c-letter">A</span><div>Vừa nêu rõ tình thế bất lợi của địch, vừa để ngỏ một đường lui trong danh dự — không dồn đối phương vào chân tường.<div class="c-sub">⭐ Kẻ thù không còn đường lui sẽ chiến đấu đến cùng — cho họ lối thoát mới là thượng sách.</div></div></button>
+      <button class="c-btn" onclick="go('s5B',7)"><span class="c-letter">B</span><div>Viết thư đầy lời sỉ nhục, hả hê trước thế cùng của địch.<div class="c-sub">Sẽ chỉ khiến đối phương thêm quyết tử chống cự vì không còn gì để mất...</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s5A">
+  <div class="chap">⭐ Lựa chọn A · Đường Lui Trong Danh Dự!</div>
+  <div class="outcome gold"><span class="outcome-icon">✉️</span><strong>Đây chính là nghệ thuật của tâm công.</strong> Một kẻ thù không còn gì để mất sẽ chiến đấu như thú cùng đường — nhưng một kẻ thù được cho lối thoát trong danh dự sẽ cân nhắc buông vũ khí.</div>
+  <div class="fact"><span class="fact-tag">💡 Kết quả</span>Chiến lược tâm công, kết hợp cùng các thắng lợi quân sự liên tiếp, góp phần quan trọng khiến thế trận nghiêng hẳn về phía nghĩa quân Lam Sơn trong những năm 1426–1427.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s6',0)"><span class="c-letter">→</span><div>Chương 6 — Bình Ngô Đại Cáo, tuyên ngôn độc lập!</div></button></div>
+</div>
+<div class="scene" id="s5B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Sỉ nhục một kẻ thù đang cùng đường chỉ khiến họ không còn gì để mất, sẵn sàng chiến đấu đến người lính cuối cùng. <strong>Nguyễn Trãi luôn chủ trương "lấy chí nhân thay cường bạo" — ngay cả trong lời lẽ với kẻ thù.</strong></div>
+  <div class="choices-label">⚡ Sửa lại giọng văn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5A',10)"><span class="c-letter">→</span><div>"Ta sẽ để ngỏ đường lui — đó mới là cách khiến họ thực sự buông vũ khí."</div></button></div>
+</div>
+
+<!-- ══════════ CHƯƠNG 6 — BÌNH NGÔ ĐẠI CÁO ══════════ -->
+<div class="scene" id="s6">
+  <div class="chap">📜 Chương 6 · Năm 1428 — Bình Ngô Đại Cáo <span class="src-tag" onclick="openSrcPopup('s6_daicao')">📖 nguồn</span></div>
+
+  <div class="gate" id="gate6">
+    <span class="gate-icon">📯</span>
+    <div class="gate-title">Khảo Hạch Văn Chương — 4 Câu Liên Tiếp</div>
+    <div class="gate-desc">Để soạn ra áng thiên cổ hùng văn, hãy trả lời đúng <strong>ít nhất 3/4 câu hỏi</strong>. Mỗi câu sai trừ 3 điểm.</div>
+    <div class="gate-req">📯 Đúng ≥3/4 câu</div>
+    <div class="mq-prog">
+      <div class="mq-dot current" id="mqd6-0"></div><div class="mq-dot" id="mqd6-1"></div><div class="mq-dot" id="mqd6-2"></div><div class="mq-dot" id="mqd6-3"></div>
+    </div>
+    <div class="challenge" id="mq6-0">
+      <span class="ch-tag">🖋 Câu 1/4</span>
+      <div class="ch-q">Sau khi quân Minh đại bại, viện binh do Liễu Thăng chỉ huy bị tiêu diệt ở đâu?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ6(this,true,0)">A. Ải Chi Lăng — Xương Giang</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,0)">B. Sông Bạch Đằng</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,0)">C. Đèo Hải Vân</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,0)">D. Núi Tùng, Thanh Hóa</button>
+      </div>
+      <div class="ch-fb" id="mq6fb-0"></div>
+    </div>
+    <div class="challenge" id="mq6-1" style="display:none">
+      <span class="ch-tag">🖋 Câu 2/4</span>
+      <div class="ch-q">Sau khi mất viện binh, tướng Vương Thông trong thành Đông Quan buộc phải làm gì?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ6(this,false,1)">A. Tiếp tục cố thủ vô thời hạn</button>
+        <button class="ch-opt" onclick="ansMQ6(this,true,1)">B. Xin giảng hòa, chấp nhận rút quân về nước</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,1)">C. Đầu hàng và bị xử tử</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,1)">D. Bỏ trốn khỏi thành trong đêm</button>
+      </div>
+      <div class="ch-fb" id="mq6fb-1"></div>
+    </div>
+    <div class="challenge" id="mq6-2" style="display:none">
+      <span class="ch-tag">🖋 Câu 3/4</span>
+      <div class="ch-q">Lê Lợi đối xử với hơn 10 vạn quân Minh xin hàng như thế nào — thể hiện đúng tinh thần "chí nhân" mà Nguyễn Trãi chủ trương?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ6(this,false,2)">A. Xử tử toàn bộ để trả thù</button>
+        <button class="ch-opt" onclick="ansMQ6(this,true,2)">B. Cấp thuyền, ngựa, lương thực cho rút về nước an toàn</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,2)">C. Bắt làm nô lệ lao dịch</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,2)">D. Giam giữ vô thời hạn để đòi tiền chuộc</button>
+      </div>
+      <div class="ch-fb" id="mq6fb-2"></div>
+    </div>
+    <div class="challenge" id="mq6-3" style="display:none">
+      <span class="ch-tag">🖋 Câu 4/4</span>
+      <div class="ch-q">Bình Ngô Đại Cáo được xem là bản tuyên ngôn độc lập thứ mấy trong lịch sử Việt Nam, sau bài thơ thần Nam Quốc Sơn Hà?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ6(this,true,3)">A. Thứ hai</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,3)">B. Thứ ba</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,3)">C. Đầu tiên</button>
+        <button class="ch-opt" onclick="ansMQ6(this,false,3)">D. Thứ tư</button>
+      </div>
+      <div class="ch-fb" id="mq6fb-3"></div>
+    </div>
+    <button class="seal-btn" id="gate6-unlock" onclick="unlockGate('s6-content','gate6')">🔴 Đóng Ấn — Mở Chương 6</button>
+  </div>
+
+  <div id="s6-content" class="gate-locked">
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+      <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+      <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+      <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+      <div class="tl-item"><div class="tl-dot done">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+      <div class="tl-item"><div class="tl-dot current">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+      <div class="tl-item"><div class="tl-dot todo">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+      <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+    </div>
+
+    <!-- 🖼️ CẦN ẢNH: "thư pháp chữ Hán cổ Việt Nam" / EN: "ancient Vietnamese calligraphy scroll" -->
+    <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/NguyenTrai.jpg" alt="Bình Ngô Đại Cáo" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">📜 BÌNH NGÔ ĐẠI CÁO</div>
+</div>
+
+    <div class="story reveal">
+      <div class="info-pill">
+        <span class="ip-tag">📜 Khoảnh khắc đúc kết cả một cuộc chiến</span>
+        Đầu năm 1428, sau khi quân Minh rút hoàn toàn khỏi Đại Việt, Lê Lợi giao cho Nguyễn Trãi trọng trách viết một áng văn tuyên bố nền độc lập — không chỉ để công bố chiến thắng, mà để định nghĩa lại tư cách của cả một dân tộc trước thiên hạ.
+      </div>
+      Nguyễn Trãi ngồi trước án thư nhiều đêm liền. Đây không phải một bản tường thuật chiến sự thông thường — nó phải chứng minh Đại Việt có nền văn hiến riêng, ngang hàng với bất kỳ triều đại nào ở phương Bắc, đủ tư cách để tồn tại độc lập mãi mãi.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Nguyễn Trãi, tự nhủ khi đặt bút</div>
+      "Đây không phải áng văn viết cho một trận thắng. Đây phải là áng văn để hậu thế, dù trăm năm sau, đọc lại vẫn thấy mình là người Đại Việt — không phải phên dậu của ai cả."
+    </div>
+
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Bình Ngô Đại Cáo</span>
+      Bình Ngô Đại Cáo khẳng định nền văn hiến lâu đời của Đại Việt, tố cáo tội ác giặc Minh, và ca ngợi cuộc kháng chiến chính nghĩa — được xem là kiệt tác văn chính luận số một trong lịch sử Việt Nam, "áng thiên cổ hùng văn" sánh ngang Nam Quốc Sơn Hà.
+    </div>
+
+    <div class="legend reveal">
+      <span class="legend-icon">📜</span>
+      "Việc nhân nghĩa cốt ở yên dân, quân điếu phạt trước lo trừ bạo."
+    </div>
+
+    <div class="kc reveal">
+      <span class="kc-tag">🎓 Câu hỏi kiến thức</span>
+      <div class="kc-q">Bình Ngô Đại Cáo mở đầu bằng tư tưởng cốt lõi nào?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="ansKC(this,false,'kc6')">A. Ca ngợi sức mạnh quân sự của Lam Sơn</button>
+        <button class="kc-opt" onclick="ansKC(this,true,'kc6')">B. Việc nhân nghĩa cốt ở yên dân — lấy dân làm gốc của mọi hành động chính nghĩa</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc6')">C. Kêu gọi trả thù tàn khốc quân Minh</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc6')">D. Ca ngợi tài năng cá nhân của Nguyễn Trãi</button>
+      </div>
+      <div class="kc-fb" id="kc6-fb"></div>
+    </div>
+
+    <div class="choices-label">⚡ Tiếp tục...</div>
+    <div class="choices"><button class="c-btn" onclick="go('s7',22)"><span class="c-letter">→</span><div>Chương 7 — Côn Sơn, nơi suối reo thông hát!</div></button></div>
+  </div>
+</div>
+
+<!-- ══════════ CHƯƠNG 7 — CÔN SƠN ══════════ -->
+<div class="scene" id="s7">
+  <div class="chap">🌲 Chương 7 · Sau 1428 — Côn Sơn, Suối Reo Thông Hát <span class="src-tag" onclick="openSrcPopup('s7_conson')">📖 nguồn</span></div>
+
+  <div class="tl">
+    <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+    <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+    <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+    <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+    <div class="tl-item"><div class="tl-dot done">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+    <div class="tl-item"><div class="tl-dot done">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+    <div class="tl-item"><div class="tl-dot current">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+    <div class="tl-item"><div class="tl-dot todo">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+  </div>
+
+  <!-- 🖼️ CẦN ẢNH: "Côn Sơn Hải Dương suối thông" / EN: "Con Son Hai Duong pine forest stream Vietnam" -->
+  <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/con-son.jpg" alt="Côn Sơn" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">🌲 CÔN SƠN</div>
+</div>
+
+  <div class="story reveal">
+    <div class="info-pill">
+      <span class="ip-tag">🌲 Sau đỉnh vinh quang</span>
+      Đất nước thái bình, Nguyễn Trãi được phong tước lớn. Nhưng chốn quan trường vốn không phải nơi dành cho một người quen suy nghĩ thẳng thắn, ít vòng vo — ông dần bị gièm pha, nghi kỵ bởi những kẻ chỉ giỏi luồn cúi.
+    </div>
+    Chán cảnh triều chính, ông xin về ở ẩn tại Côn Sơn (Hải Dương ngày nay) — nơi có suối chảy quanh năm, rừng thông trăm tuổi, và một sự tĩnh lặng mà Thăng Long không bao giờ có được.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Nguyễn Trãi, viết trong một buổi chiều ở Côn Sơn</div>
+    "Ta đã dành nửa đời đối phó với gươm giáo và mưu mô. Ở đây, kẻ thù duy nhất của ta là chính những suy nghĩ chưa yên trong lòng mình."
+  </div>
+
+  <div class="story reveal">
+    Tại Côn Sơn, ông không ngừng viết. Tập <em>Quốc âm thi tập</em> — một trong những tác phẩm chữ Nôm cổ nhất còn lưu giữ được của văn học Việt Nam — ra đời từ những buổi sáng nghe chim hót, những đêm ngồi bên án thư dưới ánh trăng.
+  </div>
+
+  <div class="poem-box reveal">
+    <div class="ch-tag" style="text-align:left;margin-bottom:10px;">🖋 Hoàn thành câu thơ (điền vào chỗ trống)</div>
+    <div class="poem-line">"Côn Sơn suối chảy rì rầm,<br>Ta nghe như tiếng đàn cầm bên _______."</div>
+    <input type="text" class="poem-blank-input" id="poem-input" placeholder="..." maxlength="10"/>
+    <br><button class="poem-submit" onclick="checkPoem()">Kiểm tra</button>
+    <div class="ch-fb" id="poem-fb" style="margin-top:12px;text-align:left;"></div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Về nguồn sử liệu</span>
+    Bài "Côn Sơn ca" là tác phẩm nổi tiếng thực sự của Nguyễn Trãi, tuy câu thơ trong ô điền từ trên đây được diễn đạt lại đơn giản hóa cho mục đích minh họa, không phải trích nguyên văn chữ Nôm cổ.
+  </div>
+
+  <div class="reflect reveal">
+    <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+    <div class="reflect-q">Một người từng là mưu sĩ số một của cả một cuộc kháng chiến, giờ tìm thấy bình yên bên suối và rừng thông. Bạn nghĩ điều gì đã thay đổi trong ông — và điều gì vẫn còn nguyên vẹn?</div>
+    <div class="reflect-note">Không có đáp án đúng/sai — đây là câu hỏi để bạn tự suy ngẫm.</div>
+  </div>
+
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s8',0)"><span class="c-letter">→</span><div>Chương 8 — Lệ Chi Viên, oan án và ánh sáng sao Khuê!</div></button></div>
+</div>
+
+<!-- ══════════ CHƯƠNG 8 — LỆ CHI VIÊN ══════════ -->
+<div class="scene" id="s8">
+  <div class="chap">⭐ Chương 8 · 1442 Trở Đi — Lệ Chi Viên, Oan Án Và Ánh Sáng Sao Khuê <span class="src-tag" onclick="openSrcPopup('s8_lechivien')">📖 nguồn</span></div>
+
+  <div class="gate" id="gate8">
+    <span class="gate-icon">⭐</span>
+    <div class="gate-title">Khảo Hạch Cuối — Vòng Phán Xét Lịch Sử</div>
+    <div class="gate-desc">5 câu hỏi tổng hợp cuối cùng. <strong>Đúng ≥4/5</strong> để bước vào chương kết với điểm thưởng lớn nhất!</div>
+    <div class="gate-req">⭐ Cần ≥4/5 câu đúng</div>
+    <div class="mq-prog">
+      <div class="mq-dot current" id="mqd8-0"></div><div class="mq-dot" id="mqd8-1"></div><div class="mq-dot" id="mqd8-2"></div><div class="mq-dot" id="mqd8-3"></div><div class="mq-dot" id="mqd8-4"></div>
+    </div>
+    <div class="challenge" id="mq8-0">
+      <span class="ch-tag">⭐ Câu 1/5</span>
+      <div class="ch-q">Năm 1442, sự kiện nào xảy ra tại Lệ Chi Viên dẫn đến bi kịch của Nguyễn Trãi?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ8(this,false,0)">A. Một trận hỏa hoạn lớn</button>
+        <button class="ch-opt" onclick="ansMQ8(this,true,0)">B. Vua Lê Thái Tông đột ngột băng hà khi ghé thăm, sau khi từng qua Côn Sơn thăm Nguyễn Trãi</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,0)">C. Một cuộc nổi loạn của quân địa phương</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,0)">D. Một trận lụt lớn phá hủy mùa màng</button>
+      </div>
+      <div class="ch-fb" id="mq8fb-0"></div>
+    </div>
+    <div class="challenge" id="mq8-1" style="display:none">
+      <span class="ch-tag">⭐ Câu 2/5</span>
+      <div class="ch-q">Triều đình quy kết ai đã "đầu độc" vua, kéo theo án oan cho cả gia tộc Nguyễn Trãi?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ8(this,false,1)">A. Một vị tướng đối địch</button>
+        <button class="ch-opt" onclick="ansMQ8(this,true,1)">B. Nguyễn Thị Lộ — người thiếp của Nguyễn Trãi, đang hầu cận nhà vua</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,1)">C. Một ngự y trong cung</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,1)">D. Chính con trai của Nguyễn Trãi</button>
+      </div>
+      <div class="ch-fb" id="mq8fb-1"></div>
+    </div>
+    <div class="challenge" id="mq8-2" style="display:none">
+      <span class="ch-tag">⭐ Câu 3/5</span>
+      <div class="ch-q">Hình phạt mà Nguyễn Trãi và gia tộc phải chịu trong vụ án Lệ Chi Viên là gì?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ8(this,false,2)">A. Bị đày ra biên giới</button>
+        <button class="ch-opt" onclick="ansMQ8(this,true,2)">B. Tru di tam tộc — một trong những án oan tàn khốc nhất lịch sử phong kiến Việt Nam</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,2)">C. Bị tước hết chức tước nhưng được tha mạng</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,2)">D. Bị giam lỏng tại Côn Sơn</button>
+      </div>
+      <div class="ch-fb" id="mq8fb-2"></div>
+    </div>
+    <div class="challenge" id="mq8-3" style="display:none">
+      <span class="ch-tag">⭐ Câu 4/5</span>
+      <div class="ch-q">Bao nhiêu năm sau, vua Lê Thánh Tông chính thức minh oan cho Nguyễn Trãi?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ8(this,false,3)">A. 5 năm (1447)</button>
+        <button class="ch-opt" onclick="ansMQ8(this,true,3)">B. 22 năm (1464)</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,3)">C. 100 năm sau</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,3)">D. Chưa từng được minh oan chính thức</button>
+      </div>
+      <div class="ch-fb" id="mq8fb-3"></div>
+    </div>
+    <div class="challenge" id="mq8-4" style="display:none">
+      <span class="ch-tag">⭐ Câu 5/5 — Câu hỏi sâu sắc nhất</span>
+      <div class="ch-q">Câu nói của vua Lê Thánh Tông về Nguyễn Trãi — "Ức Trai tâm thượng quang Khuê tảo" (tấm lòng Ức Trai sáng như sao Khuê) — mang ý nghĩa gì?</div>
+      <div class="ch-opts">
+        <button class="ch-opt" onclick="ansMQ8(this,false,4)">A. Chỉ là một lời khen văn chương thông thường</button>
+        <button class="ch-opt" onclick="ansMQ8(this,true,4)">B. Khẳng định phẩm giá và sự trong sạch của Nguyễn Trãi vượt lên trên oan khuất, mãi mãi rực sáng dù từng bị vùi dập</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,4)">C. Một câu đối dùng để trang trí đền thờ</button>
+        <button class="ch-opt" onclick="ansMQ8(this,false,4)">D. Lời tiên tri về việc UNESCO vinh danh sau này</button>
+      </div>
+      <div class="ch-fb" id="mq8fb-4"></div>
+    </div>
+    <button class="seal-btn" id="gate8-unlock" onclick="unlockGate('s8-content','gate8')">🔴 Đóng Ấn — Mở Chương Cuối</button>
+  </div>
+
+  <div id="s8-content" class="gate-locked">
+    <div class="tl">
+      <div class="tl-item"><div class="tl-dot done">1</div><div class="tl-year">~1385</div><div class="tl-event">Thăng Long</div></div>
+      <div class="tl-item"><div class="tl-dot done">2</div><div class="tl-year">1407</div><div class="tl-event">Nam Quan</div></div>
+      <div class="tl-item"><div class="tl-dot done">3</div><div class="tl-year">1407–17</div><div class="tl-event">Ẩn Nhẫn</div></div>
+      <div class="tl-item"><div class="tl-dot done">4</div><div class="tl-year">1418</div><div class="tl-event">Lỗi Giang</div></div>
+      <div class="tl-item"><div class="tl-dot done">5</div><div class="tl-year">1426–27</div><div class="tl-event">Tâm Công</div></div>
+      <div class="tl-item"><div class="tl-dot done">6</div><div class="tl-year">1428</div><div class="tl-event">Đại Cáo</div></div>
+      <div class="tl-item"><div class="tl-dot done">7</div><div class="tl-year">Sau 1428</div><div class="tl-event">Côn Sơn</div></div>
+      <div class="tl-item"><div class="tl-dot current">8</div><div class="tl-year">1442</div><div class="tl-event">Lệ Chi Viên</div></div>
+    </div>
+
+    <!-- 🖼️ CẦN ẢNH: "đền thờ Nguyễn Trãi Côn Sơn" / EN: "Nguyen Trai memorial temple Con Son Vietnam" -->
+    <div class="hero-art reveal" style="height:auto;background:linear-gradient(135deg,#050a09 0%,#0a1410 100%);border-radius:16px;overflow:hidden;border:1px solid rgba(201,168,118,0.2);margin-bottom:14px;">
+  <img src="images/den-nguyen-trai.jpg" alt="Đền thờ Nguyễn Trãi" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'"/>
+  <div style="text-align:center;color:var(--paper-l);padding:12px 10px;background:rgba(10,10,5,0.5);">⭐ ĐỀN THỜ NGUYỄN TRÃI</div>
+</div>
+
+    <div class="story reveal">
+      <div class="info-pill">
+        <span class="ip-tag">⚡ Bóng tối ập đến</span>
+        Năm 1442, vua Lê Thái Tông đi duyệt binh, ghé qua Côn Sơn thăm Nguyễn Trãi. Trên đường về, nhà vua đột ngột băng hà tại Lệ Chi Viên — nơi có Nguyễn Thị Lộ, người thiếp của Nguyễn Trãi, đang hầu cận.
+      </div>
+      Không có điều tra thấu đáo, không có bằng chứng rõ ràng — triều đình quy kết Nguyễn Thị Lộ đầu độc vua, rồi khép luôn Nguyễn Trãi vào tội mưu phản. Một người đã dành cả đời viết những áng văn về "nhân nghĩa", giờ đây bị kết án bằng chính sự bất công mà ông từng đấu tranh chống lại.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Tương truyền, Nguyễn Trãi trước ngày chịu án</div>
+      "Ta viết Bình Ngô Đại Cáo để nói rằng đất nước này có đạo lý, có công bằng. Không ngờ chính đạo lý ấy lại không cứu được ta trước những kẻ chỉ cần một cái cớ."
+    </div>
+
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Bản án tàn khốc</span>
+      Nguyễn Trãi cùng ba đời trong gia tộc bị xử tru di tam tộc — một trong những án oan tàn khốc nhất lịch sử phong kiến Việt Nam, khép lại cuộc đời của người từng là bộ óc chiến lược đứng sau chiến thắng vĩ đại nhất của dân tộc.
+    </div>
+
+    <div class="reflect reveal">
+      <span class="reflect-tag">💭 Suy ngẫm (không chấm điểm)</span>
+      <div class="reflect-q">Người viết ra "việc nhân nghĩa cốt ở yên dân" lại chết vì một bản án bất công, thiếu công lý. Bạn nghĩ điều gì khiến câu chuyện của ông vẫn đáng được kể lại, dù kết thúc đầy oan khuất?</div>
+      <div class="reflect-note">Không có đáp án đúng/sai — đây là câu hỏi để bạn tự suy ngẫm.</div>
+    </div>
+
+    <div class="choices-label">⚡ 22 năm sau, vua Lê Thánh Tông xem xét lại vụ án. Kết cục là...</div>
+    <div class="choices">
+      <button class="c-btn" onclick="go('s8A',35)"><span class="c-letter">A</span><div>Chính thức minh oan cho Nguyễn Trãi, truy tặng lại chức tước, cho sưu tầm lại toàn bộ thơ văn của ông.<div class="c-sub">⭐ Đây là điều thực sự đã xảy ra năm 1464.</div></div></button>
+      <button class="c-btn" onclick="go('s8B',14)"><span class="c-letter">B</span><div>Vụ án bị lãng quên hoàn toàn, không ai còn nhắc đến Nguyễn Trãi nữa.<div class="c-sub">Không phải điều lịch sử ghi nhận — di sản của ông chưa từng thực sự bị lãng quên...</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s8A">
+  <div class="chap">⭐ Lựa chọn A · Ánh Sáng Sao Khuê Trở Lại!</div>
+  <div class="outcome gold"><span class="outcome-icon">⭐</span><strong>Năm 1464, vua Lê Thánh Tông ban chiếu minh oan.</strong> Câu nói "Ức Trai tâm thượng quang Khuê tảo" — tấm lòng Ức Trai sáng như sao Khuê — trở thành lời khẳng định muộn màng nhưng vĩnh viễn về phẩm giá của một con người.</div>
+  <div class="fact"><span class="fact-tag">💡 Danh nhân văn hóa thế giới</span>Năm 1980, UNESCO công nhận Nguyễn Trãi là Danh nhân văn hóa thế giới — vinh danh những đóng góp của ông cho văn học, quân sự và tư tưởng nhân nghĩa của dân tộc Việt Nam, một trong số rất ít người Việt được vinh danh ở tầm vóc quốc tế này.
+  <div style="margin-top:10px;"><span class="chip">⭐ Minh oan năm 1464</span><span class="chip">🌏 UNESCO vinh danh 1980</span><span class="chip">📜 Danh nhân văn hóa thế giới</span></div></div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('final',0)"><span class="c-letter">→</span><div>Xem lại toàn bộ hành trình...</div></button></div>
+</div>
+<div class="scene" id="s8B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Trên thực tế, ngay cả trong những năm bị kết án oan, thơ văn và tư tưởng của Nguyễn Trãi vẫn âm thầm được lưu truyền trong dân gian. <strong>22 năm sau, chính triều đình đã phải chính thức thừa nhận sai lầm và minh oan cho ông.</strong></div>
+  <div class="choices-label">⚡ Nhìn lại sự thật...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s8A',15)"><span class="c-letter">→</span><div>"Ánh sáng ấy chưa từng thực sự tắt — nó chỉ chờ ngày được thừa nhận."</div></button></div>
+</div>
+
+<!-- ══════════ FINAL ══════════ -->
+<div class="scene" id="final">
+  <div class="final">
+    <div class="final-seal" id="finalSeal">⭐<div class="star-twinkle" id="starTwinkle"></div></div>
+    <div class="final-h" id="finalH">Hành Trình Hoàn Thành!</div>
+    <div class="final-pts" id="finalPts">0 điểm</div>
+    <div class="final-rank" id="finalRank">—</div>
+    <div class="final-desc" id="finalDesc">...</div>
+    <div class="achievements" id="achievements"></div>
+    <div class="final-lesson">
+      <span class="fl-tag">📚 Ba Bài Học Từ Nguyễn Trãi</span>
+      <strong>1. Kiên nhẫn không phải là chờ đợi vô nghĩa:</strong> Mười năm ẩn nhẫn dưới ách đô hộ không phải là mười năm bỏ phí — đó là mười năm quan sát, tích lũy, chuẩn bị cho khoảnh khắc dâng trọn tâm huyết đúng người, đúng lúc.<br><br>
+      <strong>2. Chiến thắng lớn nhất là chiến thắng không cần đổ máu:</strong> Tâm công — đánh vào lòng người thay vì chỉ dùng vũ lực — cho thấy trí tuệ đôi khi mạnh hơn gươm giáo, và lòng nhân đôi khi hiệu quả hơn sự tàn bạo.<br><br>
+      <strong>3. Công lý có thể đến muộn, nhưng phẩm giá không bao giờ mất đi:</strong> Nguyễn Trãi chết trong oan khuất, nhưng ánh sáng "sao Khuê" của ông không hề tắt — nó chỉ chờ 22 năm để được thắp lại, và còn cháy sáng đến tận hôm nay.
+    </div>
+    <div class="btn-row">
+      <button class="btn-restart" onclick="restart()">🔄 Chơi lại</button>
+      <a href="cau-chuyen.html" class="btn-home">📖 Câu chuyện khác</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-modal">
+  <div class="ref-modal-head">
+    <span class="ref-page-title" style="margin-bottom:0;">📚 Nguồn Tham Khảo</span>
+    <button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button>
+  </div>
+  <div class="ref-page-sub">Các sự kiện, ngày tháng, số liệu chính được đối chiếu từ sử liệu đã kiểm chứng. Hội thoại giữa các nhân vật và một số chi tiết (như cuộc gặp gỡ Trương Phụ, câu trả lời cụ thể tại Lỗi Giang, nội dung chi tiết các bức thư tâm công) là <strong>dựng lại minh họa</strong> dựa trên tinh thần lịch sử — nhấn 📖 nguồn ở mỗi chương để xem chi tiết.</div>
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">Đại Việt Sử Ký Toàn Thư — Ngô Sĩ Liên và sử quan triều Hậu Lê</div>
+    <div class="ref-item">Ức Trai thi tập, Quốc âm thi tập — tác phẩm của Nguyễn Trãi</div>
+    <div class="ref-item">Bình Ngô Đại Cáo (1428) — văn bản gốc còn lưu truyền</div>
+    <div class="ref-item">Viện Sử học Việt Nam — Lịch sử Việt Nam, thời kỳ khởi nghĩa Lam Sơn</div>
+    <div class="ref-item">Hồ sơ UNESCO vinh danh Danh nhân văn hóa thế giới (1980)</div>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════ INK PARTICLES (nền) ═══════
+(function(){
+  const c=document.getElementById('inkCont');
+  const cols=['#3fae7c','#c9a876','#9c2b3e','#e6d3a3'];
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='ink-p';
+    const sz=2+Math.random()*3.5;const fx=(Math.random()-.5)*40+'px';
+    p.style.setProperty('--fx',fx);p.style.left=Math.random()*100+'%';p.style.top='-10px';
+    p.style.width=sz+'px';p.style.height=sz+'px';p.style.background=cols[Math.floor(Math.random()*cols.length)];
+    p.style.animationDuration=(6+Math.random()*10)+'s';p.style.animationDelay=(Math.random()*12)+'s';
+    c.appendChild(p);
+  }
+})();
+
+// ═══════ CURSOR INK TRAIL ═══════
+const curC=document.getElementById('cursorCanvas');
+const curCtx=curC.getContext('2d');
+function resizeCur(){curC.width=window.innerWidth;curC.height=window.innerHeight;}
+resizeCur();window.addEventListener('resize',resizeCur);
+let trailPts=[];
+const isTouchDevice='ontouchstart' in window;
+if(!isTouchDevice){
+  let lastMove=0;
+  window.addEventListener('mousemove',e=>{
+    const now=Date.now();if(now-lastMove<32)return;lastMove=now;
+    trailPts.push({x:e.clientX,y:e.clientY,life:1,size:2.2+Math.random()*2.8,wob:(Math.random()-.5)*1.5});
+    if(trailPts.length>34)trailPts.shift();
+  });
+}
+function drawCursorTrail(){
+  curCtx.clearRect(0,0,curC.width,curC.height);
+  trailPts.forEach(p=>{
+    p.life-=0.024;const alpha=Math.max(0,p.life);
+    curCtx.beginPath();
+    curCtx.ellipse(p.x,p.y,p.size*(1.6-alpha*0.5),p.size*(1+alpha*0.4),p.wob,0,Math.PI*2);
+    curCtx.fillStyle=`rgba(20,26,22,${alpha*0.5})`;curCtx.fill();
+    curCtx.beginPath();curCtx.arc(p.x,p.y,p.size*0.5,0,Math.PI*2);
+    curCtx.fillStyle=`rgba(63,174,124,${alpha*0.3})`;curCtx.fill();
+  });
+  trailPts=trailPts.filter(p=>p.life>0);
+  requestAnimationFrame(drawCursorTrail);
+}drawCursorTrail();
+
+// ═══════ REVEAL OBSERVER ═══════
+const revObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));}
+initReveal();
+
+// ═══════ AUDIO ═══════
+let aCtx=null;
+function getCtx(){if(!aCtx){try{aCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return aCtx;}
+function playTone(f,t,d,v){const c=getCtx();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||0.06,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+(d||0.4));o.start();o.stop(c.currentTime+(d||0.4));}
+function playCorrect(){playTone(494,'sine',0.16,0.08);setTimeout(()=>playTone(622,'sine',0.22,0.08),130);}
+function playWrong(){playTone(160,'sine',0.3,0.05);}
+function playCombo(){playTone(370,'sine',0.1,0.06);setTimeout(()=>playTone(494,'sine',0.1,0.08),80);setTimeout(()=>playTone(622,'sine',0.22,0.1),170);}
+function playBell(){const c=getCtx();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=740;g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+1.6);o.start();o.stop(c.currentTime+1.6);}
+function playSeal(){playTone(220,'triangle',0.1,0.1);setTimeout(()=>playTone(330,'triangle',0.24,0.1),90);}
+
+// ═══════ FX CANVAS ═══════
+const canvas=document.getElementById('fxCanvas');const c2=canvas.getContext('2d');let parts=[];
+function resC(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}resC();window.addEventListener('resize',resC);
+function spawnInk(n){
+  const cols=['#3fae7c','#c9a876','#9c2b3e','#e6d3a3','#2da05a'];
+  for(let i=0;i<n;i++){
+    const x=window.innerWidth*.15+Math.random()*window.innerWidth*.7;
+    parts.push({x,y:window.innerHeight*.6+Math.random()*80,vx:(Math.random()-.5)*2,vy:-(1.5+Math.random()*3),r:2+Math.random()*4,alpha:1,color:cols[Math.floor(Math.random()*cols.length)],delay:i*35});
+  }
+}
+function animP(){
+  if(!parts.length){c2.clearRect(0,0,canvas.width,canvas.height);return;}
+  c2.clearRect(0,0,canvas.width,canvas.height);
+  parts=parts.filter(p=>{
+    if(p.delay>0){p.delay-=16;return true;}
+    p.x+=p.vx;p.y+=p.vy;p.vy*=0.99;p.alpha-=0.012;if(p.alpha<=0)return false;
+    c2.save();c2.globalAlpha=p.alpha;c2.fillStyle=p.color;c2.beginPath();c2.arc(p.x,p.y,p.r,0,Math.PI*2);c2.fill();c2.restore();return true;
+  });
+  requestAnimationFrame(animP);
+}
+function inkBurst(){spawnInk(16+Math.floor(Math.random()*10));requestAnimationFrame(animP);}
+
+// ═══════ STATE ═══════
+let pts=0,streak=0,maxStreak=0,totalCorrect=0,totalKC=0;
+let kcAnswered={};
+let mqErrors={6:0,8:0};
+let mq6State={correct:0,answered:new Array(4).fill(false)};
+let mq8State={correct:0,answered:new Array(5).fill(false)};
+let arr3Done=false;
+let letterOrderDone=false,letterToneDone=false;
+let duoiState={selected:null,side:null,pairs:{}};
+let poemDone=false;
+let duoiDone=false;
+
+// ═══════ ORACLE ═══════
+const oMsgs=["Việc nhân nghĩa cốt ở yên dân — đó là gốc rễ của mọi mưu lược.","Lấy đại nghĩa thắng hung tàn, lấy chí nhân thay cường bạo.","Một bức thư đúng lúc đôi khi mạnh hơn ngàn mũi tên.","Kiên nhẫn không phải là yếu đuối — đó là sức mạnh chưa đến lúc bộc lộ.","Tấc lòng ưu ái cũ, đêm ngày cuồn cuộn nước triều đông.","Sao Khuê dù có bị mây che, ánh sáng ấy không bao giờ thực sự tắt."];
+let oCount=0,oTimer=null;
+function showOracle(msg){document.getElementById('oracleText').textContent=msg||oMsgs[Math.floor(Math.random()*oMsgs.length)];const o=document.getElementById('oracle');o.classList.add('show');if(oTimer)clearTimeout(oTimer);oTimer=setTimeout(closeOracle,7000);}
+function closeOracle(){document.getElementById('oracle').classList.remove('show');}
+function maybeOracle(){oCount++;if(oCount%3===0)setTimeout(()=>showOracle(),800);}
+
+// ═══════ METERS ═══════
+function updateMeter(){
+  const pct=Math.min(100,Math.round((pts/230)*100));
+  const el=document.getElementById('nghiaMeter'),p=document.getElementById('nghiaPct');
+  if(el)el.style.width=pct+'%';if(p)p.textContent=pct+'%';
+}
+
+// ═══════ PROGRESS + NAVIGATION ═══════
+const sceneP={cover:0,s1:3,s1B:6,s2:14,s2A:22,s2B:17,s3:30,s3A:40,s3B:35,s4:48,s4A:56,s4B:51,s5:64,s5A:72,s5B:67,s6:78,s7:86,s8:92,s8A:99,s8B:95,final:100};
+let sceneHistory=['cover'];
+let historyIndex=0;
+let sceneRewarded={};
+
+function go(id,addPts){
+  if(addPts>0 && !sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPtsPopup('+'+addPts);pts+=addPts;updateScore();
+  }
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{el.querySelectorAll('.reveal').forEach(r=>revObs.observe(r));},100);}
+  document.getElementById('prog').style.width=(sceneP[id]||0)+'%';
+  updateJourneyMap(id);
+  if(id==='final')showFinal();
+  maybeOracle();
+  if(id.startsWith('s')&&id.length<=3)playBell();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+function showPtsPopup(txt){const p=document.getElementById('ptsPopup');p.textContent=txt;p.className='pts-popup';void p.offsetWidth;p.className='pts-popup show';}
+function updateScore(){
+  const el=document.getElementById('scoreNum');el.textContent=pts;el.classList.add('bump');setTimeout(()=>el.classList.remove('bump'),300);
+  document.getElementById('scoreRank').textContent=getRank(pts).label;updateMeter();
+}
+function getRank(p){
+  if(p>=175)return{label:'⭐ Ức Trai Toàn Vẹn',emoji:'⭐',desc:'Xuất sắc tuyệt vời! Bạn thể hiện trí tuệ và tấm lòng nhân nghĩa xứng đáng với Nguyễn Trãi. Một hành trình hoàn hảo!'};
+  if(p>=115)return{label:'🖋️ Mưu Sĩ Đại Việt',emoji:'🖋️',desc:'Xuất sắc! Bạn hiểu sâu về tư tưởng và cuộc đời Nguyễn Trãi. Hãy khám phá thêm các góc độ lịch sử!'};
+  if(p>=60)return{label:'📜 Học Trò Thư Phòng',emoji:'📜',desc:'Tốt! Bạn đã hoàn thành hành trình. Hãy thử lại để nắm vững hơn về cuộc đời phi thường này!'};
+  return{label:'🌱 Người Học Sử Nhập Môn',emoji:'🌱',desc:'Bạn đã bắt đầu tìm hiểu! Cuộc đời Nguyễn Trãi rất phong phú — hãy khám phá thêm nhé!'};
+}
+
+// ═══════ STREAK ═══════
+function addStreak(){
+  streak++;if(streak>maxStreak)maxStreak=streak;
+  document.getElementById('streakNum').textContent=streak;
+  const b=document.getElementById('streakBadge');b.classList.add('show');
+  if(streak>=3){b.classList.add('fire');showCombo(streak);}else b.classList.remove('fire');
+}
+function resetStreak(){streak=0;document.getElementById('streakBadge').classList.remove('show','fire');}
+function showCombo(n){
+  const lb={3:'🖋️ COMBO x3',4:'📜 UYÊN BÁC x4',5:'⭐ SAO KHUÊ x5'};const bn={3:10,4:16,5:24};
+  const label=lb[n]||('⭐ HUYỀN THOẠI x'+n);const bonus=bn[n]||24;
+  document.getElementById('comboLabel').textContent=label;document.getElementById('comboPtsLabel').textContent='+'+bonus+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bonus;updateScore();showPtsPopup('+'+bonus+' COMBO!');playCombo();if(n>=3)inkBurst();
+}
+
+// ═══════ KnowledgeCheck ═══════
+const kcFb={
+  kc1:{ok:'Trần Nguyên Đán từng làm Tư đồ triều Trần, nổi tiếng uyên bác về thiên văn, lịch pháp — người có ảnh hưởng lớn đến tri thức của Nguyễn Trãi thời thơ ấu.',no:'Đáp án B — Trần Nguyên Đán, ông ngoại của Nguyễn Trãi.'},
+  kc2:{ok:'Lời dặn "trở về lo trả thù cho nước, rửa hận cho cha" đã định hướng cả cuộc đời sau này của Nguyễn Trãi.',no:'Đáp án B. Đây là lời trăn trối nổi tiếng của Nguyễn Phi Khanh tại ải Nam Quan.'},
+  kc3:{ok:'Mười năm ẩn nhẫn là giai đoạn chuẩn bị âm thầm nhưng quan trọng, trước khi Nguyễn Trãi tìm đến Lê Lợi.',no:'Đáp án B — sống ẩn danh, quan sát, chờ đợi minh chủ xứng đáng.'},
+  kc5:{ok:'Tâm công là chiến lược đánh vào tinh thần, ý chí đối phương — một hình thức chiến tranh tâm lý vượt trước thời đại.',no:'Đáp án B — đánh vào lòng người, làm lung lay ý chí chiến đấu của đối phương.'},
+  kc6:{ok:'"Việc nhân nghĩa cốt ở yên dân, quân điếu phạt trước lo trừ bạo" — câu mở đầu nổi tiếng của Bình Ngô Đại Cáo, đặt dân làm gốc của chính nghĩa.',no:'Đáp án B. Đây là tư tưởng cốt lõi xuyên suốt toàn bộ áng văn.'},
+};
+function ansKC(btn,correct,id){
+  if(kcAnswered[id])return;kcAnswered[id]=true;totalKC++;
+  const cont=btn.parentElement;cont.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(correct){
+    btn.classList.add('correct');pts+=6;totalCorrect++;updateScore();showPtsPopup('+6');
+    fb.textContent='✅ Chính xác! '+(kcFb[id]?kcFb[id].ok:'');fb.className='kc-fb show ok';
+    addStreak();playCorrect();if(totalCorrect%2===0)inkBurst();
+  } else {
+    btn.classList.add('wrong');
+    cont.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(',true,'))b.classList.add('correct');});
+    fb.textContent='❌ Chưa đúng. '+(kcFb[id]?kcFb[id].no:'');fb.className='kc-fb show no';
+    resetStreak();playWrong();setTimeout(()=>showOracle(),600);
+    setTimeout(()=>{
+      kcAnswered[id]=false;totalKC--;
+      cont.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+      fb.className='kc-fb';fb.textContent='';
+    },2500);
+  }
+}
+
+// ═══════ ĐỐI CÂU (Chương 2, re-skin của matching) ═══════
+function selectDuoi(el,side){
+  const items=document.querySelectorAll('.duoi-item:not(.matched-ok):not(.matched-no)');
+  if(duoiState.selected===null){
+    items.forEach(p=>p.classList.remove('selected'));el.classList.add('selected');duoiState.selected=el;duoiState.side=side;
+  } else {
+    if(duoiState.side===side){el.classList.add('selected');duoiState.selected.classList.remove('selected');duoiState.selected=el;}
+    else{
+      const L=side==='right'?duoiState.selected:el;const R=side==='right'?el:duoiState.selected;
+      duoiState.pairs[L.dataset.id]=R.dataset.id;L.classList.add('selected');R.classList.add('selected');
+      duoiState.selected=null;duoiState.side=null;updateDuoiScore();
+    }
+  }
+}
+function updateDuoiScore(){
+  let c=0;for(const [lid,rid] of Object.entries(duoiState.pairs)){
+    const lEl=document.querySelector(`[data-id="${lid}"]`);const rEl=document.querySelector(`[data-id="${rid}"]`);
+    if(lEl&&rEl&&lEl.dataset.pair===rEl.dataset.pair)c++;
+  }
+  document.getElementById('duoiScore').textContent=c+'/4 đúng';
+}
+function checkDuoi(){
+  if(duoiDone)return;
+  let correct=0;
+  const wrongEls=[];
+  for(const [lid,rid] of Object.entries(duoiState.pairs)){
+    const lEl=document.querySelector(`[data-id="${lid}"]`);const rEl=document.querySelector(`[data-id="${rid}"]`);
+    if(!lEl||!rEl)continue;
+    const ok=lEl.dataset.pair===rEl.dataset.pair;
+    lEl.classList.remove('selected');rEl.classList.remove('selected');
+    lEl.classList.add(ok?'matched-ok':'matched-no');rEl.classList.add(ok?'matched-ok':'matched-no');
+    if(ok){correct++;}else{wrongEls.push(lEl,rEl);}
+  }
+  const fb=document.getElementById('duoi-fb');
+  if(correct===4){
+    duoiDone=true;
+    fb.textContent='✅ Xuất sắc! Tất cả 4 cặp đúng! +12 điểm';fb.className='ch-fb show ok';
+    pts+=12;updateScore();showPtsPopup('+12');addStreak();playCorrect();
+    setTimeout(()=>{document.getElementById('gate2-unlock').classList.add('ready');},500);inkBurst();
+  } else {
+    fb.textContent=`❌ ${correct}/4 đúng. Hãy xem lại các cặp chưa đúng (màu đỏ) và thử lại nhé!`;fb.className='ch-fb show no';
+    resetStreak();playWrong();
+    // Giữ lại các cặp đúng, chỉ xóa các cặp sai khỏi state để không bị tính lại
+    const newPairs={};
+    for(const [lid,rid] of Object.entries(duoiState.pairs)){
+      const lEl=document.querySelector(`[data-id="${lid}"]`);
+      if(lEl&&lEl.classList.contains('matched-ok'))newPairs[lid]=rid;
+    }
+    duoiState.pairs=newPairs;
+    // Sau 1.2s, mở lại các item ghép sai để chọn lại
+    setTimeout(()=>{
+      wrongEls.forEach(el=>el.classList.remove('matched-no'));
+    },1200);
+  }
+}
+
+// ═══════ SẮP XẾP MẬT LỆNH (Chương 3, re-skin của arrange) ═══════
+let dragSrc3=null;
+function setupDrag3(){
+  document.querySelectorAll('#scroll-zone3 .scroll-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{dragSrc3=item;item.classList.add('dragging');});
+    item.addEventListener('dragend',e=>{item.classList.remove('dragging');});
+    item.addEventListener('dragover',e=>{e.preventDefault();});
+    item.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragSrc3!==item){
+        const zone=document.getElementById('scroll-zone3');const items=[...zone.children];
+        const si=items.indexOf(dragSrc3),ti=items.indexOf(item);
+        if(si<ti)zone.insertBefore(dragSrc3,item.nextSibling);else zone.insertBefore(dragSrc3,item);
+      }
+    });
+  });
+}
+setTimeout(setupDrag3,800);
+function checkArr3(){
+  if(arr3Done)return;
+  const zone=document.getElementById('scroll-zone3');
+  const order=[...zone.children].map(el=>parseInt(el.dataset.val));
+  const correct=[1,2,3,4];const ok=order.every((v,i)=>v===correct[i]);
+  const fb=document.getElementById('arr3-fb');
+  if(ok){
+    fb.textContent='✅ Chính xác! +12 điểm';fb.className='ch-fb show ok';
+    pts+=12;updateScore();showPtsPopup('+12');addStreak();playCorrect();arr3Done=true;
+    document.getElementById('gate3-unlock').classList.add('ready');
+  } else {
+    fb.textContent='❌ Thứ tự chưa đúng! Đúng là: 1) Về Thăng Long ẩn danh → 2) Trương Phụ chiêu dụ → 3) Khéo léo từ chối → 4) Nghe tin Lê Lợi, tìm đường vào Thanh Hóa.';fb.className='ch-fb show no';
+    resetStreak();playWrong();
+  }
+}
+
+// ═══════ SOẠN THƯ TÂM CÔNG (Chương 5, cơ chế mới) ═══════
+let dragSrcL=null;
+function setupDragLetter(){
+  document.querySelectorAll('#letter-zone .letter-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{dragSrcL=item;item.classList.add('dragging');});
+    item.addEventListener('dragend',e=>{item.classList.remove('dragging');});
+    item.addEventListener('dragover',e=>{e.preventDefault();});
+    item.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragSrcL!==item){
+        const zone=document.getElementById('letter-zone');const items=[...zone.children];
+        const si=items.indexOf(dragSrcL),ti=items.indexOf(item);
+        if(si<ti)zone.insertBefore(dragSrcL,item.nextSibling);else zone.insertBefore(dragSrcL,item);
+      }
+    });
+  });
+}
+setTimeout(setupDragLetter,800);
+function checkLetterOrder(){
+  if(letterOrderDone)return;
+  const zone=document.getElementById('letter-zone');
+  const order=[...zone.children].map(el=>parseInt(el.dataset.val));
+  const correct=[1,2,3,4];const ok=order.every((v,i)=>v===correct[i]);
+  const fb=document.getElementById('letter-fb');
+  if(ok){
+    fb.textContent='✅ Đúng bố cục thuyết phục! +12 điểm. Đây là logic lập luận kinh điển của tâm công: nêu thực trạng → viện lẽ trời đất → mở đường lui → cảnh báo hậu quả.';fb.className='ch-fb show ok';
+    pts+=12;updateScore();showPtsPopup('+12');addStreak();playCorrect();letterOrderDone=true;
+    zone.querySelectorAll('.letter-item').forEach((el,i)=>{el.querySelector('.letter-num').textContent=(i+1);el.setAttribute('draggable','false');el.style.cursor='default';});
+    document.getElementById('letter-tone-wrap').style.display='block';
+  } else {
+    fb.textContent='❌ Thứ tự chưa thuyết phục! Trình tự đúng: 1) Nêu thực trạng cùng đường → 2) Viện lẽ thịnh suy của trời đất → 3) Mở đường lui danh dự → 4) Cảnh báo hậu quả nếu ngoan cố.';fb.className='ch-fb show no';
+    resetStreak();playWrong();
+  }
+}
+function chooseTone(btn,correct){
+  if(letterToneDone)return;letterToneDone=true;
+  const cont=btn.parentElement;cont.querySelectorAll('.tone-chip').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('tone-fb');
+  if(correct){
+    btn.classList.add('correct');pts+=10;updateScore();showPtsPopup('+10');addStreak();playCorrect();
+    fb.textContent='✅ Chính xác! Giọng điệu điềm tĩnh, cương quyết nhưng vẫn giữ thể diện cho đối phương chính là điều làm nên hiệu quả của tâm công — không phải sự yếu đuối, cũng không phải sự sỉ nhục.';fb.className='ch-fb show ok';
+    setTimeout(()=>{document.getElementById('gate5-unlock').classList.add('ready');},600);inkBurst();
+  } else {
+    btn.classList.add('wrong');
+    cont.querySelectorAll('.tone-chip').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');});
+    fb.textContent='❌ Chưa đúng. Van xin thì mất uy thế, đe dọa gay gắt thì dồn địch vào đường cùng — cả hai đều phản tác dụng.';fb.className='ch-fb show no';
+    resetStreak();playWrong();
+    setTimeout(()=>{document.getElementById('gate5-unlock').classList.add('ready');},600);
+  }
+}
+
+// ═══════ POEM COMPLETION (Chương 7) ═══════
+function checkPoem(){
+  if(poemDone)return;
+  const input=document.getElementById('poem-input');const val=input.value.trim().toLowerCase();
+  const fb=document.getElementById('poem-fb');
+  if(val.includes('tai')||val.includes('tại')){
+    fb.textContent='✅ Chính xác! +10 điểm. "Ta nghe như tiếng đàn cầm bên tai" — câu thơ nổi tiếng trong Côn Sơn ca, gợi tả tiếng suối như âm nhạc.';fb.className='ch-fb show ok';
+    pts+=10;updateScore();showPtsPopup('+10');addStreak();playCorrect();poemDone=true;input.disabled=true;inkBurst();
+  } else {
+    fb.textContent='❌ Chưa đúng. Gợi ý: một từ chỉ bộ phận cơ thể dùng để nghe, vần với câu trước.';fb.className='ch-fb show no';
+    resetStreak();playWrong();input.value='';
+  }
+}
+
+// ═══════ MQ6 (Chương 6 — 4 câu) ═══════
+const mq6Fb=[
+  {ok:'Trận Chi Lăng - Xương Giang (1427) chém chết Liễu Thăng, tiêu diệt toàn bộ viện binh — bước ngoặt quyết định của cuộc kháng chiến.',no:'Đáp án A — Ải Chi Lăng — Xương Giang.'},
+  {ok:'Mất viện binh, Vương Thông buộc phải xin giảng hòa, chấp nhận rút quân về nước.',no:'Đáp án B — xin giảng hòa, rút quân về nước.'},
+  {ok:'Lê Lợi cấp thuyền, ngựa, lương thực cho quân Minh rút về nước — thể hiện đúng tinh thần "lấy chí nhân thay cường bạo" mà Nguyễn Trãi chủ trương.',no:'Đáp án B — cấp phương tiện cho rút quân an toàn, thể hiện lòng nhân.'},
+  {ok:'Bình Ngô Đại Cáo là bản tuyên ngôn độc lập thứ hai, sau bài thơ thần Nam Quốc Sơn Hà của Lý Thường Kiệt.',no:'Đáp án A — thứ hai.'},
+];
+function ansMQ6(btn,correct,qIdx){
+  if(mq6State.answered[qIdx])return;mq6State.answered[qIdx]=true;
+  const cont=btn.parentElement;cont.querySelectorAll('.ch-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('mq6fb-'+qIdx);const dot=document.getElementById('mqd6-'+qIdx);
+  if(correct){
+    btn.classList.add('correct');mq6State.correct++;pts+=10;updateScore();showPtsPopup('+10');addStreak();playCorrect();
+    fb.textContent='✅ Xuất sắc! +10 điểm. '+mq6Fb[qIdx].ok;fb.className='ch-fb show ok';if(dot)dot.className='mq-dot done';
+    if(qIdx<3){const nextDot=document.getElementById('mqd6-'+(qIdx+1));if(nextDot)nextDot.className='mq-dot current';
+      setTimeout(()=>{document.getElementById('mq6-'+(qIdx+1)).style.display='block';},700);}
+    if(mq6State.correct>=3){setTimeout(()=>{document.getElementById('gate6-unlock').classList.add('ready');},800);}
+    if(mq6State.correct===4){setTimeout(inkBurst,400);}
+  } else {
+    btn.classList.add('wrong');mqErrors[6]++;
+    cont.querySelectorAll('.ch-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');});
+    fb.textContent='❌ Chưa đúng. '+mq6Fb[qIdx].no;fb.className='ch-fb show no';
+    resetStreak();playWrong();if(mqErrors[6]>=2){pts=Math.max(0,pts-3);updateScore();showPtsPopup('-3');}
+    setTimeout(()=>showOracle(),500);
+    setTimeout(()=>{
+      mq6State.answered[qIdx]=false;
+      cont.querySelectorAll('.ch-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+      fb.className='ch-fb';fb.textContent='';
+    },2500);
+  }
+}
+
+// ═══════ MQ8 (Chương 8 — 5 câu) ═══════
+const mq8Fb=[
+  {ok:'Vua Lê Thái Tông đột ngột băng hà tại Lệ Chi Viên sau khi ghé thăm Côn Sơn — sự kiện châm ngòi cho bi kịch.',no:'Đáp án B — vua đột ngột băng hà tại Lệ Chi Viên.'},
+  {ok:'Nguyễn Thị Lộ, người thiếp của Nguyễn Trãi đang hầu cận vua, bị quy kết là người đầu độc.',no:'Đáp án B — Nguyễn Thị Lộ.'},
+  {ok:'Tru di tam tộc — hình phạt tàn khốc nhất thời phong kiến, giết cả ba đời trong gia tộc.',no:'Đáp án B — tru di tam tộc.'},
+  {ok:'Năm 1464, tức 22 năm sau, vua Lê Thánh Tông chính thức minh oan cho Nguyễn Trãi.',no:'Đáp án B — 22 năm (1464).'},
+  {ok:'Câu nói khẳng định phẩm giá vượt lên trên oan khuất — một sự thừa nhận muộn màng nhưng vĩnh viễn về sự trong sạch của ông.',no:'Đáp án B — khẳng định phẩm giá và sự trong sạch vượt lên trên oan khuất.'},
+];
+function ansMQ8(btn,correct,qIdx){
+  if(mq8State.answered[qIdx])return;mq8State.answered[qIdx]=true;
+  const cont=btn.parentElement;cont.querySelectorAll('.ch-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('mq8fb-'+qIdx);const dot=document.getElementById('mqd8-'+qIdx);
+  if(correct){
+    btn.classList.add('correct');mq8State.correct++;pts+=10;updateScore();showPtsPopup('+10');addStreak();playCorrect();
+    fb.textContent='✅ Xuất sắc! +10 điểm. '+mq8Fb[qIdx].ok;fb.className='ch-fb show ok';if(dot)dot.className='mq-dot done';
+    if(qIdx<4){const nextDot=document.getElementById('mqd8-'+(qIdx+1));if(nextDot)nextDot.className='mq-dot current';
+      setTimeout(()=>{document.getElementById('mq8-'+(qIdx+1)).style.display='block';},700);}
+    if(mq8State.correct>=4){setTimeout(()=>{document.getElementById('gate8-unlock').classList.add('ready');},800);}
+    if(mq8State.correct===5){setTimeout(inkBurst,400);setTimeout(inkBurst,900);}
+  } else {
+    btn.classList.add('wrong');mqErrors[8]++;
+    cont.querySelectorAll('.ch-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');});
+    fb.textContent='❌ Chưa đúng. '+mq8Fb[qIdx].no;fb.className='ch-fb show no';
+    resetStreak();playWrong();if(mqErrors[8]>=2){pts=Math.max(0,pts-4);updateScore();showPtsPopup('-4');}
+    setTimeout(()=>showOracle(),500);
+    setTimeout(()=>{
+      mq8State.answered[qIdx]=false;
+      cont.querySelectorAll('.ch-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+      fb.className='ch-fb';fb.textContent='';
+    },2500);
+  }
+}
+
+// ═══════ UNLOCK GATE (con dấu) ═══════
+function unlockGate(contentId,gateId){
+  const content=document.getElementById(contentId);if(content)content.classList.remove('gate-locked');
+  const gate=document.getElementById(gateId);
+  if(gate){gate.style.opacity='0';gate.style.transform='scale(0.95)';gate.style.transition='all .4s';setTimeout(()=>gate.style.display='none',400);}
+  pts+=10;updateScore();showPtsPopup('+10 Đóng Ấn!');playSeal();inkBurst();
+  setTimeout(()=>{if(content)content.querySelectorAll('.reveal').forEach(r=>revObs.observe(r));},200);
+}
+
+// ═══════ BẢN ĐỒ HÀNH TRÌNH ═══════
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+const mapUnlockStages={s2:['pt-namquan'],s3:['pt-dongquan1'],s4:['pt-loigiang'],s5:['pt-dongquan2'],s6:['pt-thanglong2'],s7:['pt-consơn'],s8:[]};
+function updateJourneyMap(id){
+  const keys=mapUnlockStages[id];if(!keys)return;let unlockedSomething=false;
+  keys.forEach(k=>{document.querySelectorAll('.'+k).forEach(el=>{if(el.classList.contains('locked')){el.classList.remove('locked');unlockedSomething=true;}});});
+  if(unlockedSomething)showPtsPopup('🖋️ Mở khóa địa điểm mới!');
+}
+
+// ═══════ NGUỒN SỬ LIỆU ═══════
+const sourceDB={
+  s1_thanglong:{v:true,title:'Thời thơ ấu ở Thăng Long',body:'Nguyễn Trãi là con của Nguyễn Phi Khanh và Trần Thị Thái, con gái quan Tư đồ Trần Nguyên Đán. Chi tiết về cuộc đối thoại cụ thể với ông ngoại về sao Khuê là dựng lại minh họa, kết nối với câu nói nổi tiếng "Ức Trai tâm thượng quang Khuê tảo" xuất hiện muộn hơn trong lịch sử.',cite:'Đại Việt Sử Ký Toàn Thư; Ức Trai thi tập'},
+  s2_namquan:{v:true,title:'Ải Nam Quan, 1407',body:'Sự kiện Nguyễn Phi Khanh bị giặc Minh bắt giải về Trung Quốc và lời trăn trối tại ải Nam Quan được nhiều nguồn sử liệu ghi nhận rộng rãi, dù lời thoại cụ thể là diễn đạt lại theo tinh thần được truyền tụng.',cite:'Đại Việt Sử Ký Toàn Thư'},
+  s3_anhan:{v:true,title:'Mười năm ẩn nhẫn, 1407–1417',body:'Việc Nguyễn Trãi sống ẩn nhẫn dưới ách đô hộ nhà Minh trước khi tìm đến Lê Lợi là giai đoạn được xác nhận trong lịch sử. Chi tiết cụ thể về việc Trương Phụ chiêu dụ là giai thoại được một số nguồn nhắc đến nhưng không có ghi chép thống nhất, mang tính dựng lại minh họa.',cite:'Lịch sử Việt Nam, Viện Sử học; giai thoại dân gian'},
+  s4_loigiang:{v:true,title:'Lỗi Giang, 1418',body:'Nguyễn Trãi tìm đến Lê Lợi và dâng Bình Ngô sách là sự kiện lịch sử được ghi nhận. Đoạn đối thoại cụ thể giữa hai người là dựng lại minh họa dựa trên tinh thần và tư tưởng đã biết của cả hai nhân vật.',cite:'Đại Việt Sử Ký Toàn Thư'},
+  s5_tamcong:{v:true,title:'Chiến lược tâm công, 1426–1427',body:'Nguyễn Trãi viết nhiều thư dụ hàng các tướng Minh là sự kiện lịch sử được ghi nhận rộng rãi. Nội dung cụ thể từng luận điểm trong bài tập "Soạn Thư Tâm Công" là diễn đạt lại nhằm mục đích minh họa logic thuyết phục, không phải trích nguyên văn các bức thư gốc.',cite:'Đại Việt Sử Ký Toàn Thư; Ức Trai thi tập'},
+  s6_daicao:{v:true,title:'Bình Ngô Đại Cáo, 1428',body:'Bình Ngô Đại Cáo là văn bản lịch sử có thật, do Nguyễn Trãi soạn thay lời Lê Lợi năm 1428, hiện còn lưu truyền nguyên văn.',cite:'Bình Ngô Đại Cáo (1428)'},
+  s7_conson:{v:true,title:'Côn Sơn ẩn dật',body:'Nguyễn Trãi về ở ẩn tại Côn Sơn và sáng tác Quốc âm thi tập là sự kiện lịch sử được ghi nhận. Câu thơ trong phần điền từ là diễn đạt đơn giản hóa dựa trên tinh thần bài Côn Sơn ca, không phải trích nguyên văn chữ Nôm cổ.',cite:'Quốc âm thi tập, Nguyễn Trãi'},
+  s8_lechivien:{v:true,title:'Lệ Chi Viên, 1442',body:'Vụ án Lệ Chi Viên, việc Nguyễn Trãi bị tru di tam tộc, và việc vua Lê Thánh Tông minh oan năm 1464 đều là sự kiện lịch sử được ghi nhận rộng rãi trong chính sử.',cite:'Đại Việt Sử Ký Toàn Thư; Hồ sơ UNESCO 1980'},
+};
+function openSrcPopup(key){
+  const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcBadge').textContent=d.v?'📖 ĐÃ KIỂM CHỨNG':'🔵 DỰNG LẠI MINH HỌA';
+  document.getElementById('srcBadge').className='src-popup-badge '+(d.v?'':'d');
+  document.getElementById('srcTitle').textContent=d.title;
+  document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;
+  document.getElementById('srcOverlay').classList.add('show');playTone(620,'sine',.08,.07);
+}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+// ═══════ ACHIEVEMENTS ═══════
+const allAch=[
+  {id:'ink',icon:'🖋️',name:'Nét Bút Đầu Tiên',cond:()=>pts>=55},
+  {id:'strategist',icon:'📜',name:'Mưu Sĩ',cond:()=>totalCorrect>=5},
+  {id:'letter',icon:'✉️',name:'Bậc Thầy Tâm Công',cond:()=>letterOrderDone&&letterToneDone},
+  {id:'streak',icon:'✨',name:'Liên Hoàn x3',cond:()=>maxStreak>=3},
+  {id:'poet',icon:'🌲',name:'Thi Nhân Côn Sơn',cond:()=>poemDone},
+  {id:'legend',icon:'⭐',name:'Sao Khuê Bất Diệt',cond:()=>pts>=175},
+];
+function buildAch(){
+  const w=document.getElementById('achievements');if(!w)return;w.innerHTML='';
+  allAch.forEach((a,i)=>{
+    const locked=!a.cond();const d=document.createElement('div');d.className='ach-card'+(locked?' locked':'');
+    d.style.animationDelay=(i*0.1)+'s';d.innerHTML=`<span class="ach-icon">${a.icon}</span><div class="ach-name">${locked?'???':a.name}</div>`;
+    w.appendChild(d);
+  });
+}
+function buildStarTwinkle(){
+  const w=document.getElementById('starTwinkle');if(!w)return;w.innerHTML='';
+  for(let i=0;i<6;i++){
+    const s=document.createElement('div');
+    const ang=(i/6)*Math.PI*2;const r=48;
+    s.style.cssText=`position:absolute;left:${50+Math.cos(ang)*r/1.3}%;top:${50+Math.sin(ang)*r/1.3}%;width:3px;height:3px;background:#e6d3a3;border-radius:50%;box-shadow:0 0 6px #e6d3a3;animation:pulseDot ${1.5+Math.random()}s ease-in-out infinite ${Math.random()}s;`;
+    w.appendChild(s);
+  }
+}
+function showFinal(){
+  const rank=getRank(pts);
+  let title='🌱 Người Học Sử Nhiệt Huyết!';
+  if(pts>=175)title='⭐ Ức Trai Toàn Vẹn — Sao Khuê Sáng Mãi!';else if(pts>=115)title='🖋️ Mưu Sĩ Đại Việt!';else if(pts>=60)title='📜 Học Trò Thư Phòng Đáng Kính!';
+  document.getElementById('finalH').textContent=title;
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=rank.label;
+  document.getElementById('finalDesc').textContent=rank.desc;
+  buildAch();buildStarTwinkle();
+  if(pts>=110){setTimeout(inkBurst,400);setTimeout(inkBurst,900);}
+  setTimeout(()=>showOracle("Cảm ơn đã đồng hành cùng ta trong hành trình này. Dù đời có oan khuất, tấc lòng ưu ái vẫn cuồn cuộn như nước triều đông — hãy giữ ánh sáng ấy trong lòng ngươi."),1500);
+}
+
+// ═══════ RESTART ═══════
+function restart(){
+  pts=0;streak=0;maxStreak=0;totalCorrect=0;totalKC=0;kcAnswered={};mqErrors={6:0,8:0};
+  sceneHistory=['cover'];historyIndex=0;sceneRewarded={};
+  mq6State={correct:0,answered:new Array(4).fill(false)};
+  mq8State={correct:0,answered:new Array(5).fill(false)};
+  arr3Done=false;letterOrderDone=false;letterToneDone=false;poemDone=false;duoiDone=false;
+  duoiState={selected:null,side:null,pairs:{}};
+  ['s2-content','s3-content','s5-content','s6-content','s8-content'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('gate-locked');});
+  ['gate2','gate3','gate5','gate6','gate8'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='';el.style.opacity='';el.style.transform='';}});
+  ['gate2-unlock','gate3-unlock','gate5-unlock','gate6-unlock','gate8-unlock'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('ready');});
+  document.querySelectorAll('.ch-opt,.kc-opt,.tone-chip').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+  document.querySelectorAll('.ch-fb,.kc-fb').forEach(f=>{f.classList.remove('show');});
+  document.querySelectorAll('.duoi-item').forEach(m=>{m.classList.remove('selected','matched-ok','matched-no');});
+  const ds=document.getElementById('duoiScore');if(ds)ds.textContent='0/4 đúng';
+  const lt=document.getElementById('letter-tone-wrap');if(lt)lt.style.display='none';
+  document.querySelectorAll('#letter-zone .letter-item').forEach(el=>{el.querySelector('.letter-num').textContent='?';el.setAttribute('draggable','true');el.style.cursor='grab';});
+  const pi=document.getElementById('poem-input');if(pi){pi.value='';pi.disabled=false;}
+  ['mq6-1','mq6-2','mq6-3','mq8-1','mq8-2','mq8-3','mq8-4'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  for(let i=0;i<4;i++){const d=document.getElementById('mqd6-'+i);if(d){d.className='mq-dot';if(i===0)d.className='mq-dot current';}}
+  for(let i=0;i<5;i++){const d=document.getElementById('mqd8-'+i);if(d){d.className='mq-dot';if(i===0)d.className='mq-dot current';}}
+  document.querySelectorAll('.jmap-pt,.jmap-lbl,.jmap-yr').forEach(el=>{
+    if(!el.classList.contains('pt-thanglong1')){el.classList.add('locked');}
+  });
+  updateScore();document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  document.getElementById('streakBadge').classList.remove('show','fire');
+  window.scrollTo({top:0,behavior:'smooth'});closeOracle();
+  updateNavButtons();
+}
+
+// ═══════ INIT ═══════
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='poem-input')checkPoem();});
+setTimeout(()=>showOracle("Chào mừng đến với hành trình của ta. Ta là Nguyễn Trãi, hiệu Ức Trai. Đây không phải câu chuyện của gươm giáo — mà của một cây bút, một tấc lòng, và một ngôi sao không bao giờ thực sự tắt."),2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Võ Nguyên Giáp | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --red: #8B0000;
+  --gold: #d4a017;
+  --dark: #1a0f06;
+  --bg: #f5f0e8;
+  --white: #ffffff;
+  --border: #e8dfc8;
+  --text: #333333;
+  --muted: #777777;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+
+/* HERO */
+.hero {
+  background: linear-gradient(to right, rgba(15,8,3,.90) 42%, rgba(15,8,3,.4) 75%, rgba(0,0,0,.15) 100%),
+              url('images/vonguyengiap1.jpg') center/cover no-repeat;
+  min-height:400px; display:flex; align-items:center;
+  padding:56px 56px 50px; color:#fff;
+  border-bottom:3px solid var(--gold);
+  position:relative; overflow:hidden;
+}
+.hero-badge {
+  display:inline-block; background:rgba(212,160,23,.2); border:1px solid var(--gold);
+  color:var(--gold); font-size:11px; font-weight:600; padding:4px 14px; border-radius:20px;
+  margin-bottom:14px; letter-spacing:.8px; text-transform:uppercase;
+}
+.hero h1 { font-size:48px; font-weight:800; line-height:1; margin-bottom:12px; letter-spacing:-.5px; }
+.hero-sub { font-size:15px; color:rgba(255,255,255,.8); max-width:500px; line-height:1.6; margin-bottom:24px; }
+.hero-stats { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:26px; }
+.hero-stat { display:flex; align-items:center; gap:9px; }
+.hero-stat-icon { width:36px; height:36px; background:rgba(212,160,23,.2); border:1px solid rgba(212,160,23,.5); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.hero-stat-label { font-size:11px; color:rgba(255,255,255,.6); }
+.hero-stat-val { font-size:13px; font-weight:600; color:#fff; }
+.btn-story { display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--dark); font-weight:700; font-size:13px; padding:11px 22px; border-radius:9px; text-decoration:none; transition:.2s; }
+.btn-story:hover { background:#e8b820; }
+
+/* BREADCRUMB */
+.breadcrumb { background:#fff; padding:12px 56px; font-size:13px; color:#999; border-bottom:1px solid var(--border); }
+.breadcrumb a { color:var(--red); text-decoration:none; font-weight:500; }
+.breadcrumb a:hover { text-decoration:underline; }
+.breadcrumb span { margin:0 7px; color:#ccc; }
+
+/* LAYOUT */
+.layout { display:grid; grid-template-columns:1fr 310px; gap:24px; padding:26px 56px 40px; max-width:1400px; margin:0 auto; }
+
+/* CARD */
+.card { background:#fff; border-radius:14px; padding:24px 28px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
+.card-title { color:var(--red); font-size:15px; font-weight:700; padding-bottom:14px; margin-bottom:18px; border-bottom:2px solid #f2ead8; display:flex; align-items:center; gap:8px; }
+.card p { font-size:13.5px; line-height:1.85; color:#444; margin-bottom:12px; }
+.card p:last-child { margin-bottom:0; }
+
+/* KEY STATS ROW */
+.key-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0; }
+.ks-item { text-align:center; padding:14px 10px; background:#fffdf7; border:1px solid var(--border); border-radius:10px; }
+.ks-icon { font-size:22px; margin-bottom:6px; display:block; }
+.ks-val { font-size:13px; font-weight:700; color:var(--red); }
+.ks-label { font-size:11px; color:#999; margin-top:2px; }
+
+/* PHOTO GRID */
+.photo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0 0; }
+.photo-caption { font-size:12px; font-weight:600; margin-top:6px; color:#222; }
+.photo-sub { font-size:11px; color:#999; }
+
+/* QUOTE BLOCK */
+.quote-block {
+  background:#fffbf0; border-left:4px solid var(--gold);
+  border-radius:0 12px 12px 0; padding:18px 22px; margin:18px 0;
+}
+.quote-block p { font-size:13.5px; font-style:italic; color:#555; line-height:1.8; margin-bottom:8px; }
+.quote-source { font-size:12px; color:#999; font-weight:500; }
+
+/* TIMELINE HORIZONTAL */
+.tl-h { position:relative; padding:10px 0 0; }
+.tl-h-track { position:relative; display:flex; justify-content:space-between; padding:0 10px; }
+.tl-h-track::before { content:''; position:absolute; top:22px; left:20px; right:20px; height:2px; background:linear-gradient(to right, var(--gold),#e8d080); }
+.tl-h-item { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+.tl-h-dot { width:18px; height:18px; border-radius:50%; background:var(--gold); border:3px solid #fff; box-shadow:0 0 0 2px var(--gold); z-index:1; margin-bottom:10px; flex-shrink:0; }
+.tl-h-dot.red { background:var(--red); box-shadow:0 0 0 2px var(--red); }
+.tl-h-year { font-size:10px; font-weight:700; color:var(--gold); margin-bottom:4px; text-align:center; }
+.tl-h-icon { font-size:24px; margin-bottom:6px; }
+.tl-h-name { font-size:12px; font-weight:700; text-align:center; margin-bottom:4px; }
+.tl-h-desc { font-size:10.5px; color:#666; text-align:center; line-height:1.5; max-width:110px; }
+
+/* ACHIEVE GRID */
+.achieve-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:14px; }
+.ac-item { text-align:center; padding:18px 12px; background:#fffdf7; border:1px solid var(--border); border-radius:12px; }
+.ac-icon { font-size:28px; margin-bottom:10px; display:block; }
+.ac-title { font-size:13px; font-weight:700; margin-bottom:6px; }
+.ac-text { font-size:11.5px; color:#666; line-height:1.55; }
+
+/* FUN FACTS (sidebar, 1 cột) */
+.ff-grid { display:grid; grid-template-columns:1fr; gap:14px; margin-top:14px; }
+.ff-item { background:#fffdf7; border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; align-items:flex-start; gap:12px; }
+.ff-icon-wrap { width:44px; height:44px; border-radius:10px; background:#f2ead8; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.ff-text { font-size:12px; color:#555; line-height:1.6; }
+.ff-text strong { color:#222; display:block; margin-bottom:3px; font-size:13px; }
+.ff-highlight { color:var(--red); font-weight:700; }
+
+/* LESSON BOX */
+.lesson-box {
+  background:linear-gradient(135deg, #1e1206, #3a2010);
+  border-radius:14px; padding:22px 24px; margin-top:14px; color:white;
+}
+.lesson-title { font-size:14px; font-weight:700; color:var(--gold); margin-bottom:8px; }
+.lesson-text { font-size:13px; color:rgba(255,255,255,0.8); line-height:1.7; }
+
+/* TRAIT TAGS */
+.trait-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.trait-tag { padding:5px 14px; border-radius:20px; font-size:12px; font-weight:500; }
+.trait-red   { background:#fdeaea; color:#8b0000; }
+.trait-gold  { background:#fdf3d0; color:#8a6800; }
+.trait-green { background:#eaf5e0; color:#2a6e1a; }
+.trait-pink  { background:#fce4ec; color:#880e4f; }
+
+.hl { background:#fff2cc; padding:1px 6px; border-radius:4px; font-weight:600; font-size:13px; color:#7a5a00; }
+
+/* SIDEBAR */
+.sidebar { display:flex; flex-direction:column; gap:18px; }
+.sb { background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
+.sb-title { font-size:13px; font-weight:700; color:var(--red); padding-bottom:10px; margin-bottom:14px; border-bottom:2px solid #f2ead8; display:flex; align-items:center; gap:7px; }
+.sb-title .sb-icon { width:22px; height:22px; border-radius:6px; background:var(--gold); display:inline-flex; align-items:center; justify-content:center; font-size:12px; color:var(--dark); }
+
+/* INFO TABLE */
+.info-tbl { width:100%; border-collapse:collapse; }
+.info-tbl tr { border-bottom:1px solid #f2ead8; }
+.info-tbl tr:last-child { border-bottom:none; }
+.info-tbl td { padding:8px 0; font-size:12.5px; vertical-align:top; }
+.info-tbl td:first-child { color:#999; width:38%; padding-right:8px; display:flex; align-items:center; gap:6px; }
+.info-tbl td:last-child { font-weight:600; color:#222; }
+
+/* RELATED CHARS */
+.char-list { display:flex; flex-direction:column; gap:0; }
+.char-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f2ead8; text-decoration:none; color:inherit; transition:.15s; cursor:pointer; border-radius:8px; }
+.char-row:last-child { border-bottom:none; }
+.char-row:hover { background:#faf5ec; padding-left:6px; }
+.char-avatar { width:42px; height:42px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; border:2px solid var(--border); }
+.char-name { font-size:13px; font-weight:600; }
+.char-role { font-size:11px; color:#999; }
+.char-arrow { margin-left:auto; color:#ccc; font-size:16px; }
+
+/* EXPLORE MORE */
+.explore-list { display:flex; flex-direction:column; }
+.explore-item { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid #f2ead8; text-decoration:none; color:inherit; transition:.15s; }
+.explore-item:last-child { border-bottom:none; }
+.explore-item:hover { color:var(--red); padding-left:4px; }
+.explore-icon { font-size:16px; flex-shrink:0; }
+.explore-name { font-size:13px; font-weight:500; flex:1; }
+.explore-arrow { color:#ccc; font-size:14px; }
+
+/* BTN BACK */
+.btn-back { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--red); color:#fff; font-weight:700; font-size:13px; padding:13px 20px; border-radius:10px; text-decoration:none; transition:.2s; text-align:center; }
+.btn-back:hover { background:#a00000; }
+
+/* FOOTER */
+footer { background:var(--dark); color:#888; padding:22px 56px; font-size:12px; display:flex; justify-content:space-between; align-items:center; }
+footer a { color:#777; text-decoration:none; }
+footer a:hover { color:#aaa; }
+
+/* ===== DI SẢN & DI TÍCH — CARD THU NHỎ VỚI BẢN ĐỒ MINI ===== */
+.heritage-mini-card { cursor:pointer; }
+.heritage-mini-header { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.heritage-mini-icon {
+  width:34px; height:34px; border-radius:9px; background:var(--red); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+}
+.heritage-mini-title { font-size:13px; font-weight:700; color:var(--red); }
+.heritage-mini-sub { font-size:11.5px; color:#888; line-height:1.5; margin-bottom:12px; }
+.heritage-mini-map-wrap {
+  position:relative; border-radius:12px; overflow:hidden; border:1px solid var(--border);
+  transition:.2s;
+}
+.heritage-mini-card:hover .heritage-mini-map-wrap { box-shadow:0 6px 18px rgba(0,0,0,.12); transform:translateY(-2px); }
+#heritage-map-mini { width:100%; height:200px; background:#e8e0cc; }
+.heritage-mini-btn {
+  position:absolute; left:10px; right:10px; bottom:10px; z-index:500;
+  background:var(--red); color:#fff; font-size:11.5px; font-weight:700;
+  padding:9px 12px; border-radius:9px; border:none; display:flex; align-items:center;
+  justify-content:center; gap:6px; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.25);
+  transition:.2s;
+}
+.heritage-mini-btn:hover { background:#a00000; }
+.heritage-mini-map-wrap .leaflet-control-zoom { margin:8px !important; }
+.heritage-mini-map-wrap .leaflet-popup-content-wrapper { border-radius:9px; }
+.heritage-mini-map-wrap .leaflet-popup-content { font-family:'Poppins',sans-serif; font-size:11.5px; margin:8px 10px; }
+.heritage-mini-map-wrap .leaflet-popup-content b { color:var(--red); }
+.heritage-mini-map-wrap .leaflet-popup-tip-container,
+.heritage-mini-map-wrap .leaflet-popup { pointer-events:none; }
+
+.heritage-mini-list { display:flex; flex-direction:column; gap:12px; margin-top:14px; }
+.heritage-mini-list-item {
+  display:flex; gap:10px; align-items:flex-start; cursor:pointer;
+  border-radius:8px; padding:4px 4px; transition:.15s;
+}
+.heritage-mini-list-item:hover { background:#faf5ec; }
+.heritage-mini-list-pin { color:var(--red); font-size:14px; margin-top:1px; flex-shrink:0; }
+.heritage-mini-list-name { font-size:13px; font-weight:700; color:#222; margin-bottom:2px; }
+.heritage-mini-list-desc { font-size:11.5px; color:#999; line-height:1.4; }
+
+/* ===== HERITAGE MODAL ===== */
+.heritage-modal-overlay {
+  position:fixed; inset:0; background:rgba(15,8,3,.72); z-index:1000;
+  display:none; align-items:center; justify-content:center; padding:30px;
+}
+.heritage-modal-overlay.active { display:flex; }
+.heritage-modal {
+  background:var(--bg); border-radius:20px; width:100%; max-width:1140px; max-height:92vh;
+  overflow-y:auto; padding:28px 32px 32px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,.4);
+  animation: heritageModalIn .22s ease;
+}
+@keyframes heritageModalIn { from{opacity:0; transform:scale(.96);} to{opacity:1; transform:scale(1);} }
+.heritage-modal-close {
+  position:absolute; top:20px; right:20px; width:36px; height:36px; border-radius:50%;
+  background:#fff; border:1px solid var(--border); font-size:16px; color:#888; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:.2s; z-index:5;
+}
+.heritage-modal-close:hover { background:var(--red); color:#fff; border-color:var(--red); }
+.heritage-modal-header { display:flex; align-items:center; gap:14px; margin-bottom:22px; padding-right:40px; }
+.heritage-modal-icon {
+  width:44px; height:44px; border-radius:12px; background:var(--red); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+}
+.heritage-modal-title { font-size:22px; font-weight:800; color:var(--red); }
+.heritage-modal-sub { font-size:13px; color:#888; margin-top:3px; }
+.heritage-modal-body { display:grid; grid-template-columns:340px 1fr; gap:20px; }
+
+.heritage-modal-list { display:flex; flex-direction:column; gap:10px; max-height:520px; overflow-y:auto; padding-right:4px; }
+.heritage-item2 { display:flex; gap:12px; align-items:flex-start; cursor:pointer; padding:12px; border-radius:12px; border-left:4px solid transparent; transition:.15s; background:#fff; }
+.heritage-item2:hover { background:#faf5ec; }
+.heritage-item2.active { background:#fdf3d0; border-left-color:var(--red); }
+.heritage-thumb { width:56px; height:56px; border-radius:12px; object-fit:cover; flex-shrink:0; border:1px solid var(--border); background:#eee; }
+.heritage-info { flex:1; min-width:0; }
+.heritage-name { font-size:13px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:5px; margin-bottom:3px; }
+.heritage-name .pin { color:var(--red); font-size:12px; }
+.heritage-desc { font-size:11.5px; color:#888; line-height:1.5; margin-bottom:6px; }
+.heritage-tag {
+  display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:600; color:var(--red);
+  background:#fdeaea; border:1px solid #f5c6c6; padding:3px 10px; border-radius:20px;
+}
+
+.heritage-modal-map-wrap { position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+#heritage-map-modal { width:100%; height:100%; background:#e8e0cc; }
+.map-explore-btn {
+  position:absolute; z-index:500;
+  background:#fff; color:var(--dark); font-size:12px; font-weight:700;
+  padding:9px 16px; border-radius:20px; display:flex; align-items:center; gap:6px;
+  box-shadow:0 3px 10px rgba(0,0,0,.25); border:none; cursor:pointer; white-space:nowrap;
+  top:14px; right:14px;
+}
+.map-explore-btn:hover { background:#f2ead8; }
+.custom-marker { font-size:32px; line-height:1; filter:drop-shadow(0 3px 3px rgba(0,0,0,.35)); cursor:pointer; }
+.leaflet-popup-content-wrapper { border-radius:10px; }
+.leaflet-popup-content { font-family:'Poppins',sans-serif; font-size:12.5px; margin:10px 12px; }
+.leaflet-popup-content b { color:var(--red); }
+
+.heritage-detail-card {
+  display:grid; grid-template-columns:220px 1fr 220px; gap:22px; margin-top:22px;
+  padding:22px; background:#fff; border:1px solid var(--border); border-radius:16px; align-items:center;
+}
+.heritage-detail-img { width:100%; height:160px; object-fit:cover; border-radius:12px; background:#eee; display:block; }
+.heritage-detail-tag {
+  display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:#8a6800;
+  background:#fdf3d0; padding:4px 12px; border-radius:20px; margin-bottom:8px;
+}
+.heritage-detail-title { font-size:19px; font-weight:800; color:var(--dark); margin-bottom:8px; }
+.heritage-detail-desc { font-size:13px; color:#555; line-height:1.7; }
+.heritage-detail-meta { display:flex; flex-direction:column; gap:14px; }
+.hd-meta-item { display:flex; gap:10px; align-items:flex-start; }
+.hd-meta-icon { width:34px; height:34px; border-radius:9px; background:#fff3e0; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.hd-meta-label { font-size:11px; color:#999; }
+.hd-meta-val { font-size:13px; font-weight:700; color:#222; }
+
+@media (max-width: 720px) {
+  .heritage-modal-body { grid-template-columns:1fr; }
+  .heritage-detail-card { grid-template-columns:1fr; text-align:left; }
+}
+
+/* ===== TIỂU SỬ — LAYOUT MỚI ===== */
+.bio-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.bio-icon {
+  width:42px; height:42px; border-radius:12px; background:#f2c879;
+  display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+}
+.bio-header-title { font-size:15px; font-weight:800; color:var(--red); letter-spacing:.5px; }
+.bio-header-line { flex:1; height:2px; background:linear-gradient(to right, #e8dfc8, transparent); margin-left:6px; }
+
+.bio-top { display:grid; grid-template-columns:1.15fr 0.85fr; gap:28px; align-items:stretch; margin-bottom:22px; }
+.bio-name { font-size:30px; font-weight:800; color:var(--dark); margin-bottom:6px; letter-spacing:-.3px; }
+.bio-tagline { font-size:14px; color:var(--red); font-weight:600; margin-bottom:16px; }
+.bio-text p { font-size:13.5px; line-height:1.85; color:#444; margin-bottom:12px; }
+.bio-text p:last-child { margin-bottom:0; }
+.bio-hl { background:#fff2cc; padding:1px 7px; border-radius:5px; font-weight:600; color:#7a5a00; }
+
+.bio-portrait { border-radius:16px; overflow:hidden; position:relative; height:100%; min-height:280px; }
+.bio-portrait img {
+  width:100%; height:100%; min-height:280px; object-fit:cover; display:block; border-radius:16px;
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, #000 18%);
+  mask-image:linear-gradient(to right, transparent 0%, #000 18%);
+}
+.bio-portrait-fallback {
+  width:100%; height:100%; min-height:280px; border-radius:16px; display:none; align-items:center; justify-content:center;
+  font-size:52px; background:linear-gradient(135deg,#7a2020,#c8905a);
+}
+
+.bio-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+.bio-card {
+  position:relative; border-radius:14px; padding:18px 16px 46px; overflow:hidden;
+  border:1px solid var(--border); min-height:210px; display:flex; flex-direction:column;
+}
+.bio-card-art { margin-top:auto; padding-top:8px; height:50px; }
+.bio-card-art svg { width:100%; height:100%; display:block; }
+.bio-card.c-pink { background:#fdf1ef; }
+.bio-card.c-green { background:#eef4e9; }
+.bio-card.c-gold { background:#fdf3e3; }
+.bio-card.c-purple { background:#f0edf6; }
+.bio-card-icon {
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:17px; color:#fff; margin-bottom:10px;
+}
+.c-pink .bio-card-icon { background:#c0546a; }
+.c-green .bio-card-icon { background:#6a9350; }
+.c-gold .bio-card-icon { background:#d1962f; }
+.c-purple .bio-card-icon { background:#7a5aa8; }
+.bio-card-title { font-size:13.5px; font-weight:800; color:#2a2a2a; margin-bottom:2px; }
+.bio-card-sub { font-size:11px; font-weight:600; color:#888; margin-bottom:8px; }
+.bio-card-text { font-size:11.5px; color:#666; line-height:1.6; }
+.bio-card-arrow {
+  position:absolute; right:14px; bottom:14px; width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px;
+}
+.c-pink .bio-card-arrow { background:#c0546a; }
+.c-green .bio-card-arrow { background:#6a9350; }
+.c-gold .bio-card-arrow { background:#d1962f; }
+.c-purple .bio-card-arrow { background:#7a5aa8; }
+
+.bio-quote {
+  background:#fbf3e4; border-radius:14px;
+  padding:28px 40px; position:relative; overflow:hidden;
+}
+.bio-quote::before, .bio-quote::after {
+  content:'⭐'; position:absolute; font-size:34px; opacity:.35; pointer-events:none;
+}
+.bio-quote::before { top:8px; left:14px; transform:rotate(-18deg); }
+.bio-quote::after { bottom:2px; right:18px; transform:rotate(12deg); }
+.bio-quote-text { font-size:16px; font-style:italic; color:#3a2a1a; line-height:1.75; position:relative; z-index:1; }
+.bio-quote-source { display:block; margin-top:12px; font-size:12.5px; font-style:normal; color:#8a7a5a; font-weight:500; text-align:right; }
+
+@media (max-width: 900px) {
+  .bio-top { grid-template-columns:1fr; }
+  .bio-cards { grid-template-columns:repeat(2,1fr); }
+}
+
+/* ===== NAVBAR (giống hệ thống chung) ===== */
+.navbar-sv{
+  position:sticky;top:0;left:0;width:100%;z-index:1000;
+  display:flex;align-items:center;gap:28px;
+  padding: 10px 28px;
+  background:linear-gradient(#2c1b12,#241610);
+  border-top:3px solid #c8a96e;
+  border-bottom:3px solid #c8a96e;
+}
+.corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+.corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+.corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+.corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+.corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+.navbar-sv .logo{
+  display:flex;align-items:center;gap:12px;
+  color:#c8a96e;font-size:28px;font-weight:700;
+  font-family:'Libre Baskerville',serif;letter-spacing:1px;
+  text-decoration:none;flex-shrink:0;
+}
+.navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+.nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+.nav-menu-sv>li{position:relative;}
+.nav-menu-sv .nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  text-decoration:none;color:rgba(255,255,255,.85);
+  font-size:14px;font-weight:700;
+  padding:8px 18px;border-radius:10px;transition:.2s;
+  position:relative;min-width:96px;justify-content:center;
+  border:none;background:none;
+}
+.nav-ic{font-size:18px;line-height:1;}
+.nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+.nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+.nav-menu-sv .nav-item.active::after{
+  content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+  border-bottom:6px solid #f4c542;
+}
+.caret{font-size:10px;opacity:.8;}
+.has-dropdown .dropdown-menu{
+  position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);
+  background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;
+  min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+  opacity:0;visibility:hidden;transition:.25s;z-index:999;
+}
+.has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+.dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+.dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+.dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+.nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+.nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+.nav-search-sv input::placeholder{color:#999;}
+.nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+
+.nav-user-item{position:relative;}
+.nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:500;}
+.nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+.nav-user-dropdown{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border-radius:12px;min-width:220px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:999;}
+.nav-user-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+.nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.nav-dropdown-avatar{width:44px;height:44px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;}
+.nav-dropdown-avatar img{width:100%;height:100%;object-fit:cover;}
+.nav-dropdown-divider{height:1px;background:#eee;margin:8px 0;}
+.nav-dropdown-logout{display:block;color:#8B0000;text-decoration:none;font-weight:600;font-size:13px;}
+
+.nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+.nav-toggle span{width:24px;height:2px;background:#c8a96e;display:block;}
+
+@media(max-width:1000px){
+  .nav-menu-sv{display:none !important;}
+  .nav-menu-sv.open{
+    display:flex !important;flex-direction:column;
+    position:fixed;top:78px;left:0;right:0;margin:0;padding:16px;
+    background:#2c1b12;border-bottom:3px solid #c8a96e;z-index:998;gap:6px;
+  }
+  .nav-menu-sv.open .nav-item{min-width:0;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;}
+  .nav-menu-sv.open .has-dropdown .dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;display:none;box-shadow:none;margin-top:4px;}
+  .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+  .nav-search-sv{display:none !important;}
+  .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+  .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+  .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+  .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .nav-user-email-text{display:none !important;}
+  .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;}
+  .navbar-sv .logo{font-size:20px;gap:8px;}
+  .navbar-sv .logo img{width:38px;height:38px;}
+  .nav-right-sv{gap:8px;flex-shrink:0;}
+  .nav-toggle{display:flex !important;flex-shrink:0;}
+}
+
+/* ===== QUAN HỆ NHÂN VẬT ===== */
+.character-relation { background:#fff; border:1px solid #eee5da; border-radius:18px; padding:25px; margin-bottom:25px; }
+.character-relation-title { font-size:23px; font-weight:800; color:#7d2020; margin-bottom:6px; }
+.character-relation-subtitle { color:#777; font-size:14px; margin-bottom:20px; }
+.relation-content { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:18px; }
+.relation-map { position:relative; height:560px; border:1px solid #eee5da; border-radius:16px; background:#fcfaf6; overflow:hidden; }
+.relation-lines { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+.character { position:absolute; width:130px; text-align:center; transform:translate(-50%,-50%); z-index:5; cursor:pointer; }
+.character-photo { width:68px; height:68px; margin:auto; border-radius:50%; overflow:hidden; background:#fff; border:3px solid #999; box-shadow:0 4px 12px rgba(0,0,0,.12); }
+.character-photo img { width:100%; height:100%; object-fit:cover; }
+.character-name { margin-top:8px; background:#fff; border-radius:8px; padding:7px 5px 2px; font-size:14px; font-weight:800; color:#7d2020; }
+.character-role { background:#fff; padding:1px 5px 7px; border-radius:0 0 8px 8px; font-size:11px; color:#777; }
+.character.selected .character-photo { box-shadow:0 0 0 4px rgba(125,32,32,.12), 0 5px 18px rgba(0,0,0,.18); }
+.relation-label { position:absolute; z-index:3; transform:translate(-50%,-50%); background:#fcfaf6; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; white-space:nowrap; }
+.relation-detail { border:1px solid #eee5da; border-radius:16px; background:#fff; padding:20px; min-height:440px; box-shadow:0 3px 12px rgba(0,0,0,.04); }
+.detail-header { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+.detail-photo { width:78px; height:78px; border-radius:50%; overflow:hidden; border:3px solid #8b0000; flex-shrink:0; }
+.detail-photo img { width:100%; height:100%; object-fit:cover; }
+.detail-name { font-size:21px; font-weight:800; color:#7d2020; }
+.detail-role { color:#777; font-size:13px; margin-top:3px; }
+.detail-tag { display:inline-block; padding:5px 9px; border-radius:6px; background:#f9e5e5; color:#8b0000; font-size:11px; font-weight:700; margin-bottom:15px; }
+.detail-box { border:1px solid #eee5da; border-radius:12px; padding:14px; margin-bottom:12px; }
+.detail-box-title { color:#7d2020; font-weight:800; font-size:13px; margin-bottom:8px; }
+.detail-bio { font-size:13px; line-height:1.6; color:#555; }
+.detail-relation { display:flex; gap:9px; padding:9px 0; border-bottom:1px solid #f1ece5; }
+.detail-relation:last-child { border-bottom:none; }
+.detail-relation-icon { font-size:18px; }
+.detail-relation strong { display:block; font-size:12px; color:#555; }
+.detail-relation span { display:block; font-size:11px; color:#888; margin-top:2px; line-height:1.4; }
+.relation-legend { display:flex; flex-wrap:wrap; gap:18px; padding:14px 5px 0; font-size:12px; color:#666; }
+.legend-item { display:flex; align-items:center; gap:6px; }
+.legend-line { width:25px; border-top:3px solid; }
+@media(max-width: 900px) {
+    .relation-content { grid-template-columns: 1fr; }
+    .relation-map { height: 520px; }
+    .relation-detail { min-height: auto; }
+}
+@media(max-width: 600px) {
+    .relation-map { height: 480px; }
+    .character { width: 110px; }
+    .character-photo { width: 62px; height: 62px; }
+    .character-name { font-size: 10.5px; padding:5px 4px 1px; }
+    .character-role { font-size: 9px; padding:1px 4px 5px; }
+    .relation-label { font-size: 9px; padding:3px 6px; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;background:#8B0000;color:#fff;padding:12px 20px;z-index:10001;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;">Bỏ qua để đến nội dung chính</a>
+
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Sử Việt">
+      SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+      <li class="mobile-search-item" style="display:none;">
+        <div class="nav-search-mobile">
+          <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+          <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+        </div>
+      </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item active" aria-current="page"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm" autocomplete="off">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng" onkeydown="if(event.key==='Enter'||event.key===' '){this.click();}">
+          <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+          <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+          <span style="color:#c8a96e; font-size:10px;" aria-hidden="true">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+          <div class="nav-dropdown-info">
+            <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+            <div>
+              <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+              <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+            </div>
+          </div>
+          <div class="nav-dropdown-divider"></div>
+          <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-badge">⭐ Nhân vật lịch sử</div>
+    <h1>VÕ NGUYÊN GIÁP</h1>
+    <p class="hero-sub">Đại tướng huyền thoại — vị tướng tài ba được cả thế giới thừa nhận,<br>người chỉ huy những chiến thắng làm thay đổi lịch sử thế kỷ XX.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-icon">📅</div>
+        <div>
+          <div class="hero-stat-label">Sinh – Mất</div>
+          <div class="hero-stat-val">1911 – 2013</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-icon">🏆</div>
+        <div>
+          <div class="hero-stat-label">Chiến thắng lừng danh</div>
+          <div class="hero-stat-val">Điện Biên Phủ 1954</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-icon">⭐</div>
+        <div>
+          <div class="hero-stat-label">Quân hàm</div>
+          <div class="hero-stat-val">Đại tướng (1948)</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-icon">📚</div>
+        <div>
+          <div class="hero-stat-label">Xuất thân</div>
+          <div class="hero-stat-val">Nhà giáo – tự học binh pháp</div>
+        </div>
+      </div>
+    </div>
+    <a href="#" class="btn-story">📖 Xem câu chuyện</a>
+  </div>
+</section>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html">Trang chủ</a><span>›</span>
+  <a href="chong-phap.html">Kháng chiến chống Pháp</a><span>›</span>
+  Võ Nguyên Giáp
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+  <div class="main-col">
+
+    <!-- TIỂU SỬ -->
+    <div class="card">
+      <div class="bio-header">
+        <div class="bio-icon">📖</div>
+        <div class="bio-header-title">TIỂU SỬ</div>
+        <div class="bio-header-line"></div>
+      </div>
+
+      <div class="bio-top">
+        <div>
+          <div class="bio-name">Võ Nguyên Giáp</div>
+          <div class="bio-tagline">Đại tướng đầu tiên của Quân đội nhân dân Việt Nam — Người làm nên chiến thắng Điện Biên Phủ chấn động địa cầu</div>
+          <div class="bio-text">
+            <p>Võ Nguyên Giáp (25/8/1911 – 4/10/2013), quê tại làng An Xá, huyện <span class="bio-hl">Lệ Thủy, Quảng Bình</span>. Ông là người học trò và cộng sự xuất sắc của Chủ tịch Hồ Chí Minh. Xuất thân là nhà giáo dạy Sử – Địa, tự học binh pháp, ông trở thành <span class="bio-hl">Đại tướng đầu tiên</span> của Quân đội nhân dân Việt Nam năm 1948 khi chưa từng qua một trường lớp quân sự chính quy nào.</p>
+            <p>Ông được thế giới biết đến nhiều nhất qua chiến thắng <span class="bio-hl">Điện Biên Phủ (1954)</span> — trận đánh chấn động địa cầu, buộc thực dân Pháp phải rút khỏi Đông Dương. Sau đó, ông tiếp tục chỉ huy các chiến dịch lớn trong kháng chiến chống Mỹ, góp phần quan trọng vào Đại thắng Mùa Xuân năm 1975.</p>
+            <p>Được các học viện quân sự phương Tây xếp vào hàng những vị tướng vĩ đại nhất thế kỷ XX, Võ Nguyên Giáp sống đến 102 tuổi, để lại di sản binh pháp và tình cảm sâu đậm trong lòng nhân dân, được gọi thân thương là <span class="bio-hl">"Anh Văn"</span>.</p>
+          </div>
+        </div>
+        <div class="bio-portrait">
+          <img src="images/vonguyengiap.jfif" alt="Võ Nguyên Giáp"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="bio-portrait-fallback">⭐</div>
+        </div>
+      </div>
+
+      <div class="bio-cards">
+        <div class="bio-card c-pink">
+          <div class="bio-card-icon">🎓</div>
+          <div class="bio-card-title">Nhà giáo trở thành tướng</div>
+          <div class="bio-card-sub">Từ bục giảng đến chiến trường</div>
+          <div class="bio-card-text">Từng dạy Sử – Địa tại trường Thăng Long, Hà Nội trước khi bước vào con đường binh nghiệp.</div>
+          <div class="bio-card-art">
+            <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+              <g stroke="#c0546a" stroke-linecap="round" fill="none">
+                <path d="M10 40 L70 18 L130 40 L70 58 Z" opacity="0.18" stroke-width="1.1"/>
+                <path d="M25 46 L25 62" stroke-width="1"/>
+                <path d="M115 46 L115 62" stroke-width="1"/>
+                <path d="M10 40 Q70 50 130 40" stroke-width="1" opacity="0.35"/>
+              </g>
+            </svg>
+          </div>
+          <div class="bio-card-arrow">›</div>
+        </div>
+        <div class="bio-card c-green">
+          <div class="bio-card-icon">⭐</div>
+          <div class="bio-card-title">Đại tướng đầu tiên</div>
+          <div class="bio-card-sub">Phong hàm năm 1948</div>
+          <div class="bio-card-text">Được phong Đại tướng khi mới 37 tuổi — chưa từng qua trường lớp quân sự chính quy nào.</div>
+          <div class="bio-card-art">
+            <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="#6a9350" stroke-width="1.1" opacity="0.5">
+                <path d="M70 10 L79 32 L103 32 L84 46 L91 68 L70 55 L49 68 L56 46 L37 32 L61 32 Z"/>
+              </g>
+            </svg>
+          </div>
+          <div class="bio-card-arrow">›</div>
+        </div>
+        <div class="bio-card c-gold">
+          <div class="bio-card-icon">🏆</div>
+          <div class="bio-card-title">Điện Biên Phủ 1954</div>
+          <div class="bio-card-sub">Chấn động địa cầu</div>
+          <div class="bio-card-text">Chỉ huy chiến dịch đánh bại thực dân Pháp, buộc ký Hiệp định Genève, chấm dứt chiến tranh Đông Dương.</div>
+          <div class="bio-card-art">
+            <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="#d1962f" stroke-width="1.1" opacity="0.5" stroke-linejoin="round" stroke-linecap="round">
+                <path d="M20 60 L20 30 L45 14 L70 30 L70 60 Z"/>
+                <path d="M85 60 L85 40 L110 26 L120 34 L120 60 Z"/>
+                <path d="M10 60 L130 60" opacity="0.4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="bio-card-arrow">›</div>
+        </div>
+        <div class="bio-card c-purple">
+          <div class="bio-card-icon">🏳️</div>
+          <div class="bio-card-title">Đại thắng Mùa Xuân 1975</div>
+          <div class="bio-card-sub">Thống nhất đất nước</div>
+          <div class="bio-card-text">Ra mệnh lệnh "Thần tốc, thần tốc hơn nữa" trong Chiến dịch Hồ Chí Minh lịch sử.</div>
+          <div class="bio-card-art">
+            <svg viewBox="0 0 140 70" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="#7a5aa8" stroke-width="1.1" opacity="0.5" stroke-linecap="round">
+                <path d="M20 12 L20 62"/>
+                <path d="M20 14 L100 14 L84 26 L100 38 L20 38"/>
+                <path d="M10 62 L110 62" opacity="0.4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="bio-card-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="bio-quote">
+        <div class="bio-quote-text">
+          "Thần tốc, thần tốc hơn nữa; táo bạo, táo bạo hơn nữa. Tranh thủ từng giờ từng phút, xốc tới mặt trận, giải phóng miền Nam. Quyết chiến và toàn thắng!"
+          <span class="bio-quote-source">— Mệnh lệnh của Đại tướng Võ Nguyên Giáp, tháng 4/1975</span>
+        </div>
+      </div>
+
+      <div class="trait-tags" style="margin-top:16px;">
+        <span class="trait-tag trait-gold">⭐ Đại tướng đầu tiên VN</span>
+        <span class="trait-tag trait-red">🏹 Người hùng Điện Biên Phủ</span>
+        <span class="trait-tag trait-green">🎓 Nhà giáo – tự học binh pháp</span>
+        <span class="trait-tag trait-pink">🕊️ Đại tướng của nhân dân</span>
+      </div>
+    </div>
+
+    <!-- DÒNG THỜI GIAN -->
+    <div class="card">
+      <div class="card-title">🗓️ DÒNG THỜI GIAN</div>
+      <div class="tl-h">
+        <div class="tl-h-track">
+          <div class="tl-h-item">
+            <div class="tl-h-year">1911</div>
+            <div class="tl-h-dot"></div>
+            <div class="tl-h-icon">👶</div>
+            <div class="tl-h-name">Chào đời</div>
+            <div class="tl-h-desc">Sinh tại Lệ Thủy, Quảng Bình, trong gia đình nhà nho.</div>
+          </div>
+          <div class="tl-h-item">
+            <div class="tl-h-year">1944</div>
+            <div class="tl-h-dot"></div>
+            <div class="tl-h-icon">🔫</div>
+            <div class="tl-h-name">Thành lập ĐVNTTGPQ</div>
+            <div class="tl-h-desc">Chỉ huy Đội Việt Nam Tuyên truyền Giải phóng quân – 34 người.</div>
+          </div>
+          <div class="tl-h-item">
+            <div class="tl-h-year">1948</div>
+            <div class="tl-h-dot"></div>
+            <div class="tl-h-icon">⭐</div>
+            <div class="tl-h-name">Phong Đại tướng</div>
+            <div class="tl-h-desc">Trở thành Đại tướng đầu tiên của QĐNDVN ở tuổi 37.</div>
+          </div>
+          <div class="tl-h-item">
+            <div class="tl-h-year">1954</div>
+            <div class="tl-h-dot"></div>
+            <div class="tl-h-icon">🏆</div>
+            <div class="tl-h-name">Điện Biên Phủ</div>
+            <div class="tl-h-desc">Đập tan cứ điểm kiên cố nhất của Pháp, chấm dứt thực dân Pháp ở Đông Dương.</div>
+          </div>
+          <div class="tl-h-item">
+            <div class="tl-h-year">2013</div>
+            <div class="tl-h-dot red"></div>
+            <div class="tl-h-icon">🕊️</div>
+            <div class="tl-h-name">Từ trần</div>
+            <div class="tl-h-desc">Ra đi ở tuổi 102, để lại huyền thoại bất tử.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THÀNH TỰU NỔI BẬT -->
+    <div class="card">
+      <div class="card-title">🏆 THÀNH TỰU NỔI BẬT</div>
+      <div class="achieve-grid">
+        <div class="ac-item">
+          <span class="ac-icon">🏹</span>
+          <div class="ac-title">Chiến thắng Điện Biên Phủ</div>
+          <div class="ac-text">Trận thắng lớn nhất thế kỷ XX chống thực dân, buộc Pháp ký Hiệp định Genève.</div>
+        </div>
+        <div class="ac-item">
+          <span class="ac-icon">⭐</span>
+          <div class="ac-title">Đại tướng tự học</div>
+          <div class="ac-text">Chưa qua trường quân sự chính quy nhưng đánh bại hai cường quốc Pháp và Mỹ.</div>
+        </div>
+        <div class="ac-item">
+          <span class="ac-icon">📚</span>
+          <div class="ac-title">Tác giả binh pháp</div>
+          <div class="ac-text">Để lại nhiều tác phẩm quân sự được giảng dạy tại các học viện quốc tế.</div>
+        </div>
+        <div class="ac-item">
+          <span class="ac-icon">🕊️</span>
+          <div class="ac-title">Trăm tuổi trọn vẹn</div>
+          <div class="ac-text">Sống đến 102 tuổi, tiếp tục đóng góp tư tưởng cho đất nước đến cuối đời.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= QUAN HỆ NHÂN VẬT ================= -->
+    <div class="character-relation">
+
+      <div class="character-relation-title">🤝 QUAN HỆ NHÂN VẬT</div>
+
+      <div class="character-relation-subtitle">
+        Sơ đồ thể hiện mối quan hệ giữa Võ Nguyên Giáp và các nhân vật tiêu biểu cùng thời.
+        Bấm vào nhân vật để xem thông tin chi tiết.
+      </div>
+
+      <div class="relation-content">
+
+        <div class="relation-map" id="relationMap">
+
+          <svg class="relation-lines" viewBox="0 0 900 600" preserveAspectRatio="none">
+
+            <!-- HỒ CHÍ MINH - VÕ NGUYÊN GIÁP -->
+            <line x1="450" y1="100" x2="450" y2="270" stroke="#d4a017" stroke-width="3" />
+
+            <!-- VÕ NGUYÊN GIÁP - VĂN TIẾN DŨNG -->
+            <line x1="450" y1="320" x2="450" y2="500" stroke="#2a5a8a" stroke-width="3" />
+
+            <!-- TRƯỜNG CHINH - VĂN TIẾN DŨNG -->
+            <line x1="150" y1="500" x2="450" y2="500" stroke="#2a8a2a" stroke-width="3" />
+
+            <!-- VĂN TIẾN DŨNG - DE CASTRIES -->
+            <line x1="450" y1="500" x2="750" y2="500" stroke="#c0392b" stroke-width="3" />
+
+          </svg>
+
+          <div class="relation-label" style="left:68%; top:22%; color:#8a6800;">🎓 Thầy - trò</div>
+          <div class="relation-label" style="left:68%; top:66%; color:#2a5a8a;">⭐ Cấp trên - cấp dưới</div>
+          <div class="relation-label" style="left:33%; top:69%; color:#2a8a2a;">🤝 Đồng chí</div>
+          <div class="relation-label" style="left:67%; top:69%; color:#c0392b;">⚔️ Đối thủ</div>
+
+          <div class="character" id="char-hochiminh" style="left:50%; top:13%;" onclick="showCharacter('hochiminh')">
+            <div class="character-photo" style="border-color:#d4a017;">
+              <img src="images/hcm-avatar.jpg" alt="Hồ Chí Minh">
+            </div>
+            <div class="character-name">HỒ CHÍ MINH</div>
+            <div class="character-role">Lãnh tụ - người thầy</div>
+          </div>
+
+          <div class="character selected" id="char-giap" style="left:50%; top:49%;" onclick="showCharacter('giap')">
+            <div class="character-photo" style="border-color:#8b0000;">
+              <img src="images/vonguyengiap.jpg" alt="Võ Nguyên Giáp">
+            </div>
+            <div class="character-name">VÕ NGUYÊN GIÁP</div>
+            <div class="character-role">Đại tướng</div>
+          </div>
+
+          <div class="character" id="char-truongchinh" style="left:17%; top:84%;" onclick="showCharacter('truongchinh')">
+            <div class="character-photo" style="border-color:#2a8a2a;">
+              <img src="images/truongchinh.jfif" alt="Trường Chinh">
+            </div>
+            <div class="character-name">TRƯỜNG CHINH</div>
+            <div class="character-role">Đồng chí lãnh đạo</div>
+          </div>
+
+          <div class="character" id="char-vantiendung" style="left:50%; top:84%;" onclick="showCharacter('vantiendung')">
+            <div class="character-photo" style="border-color:#2a5a8a;">
+              <img src="images/vantiendung.jfif" alt="Văn Tiến Dũng">
+            </div>
+            <div class="character-name">VĂN TIẾN DŨNG</div>
+            <div class="character-role">Tướng lĩnh thân tín</div>
+          </div>
+
+          <div class="character" id="char-decastries" style="left:83%; top:84%;" onclick="showCharacter('decastries')">
+            <div class="character-photo" style="border-color:#c0392b;">
+              <img src="images/tuongphap.jfif" alt="De Castries">
+            </div>
+            <div class="character-name">DE CASTRIES</div>
+            <div class="character-role">Tướng Pháp - đối thủ</div>
+          </div>
+
+        </div>
+
+        <div class="relation-detail" id="relationDetail"></div>
+
+      </div>
+
+      <div class="relation-legend">
+        <div class="legend-item"><span class="legend-line" style="border-color:#d4a017;"></span>🎓 Thầy - trò</div>
+        <div class="legend-item"><span class="legend-line" style="border-color:#2a5a8a;"></span>⭐ Cấp trên - cấp dưới</div>
+        <div class="legend-item"><span class="legend-line" style="border-color:#2a8a2a;"></span>🤝 Đồng chí</div>
+        <div class="legend-item"><span class="legend-line" style="border-color:#c0392b;"></span>⚔️ Đối thủ</div>
+      </div>
+
+    </div>
+
+    <script>
+    const characters = {
+
+        hochiminh: {
+            name: "HỒ CHÍ MINH",
+            role: "Lãnh tụ - người thầy",
+            image: "images/hcm-avatar.jpg",
+            tag: "Người dẫn đường cách mạng",
+            bio: "Chủ tịch Hồ Chí Minh là người thầy, lãnh tụ tối cao đã tin tưởng giao cho Võ Nguyên Giáp trọng trách thành lập và chỉ huy quân đội cách mạng, dù ông chưa từng qua trường lớp quân sự nào.",
+            relations: [
+                ["🎓", "Thầy - trò với Võ Nguyên Giáp", "Trực tiếp giao nhiệm vụ thành lập Đội Việt Nam Tuyên truyền Giải phóng quân năm 1944."]
+            ]
+        },
+
+        giap: {
+            name: "VÕ NGUYÊN GIÁP",
+            role: "Đại tướng đầu tiên của QĐNDVN",
+            image: "images/vonguyengiap.jpg",
+            tag: "Nhân vật chính",
+            bio: "Võ Nguyên Giáp là học trò xuất sắc của Chủ tịch Hồ Chí Minh, được phong Đại tướng đầu tiên năm 1948. Ông chỉ huy chiến thắng Điện Biên Phủ 1954 và nhiều chiến dịch lớn trong kháng chiến chống Mỹ.",
+            relations: [
+                ["🎓", "Học trò của Hồ Chí Minh", "Được Bác Hồ trực tiếp tin tưởng giao chỉ huy quân đội cách mạng."],
+                ["⭐", "Cấp trên của Văn Tiến Dũng", "Giao nhiệm vụ chỉ huy Chiến dịch Hồ Chí Minh năm 1975."],
+                ["⚔️", "Đối thủ của De Castries", "Đánh bại tập đoàn cứ điểm Điện Biên Phủ năm 1954."]
+            ]
+        },
+
+        truongchinh: {
+            name: "TRƯỜNG CHINH",
+            role: "Đồng chí lãnh đạo",
+            image: "images/truongchinh.jfif",
+            tag: "Nhà lý luận cách mạng",
+            bio: "Trường Chinh là Tổng Bí thư của Đảng, đồng chí thân cận cùng Võ Nguyên Giáp trong Bộ Chính trị, tham gia hoạch định đường lối kháng chiến chống Pháp và chống Mỹ.",
+            relations: [
+                ["🤝", "Đồng chí trong Bộ Chính trị", "Cùng tham gia lãnh đạo, hoạch định chiến lược kháng chiến cùng Võ Nguyên Giáp."]
+            ]
+        },
+
+        vantiendung: {
+            name: "VĂN TIẾN DŨNG",
+            role: "Tướng lĩnh thân tín",
+            image: "images/vantiendung.jfif",
+            tag: "Tư lệnh Chiến dịch Hồ Chí Minh",
+            bio: "Đại tướng Văn Tiến Dũng là học trò, cấp dưới thân tín của Võ Nguyên Giáp, trực tiếp chỉ huy Chiến dịch Hồ Chí Minh năm 1975 theo mệnh lệnh \"thần tốc\" của ông.",
+            relations: [
+                ["⭐", "Cấp dưới - học trò của Võ Nguyên Giáp", "Được tin tưởng giao chỉ huy chiến dịch giải phóng miền Nam năm 1975."]
+            ]
+        },
+
+        decastries: {
+            name: "DE CASTRIES",
+            role: "Tướng Pháp - đối thủ",
+            image: "images/tuongphap.jfif",
+            tag: "Chỉ huy tập đoàn cứ điểm ĐBP",
+            bio: "Đại tá Christian de Castries là chỉ huy quân Pháp tại Điện Biên Phủ, bị bắt sống khi tập đoàn cứ điểm thất thủ trước chiến thuật \"đánh chắc, tiến chắc\" của Võ Nguyên Giáp.",
+            relations: [
+                ["⚔️", "Đối thủ tại Điện Biên Phủ", "Bị đánh bại và bắt sống sau 56 ngày đêm giao tranh ác liệt với quân đội của Võ Nguyên Giáp."]
+            ]
+        }
+
+    };
+
+    function showCharacter(id) {
+        const c = characters[id];
+
+        document.querySelectorAll(".character").forEach(function(item) {
+            item.classList.remove("selected");
+        });
+        document.getElementById("char-" + id).classList.add("selected");
+
+        let relationHTML = "";
+        c.relations.forEach(function(r) {
+            relationHTML += `
+                <div class="detail-relation">
+                    <div class="detail-relation-icon">${r[0]}</div>
+                    <div>
+                        <strong>${r[1]}</strong>
+                        <span>${r[2]}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById("relationDetail").innerHTML = `
+            <div class="detail-header">
+                <div class="detail-photo" style="border-color:${id === 'giap' ? '#8b0000' : '#2a5a8a'};">
+                    <img src="${c.image}" alt="${c.name}">
+                </div>
+                <div>
+                    <div class="detail-name">${c.name}</div>
+                    <div class="detail-role">${c.role}</div>
+                </div>
+            </div>
+            <div class="detail-tag">${c.tag}</div>
+            <div class="detail-box">
+                <div class="detail-box-title">📖 TIỂU SỬ</div>
+                <div class="detail-bio">${c.bio}</div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-box-title">🤝 MỐI QUAN HỆ</div>
+                ${relationHTML}
+            </div>
+        `;
+    }
+
+    showCharacter("giap");
+    </script>
+    <!-- ================= HẾT QUAN HỆ NHÂN VẬT ================= -->
+
+    <!-- Ý NGHĨA LỊCH SỬ -->
+    <div class="card" style="background:#fffbf0;border:1px solid #f0d890;">
+      <div class="card-title">⭐ Ý NGHĨA LỊCH SỬ</div>
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+        <img src="images/ynls_vng.jpg" alt="Ý nghĩa lịch sử"
+          style="flex-shrink:0;width:180px;min-height:160px;border-radius:10px;object-fit:cover;"
+          onerror="this.style.display='none'">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;flex:1;">
+          <li style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="color:#c87d2f;font-size:16px;margin-top:2px;flex-shrink:0;">★</span>
+            <span><strong>Chứng minh sức mạnh chiến tranh nhân dân:</strong> Điện Biên Phủ là minh chứng hùng hồn rằng một dân tộc nhỏ, với vũ khí thô sơ, hoàn toàn có thể đánh bại đội quân nhà nghề được trang bị hiện đại.</span>
+          </li>
+          <li style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="color:#c87d2f;font-size:16px;margin-top:2px;flex-shrink:0;">★</span>
+            <span><strong>Ảnh hưởng toàn cầu:</strong> Chiến thắng 1954 trực tiếp truyền cảm hứng cho các phong trào giải phóng dân tộc ở châu Phi, châu Á và Mỹ Latin.</span>
+          </li>
+          <li style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="color:#c87d2f;font-size:16px;margin-top:2px;flex-shrink:0;">★</span>
+            <span><strong>Tinh thần "kéo pháo bằng tay":</strong> Quyết định táo bạo đổi phương án từ "đánh nhanh thắng nhanh" sang "đánh chắc, tiến chắc" — biểu tượng của tư duy linh hoạt, dám chịu trách nhiệm.</span>
+          </li>
+          <li style="display:flex;gap:10px;align-items:flex-start;">
+            <span style="color:#c87d2f;font-size:16px;margin-top:2px;flex-shrink:0;">★</span>
+            <span><strong>Huyền thoại sống:</strong> Suốt cuộc đời, ông được nhân dân gọi thân thương là "Anh Văn" hay "Đại tướng của nhân dân" — vị tướng lĩnh mà lòng dân dành tình cảm hiếm có.</span>
+          </li>
+        </ul>
+      </div>
+      <div class="quote-block" style="margin-top:16px;">
+        <p>"Thần tốc, thần tốc hơn nữa; táo bạo, táo bạo hơn nữa..."</p>
+        <span class="quote-source">— Mệnh lệnh của Đại tướng Võ Nguyên Giáp, tháng 4/1975</span>
+      </div>
+      <div class="lesson-box">
+        <div class="lesson-title">🏛️ Nhận định tổng hợp</div>
+        <div class="lesson-text">Võ Nguyên Giáp là hình tượng tiêu biểu cho ý chí và trí tuệ Việt Nam trong thế kỷ XX — từ một nhà giáo trở thành vị tướng lừng danh thế giới. Ông không chỉ để lại những chiến công lừng lẫy mà còn là bài học về tinh thần tự học, lòng quả cảm và tư duy chiến lược táo bạo, dám chịu trách nhiệm.</div>
+      </div>
+    </div>
+
+  </div><!-- /.main-col -->
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- THÔNG TIN NHANH -->
+    <div class="sb">
+      <div class="sb-title"><span class="sb-icon">ℹ</span> THÔNG TIN NHANH</div>
+      <table class="info-tbl" style="width:100%;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid #f5f0e8;">
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📖</span>
+            <span style="color:#888;font-size:13px;">Họ và tên</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">Võ Nguyên Giáp</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f0e8;">
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📅</span>
+            <span style="color:#888;font-size:13px;">Sinh – Mất</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">25/8/1911 – 4/10/2013</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f0e8;">
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📍</span>
+            <span style="color:#888;font-size:13px;">Quê hương</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">Lệ Thủy, Quảng Bình</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f0e8;">
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">⭐</span>
+            <span style="color:#888;font-size:13px;">Quân hàm</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">Đại tướng (1948)</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f0e8;">
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🏆</span>
+            <span style="color:#888;font-size:13px;">Chiến thắng lớn</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">Điện Biên Phủ 1954</td>
+        </tr>
+        <tr style="border-bottom:1px solid #f5f0e8;">
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📚</span>
+            <span style="color:#888;font-size:13px;">Xuất thân</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">Nhà giáo – Luật sư</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 8px;display:flex;align-items:center;gap:10px;white-space:nowrap;">
+            <span style="background:#fff3e0;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎂</span>
+            <span style="color:#888;font-size:13px;">Tuổi thọ</span>
+          </td>
+          <td style="padding:10px 8px;font-size:13px;font-weight:600;">102 tuổi</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- SỰ THẬT THÚ VỊ -->
+    <div class="sb">
+      <div class="sb-title">💡 SỰ THẬT THÚ VỊ</div>
+      <div class="ff-grid">
+        <div class="ff-item">
+          <div class="ff-icon-wrap">🎓</div>
+          <div class="ff-text">
+            <strong>Đại tướng xuất thân từ lớp học</strong>
+            Trước khi cầm súng, Võ Nguyên Giáp là <span class="ff-highlight">giáo viên dạy Sử và Địa</span> tại trường Thăng Long, Hà Nội — chưa từng học qua một trường quân sự nào.
+          </div>
+        </div>
+        <div class="ff-item">
+          <div class="ff-icon-wrap">🔄</div>
+          <div class="ff-text">
+            <strong>Quyết định táo bạo nhất</strong>
+            Chỉ 2 ngày trước giờ G, ông ra lệnh <span class="ff-highlight">kéo pháo ra</span>, hoãn trận đánh để chuyển sang chiến thuật mới — quyết định mạo hiểm nhưng đã tạo nên chiến thắng lịch sử.
+          </div>
+        </div>
+        <div class="ff-item">
+          <div class="ff-icon-wrap">🌍</div>
+          <div class="ff-text">
+            <strong>Được thế giới tôn vinh</strong>
+            Tạp chí TIME và nhiều học viện quân sự phương Tây xếp ông vào <span class="ff-highlight">danh sách những vị tướng vĩ đại nhất thế kỷ XX</span>, sánh ngang Napoleon và Wellington.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DI SẢN & DI TÍCH — CARD THU NHỎ VỚI BẢN ĐỒ MINI -->
+    <div class="sb heritage-mini-card" id="heritageTriggerCard" onclick="openHeritageModal()">
+      <div class="heritage-mini-header">
+        <div class="heritage-mini-icon">🗺️</div>
+        <div class="heritage-mini-title">DI SẢN & DI TÍCH</div>
+      </div>
+      <div class="heritage-mini-sub">Khám phá những dấu tích gắn liền với cuộc đời Đại tướng Võ Nguyên Giáp</div>
+      <div class="heritage-mini-map-wrap" onclick="event.stopPropagation()">
+        <div id="heritage-map-mini"></div>
+        <button type="button" class="heritage-mini-btn" onclick="openHeritageModal()">📍 Khám phá các địa danh</button>
+      </div>
+      <div class="heritage-mini-list" id="heritageMiniList"></div>
+    </div>
+
+
+    <!-- KHÁM PHÁ THÊM -->
+    <div class="sb">
+      <div class="sb-title">🔍 KHÁM PHÁ THÊM</div>
+      <div class="explore-list">
+        <div class="explore-item">
+          <span class="explore-icon">🏹</span>
+          <span class="explore-name">Chiến dịch Điện Biên Phủ</span>
+          <span class="explore-arrow">›</span>
+        </div>
+        <div class="explore-item">
+          <span class="explore-icon">📜</span>
+          <span class="explore-name">Hiệp định Genève 1954</span>
+          <span class="explore-arrow">›</span>
+        </div>
+        <div class="explore-item">
+          <span class="explore-icon">🔫</span>
+          <span class="explore-name">Đội Việt Nam Tuyên truyền GP</span>
+          <span class="explore-arrow">›</span>
+        </div>
+        <div class="explore-item">
+          <span class="explore-icon">📚</span>
+          <span class="explore-name">Binh pháp Võ Nguyên Giáp</span>
+          <span class="explore-arrow">›</span>
+        </div>
+        <div class="explore-item">
+          <span class="explore-icon">🏳️</span>
+          <span class="explore-name">Đại thắng Mùa Xuân 1975</span>
+          <span class="explore-arrow">›</span>
+        </div>
+      </div>
+    </div>
+
+    <a href="chong-phap.html" class="btn-back">← Quay lại Kháng chiến chống Pháp</a>
+
+  </div><!-- /.sidebar -->
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Sử Việt. Bảo lưu mọi quyền.</span>
+  <span><a href="#">Chính sách</a> · <a href="#">Điều khoản</a></span>
+</footer>
+
+<!-- ===== MODAL OVERLAY: DI SẢN & DI TÍCH ===== -->
+<div class="heritage-modal-overlay" id="heritageModalOverlay">
+  <div class="heritage-modal">
+    <button class="heritage-modal-close" onclick="closeHeritageModal()">✕</button>
+    <div class="heritage-modal-header">
+      <div class="heritage-modal-icon">🗺️</div>
+      <div>
+        <div class="heritage-modal-title">DI SẢN & DI TÍCH</div>
+        <div class="heritage-modal-sub">Khám phá những địa danh gắn liền với cuộc đời Đại tướng Võ Nguyên Giáp</div>
+      </div>
+    </div>
+
+    <div class="heritage-modal-body">
+      <div class="heritage-modal-list" id="heritageModalList"></div>
+      <div class="heritage-modal-map-wrap">
+        <div id="heritage-map-modal"></div>
+        <button type="button" class="map-explore-btn" onclick="fitAllHeritageMarkers()">📍 Hiển thị tất cả</button>
+      </div>
+    </div>
+
+    <div class="heritage-detail-card" id="heritageDetailCard"></div>
+  </div>
+</div>
+
+<!-- ===== SCRIPT: DỮ LIỆU + LOGIC BẢN ĐỒ & MODAL ===== -->
+<script>
+const heritagePlaces = [
+  {
+    name: "Sở chỉ huy Chiến dịch Điện Biên Phủ",
+    desc: "Nằm tại xã Mường Phăng, thành phố Điện Biên Phủ — nơi Đại tướng Võ Nguyên Giáp cùng Bộ Chỉ huy chiến dịch trực tiếp lãnh đạo trận Điện Biên Phủ năm 1954. Khu di tích còn lưu giữ hầm chỉ huy, lán làm việc của Đại tướng.",
+    tag: "Mường Phăng, Điện Biên",
+    location: "Mường Phăng, Điện Biên Phủ",
+    period: "Chiến dịch Điện Biên Phủ 1954",
+    type: "Di tích quốc gia đặc biệt",
+    lat: 21.4692, lng: 103.1725,
+    img: "images/sochihuy.jfif"
+  },
+  {
+    name: "Đồi A1 – Điện Biên Phủ",
+    desc: "Cứ điểm quan trọng bậc nhất trong tập đoàn cứ điểm của Pháp, nơi diễn ra những trận đánh ác liệt nhất, quyết định thắng lợi của chiến dịch dưới sự chỉ huy của Võ Nguyên Giáp.",
+    tag: "Điện Biên Phủ",
+    location: "TP. Điện Biên Phủ, tỉnh Điện Biên",
+    period: "1954",
+    type: "Di tích chiến trận",
+    lat: 21.3841, lng: 103.0206,
+    img: "images/doia1.jfif"
+  },
+  {
+    name: "Vũng Chùa – Đảo Yến",
+    desc: "Nơi an nghỉ của Đại tướng Võ Nguyên Giáp tại xã Quảng Đông, huyện Quảng Trạch, tỉnh Quảng Bình — nhìn ra biển, gần quê hương Lệ Thủy của ông. Hàng năm hàng vạn người dân về đây viếng thăm.",
+    tag: "Quảng Trạch, Quảng Bình",
+    location: "Quảng Đông, Quảng Trạch, Quảng Bình",
+    period: "Từ năm 2013",
+    type: "Nơi an nghỉ",
+    lat: 17.9500, lng: 106.5167,
+    img: "images/vungchua.jfif"
+  },
+  {
+    name: "Bảo tàng Lịch sử Quân sự Việt Nam",
+    desc: "Nơi trưng bày hàng nghìn hiện vật, hình ảnh về cuộc đời và sự nghiệp cầm quân của Đại tướng Võ Nguyên Giáp, cùng các chiến dịch lớn của Quân đội nhân dân Việt Nam.",
+    tag: "Hà Nội",
+    location: "Nam Từ Liêm, Hà Nội",
+    period: "Đương đại",
+    type: "Bảo tàng",
+    lat: 21.0181, lng: 105.7646,
+    img: "images/baotangvn.jfif"
+  }
+];
+
+let heritageMap = null;
+let heritageMarkers = [];
+let activeHeritageIndex = 0;
+
+let heritageMiniMap = null;
+
+function initHeritageMiniMap() {
+  if (heritageMiniMap) return;
+
+  const first = heritagePlaces[0];
+  heritageMiniMap = L.map('heritage-map-mini', {
+    zoomControl: true,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    touchZoom: false,
+    boxZoom: false,
+    keyboard: false
+  }).setView([first.lat, first.lng], 10);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 18
+  }).addTo(heritageMiniMap);
+
+  const redIcon = L.divIcon({
+    className: "custom-marker",
+    html: "📍",
+    iconSize: [26, 26],
+    iconAnchor: [13, 26],
+    popupAnchor: [0, -24]
+  });
+
+  const marker = L.marker([first.lat, first.lng], { icon: redIcon }).addTo(heritageMiniMap);
+  marker.bindPopup(`<b>${first.name}</b><br>${first.location}`).openPopup();
+  marker.on('click', () => openHeritageModal());
+}
+
+function renderHeritageMiniList() {
+  const listEl = document.getElementById('heritageMiniList');
+  if (!listEl) return;
+  listEl.innerHTML = heritagePlaces.map((place, i) => `
+    <div class="heritage-mini-list-item" onclick="event.stopPropagation(); openHeritageModal(); setTimeout(() => selectHeritageItem(${i}), 150);">
+      <span class="heritage-mini-list-pin">📍</span>
+      <div>
+        <div class="heritage-mini-list-name">${place.name}</div>
+        <div class="heritage-mini-list-desc">${place.type}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderHeritageList() {
+  const listEl = document.getElementById('heritageModalList');
+  listEl.innerHTML = '';
+  heritagePlaces.forEach((place, i) => {
+    const item = document.createElement('div');
+    item.className = 'heritage-item2' + (i === activeHeritageIndex ? ' active' : '');
+    item.innerHTML = `
+      <img class="heritage-thumb" src="${place.img}" alt="${place.name}" onerror="this.style.display='none'">
+      <div class="heritage-info">
+        <div class="heritage-name"><span class="pin">📍</span>${place.name}</div>
+        <div class="heritage-desc">${place.type}</div>
+        <span class="heritage-tag">📍 ${place.tag}</span>
+      </div>
+    `;
+    item.addEventListener('click', () => selectHeritageItem(i));
+    listEl.appendChild(item);
+  });
+}
+
+function renderHeritageDetail(i) {
+  const p = heritagePlaces[i];
+  const detailEl = document.getElementById('heritageDetailCard');
+  detailEl.innerHTML = `
+    <img class="heritage-detail-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none'">
+    <div>
+      <span class="heritage-detail-tag">🏛️ DI TÍCH LỊCH SỬ</span>
+      <div class="heritage-detail-title">${p.name}</div>
+      <div class="heritage-detail-desc">${p.desc}</div>
+    </div>
+    <div class="heritage-detail-meta">
+      <div class="hd-meta-item">
+        <div class="hd-meta-icon">📍</div>
+        <div><div class="hd-meta-label">Địa điểm</div><div class="hd-meta-val">${p.location}</div></div>
+      </div>
+      <div class="hd-meta-item">
+        <div class="hd-meta-icon">📅</div>
+        <div><div class="hd-meta-label">Thời kỳ</div><div class="hd-meta-val">${p.period}</div></div>
+      </div>
+      <div class="hd-meta-item">
+        <div class="hd-meta-icon">🛡️</div>
+        <div><div class="hd-meta-label">Loại hình di tích</div><div class="hd-meta-val">${p.type}</div></div>
+      </div>
+    </div>
+  `;
+}
+
+function selectHeritageItem(i) {
+  activeHeritageIndex = i;
+  renderHeritageList();
+  renderHeritageDetail(i);
+  const p = heritagePlaces[i];
+  if (heritageMap) {
+    heritageMap.flyTo([p.lat, p.lng], 11, { duration: 0.8 });
+    heritageMarkers[i].openPopup();
+  }
+}
+
+function initHeritageMap() {
+  if (heritageMap) return;
+
+  heritageMap = L.map('heritage-map-modal', { scrollWheelZoom: false }).setView([19.7, 105.0], 6);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 18
+  }).addTo(heritageMap);
+
+  const redIcon = L.divIcon({
+    className: "custom-marker",
+    html: "📍",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -30]
+  });
+
+  heritagePlaces.forEach((place, i) => {
+    const marker = L.marker([place.lat, place.lng], { icon: redIcon })
+      .addTo(heritageMap)
+      .bindPopup(`<b>${place.name}</b><br>${place.tag}`);
+    marker.on('click', () => selectHeritageItem(i));
+    heritageMarkers.push(marker);
+  });
+}
+
+function fitAllHeritageMarkers() {
+  if (!heritageMap || heritageMarkers.length === 0) return;
+  const group = L.featureGroup(heritageMarkers);
+  heritageMap.fitBounds(group.getBounds().pad(0.3));
+}
+
+function openHeritageModal() {
+  document.getElementById('heritageModalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  initHeritageMap();
+  renderHeritageList();
+  renderHeritageDetail(activeHeritageIndex);
+
+  setTimeout(() => {
+    heritageMap.invalidateSize();
+    const p = heritagePlaces[activeHeritageIndex];
+    heritageMap.setView([p.lat, p.lng], 10);
+  }, 120);
+}
+
+function closeHeritageModal() {
+  document.getElementById('heritageModalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('heritageModalOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'heritageModalOverlay') closeHeritageModal();
+});
+
+initHeritageMiniMap();
+renderHeritageMiniList();
+
+function toggleMobileNav() {
+    const menu = document.querySelector('.nav-menu-sv');
+    const btn = document.getElementById('navToggle');
+    if (!menu || !btn) return;
+    menu.classList.toggle('open');
+    btn.classList.toggle('open');
+    btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false');
+}
+function toggleUserMenu(trigger) {
+    const dropdown = document.getElementById('navUserDropdown');
+    dropdown.classList.toggle('open');
+    trigger.setAttribute('aria-expanded', dropdown.classList.contains('open') ? 'true' : 'false');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-user-item'))
+        document.getElementById('navUserDropdown')?.classList.remove('open');
+});
+function doLogout() {
+    localStorage.removeItem('suVietUser');
+}
+(function() {
+    const raw = localStorage.getItem('suVietUser');
+    if (!raw) return;
+    const u = JSON.parse(raw);
+    const email   = u.email || '';
+    const name    = u.name  || email.split('@')[0] || 'Người dùng';
+    const initial = name[0]?.toUpperCase() || 'U';
+    document.getElementById('navEmailText').textContent  = email;
+    document.getElementById('navDropEmail').textContent  = email;
+    document.getElementById('navDropName').textContent   = name;
+    function setAvatar(el, avatarUrl, fallbackText) {
+        if (avatarUrl) {
+            el.innerHTML = `<img src="${avatarUrl}" alt="" onerror="this.parentElement.textContent='${fallbackText}'">`;
+        } else {
+            el.textContent = fallbackText;
+        }
+    }
+    setAvatar(document.getElementById('navAvatarCircle'),  u.avatar, initial);
+    setAvatar(document.getElementById('navDropAvatar'),    u.avatar, initial);
+})();
+function doNavSearch() {
+    const q = document.getElementById('navSearchInput')?.value?.trim();
+    if (q) window.location.href = 'index.html?search=' + encodeURIComponent(q);
+}
+function doNavSearchMobile() {
+    const mobileInput = document.getElementById('navSearchInputMobile');
+    const desktopInput = document.getElementById('navSearchInput');
+    if (mobileInput && desktopInput) desktopInput.value = mobileInput.value;
+    doNavSearch();
+}
+document.getElementById('navSearchInputMobile')?.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doNavSearchMobile();
+});
+</script>
+
+</body>
+</html>

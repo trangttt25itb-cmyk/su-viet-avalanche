@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Văn Miếu - Quốc Tử Giám | Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main: #8B0000;
+            --gold: #d4af37;
+            --dark: #1e1206;
+            --bg-light: #f8f4ea;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: #333; }
+
+        .navbar-sv{
+          position:sticky;top:0;left:0;width:100%;z-index:1000;
+          display:flex;align-items:center;gap:28px;
+          padding:14px 28px;
+          background:linear-gradient(#2c1b12,#241610);
+          border-top:3px solid #c8a96e;
+          border-bottom:3px solid #c8a96e;
+        }
+        .corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+        .corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+        .corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+        .corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+        .corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+        .navbar-sv .logo{
+          display:flex;align-items:center;gap:12px;
+          color:#c8a96e;font-size:28px;font-weight:700;
+          font-family:'Libre Baskerville',serif;letter-spacing:1px;
+          text-decoration:none;flex-shrink:0;
+        }
+        .navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+        .nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+        .nav-menu-sv>li{position:relative;}
+        .nav-menu-sv .nav-item{
+          display:flex;flex-direction:column;align-items:center;gap:4px;
+          text-decoration:none;color:rgba(255,255,255,.85);
+          font-size:14px;font-weight:700;
+          padding:8px 18px;border-radius:10px;transition:.2s;
+          position:relative;min-width:96px;justify-content:center;
+          border:none;background:none;
+        }
+        .nav-ic{font-size:18px;line-height:1;}
+        .nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+        .nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+        .nav-menu-sv .nav-item.active::after{
+          content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+          width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+          border-bottom:6px solid #f4c542;
+        }
+        .caret{font-size:10px;opacity:.8;}
+        .has-dropdown .dropdown-menu{
+          position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);
+          background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;
+          min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+          opacity:0;visibility:hidden;transition:.25s;z-index:999;
+        }
+        .has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+        .dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+        .dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+        .dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+        .nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+        .nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+        .nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+        .nav-search-sv input::placeholder{color:#999;}
+        .nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+        .nav-user-item{position:relative;}
+        .nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;}
+        .nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:500;}
+        .nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;}
+        .nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-user-dropdown{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border-radius:12px;min-width:220px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:999;}
+        .nav-user-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+        .nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+        .nav-dropdown-avatar{width:44px;height:44px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;}
+        .nav-dropdown-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-dropdown-divider{height:1px;background:#eee;margin:8px 0;}
+        .nav-dropdown-logout{display:block;color:#8B0000;text-decoration:none;font-weight:600;font-size:13px;}
+        .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+        .nav-toggle span{width:24px;height:2px;background:#c8a96e;display:block;}
+        @media(max-width:1000px){
+          .nav-menu-sv{display:none !important;}
+          .nav-menu-sv.open{
+            display:flex !important;flex-direction:column;
+            position:fixed;top:78px;left:0;right:0;margin:0;padding:16px;
+            background:#2c1b12;border-bottom:3px solid #c8a96e;z-index:998;gap:6px;
+          }
+          .nav-menu-sv.open .nav-item{min-width:0;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;}
+          .nav-menu-sv.open .has-dropdown .dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;display:none;box-shadow:none;margin-top:4px;}
+          .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+          .nav-search-sv{display:none !important;}
+          .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+          .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+          .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+          .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+          .nav-user-email-text{display:none !important;}
+          .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;}
+          .navbar-sv .logo{font-size:20px;gap:8px;}
+          .navbar-sv .logo img{width:38px;height:38px;}
+          .nav-right-sv{gap:8px;flex-shrink:0;}
+          .nav-toggle{display:flex !important;flex-shrink:0;}
+        }
+
+        .hero {
+            background: linear-gradient(to right, rgba(0,0,0,0.82) 45%, rgba(0,0,0,0.25) 100%),
+                        url('images/vanmieu-hero.jpg') center/cover no-repeat;
+            min-height: 420px;
+            display: flex; align-items: center;
+            padding: 60px 80px;
+            color: white;
+            border-bottom: 3px solid var(--gold);
+            background-color: #2a1a0a;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212,175,55,0.25);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 12px; font-weight: 500;
+            padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 14px; letter-spacing: 0.5px;
+        }
+        .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.05; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .hero .subtitle { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.85); margin-bottom: 22px; max-width: 520px; line-height: 1.65; }
+        .hero-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 13px; }
+
+        .breadcrumb { padding: 14px 80px; font-size: 13px; color: #888; border-bottom: 1px solid #e8e2d4; background: white; }
+        .breadcrumb a { color: var(--main); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 6px; }
+
+        .page-layout {
+            display: grid; grid-template-columns: 1fr 300px;
+            gap: 26px; padding: 30px 80px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .content-box {
+            background: white; border-radius: 16px;
+            padding: 28px 32px; margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .content-box h2 {
+            color: var(--main); font-size: 17px; font-weight: 700;
+            margin-bottom: 18px; display: flex; align-items: center; gap: 9px;
+            padding-bottom: 12px; border-bottom: 2px solid #f5ede0;
+        }
+        .content-box p { font-size: 14px; line-height: 1.9; color: #444; margin-bottom: 14px; }
+        .content-box p:last-child { margin-bottom: 0; }
+
+        /* INLINE IMAGES */
+        .inline-img-right {
+            float: right; width: 250px;
+            margin: 0 0 16px 22px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-right img { width: 100%; display: block; }
+        .inline-img-left {
+            float: left; width: 250px;
+            margin: 0 22px 16px 0;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-left img { width: 100%; display: block; }
+        .img-cap { background: #f8f4ea; font-size: 11px; color: #888; text-align: center; padding: 6px 8px; font-style: italic; }
+        .img-banner { width: 100%; border-radius: 12px; overflow: hidden; margin: 18px 0; box-shadow: 0 3px 12px rgba(0,0,0,0.1); border: 2px solid #ede7d3; }
+        .img-banner img { width: 100%; display: block; max-height: 280px; object-fit: cover; }
+        .clearfix::after { content: ''; display: table; clear: both; }
+
+        /* TIMELINE */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+            width: 2px; background: linear-gradient(to bottom, var(--gold), #e8d4a8); border-radius: 2px;
+        }
+        .tl-item { position: relative; margin-bottom: 28px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: 2px solid white; box-shadow: 0 0 0 2px var(--gold); }
+        .tl-dot.red { background: var(--main); box-shadow: 0 0 0 2px var(--main); }
+        .tl-dot.green { background: #2a8a2a; box-shadow: 0 0 0 2px #2a8a2a; }
+        .tl-year { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .tl-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .tl-text { font-size: 13px; color: #555; line-height: 1.7; }
+
+        /* QUOTE */
+        .quote-block {
+            background: #fffbf0; border-left: 4px solid var(--gold);
+            border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0;
+        }
+        .quote-block p { font-size: 14px; font-style: italic; color: #555; line-height: 1.8; margin-bottom: 8px; }
+        .quote-source { font-size: 12px; color: #999; font-weight: 500; }
+
+        /* TAGS */
+        .trait-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .trait-tag { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .trait-red   { background: #fdeaea; color: #8b0000; }
+        .trait-gold  { background: #fdf3d0; color: #8a6800; }
+        .trait-blue  { background: #e6f0fb; color: #1a5fa8; }
+        .trait-green { background: #eaf5e0; color: #2a6e1a; }
+
+        /* ACHIEVE GRID */
+        .achieve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .achieve-card { background: #fffdf7; border: 1px solid #ede7d3; border-radius: 12px; padding: 16px; }
+        .achieve-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .achieve-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #222; }
+        .achieve-text { font-size: 12px; color: #666; line-height: 1.6; }
+
+        /* STAT CARDS */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+        .stat-card { background: linear-gradient(135deg, #fffdf7, #f8f4ea); border: 1px solid #ede7d3; border-radius: 14px; padding: 20px 16px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 800; color: var(--main); display: block; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: #666; line-height: 1.4; }
+
+        /* CAUSE GRID (repurposed for development periods) */
+        .cause-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .cause-card { border-radius: 12px; padding: 18px 16px; }
+        .cause-card.economy { background: #f0f7e6; border: 2px solid #8fb86a; }
+        .cause-card.politics { background: #fdf3d0; border: 2px solid var(--gold); }
+        .cause-card.military  { background: #fdeaea; border: 2px solid #c0392b; }
+        .cause-card.culture  { background: #e6f0fb; border: 2px solid #5a9bd4; }
+        .cause-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+        .cause-card.economy .cause-title { color: #2a6e1a; }
+        .cause-card.politics .cause-title { color: #8a6800; }
+        .cause-card.military .cause-title { color: #8b0000; }
+        .cause-card.culture .cause-title { color: #1a5fa8; }
+        .cause-text { font-size: 12px; color: #555; line-height: 1.6; }
+
+        /* LESSON BOX */
+        .lesson-box { background: linear-gradient(135deg, #1e1206, #3a2010); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .lesson-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+        .lesson-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+        /* LEGACY BOX */
+        .legacy-box { background: linear-gradient(135deg, #0a2010, #1a4a2a); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .legacy-box .lesson-title { color: #7dffaa; }
+
+        .hl { background: #fff2cc; padding: 1px 6px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #7a5a00; }
+
+        /* SIDEBAR */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { background: white; border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .sidebar-box h3 { font-size: 14px; font-weight: 700; color: var(--main); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #f5ede0; display: flex; align-items: center; gap: 7px; }
+
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table tr { border-bottom: 1px solid #f2ede0; }
+        .info-table tr:last-child { border-bottom: none; }
+        .info-table td { padding: 9px 0; font-size: 13px; vertical-align: top; }
+        .info-table td:first-child { color: #888; width: 44%; padding-right: 8px; }
+        .info-table td:last-child { font-weight: 500; color: #222; }
+
+        .legacy-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f2ede0; }
+        .legacy-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .legacy-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .legacy-text { font-size: 12px; color: #555; line-height: 1.6; }
+        .legacy-text strong { color: #222; font-size: 13px; display: block; margin-bottom: 2px; }
+
+        .char-mini { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f2ede0; text-decoration: none; color: inherit; transition: 0.2s; border-radius: 8px; }
+        .char-mini:last-child { border-bottom: none; }
+        .char-mini:hover { background: #f9f4ec; padding-left: 6px; }
+        .char-mini-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #ede7d3; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .char-mini-info { flex: 1; }
+        .char-mini-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .char-mini-desc { font-size: 11px; color: #888; }
+        .char-mini-arrow { font-size: 14px; color: #ccc; }
+
+        .heritage-card {
+            margin-bottom: 16px; border: 1px solid #ede7d3;
+            border-radius: 12px; overflow: hidden; background: #fffdf7; transition: 0.2s;
+        }
+        .heritage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .heritage-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .heritage-content { padding: 12px; }
+        .heritage-content strong { display: block; font-size: 13px; color: #222; margin-bottom: 6px; }
+        .heritage-content p { font-size: 12px; color: #666; line-height: 1.6; margin: 0; }
+
+        .btn-back { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--main); color: white; border-radius: 9px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: var(--gold); color: #1e1206; }
+
+        footer { background: var(--dark); color: #bbb; padding: 28px 80px; margin-top: 10px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .footer-bottom a { color: #888; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Sử Việt">
+      SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+      <li class="mobile-search-item" style="display:none;">
+        <div class="nav-search-mobile">
+          <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+          <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+        </div>
+      </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item active" aria-current="page"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm" autocomplete="off">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng" onkeydown="if(event.key==='Enter'||event.key===' '){this.click();}">
+          <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+          <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+          <span style="color:#c8a96e; font-size:10px;" aria-hidden="true">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+          <div class="nav-dropdown-info">
+            <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+            <div>
+              <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+              <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+            </div>
+          </div>
+          <div class="nav-dropdown-divider"></div>
+          <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+    <div>
+        <div class="hero-badge">🏛️ DI TÍCH LỊCH SỬ - GIÁO DỤC</div>
+        <h1>VĂN MIẾU - QUỐC TỬ GIÁM</h1>
+        <p class="subtitle">Trường đại học đầu tiên của Việt Nam, biểu tượng ngàn năm văn hiến và truyền thống hiếu học của dân tộc, tọa lạc giữa lòng kinh thành Thăng Long từ thời nhà Lý</p>
+        <div class="hero-tags">
+            <span class="hero-tag">📅 1070 – nay</span>
+            <span class="hero-tag">📍 Thăng Long (Hà Nội)</span>
+            <span class="hero-tag">🎓 Trường đại học đầu tiên VN</span>
+            <span class="hero-tag">📜 Di sản tư liệu thế giới</span>
+        </div>
+    </div>
+</section>
+
+<div class="breadcrumb">
+    <a href="index.html">Trang chủ</a>
+    <span>›</span>
+    <a href="ly-tran.html">Lý - Trần</a>
+    <span>›</span>
+    Văn Miếu - Quốc Tử Giám
+</div>
+
+<div class="page-layout">
+    <div class="main-col">
+
+        <!-- GIỚI THIỆU -->
+        <div class="content-box">
+            <h2>📖 GIỚI THIỆU</h2>
+            <div class="clearfix">
+                <div class="inline-img-right">
+                    <img src="images/van-mieu.PNG" alt="Văn Miếu Quốc Tử Giám" onerror="this.parentElement.style.display='none'">
+                    <div class="img-cap">Văn Miếu - Quốc Tử Giám, Hà Nội</div>
+                </div>
+                <p>
+                    <span class="hl">Văn Miếu - Quốc Tử Giám</span> được xây dựng năm <span class="hl">1070</span> dưới thời vua Lý Thánh Tông, ban đầu là nơi thờ Khổng Tử, Chu Công cùng Tứ Phối và các bậc hiền triết Nho giáo, đồng thời là nơi Hoàng thái tử Lý Càn Đức đến học.
+                </p>
+                <p>
+                    Năm <span class="hl">1076</span>, vua Lý Nhân Tông cho lập thêm Quốc Tử Giám ngay bên cạnh Văn Miếu, ban đầu chỉ dành riêng cho con vua và con em quý tộc — đây được xem là <span class="hl">trường đại học đầu tiên của Việt Nam</span>.
+                </p>
+                <p>
+                    Trải qua các triều đại Lý, Trần, Lê, Nguyễn, nơi đây liên tục là trung tâm giáo dục Nho học quan trọng bậc nhất đất nước, tổ chức các kỳ thi tuyển chọn nhân tài và lưu giữ <span class="hl">82 tấm bia tiến sĩ</span> — bằng chứng sống động cho truyền thống hiếu học của dân tộc Việt Nam.
+                </p>
+            </div>
+            <div class="trait-tags">
+                <span class="trait-tag trait-gold">🎓 ĐH đầu tiên Việt Nam</span>
+                <span class="trait-tag trait-green">📜 82 bia tiến sĩ</span>
+                <span class="trait-tag trait-blue">🏛️ Biểu tượng Hà Nội</span>
+                <span class="trait-tag trait-red">⛩️ Gần 1.000 năm lịch sử</span>
+            </div>
+        </div>
+
+        <!-- SỐ LIỆU NỔI BẬT -->
+        <div class="content-box">
+            <h2>📊 DẤU MỐC & CON SỐ</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">1070</span>
+                    <span class="stat-label">Năm vua Lý Thánh Tông cho xây Văn Miếu</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1076</span>
+                    <span class="stat-label">Năm lập Quốc Tử Giám — ĐH đầu tiên của VN</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">82</span>
+                    <span class="stat-label">Tấm bia tiến sĩ còn lưu giữ đến ngày nay</span>
+                </div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">82</span>
+                    <span class="stat-label">Khoa thi được khắc bia, từ 1442 đến 1779</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1805</span>
+                    <span class="stat-label">Năm dựng Khuê Văn Các thời Nguyễn</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">950+</span>
+                    <span class="stat-label">Năm hoạt động liên tục là trung tâm giáo dục</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUÁ TRÌNH HÌNH THÀNH -->
+        <div class="content-box">
+            <h2>⚡ QUÁ TRÌNH HÌNH THÀNH & PHÁT TRIỂN</h2>
+            <p>Văn Miếu - Quốc Tử Giám không hình thành trong một sớm một chiều, mà là kết quả bồi đắp qua nhiều triều đại phong kiến Việt Nam, mỗi giai đoạn để lại một dấu ấn riêng trong lịch sử giáo dục dân tộc.</p>
+
+            <div class="cause-grid">
+                <div class="cause-card politics">
+                    <div class="cause-title">🏛️ Thời Lý — Đặt nền móng</div>
+                    <div class="cause-text">Năm 1070, Lý Thánh Tông dựng Văn Miếu thờ Khổng Tử, Chu Công. Năm 1076, Lý Nhân Tông lập Quốc Tử Giám bên cạnh, ban đầu chỉ dạy con vua và con quan lại.</div>
+                </div>
+                <div class="cause-card economy">
+                    <div class="cause-title">📚 Thời Trần — Mở rộng đối tượng</div>
+                    <div class="cause-text">Năm 1253, Trần Thái Tông đổi tên thành Quốc Học viện, cho phép cả con em thường dân có tài học được theo học, không còn giới hạn trong hoàng tộc.</div>
+                </div>
+                <div class="cause-card military">
+                    <div class="cause-title">🎓 Thời Lê — Đỉnh cao khoa cử</div>
+                    <div class="cause-text">Từ năm 1484, Lê Thánh Tông cho dựng bia ghi danh tiến sĩ. Suốt gần 300 năm, 82 tấm bia lần lượt ra đời, ghi lại tên tuổi hiền tài của đất nước.</div>
+                </div>
+                <div class="cause-card culture">
+                    <div class="cause-title">🏯 Thời Nguyễn — Đổi thay tên gọi</div>
+                    <div class="cause-text">Triều Nguyễn lập Quốc Tử Giám mới ở Huế, khu di tích tại Thăng Long được đổi thành Văn Miếu Hà Nội và dựng thêm Khuê Văn Các năm 1805.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIỄN BIẾN LỊCH SỬ -->
+        <div class="content-box">
+            <h2>📜 DIỄN BIẾN LỊCH SỬ</h2>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1070 SCN</div>
+                    <div class="tl-title">Lý Thánh Tông cho dựng Văn Miếu</div>
+                    <div class="tl-text">Văn Miếu được xây dựng tại phía Nam kinh thành Thăng Long, đắp tượng thờ Khổng Tử, Chu Công cùng Tứ Phối và các bậc hiền triết. Hoàng thái tử Lý Càn Đức (sau này là vua Lý Nhân Tông) là học trò đầu tiên theo học tại đây.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1076</div>
+                    <div class="tl-title">Lập Quốc Tử Giám — trường đại học đầu tiên</div>
+                    <div class="tl-text">Vua Lý Nhân Tông cho xây dựng Quốc Tử Giám ngay kề Văn Miếu, chuyên dạy học cho con vua và con em các gia đình quyền quý — đánh dấu sự ra đời của trường đại học đầu tiên trong lịch sử Việt Nam.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1253</div>
+                    <div class="tl-title">Trần Thái Tông mở rộng, đổi tên Quốc Học viện</div>
+                    <div class="tl-text">Sang thời Trần, trường được đổi tên thành Quốc Học viện và bắt đầu thu nhận cả những sĩ tử tài giỏi xuất thân từ dân thường, không còn bó hẹp trong hoàng tộc và quan lại.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">Thế kỷ XIV</div>
+                    <div class="tl-title">Chu Văn An làm Tư nghiệp Quốc Tử Giám</div>
+                    <div class="tl-text">Nhà giáo Chu Văn An giữ chức Tư nghiệp, trực tiếp giảng dạy tại Quốc Tử Giám, để lại tấm gương đạo cao đức trọng, trở thành biểu tượng tiêu biểu của nền giáo dục Việt Nam.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1442 – 1484</div>
+                    <div class="tl-title">Khoa thi đầu tiên được ghi bia</div>
+                    <div class="tl-text">Khoa thi Nhâm Tuất, niên hiệu Đại Bảo thứ 3 (1442), là khoa thi đầu tiên sau này được khắc bia. Đến năm 1484, vua Lê Thánh Tông chính thức cho dựng bia đề danh tiến sĩ tại Văn Miếu.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1483</div>
+                    <div class="tl-title">Đổi tên thành Thái Học đường</div>
+                    <div class="tl-text">Thời Lê, Quốc Tử viện được đổi tên thành Thái Học đường, tiếp tục là trung tâm đào tạo Nho học lớn nhất của đất nước.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1484 – 1780</div>
+                    <div class="tl-title">Dựng 82 tấm bia tiến sĩ</div>
+                    <div class="tl-text">Trong gần 300 năm, 82 tấm bia đá được lần lượt dựng trên lưng rùa đá hai bên giếng Thiên Quang, ghi danh những người đỗ đạt qua 82 khoa thi, từ năm 1442 đến khoa thi năm 1779.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1805</div>
+                    <div class="tl-title">Nhà Nguyễn dựng Khuê Văn Các</div>
+                    <div class="tl-text">Triều Nguyễn cho xây dựng Khuê Văn Các — lầu vuông hai tầng tám mái, với các cửa tròn tượng trưng cho ánh sao Khuê tỏa sáng tri thức. Cùng thời điểm này, khu vực được đổi tên thành Văn Miếu Hà Nội khi triều đình lập thêm Quốc Tử Giám mới tại Huế.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">2010 – 2012</div>
+                    <div class="tl-title">Được vinh danh ở tầm quốc tế</div>
+                    <div class="tl-text">Ngày 9/3/2010, UNESCO công nhận 82 bia tiến sĩ là Di sản tư liệu thế giới. Năm 2012, hình ảnh Khuê Văn Các chính thức được chọn làm biểu tượng của thủ đô Hà Nội.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- THÀNH TỰU -->
+        <div class="content-box">
+            <h2>🏆 THÀNH TỰU & DẤU ẤN</h2>
+            <p>
+                Gần một nghìn năm tồn tại, Văn Miếu - Quốc Tử Giám để lại những dấu ấn sâu đậm không chỉ về giáo dục mà còn về văn hóa và bản sắc dân tộc.
+            </p>
+            <div class="achieve-grid">
+                <div class="achieve-card">
+                    <span class="achieve-icon">🎓</span>
+                    <div class="achieve-title">Trường đại học đầu tiên của Việt Nam</div>
+                    <div class="achieve-text">Quốc Tử Giám, thành lập năm 1076, là cơ sở đào tạo bậc cao đầu tiên trong lịch sử dân tộc, mở đầu cho truyền thống khoa cử kéo dài hàng trăm năm.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">📜</span>
+                    <div class="achieve-title">82 bia tiến sĩ — Di sản tư liệu thế giới</div>
+                    <div class="achieve-text">Được UNESCO công nhận năm 2010, 82 tấm bia đặt trên lưng rùa đá là tư liệu gốc duy nhất còn lưu giữ liên tục tại chỗ, ghi danh hiền tài qua nhiều triều đại.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">🏯</span>
+                    <div class="achieve-title">Khuê Văn Các — biểu tượng Hà Nội</div>
+                    <div class="achieve-text">Công trình dựng năm 1805 mang kiến trúc độc đáo với các cửa tròn tượng trưng cho sao Khuê, được chọn làm biểu tượng chính thức của thủ đô từ năm 2012.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">👨‍🏫</span>
+                    <div class="achieve-title">Cái nôi của những bậc hiền tài</div>
+                    <div class="achieve-text">Nơi đây gắn liền với tên tuổi nhà giáo Chu Văn An và nhiều thế hệ trí thức, hun đúc nên truyền thống tôn sư trọng đạo của dân tộc Việt Nam.</div>
+                </div>
+            </div>
+
+            <div class="quote-block" style="margin-top:20px;">
+                <p>Các nhà nghiên cứu văn hóa đánh giá Văn Miếu - Quốc Tử Giám là biểu trưng cho tiến trình phát triển văn hóa Việt Nam, minh chứng cho đóng góp của dân tộc vào nền văn minh Nho giáo khu vực.</p>
+                <span class="quote-source">— Tổng hợp từ tư liệu di sản văn hóa Việt Nam</span>
+            </div>
+        </div>
+
+        <!-- Ý NGHĨA -->
+        <div class="content-box">
+            <h2>💡 Ý NGHĨA LỊCH SỬ</h2>
+            <p>
+                Văn Miếu - Quốc Tử Giám không đơn thuần là một di tích cổ, mà là <span class="hl">biểu tượng sống động</span> của tinh thần hiếu học và trọng dụng nhân tài — những giá trị cốt lõi mà cha ông ta gìn giữ suốt chiều dài lịch sử.
+            </p>
+            <p>
+                Việc dựng bia ghi danh tiến sĩ thể hiện tư tưởng <span class="hl">"hiền tài là nguyên khí quốc gia"</span> — coi trọng học vấn và đạo đức hơn xuất thân, mở đường cho người tài từ mọi tầng lớp được cống hiến cho đất nước. Đây cũng là nơi đặt nền móng cho hệ thống giáo dục và khoa cử Việt Nam suốt gần một thiên niên kỷ.
+            </p>
+            <div class="quote-block">
+                <p>Từ một nơi thờ tự và dạy học cho hoàng tộc, Văn Miếu - Quốc Tử Giám dần trở thành trung tâm giáo dục của cả nước, phản ánh quá trình dân chủ hóa dần dần trong việc tiếp cận tri thức của xã hội phong kiến Việt Nam.</p>
+                <span class="quote-source">— Nhận định lịch sử giáo dục Việt Nam</span>
+            </div>
+            <div class="lesson-box">
+                <div class="lesson-title">🌸 Ý nghĩa cái tên "Văn Miếu"</div>
+                <div class="lesson-text">"Văn Miếu" là nơi thờ các bậc thánh hiền của đạo học — Khổng Tử, Chu Công và những người có công khai sáng tri thức. Cái tên gắn liền với chữ "Văn" thể hiện coi trọng học vấn, xem tri thức là nền tảng để dựng nước và giữ nước.</div>
+            </div>
+            <div class="legacy-box" style="margin-top:14px;">
+                <div class="lesson-title">🏅 Di sản giáo dục</div>
+                <div class="lesson-text">Gần một nghìn năm sau ngày khởi dựng, Văn Miếu - Quốc Tử Giám vẫn là nơi các thế hệ học sinh, sinh viên tìm đến trước mỗi kỳ thi quan trọng, xin chữ đầu năm và tưởng nhớ truyền thống hiếu học của dân tộc.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="sidebar-box">
+            <h3>📋 THÔNG TIN CƠ BẢN</h3>
+            <table class="info-table">
+                <tr><td>Tên gọi</td><td>Văn Miếu - Quốc Tử Giám</td></tr>
+                <tr><td>Người sáng lập</td><td>Lý Thánh Tông, Lý Nhân Tông</td></tr>
+                <tr><td>Xây dựng Văn Miếu</td><td>Năm 1070</td></tr>
+                <tr><td>Lập Quốc Tử Giám</td><td>Năm 1076</td></tr>
+                <tr><td>Vị trí</td><td>Phía Nam kinh thành Thăng Long (nay là Hà Nội)</td></tr>
+                <tr><td>Đối tượng thờ</td><td>Khổng Tử, Chu Công, Tứ Phối</td></tr>
+                <tr><td>Loại hình</td><td>Trường học kiêm nơi thờ tự Nho giáo</td></tr>
+                <tr><td>Bia tiến sĩ</td><td>82 bia, dựng 1484–1780</td></tr>
+                <tr><td>Danh hiệu</td><td>Di sản tư liệu thế giới (UNESCO, 2010)</td></tr>
+                <tr><td>Trạng thái</td><td>Di tích Quốc gia đặc biệt, mở cửa tham quan</td></tr>
+            </table>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>🏛️ DI SẢN & DI TÍCH</h3>
+
+            <div class="heritage-card">
+                <img src="images/khue-van-cac.jpg" alt="Khuê Văn Các" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Khuê Văn Các</strong>
+                    <p>Lầu vuông hai tầng, tám mái, dựng năm 1805, với các cửa tròn tượng trưng cho ánh sao Khuê. Được chọn làm biểu tượng chính thức của thủ đô Hà Nội từ năm 2012.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/bia-tien-si.jpg" alt="Nhà bia tiến sĩ" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Nhà bia Tiến sĩ</strong>
+                    <p>Gồm 82 tấm bia đặt trên lưng rùa đá, chia đều hai bên giếng Thiên Quang, ghi danh những người đỗ đạt qua 82 khoa thi từ 1442 đến 1779. UNESCO công nhận Di sản tư liệu thế giới năm 2010.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/gieng-thien-quang.jpg" alt="Giếng Thiên Quang" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Giếng Thiên Quang</strong>
+                    <p>Còn gọi là Ao Văn, có hình vuông tượng trưng cho mặt đất, nằm ngay sau Khuê Văn Các, cạnh khu nhà bia tiến sĩ — nơi được ví như hội tụ tinh túy của tri thức.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/den-khai-thanh.jpg" alt="Đền Khải Thánh" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Đền Khải Thánh (Thái Học đường)</strong>
+                    <p>Khu sau cùng của di tích, thờ phụ mẫu của Khổng Tử. Đây từng là khu vực giảng dạy chính của Quốc Tử Giám, sau này được gọi là Thái Học đường.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sidebar-box">
+            <h3>👑 NHÂN VẬT LIÊN QUAN</h3>
+            <a href="chi-tiet-ly-thanh-tong.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #6a3a1a;">👑</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lý Thánh Tông</div>
+                    <div class="char-mini-desc">Người cho xây dựng Văn Miếu năm 1070</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-ly-nhan-tong.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #2a5a3a;">🎓</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lý Nhân Tông</div>
+                    <div class="char-mini-desc">Người lập Quốc Tử Giám năm 1076</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-chu-van-an.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #5a4a7a;">📚</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Chu Văn An</div>
+                    <div class="char-mini-desc">Tư nghiệp Quốc Tử Giám, người thầy tiêu biểu</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-le-thanh-tong.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #8a2a2a;">📜</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Lê Thánh Tông</div>
+                    <div class="char-mini-desc">Cho dựng bia đề danh tiến sĩ từ 1484</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>✨ SỰ THẬT THÚ VỊ</h3>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🎓</div>
+                <div class="legacy-text">
+                    <strong>Trường đại học đầu tiên</strong>
+                    Quốc Tử Giám (1076) được xem là trường đại học đầu tiên trong lịch sử Việt Nam, ra đời sớm hơn nhiều đại học nổi tiếng ở châu Âu.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🐢</div>
+                <div class="legacy-text">
+                    <strong>Bia đặt trên lưng rùa đá</strong>
+                    82 tấm bia tiến sĩ được đặt trên lưng rùa đá — biểu tượng cho sự trường tồn và bền vững của tri thức, đạo học.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">📜</div>
+                <div class="legacy-text">
+                    <strong>Di sản tư liệu thế giới</strong>
+                    Ngày 9/3/2010, UNESCO công nhận 82 bia tiến sĩ là Di sản tư liệu thế giới nhờ giá trị văn tự gốc được lưu giữ liên tục tại chỗ.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🏯</div>
+                <div class="legacy-text">
+                    <strong>Biểu tượng của Hà Nội</strong>
+                    Khuê Văn Các, dựng năm 1805, được chính thức chọn làm biểu tượng của thủ đô Hà Nội từ năm 2012.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">⏳</div>
+                <div class="legacy-text">
+                    <strong>Gần 1.000 năm lịch sử</strong>
+                    Từ năm 1070 đến nay, Văn Miếu - Quốc Tử Giám vẫn là điểm đến gắn liền với truyền thống hiếu học của người Việt qua nhiều thế hệ.
+                </div>
+            </div>
+        </div>
+
+        <a href="ly-tran.html" class="btn-back">← Quay lại Lý - Trần</a>
+
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        <span>© 2025 Sử Việt. Bảo lưu mọi quyền.</span>
+        <span><a href="#">Chính sách</a> · <a href="#">Điều khoản</a></span>
+    </div>
+</footer>
+<script>
+    (function() {
+        const raw = localStorage.getItem('suVietUser');
+        if (!raw) return;
+        const u = JSON.parse(raw);
+        const email   = u.email || '';
+        const name    = u.name  || email.split('@')[0] || 'Người dùng';
+        const initial = name[0]?.toUpperCase() || 'U';
+        document.getElementById('navEmailText').textContent  = email;
+        document.getElementById('navDropEmail').textContent  = email;
+        document.getElementById('navDropName').textContent   = name;
+        function setAvatar(el, avatarUrl, fallbackText) {
+            if (avatarUrl) {
+                el.innerHTML = `<img src="${avatarUrl}" alt="" onerror="this.parentElement.textContent='${fallbackText}'">`;
+            } else {
+                el.textContent = fallbackText;
+            }
+        }
+        setAvatar(document.getElementById('navAvatarCircle'), u.avatar, initial);
+        setAvatar(document.getElementById('navDropAvatar'),   u.avatar, initial);
+    })();
+
+    function toggleUserMenu(trigger) {
+        const dropdown = document.getElementById('navUserDropdown');
+        dropdown.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', dropdown.classList.contains('open') ? 'true' : 'false');
+    }
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-user-item'))
+            document.getElementById('navUserDropdown')?.classList.remove('open');
+    });
+    function doLogout() {
+        localStorage.removeItem('suVietUser');
+    }
+    function toggleMobileNav() {
+        const menu = document.querySelector('.nav-menu-sv');
+        const btn = document.getElementById('navToggle');
+        if (!menu || !btn) return;
+        menu.classList.toggle('open');
+        btn.classList.toggle('open');
+        btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false');
+    }
+    function doNavSearch() {
+        const q = document.getElementById('navSearchInput')?.value?.trim();
+        if (q) window.location.href = 'index.html?search=' + encodeURIComponent(q);
+    }
+    function doNavSearchMobile() {
+        const mobileInput = document.getElementById('navSearchInputMobile');
+        const desktopInput = document.getElementById('navSearchInput');
+        if (mobileInput && desktopInput) desktopInput.value = mobileInput.value;
+        doNavSearch();
+    }
+    document.getElementById('navSearchInputMobile')?.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') doNavSearchMobile();
+    });
+</script>
+</body>
+</html>

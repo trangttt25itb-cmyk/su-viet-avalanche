@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nguyễn Văn Trỗi — Ngọn Lửa Giữa Lòng Sài Gòn | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Special+Elite&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0e10;
+  --panel:rgba(8,12,14,0.96);
+  --wire:#9aa3ab;
+  --wire-dim:rgba(154,163,171,0.35);
+  --red:#e5383b;
+  --red-dim:rgba(229,56,59,0.28);
+  --amber:#ffb020;
+  --ink:#eef4f5;
+  --ink-dim:rgba(238,244,245,0.72);
+  --ink-faint:rgba(238,244,245,0.38);
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+.headline{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;}
+.typew{font-family:'Special Elite',monospace;}
+
+#circuitCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;}
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(ellipse 70% 55% at 15% 8%,rgba(154,163,171,0.1) 0%,transparent 62%),
+  radial-gradient(ellipse 75% 60% at 92% 90%,rgba(229,56,59,0.12) 0%,transparent 58%),
+  radial-gradient(ellipse 90% 70% at 50% 45%,rgba(30,20,14,0.5) 0%,transparent 75%);}
+
+.corner{position:fixed;width:34px;height:34px;border-color:rgba(154,163,171,.35);border-style:solid;z-index:2;pointer-events:none;}
+.corner.tl{top:16px;left:18px;border-width:2px 0 0 2px;}
+.corner.tr{top:16px;right:18px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:16px;left:18px;border-width:0 0 2px 2px;}
+.corner.br{bottom:16px;right:18px;border-width:0 2px 2px 0;}
+
+.hazard-stripe{position:fixed;top:0;left:0;right:0;height:5px;z-index:300;
+  background:repeating-linear-gradient(45deg,#e5383b 0,#e5383b 14px,#0a0a0a 14px,#0a0a0a 28px);}
+
+nav{position:fixed;top:5px;left:0;right:0;z-index:200;background:rgba(5,7,8,0.97);
+  border-bottom:1px solid rgba(154,163,171,0.25);padding:12px 34px;
+  display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(10px);}
+.nav-left{display:flex;align-items:center;gap:16px;}
+.nav-back{font-size:12px;color:var(--ink-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;font-family:'Special Elite',monospace;}
+.nav-back:hover{color:var(--wire);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--wire);letter-spacing:4px;text-decoration:none;
+  text-shadow:0 0 8px rgba(154,163,171,.5);animation:neonBuzz 5s infinite;}
+@keyframes neonBuzz{
+  0%,92%,100%{opacity:1;}
+  93%{opacity:.4;}
+  94%{opacity:1;}
+  95%{opacity:.3;}
+  96%{opacity:1;}
+}
+.nav-mid{font-size:11px;color:var(--ink-faint);letter-spacing:2px;font-family:'Special Elite',monospace;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-ref-btn{background:transparent;border:1px solid rgba(154,163,171,.35);border-radius:6px;color:var(--wire);width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .25s;}
+.nav-ref-btn:hover{background:rgba(154,163,171,.12);}
+
+.prog-bar{position:fixed;top:57px;left:0;right:0;z-index:199;height:3px;background:rgba(255,255,255,.04);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--amber),var(--wire));transition:width .8s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(154,163,171,.5);}
+
+.will-gauge{position:fixed;top:68px;right:20px;z-index:198;background:var(--panel);
+  border:1px solid rgba(154,163,171,.35);border-radius:14px;padding:10px 16px 8px;
+  text-align:center;backdrop-filter:blur(10px);width:132px;}
+.will-title{font-size:9px;letter-spacing:2px;color:var(--wire);text-transform:uppercase;font-family:'Special Elite',monospace;margin-bottom:4px;}
+.will-dial{width:100px;height:56px;margin:0 auto;position:relative;overflow:hidden;}
+.will-needle{position:absolute;bottom:0;left:50%;width:3px;height:44px;background:var(--red);
+  transform-origin:bottom center;transform:translateX(-50%) rotate(-70deg);transition:transform 1s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 6px var(--red);}
+.will-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--ink);margin-top:2px;}
+
+.streak-note{position:fixed;top:68px;left:20px;z-index:198;background:var(--panel);border:1px solid rgba(229,56,59,.35);
+  border-radius:14px;padding:9px 15px;font-size:12px;color:var(--ink-dim);opacity:0;transform:translateY(-8px);
+  transition:all .4s;font-family:'Special Elite',monospace;}
+.streak-note.show{opacity:1;transform:translateY(0);}
+
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:108px;height:108px;border-radius:50%;background:radial-gradient(circle,rgba(229,56,59,.35),rgba(5,7,8,.9));border:2px solid rgba(154,163,171,.5);display:flex;align-items:center;justify-content:center;font-size:46px;margin-bottom:24px;box-shadow:0 0 55px rgba(229,56,59,.32);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 36px rgba(229,56,59,.22);transform:scale(1);}50%{box-shadow:0 0 80px rgba(154,163,171,.45),0 0 120px rgba(229,56,59,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-family:'Special Elite',monospace;font-size:12px;letter-spacing:4px;color:var(--wire);text-transform:uppercase;margin-bottom:14px;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,7vw,52px);letter-spacing:3px;color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 36px rgba(229,56,59,.45);}
+.cover-sub{font-family:'Special Elite',monospace;font-size:16px;color:var(--amber);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:540px;font-size:15.5px;line-height:1.85;color:var(--ink-dim);margin-bottom:28px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:14px 34px;background:linear-gradient(135deg,var(--red),#8f1417);border:1px solid rgba(154,163,171,.5);border-radius:6px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 36px rgba(229,56,59,.32);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 50px rgba(229,56,59,.45),0 0 36px rgba(154,163,171,.25);}
+.cover-scroll-hint{margin-top:16px;font-family:'Special Elite',monospace;font-size:11px;color:var(--ink-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:780px;margin:0 auto;padding:100px 22px 90px;position:relative;z-index:2;}
+.chstep{max-width:780px;margin:0 auto;padding:0 22px 4px;position:relative;z-index:2;}
+.chstep-row{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;}
+.chstep-row::-webkit-scrollbar{display:none;}
+.chstep-item{flex:1;min-width:78px;text-align:center;position:relative;}
+.chstep-item:not(:last-child)::after{content:'';position:absolute;top:11px;left:50%;width:100%;height:1px;background:rgba(154,163,171,.2);}
+.chstep-dot{width:22px;height:22px;border-radius:3px;background:rgba(238,244,245,.05);border:1px solid rgba(238,244,245,.15);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'Special Elite',monospace;color:var(--ink-faint);
+  margin:0 auto;position:relative;z-index:1;transition:all .4s;}
+.chstep-dot.done{background:var(--wire-dim);border-color:var(--wire);color:var(--wire);}
+.chstep-dot.now{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 0 10px rgba(229,56,59,.7);animation:dotPulse 1.6s infinite;}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 10px rgba(229,56,59,.7);}50%{box-shadow:0 0 18px rgba(229,56,59,1);}}
+.chstep-label{font-size:8px;color:var(--ink-faint);margin-top:4px;font-family:'Special Elite',monospace;line-height:1.3;}
+
+.scene{display:none;}
+.scene.active{display:block;animation:sceneIn .6s cubic-bezier(.4,0,.2,1);}
+@keyframes sceneIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.chap-tag{display:inline-flex;align-items:center;gap:9px;background:rgba(154,163,171,.08);
+  border:1px solid rgba(154,163,171,.3);border-radius:4px;padding:7px 16px;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--wire);margin-bottom:20px;}
+
+.hero-frame{width:100%;height:270px;border-radius:4px;margin-bottom:24px;border:1px solid rgba(154,163,171,.3);
+  box-shadow:0 18px 50px rgba(0,0,0,.75);position:relative;overflow:hidden;
+  background:
+    repeating-linear-gradient(135deg,rgba(154,163,171,.07) 0 2px,transparent 2px 42px),
+    radial-gradient(ellipse 75% 65% at 22% 18%,rgba(229,56,59,.32) 0%,transparent 62%),
+    radial-gradient(ellipse 70% 60% at 85% 88%,rgba(154,163,171,.28) 0%,transparent 58%),
+    linear-gradient(135deg,#292019,#1a1410 50%,#301716);}
+.hero-frame::before{content:'🖼️';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:52px;opacity:.16;filter:grayscale(1) contrast(1.2);z-index:0;pointer-events:none;}
+.hero-frame img{width:100%;height:100%;object-fit:cover;opacity:.72;filter:grayscale(.3) contrast(1.15);position:relative;z-index:1;}
+.hero-cap{position:absolute;bottom:0;left:0;right:0;padding:10px 16px;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent);
+  font-family:'Bebas Neue',sans-serif;letter-spacing:2px;color:var(--wire);font-size:14px;z-index:2;}
+.img-hint{display:none;position:absolute;top:8px;right:10px;font-size:9px;color:rgba(238,244,245,.5);font-family:'Special Elite',monospace;
+  background:rgba(0,0,0,.5);padding:3px 7px;border-radius:4px;z-index:2;}
+
+.info-card{float:right;width:206px;margin:0 0 16px 20px;background:rgba(154,163,171,.05);
+  border-left:2px solid var(--wire);padding:12px 14px;font-size:13px;line-height:1.65;color:var(--ink-dim);}
+.info-tag{font-size:10px;color:var(--wire);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;font-family:'Special Elite',monospace;}
+
+.story{font-size:18px;line-height:1.92;color:rgba(238,244,245,.92);margin-bottom:15px;}
+.story::after{content:'';display:block;clear:both;}
+.story strong{color:#fff;font-weight:600;}
+.story em{color:var(--amber);font-style:italic;}
+
+.record{background:rgba(0,0,0,.4);border:1px solid rgba(238,244,245,.14);border-left:3px solid var(--amber);
+  border-radius:0 6px 6px 0;padding:15px 19px;margin:19px 0;font-family:'Special Elite',monospace;
+  font-size:15px;line-height:1.8;color:var(--ink);position:relative;}
+.record-who{font-size:10.5px;color:var(--amber);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
+.record::before{content:'» ';color:var(--amber);}
+
+.fact{background:rgba(229,56,59,.07);border:1px solid rgba(229,56,59,.26);border-radius:6px;
+  padding:16px 19px;margin:19px 0;font-size:14px;line-height:1.8;color:var(--ink-dim);}
+.fact-tag{font-size:10.5px;color:#ff8a8d;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;font-family:'Special Elite',monospace;}
+
+.outcome{border-radius:6px;padding:19px;margin:19px 0;font-size:16px;line-height:1.8;}
+.outcome.true{background:rgba(154,163,171,.08);border:1px solid rgba(154,163,171,.32);}
+.outcome.false{background:rgba(229,56,59,.09);border:1px solid rgba(229,56,59,.3);}
+.outcome-icon{font-size:28px;display:block;margin-bottom:8px;}
+
+.quiz{background:rgba(238,244,245,.03);border:1px solid rgba(238,244,245,.14);border-radius:6px;padding:17px 20px;margin:20px 0;}
+.quiz-tag{font-size:10.5px;color:var(--wire);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Special Elite',monospace;}
+.quiz-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:12px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:7px;}
+.quiz-opt{background:rgba(238,244,245,.03);border:1px solid rgba(238,244,245,.14);border-radius:4px;padding:10px 14px;
+  font-family:'Crimson Pro',serif;font-size:15px;color:var(--ink);cursor:pointer;text-align:left;transition:all .2s;}
+.quiz-opt:hover:not(:disabled){background:rgba(154,163,171,.08);border-color:rgba(154,163,171,.35);transform:translateX(3px);}
+.quiz-opt.right{background:rgba(20,90,60,.3)!important;border-color:#3fd67a!important;color:#a8f0c6!important;}
+.quiz-opt.wrong{background:rgba(120,10,10,.3)!important;border-color:#e5383b!important;color:#ffb3b5!important;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-fb{margin-top:9px;font-size:14px;line-height:1.7;display:none;padding:9px 13px;border-radius:4px;}
+.quiz-fb.show{display:block;}
+.quiz-fb.ok{background:rgba(20,90,60,.18);color:#a8f0c6;}
+.quiz-fb.no{background:rgba(120,10,10,.18);color:#ffb3b5;}
+.quiz-fb.wait{background:rgba(255,176,32,.14);color:#ffd68a;}
+
+/* ===== ĐIỀN TỪ — dạng câu hỏi vượt ải mới ===== */
+.fill-row{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+.fill-input{flex:1;min-width:160px;background:rgba(238,244,245,.04);border:1px solid rgba(238,244,245,.22);
+  border-radius:4px;padding:10px 14px;color:var(--ink);font-family:'Crimson Pro',serif;font-size:15px;}
+.fill-input:focus{outline:none;border-color:var(--wire);box-shadow:0 0 0 2px rgba(154,163,171,.2);}
+.fill-input:disabled{opacity:.5;}
+.fill-btn{background:rgba(154,163,171,.14);border:1px solid rgba(154,163,171,.45);border-radius:4px;
+  padding:10px 22px;color:var(--wire);font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;
+  font-size:14px;cursor:pointer;transition:all .2s;}
+.fill-btn:hover:not(:disabled){background:rgba(154,163,171,.25);}
+.fill-btn:disabled{opacity:.35;cursor:default;}
+.fill-btn.ghost{background:transparent;color:var(--ink-faint);border-color:rgba(238,244,245,.2);}
+
+/* ===== SẮP XẾP — dạng câu hỏi vượt ải mới ===== */
+.arrange-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.arrange-chip{background:rgba(238,244,245,.04);border:1px solid rgba(238,244,245,.2);border-radius:20px;
+  padding:9px 17px;font-size:13.5px;color:var(--ink);cursor:pointer;transition:all .2s;font-family:'Crimson Pro',serif;}
+.arrange-chip:hover:not(:disabled){border-color:var(--wire);background:rgba(154,163,171,.1);transform:translateY(-2px);}
+.arrange-chip:disabled{opacity:.28;cursor:default;transform:none;}
+.arrange-answer{min-height:48px;margin-top:14px;padding:10px 14px;background:rgba(0,0,0,.32);
+  border:1px dashed rgba(154,163,171,.35);border-radius:6px;display:flex;flex-direction:column;gap:6px;}
+.arrange-slot{font-size:14px;color:var(--wire);font-family:'Special Elite',monospace;}
+.arrange-placeholder{font-size:12.5px;color:var(--ink-faint);font-style:italic;}
+.arrange-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+
+.choices-label{font-size:10.5px;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin:30px 0 12px;
+  display:flex;align-items:center;gap:9px;font-family:'Special Elite',monospace;}
+.choices-label::before,.choices-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(229,56,59,.35),transparent);}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.opt-btn{background:rgba(238,244,245,.025);border:1px solid rgba(238,244,245,.12);border-radius:4px;padding:16px 19px;
+  color:var(--ink);font-family:'Crimson Pro',serif;font-size:16px;text-align:left;cursor:pointer;transition:all .25s;
+  display:flex;align-items:flex-start;gap:12px;line-height:1.5;}
+.opt-btn:hover{background:rgba(154,163,171,.08);border-color:rgba(154,163,171,.4);transform:translateX(6px);box-shadow:-4px 0 0 var(--wire);}
+.opt-mark{width:26px;height:26px;min-width:26px;border-radius:3px;background:rgba(154,163,171,.1);border:1px solid rgba(154,163,171,.35);
+  color:var(--wire);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;flex-shrink:0;margin-top:2px;}
+.opt-sub{font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:4px;}
+
+/* ===== NGÒI NỔ ĐẾM NGƯỢC — kỹ xảo chương đặt mìn ===== */
+.fuse-box{background:rgba(229,56,59,.06);border:2px solid rgba(229,56,59,.4);border-radius:8px;padding:24px 26px;margin:24px 0;text-align:center;}
+.fuse-icon{font-size:40px;display:block;margin-bottom:10px;}
+.fuse-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--red);margin-bottom:8px;}
+.fuse-desc{font-size:14.5px;color:var(--ink-dim);line-height:1.7;margin-bottom:18px;}
+.fuse-track{width:100%;height:14px;background:rgba(255,255,255,.06);border-radius:7px;overflow:hidden;margin-bottom:8px;position:relative;}
+.fuse-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--amber));width:100%;transition:width .1s linear;}
+.fuse-time{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--amber);letter-spacing:2px;margin-bottom:16px;text-shadow:0 0 12px rgba(255,176,32,.5);}
+.fuse-btn{display:inline-flex;align-items:center;gap:9px;padding:14px 32px;background:rgba(229,56,59,.22);
+  border:1px solid rgba(229,56,59,.55);border-radius:6px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;
+  letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.fuse-btn:hover{background:rgba(229,56,59,.4);transform:scale(1.03);}
+.fuse-btn:disabled{opacity:.35;cursor:default;}
+.fuse-result{margin-top:16px;font-size:15px;line-height:1.75;padding:12px 16px;border-radius:6px;display:none;}
+.fuse-result.show{display:block;}
+.fuse-result.ok{background:rgba(154,163,171,.1);border:1px solid rgba(154,163,171,.35);color:#dfe4e7;}
+.fuse-result.no{background:rgba(229,56,59,.12);border:1px solid rgba(229,56,59,.4);color:#ffb3b5;}
+
+/* ===== ĐÈN THẨM VẤN — kỹ xảo chương ngục tối ===== */
+.interro-lamp{position:relative;text-align:center;padding:26px 20px;margin:24px 0;border-radius:6px;
+  background:radial-gradient(ellipse at 50% -10%,rgba(255,220,150,.14),rgba(0,0,0,.5) 65%);
+  border:1px solid rgba(255,220,150,.2);animation:lampFlicker 4s infinite;}
+@keyframes lampFlicker{
+  0%,89%,100%{background:radial-gradient(ellipse at 50% -10%,rgba(255,220,150,.14),rgba(0,0,0,.5) 65%);}
+  90%{background:radial-gradient(ellipse at 50% -10%,rgba(255,220,150,.04),rgba(0,0,0,.6) 65%);}
+  91%{background:radial-gradient(ellipse at 50% -10%,rgba(255,220,150,.2),rgba(0,0,0,.4) 65%);}
+  92%{background:radial-gradient(ellipse at 50% -10%,rgba(255,220,150,.02),rgba(0,0,0,.7) 65%);}
+}
+.interro-icon{font-size:30px;}
+.interro-q{font-family:'Special Elite',monospace;font-size:16.5px;color:#ffe9c2;line-height:1.75;margin-top:10px;}
+
+/* ===== CON DẤU TUYÊN ÁN — kỹ xảo MỚI cho chương phiên tòa ===== */
+.verdict-box{background:rgba(0,0,0,.45);border:1px solid rgba(238,244,245,.16);border-radius:8px;
+  padding:28px 24px;margin:24px 0;text-align:center;position:relative;overflow:hidden;}
+.verdict-desc{font-size:14.5px;color:var(--ink-dim);line-height:1.75;margin-bottom:20px;font-family:'Special Elite',monospace;}
+.verdict-btn{display:inline-flex;align-items:center;gap:9px;padding:13px 28px;background:rgba(229,56,59,.2);
+  border:1px solid rgba(229,56,59,.5);border-radius:6px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:16px;
+  letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.verdict-btn:hover{background:rgba(229,56,59,.38);}
+.verdict-btn:disabled{opacity:.35;cursor:default;}
+.verdict-stamp{margin:22px auto 0;width:180px;height:90px;position:relative;display:flex;align-items:center;justify-content:center;}
+.verdict-stamp-text{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:4px;color:var(--red);
+  border:5px double var(--red);padding:8px 18px;transform:rotate(-9deg) scale(2.4);opacity:0;
+  text-shadow:0 0 10px rgba(229,56,59,.6);transition:none;}
+.verdict-stamp-text.stamped{animation:stampDown .35s cubic-bezier(.2,1.3,.4,1) forwards;}
+@keyframes stampDown{
+  0%{opacity:0;transform:rotate(-9deg) scale(2.4);}
+  60%{opacity:1;transform:rotate(-9deg) scale(0.85);}
+  80%{transform:rotate(-9deg) scale(1.08);}
+  100%{opacity:1;transform:rotate(-9deg) scale(1);}
+}
+
+/* ===== BẢNG TIN ĐIỆN TOÀN CẦU — kỹ xảo MỚI cho chương làn sóng quốc tế ===== */
+.ticker-wrap{background:rgba(0,0,0,.55);border:1px solid rgba(154,163,171,.3);border-radius:6px;
+  margin:22px 0;overflow:hidden;position:relative;}
+.ticker-head{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(154,163,171,.1);
+  border-bottom:1px solid rgba(154,163,171,.25);font-family:'Special Elite',monospace;font-size:10.5px;
+  letter-spacing:1.5px;color:var(--wire);text-transform:uppercase;}
+.ticker-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:tickerBlink 1s infinite;}
+@keyframes tickerBlink{50%{opacity:.2;}}
+.ticker-track{white-space:nowrap;overflow:hidden;padding:12px 0;}
+.ticker-inner{display:inline-block;padding-left:100%;animation:tickerScroll 26s linear infinite;
+  font-family:'Special Elite',monospace;font-size:14px;color:var(--ink-dim);}
+.ticker-inner span{margin-right:50px;color:var(--amber);}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+
+/* ===== LỜI CUỐI — kỹ xảo chương pháp trường ===== */
+.final-words{text-align:center;padding:30px 24px;background:rgba(0,0,0,.5);border:1px solid rgba(255,176,32,.35);
+  border-radius:8px;margin:26px 0;min-height:130px;}
+.final-words-text{font-family:'Special Elite',monospace;font-size:19px;color:var(--amber);line-height:1.85;
+  text-shadow:0 0 10px rgba(255,176,32,.3);}
+.final-cursor{display:inline-block;width:9px;height:20px;background:var(--amber);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:middle;}
+@keyframes blink{50%{opacity:0;}}
+
+.flame-wrap{text-align:center;padding:34px 0;}
+.flame-icon{width:118px;height:118px;border-radius:50%;background:radial-gradient(circle,rgba(255,176,32,.25),rgba(229,56,59,.1) 70%,transparent);
+  border:2px solid rgba(255,176,32,.4);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:48px;
+  animation:flameGlow 2.4s ease-in-out infinite;}
+@keyframes flameGlow{0%,100%{box-shadow:0 0 30px rgba(255,176,32,.25);}50%{box-shadow:0 0 55px rgba(255,176,32,.5),0 0 26px rgba(229,56,59,.3);}}
+.flame-h{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--amber);margin-bottom:10px;}
+.flame-desc{font-size:16px;color:var(--ink-dim);line-height:1.9;max-width:520px;margin:0 auto 26px;}
+.legacy-list{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:20px 0 30px;}
+.legacy-chip{background:rgba(154,163,171,.08);border:1px solid rgba(154,163,171,.3);border-radius:20px;padding:7px 16px;
+  font-size:12.5px;color:var(--wire);font-family:'Special Elite',monospace;}
+.testament{background:rgba(255,176,32,.05);border:1px solid rgba(255,176,32,.22);border-radius:8px;padding:22px 24px;
+  text-align:left;margin:0 0 30px;font-size:15.5px;line-height:1.88;color:var(--ink-dim);}
+.testament-tag{font-size:10.5px;color:var(--amber);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Special Elite',monospace;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+.btn-ghost{padding:12px 26px;background:transparent;border:1px solid rgba(154,163,171,.4);border-radius:6px;
+  color:var(--wire);font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:15px;cursor:pointer;transition:.3s;}
+.btn-ghost:hover{background:rgba(154,163,171,.12);}
+.btn-solid{padding:12px 26px;background:rgba(229,56,59,.35);border:1px solid rgba(229,56,59,.5);border-radius:6px;
+  color:#fff;font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:15px;cursor:pointer;transition:.3s;
+  text-decoration:none;display:inline-flex;align-items:center;gap:7px;}
+.btn-solid:hover{background:rgba(229,56,59,.55);}
+
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+.ref-page{background:rgba(154,163,171,.04);border:1px solid rgba(154,163,171,.2);border-radius:8px;padding:22px 24px;margin:14px 0 0;text-align:left;}
+.ref-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--wire);margin-bottom:6px;}
+.ref-sub{font-size:12px;color:var(--ink-faint);margin-bottom:15px;line-height:1.6;font-family:'Special Elite',monospace;}
+.ref-group{margin-bottom:13px;}
+.ref-group-h{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#ff8a8d;margin-bottom:7px;font-family:'Special Elite',monospace;}
+.ref-item{font-size:13px;line-height:1.8;color:var(--ink-dim);padding-left:15px;position:relative;margin-bottom:4px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--wire);}
+.ref-overlay{position:fixed;inset:0;background:rgba(5,7,8,.82);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ref-overlay.show{display:flex;}
+.ref-overlay .ref-page{max-width:640px;width:100%;max-height:85vh;overflow-y:auto;margin:0;animation:refPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes refPopIn{from{opacity:0;transform:scale(.92) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.ref-modal-close{background:rgba(154,163,171,.14);border:1px solid rgba(154,163,171,.34);color:var(--wire);padding:6px 16px;border-radius:6px;font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:14px;cursor:pointer;float:right;margin-top:-4px;}
+
+@media(max-width:640px){
+  nav{padding:10px 14px;}
+  .wrap{padding:96px 13px 70px;}
+  .chstep{padding:0 13px;}
+  .info-card{float:none;width:100%;margin:0 0 14px;}
+  .hero-frame{height:190px;}
+  .story{font-size:16.5px;}
+  .will-gauge{width:104px;padding:8px 10px 6px;}
+  .will-dial{width:80px;height:44px;}
+  .chstep-item{min-width:64px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="circuitCanvas"></canvas>
+<div class="ambient"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="hazard-stripe"></div>
+
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#8f1417);
+  border:2px solid var(--wire);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(229,56,59,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),#8f1417);
+  border:2px solid var(--wire);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(229,56,59,.45);
+  align-items:center;justify-content:center;">➡</button>
+
+<div class="streak-note" id="streakNote">⚡ Chuỗi lựa chọn đúng: <b id="streakCount">0</b></div>
+<div class="will-gauge">
+  <div class="will-title">Ý CHÍ</div>
+  <div class="will-dial"><div class="will-needle" id="willNeedle"></div></div>
+  <div class="will-num" id="willNum">0%</div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=20">← QUAY LẠI</a>
+    <a class="nav-logo" href="cau-chuyen.html">SỬ VIỆT</a>
+  </div>
+  <div class="nav-mid">NGUYỄN VĂN TRỖI — 11 CHƯƠNG</div>
+  <div class="nav-right"><button class="nav-ref-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button></div>
+</nav>
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+
+<div class="chstep"><div class="chstep-row" id="chstepWrap"></div></div>
+
+<div class="wrap">
+
+<!-- ══════ COVER MỞ ĐẦU ══════ -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">🔥</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">NGUYỄN VĂN TRỖI<br>Ngọn Lửa Giữa Lòng Sài Gòn</div>
+    <div class="cover-sub">Năm 1940 — 1964 · 24 Tuổi Đời, Bất Khuất Đến Phút Cuối</div>
+    <div class="cover-desc">Ngươi là Nguyễn Văn Trỗi — chàng thợ điện nghèo lớn lên từ làng quê Quảng Nam, dạt vào Sài Gòn mưu sinh rồi âm thầm gia nhập Biệt động Sài Gòn. Từ những đêm trinh sát cầu Công Lý, đến giờ phút bị bắt, bị tra tấn, bị tuyên án tử hình, và câu nói cuối cùng vang lên giữa pháp trường — một hành trình 11 chương về lòng dũng cảm của một người bình thường dám hành động.</div>
+    <div class="cover-chips">
+      <span class="legacy-chip">🔥 11 chương</span>
+      <span class="legacy-chip">🎓 Kiến thức + Kỹ xảo tương tác</span>
+      <span class="legacy-chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('sPre',0)">🔥 Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ══════ CHƯƠNG 1 — TUỔI THƠ QUẢNG NAM (MỚI) ══════ -->
+<div class="scene" id="sPre">
+  <div class="chap-tag">🌾 CHƯƠNG 1 · 1940–1955 — TUỔI THƠ QUẢNG NAM</div>
+  <div class="hero-frame"><img src="images/lang-thanh-quyt-dien-ban-quang-nam.jpg" onerror="this.style.display='none'" alt="Làng Thanh Quýt Quảng Nam"><div class="img-hint">gợi ý ảnh: "làng quê Quảng Nam xưa, ruộng lúa, nhà tranh"</div><div class="hero-cap">LÀNG THANH QUÝT, ĐIỆN BÀN, QUẢNG NAM</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📋 Lý lịch</span>
+      Sinh ngày 1/2/1940 tại làng Thanh Quýt, xã Điện Thắng, huyện Điện Bàn, tỉnh Quảng Nam — một vùng quê nghèo miền Trung, nơi chiến tranh và thiên tai thay nhau đè nặng lên đời sống người dân. Là con thứ ba trong một gia đình nông dân nghèo đông con.
+    </div>
+    Ngươi là <strong>Nguyễn Văn Trỗi</strong>, cậu bé sinh ra trong một gia đình nông dân nghèo giữa những năm tháng đất nước còn chìm trong ách đô hộ thực dân Pháp, rồi tiếp nối bằng chiến tranh loạn lạc. Quảng Nam thời ấy vừa hứng chịu nạn đói, vừa là nơi giao tranh liên miên giữa quân Pháp và lực lượng kháng chiến — trẻ con trong làng lớn lên giữa tiếng súng xa xa và những buổi chạy loạn. Tuổi thơ không có nhiều thời gian cho việc học hành đủ đầy — chỉ có ruộng đồng, đói kém, và những câu chuyện người lớn kể về những người làng đã ra đi vì chiến sự, có người không bao giờ trở về.
+  </div>
+
+  <div class="story reveal">
+    Mẹ mất sớm khi Trỗi còn nhỏ, gia cảnh vốn đã khó khăn càng thêm chật vật. Giữa những năm 1950, như hàng vạn gia đình miền Trung khác chịu cảnh ruộng đất bị tàn phá bởi chiến tranh, gia đình Trỗi rời quê hương, xuôi vào Sài Gòn tìm kế sinh nhai. Với một thiếu niên vừa lớn, đó là lần đầu tiên rời khỏi lũy tre làng để bước vào một đô thị xa lạ, ồn ào, và đầy bất trắc — nơi không ruộng, không nhà, chỉ có đôi bàn tay để mưu sinh.
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Người cha — trước ngày cả nhà rời làng</div>
+    "Con à, vào trong đó rồi ráng học lấy cái nghề mà sống. Đất này giờ khó sống lắm, chỉ mong con lớn lên đàng hoàng, không phải khổ như cha."
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Bối cảnh Quảng Nam thập niên 1940–1950</span>
+    Điện Bàn là một trong những vùng đất chịu ảnh hưởng nặng nề nhất của chiến tranh Đông Dương ở miền Trung — nơi phong trào kháng chiến chống Pháp bám rễ sâu trong lòng dân.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">🌾 Gia đình nông dân nghèo, đông con</span>
+      <span class="legacy-chip">💔 Mồ côi mẹ từ nhỏ</span>
+      <span class="legacy-chip">🚶 Di cư vào Sài Gòn giữa thập niên 1950</span>
+    </div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Nguyễn Văn Trỗi sinh năm nào, tại làng nào ở Quảng Nam?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q0')">A. Năm 1938, làng Cẩm Phô</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q0')">B. Năm 1940, làng Thanh Quýt, Điện Bàn</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q0')">C. Năm 1942, làng Duy Xuyên</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q0')">D. Năm 1945, làng Hội An</button>
+    </div>
+    <div class="quiz-fb" id="q0-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ RỜI LÀNG VÀO SÀI GÒN, BẠN NGHĨ GÌ...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('sPreA',1)"><span class="opt-mark">A</span><div>Mang theo cả nỗi nhớ quê lẫn quyết tâm không để cảnh nghèo khó lặp lại đời mình.<div class="opt-sub">⭐ Phản ánh đúng động lực đã theo Trỗi suốt cuộc đời sau này.</div></div></button>
+    <button class="opt-btn" onclick="go('sPreB',0)"><span class="opt-mark">B</span><div>Chỉ xem đây là một chuyến đi tạm, mong sớm quay về quê cũ.<div class="opt-sub">Không phản ánh đúng tinh thần đã gắn bó Trỗi với Sài Gòn suốt phần đời còn lại.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="sPreA">
+  <div class="chap-tag">✔ HÀNH TRANG VÀO ĐỜI</div>
+  <div class="outcome true"><span class="outcome-icon">🌾</span><strong>Đúng tinh thần lịch sử.</strong> Cái nghèo tuổi thơ ở Quảng Nam không làm Trỗi chùn bước — ngược lại, nó hun đúc trong ông một ý chí vươn lên và một sự đồng cảm sâu sắc với những người cùng cảnh ngộ, điều sau này dẫn ông đến với con đường đấu tranh vì công bằng xã hội.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s1',0)"><span class="opt-mark">→</span><div>Chương 2 — Chàng Thợ Điện Sài Gòn</div></button></div>
+</div>
+<div class="scene" id="sPreB">
+  <div class="chap-tag">✘ KHÔNG PHẢI TINH THẦN CỦA ÔNG</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Trỗi không sống với tâm thế "ở tạm". Ông nhanh chóng gắn bó với Sài Gòn, học nghề, lập gia đình, và xem đô thị này là nơi mình sẽ tranh đấu cho một tương lai công bằng hơn.</div>
+  <div class="choices-label">⚡ SỬA LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('sPreA',0)"><span class="opt-mark">→</span><div>"Tôi sẽ không để cảnh nghèo khó này lặp lại — tôi phải xây dựng cuộc sống mới ở đây."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 2 — THỢ ĐIỆN SÀI GÒN ══════ -->
+<div class="scene" id="s1">
+  <div class="chap-tag">⚡ CHƯƠNG 2 · 1955–1963 — CHÀNG THỢ ĐIỆN SÀI GÒN</div>
+  <div class="hero-frame"><img src="images/nguyen-van-troi-tho-dien-saigon.jpg" onerror="this.style.display='none'" alt="Nguyễn Văn Trỗi thợ điện"><div class="img-hint">gợi ý ảnh: "thợ điện Sài Gòn thập niên 1960, đường phố cũ"</div><div class="hero-cap">NHÀ MÁY ĐIỆN CHỢ QUÁN, SÀI GÒN</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📋 Bối cảnh</span>
+      Vào Sài Gòn, Trỗi vừa làm thuê vừa học nghề thợ điện — công việc đòi hỏi sự tỉ mỉ, chính xác, và cả lòng gan dạ khi phải leo trèo trên cao, xử lý dây dẫn nguy hiểm. Ông làm việc gắn bó với nhà máy điện Chợ Quán, khu vực Quận 5 Sài Gòn.
+    </div>
+    Ngươi là một thanh niên tay nghề thợ điện vững vàng, sống giữa Sài Gòn những năm đầu 1960 — đô thị phồn hoa bậc nhất Đông Nam Á thời bấy giờ, nhưng cũng là nơi phân hóa giàu nghèo sâu sắc dưới chính quyền Ngô Đình Diệm rồi các chính phủ quân sự kế tiếp. Ngày ngày leo cột điện, nối dây, sửa chập cháy — nhưng mắt ngươi không chỉ nhìn thấy dây dẫn. Ngươi nhìn thấy sự bất công diễn ra ngay trên những con phố mình đi qua mỗi ngày: cảnh bắt bớ, cảnh những gia đình lao động nghèo bị chèn ép.
+  </div>
+
+  <div class="story reveal">
+    Xung quanh ngươi, chiến tranh mỗi ngày một lan rộng. Sau cuộc đảo chính lật đổ Ngô Đình Diệm cuối năm 1963, Sài Gòn liên tục thay đổi chính quyền, tình hình an ninh càng thêm bất ổn. Bạn thợ cùng xưởng thì thầm về những cuộc càn quét, về những người hàng xóm biến mất sau một đêm bị bắt vì tình nghi "có liên hệ" với lực lượng kháng chiến. Trong lòng chàng thợ điện trẻ, một câu hỏi cứ lớn dần: <em>đứng nhìn, hay làm điều gì đó?</em>
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Một người bạn thợ cùng xưởng — thì thầm giữa giờ nghỉ</div>
+    "Trỗi, mày cứ chăm chỉ đi làm, lo cho yên thân là được rồi. Thời buổi này, dính vào chuyện chính trị là mất mạng như chơi đó."
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Sài Gòn đầu thập niên 1960</span>
+    Giữa lúc chính trường Sài Gòn liên tục biến động sau các cuộc đảo chính quân sự, phong trào đấu tranh đô thị của công nhân, sinh viên, tiểu thương âm thầm lan rộng — và những người thợ như Trỗi chính là lực lượng nòng cốt giúp mạng lưới bí mật hoạt động ngay giữa lòng thành phố.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">⚡ Thợ điện tại Nhà máy điện Chợ Quán</span>
+      <span class="legacy-chip">🏙️ Sài Gòn thời hậu đảo chính 1963</span>
+      <span class="legacy-chip">👁️ Chứng kiến bất công đô thị mỗi ngày</span>
+    </div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Nghề nghiệp mà Nguyễn Văn Trỗi theo học và làm việc tại Sài Gòn là gì?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q1')">A. Thợ mộc</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q1')">B. Thợ điện, làm việc tại nhà máy điện Chợ Quán</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q1')">C. Công nhân dệt</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q1')">D. Thợ may</button>
+    </div>
+    <div class="quiz-fb" id="q1-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ TRƯỚC LỜI KHUYÊN "LO YÊN THÂN"...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('s1A',1)"><span class="opt-mark">A</span><div>"Yên thân mà nhìn người khác chịu bất công mãi sao? Tôi không thể cứ cúi đầu như vậy."<div class="opt-sub">⭐ Đúng tinh thần đã đưa Nguyễn Văn Trỗi đến với cách mạng.</div></div></button>
+    <button class="opt-btn" onclick="go('s1B',0)"><span class="opt-mark">B</span><div>Nghe theo, chỉ tập trung vào công việc thợ điện, tránh xa mọi chuyện.<div class="opt-sub">An toàn — nhưng không phải con đường ông đã chọn.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s1A">
+  <div class="chap-tag">✔ NGỌN LỬA BẮT ĐẦU NHEN LÊN</div>
+  <div class="outcome true"><span class="outcome-icon">⚡</span><strong>Đúng với con người Nguyễn Văn Trỗi.</strong> Ông không phải người sinh ra đã là chiến sĩ — ông là một thợ điện bình thường, nhưng không chấp nhận nhắm mắt làm ngơ trước bất công quanh mình. Chính điều đó đưa ông đến với những người anh em cách mạng bí mật giữa lòng đô thị.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s2',0)"><span class="opt-mark">→</span><div>Chương 3 — Giác Ngộ, Gia Nhập Biệt Động Thành</div></button></div>
+</div>
+<div class="scene" id="s1B">
+  <div class="chap-tag">✘ CON ĐƯỜNG KHÁC</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Đây không phải lựa chọn của Nguyễn Văn Trỗi ngoài đời thực. Ông không cam chịu đứng ngoài — chính sự phẫn nộ trước bất công đã đưa ông đến với con đường đấu tranh.</div>
+  <div class="choices-label">⚡ THỬ LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s1A',0)"><span class="opt-mark">→</span><div>"Không — tôi không thể cứ nhắm mắt mãi được."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 3 — GIÁC NGỘ ══════ -->
+<div class="scene" id="s2">
+  <div class="chap-tag">🔧 CHƯƠNG 3 · 1963 — GIÁC NGỘ, GIA NHẬP BIỆT ĐỘNG THÀNH</div>
+  <div class="hero-frame"><img src="images/bi-mat-hop-saigon-1963.jpg" onerror="this.style.display='none'" alt="Cuộc họp bí mật"><div class="img-hint">gợi ý ảnh: "con hẻm Sài Gòn xưa, ánh đèn dầu, ban đêm"</div><div class="hero-cap">MỘT CON HẺM SÂU, SÀI GÒN VỀ ĐÊM</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📋 Bối cảnh</span>
+      Giữa lòng đô thị Sài Gòn dưới chế độ Việt Nam Cộng Hòa, một mạng lưới bí mật — <strong>Biệt động Sài Gòn</strong> (còn gọi là Lực lượng Biệt động Quân khu Sài Gòn — Gia Định) — hoạt động ngầm, len lỏi trong đủ mọi tầng lớp: công nhân, tiểu thương, trí thức, và cả những người thợ điện như Nguyễn Văn Trỗi. Đây là lực lượng vũ trang đặc biệt, chuyên tổ chức những trận đánh táo bạo ngay giữa nội đô mà không cần căn cứ quân sự lớn.
+    </div>
+    Qua một người quen giới thiệu, Trỗi được kết nạp vào một tổ công tác vũ trang bí mật năm 1963. Không có nghi lễ long trọng — chỉ một cuộc gặp ngắn trong con hẻm tối, vài câu hỏi dò xét về lý lịch, thái độ, rồi một lời thề lặng lẽ giữ bí mật tuyệt đối. Cùng năm đó, ông kết hôn với <strong>Phan Thị Quyên</strong>, một cô gái Sài Gòn — người vợ trẻ chưa hề biết trọn vẹn về công việc bí mật của chồng, chỉ biết chồng mình là một thợ điện cần mẫn.
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Người cán bộ giao liên — hỏi Trỗi trong đêm tối</div>
+    "Anh có biết, một khi đã bước chân vào con đường này, không có đường lùi. Bị bắt là có thể mất mạng. Anh còn trẻ, mới cưới vợ — anh có chắc không?"
+  </div>
+
+  <div class="story reveal">
+    Trỗi im lặng một lúc, nhìn ánh đèn dầu chập chờn trong hẻm tối — thứ ánh sáng ông vẫn sửa chữa, nối lại mỗi ngày cho hàng ngàn ngôi nhà khác, nhưng chưa bao giờ đủ sáng để soi rõ một xã hội công bằng.
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Biệt động Sài Gòn là ai?</span>
+    Khác với bộ đội chủ lực hoạt động ở chiến khu, Biệt động Sài Gòn là mạng lưới cực kỳ bí mật, mỗi chiến sĩ chỉ biết một vài đầu mối liên lạc trực tiếp của mình — để nếu một mắt xích bị lộ, cả hệ thống vẫn được bảo toàn. Đây là kiểu tổ chức đòi hỏi lòng trung thành và bản lĩnh giữ bí mật tuyệt đối, điều mà Nguyễn Văn Trỗi đã chứng minh trọn vẹn trong suốt quãng đời hoạt động ngắn ngủi của mình.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">🤝 Kết nạp vào tổ vũ trang bí mật, 1963</span>
+      <span class="legacy-chip">💍 Kết hôn cùng năm với Phan Thị Quyên</span>
+      <span class="legacy-chip">🔒 Chỉ liên lạc qua vài đầu mối duy nhất</span>
+    </div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Vợ của Nguyễn Văn Trỗi — người sau này trở thành biểu tượng của lòng chung thủy và can đảm — tên là gì?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q2')">A. Nguyễn Thị Định</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q2')">B. Phan Thị Quyên</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q2')">C. Võ Thị Sáu</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q2')">D. Trần Thị Lý</button>
+    </div>
+    <div class="quiz-fb" id="q2-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ TRƯỚC CÂU HỎI "ANH CÓ CHẮC KHÔNG"...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('s2A',1)"><span class="opt-mark">A</span><div>"Tôi chắc. Nếu ai cũng sợ mất mạng mà lùi bước, thì sẽ chẳng bao giờ có ngày độc lập thật sự."<div class="opt-sub">⭐ Tinh thần dứt khoát, không nao núng — đúng con người thật.</div></div></button>
+    <button class="opt-btn" onclick="go('s2B',0)"><span class="opt-mark">B</span><div>Xin thêm thời gian suy nghĩ, bàn với vợ trước đã.<div class="opt-sub">Thận trọng, nhưng không phải cách ông quyết định.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s2A">
+  <div class="chap-tag">✔ LỜI THỀ TRONG BÓNG TỐI</div>
+  <div class="outcome true"><span class="outcome-icon">🕯️</span><strong>Đúng tinh thần lịch sử.</strong> Nguyễn Văn Trỗi gia nhập lực lượng vũ trang bí mật của Biệt động Sài Gòn năm 1963 — chấp nhận rủi ro cao nhất mà không hề chần chừ.</div>
+  <div class="fact reveal"><span class="fact-tag">📖 Điều ít ai biết</span>Phan Thị Quyên khi đó không hề biết chồng mình đang tham gia một mạng lưới vũ trang bí mật — cho đến ngày ông bị bắt, bà mới hiểu trọn vẹn những gì chồng mình đã âm thầm gánh vác.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s2x',0)"><span class="opt-mark">→</span><div>Chương 4 — Trinh Sát Cầu Công Lý</div></button></div>
+</div>
+<div class="scene" id="s2B">
+  <div class="chap-tag">✘ KHÔNG PHẢI CÁCH ÔNG QUYẾT ĐỊNH</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Trỗi không trì hoãn quyết định quan trọng nhất đời mình. Sự dứt khoát ấy — chấp nhận hiểm nguy ngay khi đã hiểu rõ cái giá phải trả — mới là điều làm nên con người ông.</div>
+  <div class="choices-label">⚡ QUYẾT ĐỊNH LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s2A',0)"><span class="opt-mark">→</span><div>"Không cần chờ đợi — tôi đã quyết rồi."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 4 — TRINH SÁT (MỚI) ══════ -->
+<div class="scene" id="s2x">
+  <div class="chap-tag">🔍 CHƯƠNG 4 · ĐẦU 1964 — TRINH SÁT CẦU CÔNG LÝ</div>
+  <div class="hero-frame"><img src="images/trinh-sat-cau-cong-ly.jpg" onerror="this.style.display='none'" alt="Trinh sát cầu"><div class="img-hint">gợi ý ảnh: "cầu sông Sài Gòn xưa, người thợ điện làm việc, ban ngày"</div><div class="hero-cap">CẦU CÔNG LÝ, NHIỀU LẦN QUAN SÁT TRƯỚC KHI HÀNH ĐỘNG</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📚 Bước chuẩn bị ít ai biết</span>
+      Trước khi khối thuốc nổ được đặt xuống, tổ công tác đã dành nhiều tuần lễ âm thầm quan sát: giờ giấc tuần tra, tốc độ dòng xe qua cầu, độ chắc chắn của khung cầu, vị trí các trụ đỡ thuận lợi để giấu khối thuốc nổ — mọi chi tiết đều phải được nắm lòng bàn tay.
+    </div>
+    Cầu Công Lý bắc qua kênh Nhiêu Lộc, nằm trên tuyến đường huyết mạch nối trung tâm Sài Gòn với khu vực Bộ Tổng Tham mưu — nơi các phái đoàn quân sự Mỹ thường xuyên di chuyển qua lại. Nhờ nghề thợ điện, Trỗi có thể xuất hiện dưới gầm cầu, trên cột điện gần đó mà không ai nghi ngờ — chỉ là một người thợ đang làm nhiệm vụ thường ngày, tay cầm kìm, vai vác cuộn dây. Nhưng đằng sau vẻ ngoài bình thản ấy, mỗi ánh mắt đều đang ghi nhớ từng chi tiết nhỏ nhất: giờ đổi ca của lính gác, khe hở giữa các dầm cầu, lối rút lui an toàn nhất.
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Một đồng đội — lo lắng sau lần trinh sát thứ ba</div>
+    "Anh Trỗi, mình đã tới đây ba lần trong hai tuần rồi. Có người để ý thì sao? Lỡ bị theo dõi..."
+  </div>
+
+  <div class="story reveal">
+    Trỗi lắc đầu, tay vẫn giả vờ kiểm tra một mối nối dây điện. Với ông, sự thận trọng không có nghĩa là rút lui — mà là chuẩn bị kỹ đến mức không còn chỗ cho sai sót. Ông tin rằng một kế hoạch táo bạo chỉ có thể thành công khi được dựng nên từ hàng chục chi tiết nhỏ nhặt, tầm thường nhất.
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Vị trí chiến lược của cầu Công Lý</span>
+    Cầu Công Lý (nay là cầu Nguyễn Văn Trỗi, TP.HCM) nằm trên trục đường nối trung tâm Sài Gòn với sân bay Tân Sơn Nhất và khu vực cơ quan đầu não quân sự — một điểm giao thông trọng yếu mà các đoàn xe cấp cao thường xuyên phải đi qua.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">🗺️ Cầu nối trung tâm Sài Gòn — Tân Sơn Nhất</span>
+      <span class="legacy-chip">🕵️ Nhiều tuần trinh sát bí mật</span>
+      <span class="legacy-chip">🧰 Vỏ bọc: người thợ điện sửa dây</span>
+    </div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Vì sao Nguyễn Văn Trỗi lại là người phù hợp nhất trong tổ để tiếp cận khu vực cầu Công Lý nhiều lần mà không bị nghi ngờ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q2x')">A. Vì ông có quan hệ quen biết với cảnh sát khu vực</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q2x')">B. Vì nghề thợ điện cho phép ông tiếp cận cột điện, gầm cầu một cách hợp lý, không gây chú ý</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q2x')">C. Vì ông từng là quân nhân, quen thuộc địa hình quân sự</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q2x')">D. Vì ông sống ngay cạnh khu vực cầu từ nhỏ</button>
+    </div>
+    <div class="quiz-fb" id="q2x-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ TRƯỚC LO LẮNG "CÓ NÊN TRINH SÁT THÊM LẦN NỮA"...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('s2xA',1)"><span class="opt-mark">A</span><div>"Chuẩn bị càng kỹ, rủi ro khi hành động càng thấp. Ta cần chắc chắn tuyệt đối trước khi ra tay."<div class="opt-sub">⭐ Đúng cách tiếp cận thận trọng, tỉ mỉ đã giúp kế hoạch được chuẩn bị kỹ lưỡng.</div></div></button>
+    <button class="opt-btn" onclick="go('s2xB',0)"><span class="opt-mark">B</span><div>"Không cần thêm nữa, càng trì hoãn càng dễ lộ — hành động ngay khi có thể."<div class="opt-sub">Không phản ánh đúng sự tỉ mỉ trong khâu chuẩn bị của tổ công tác.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s2xA">
+  <div class="chap-tag">✔ CHUẨN BỊ TỈ MỈ ĐẾN TỪNG CHI TIẾT</div>
+  <div class="outcome true"><span class="outcome-icon">🔍</span><strong>Đúng với thực tế lịch sử.</strong> Kế hoạch đánh cầu Công Lý được chuẩn bị công phu qua nhiều tuần quan sát — không phải một hành động bộc phát, mà là kết quả của sự tính toán tỉ mỉ đến từng chi tiết nhỏ.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s3',0)"><span class="opt-mark">→</span><div>Chương 5 — Nhận Nhiệm Vụ Đặc Biệt</div></button></div>
+</div>
+<div class="scene" id="s2xB">
+  <div class="chap-tag">✘ KHÔNG PHẢI CÁCH TỔ CÔNG TÁC HÀNH ĐỘNG</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Đây không phải điều đã xảy ra. Kế hoạch được chuẩn bị hết sức kỹ lưỡng, không hề vội vàng — chính sự thận trọng đó giúp giữ bí mật trong suốt giai đoạn chuẩn bị.</div>
+  <div class="choices-label">⚡ SỬA LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s2xA',0)"><span class="opt-mark">→</span><div>"Không — càng kỹ lưỡng, càng chắc chắn thành công."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 5 — NHẬN NHIỆM VỤ ══════ -->
+<div class="scene" id="s3">
+  <div class="chap-tag">🎯 CHƯƠNG 5 · ĐẦU 1964 — NHẬN NHIỆM VỤ ĐẶC BIỆT</div>
+  <div class="hero-frame"><img src="images/cau-cong-ly-saigon-1964.jpg" onerror="this.style.display='none'" alt="Cầu Công Lý Sài Gòn"><div class="img-hint">gợi ý ảnh: "cầu cũ Sài Gòn thập niên 1960, sông nước"</div><div class="hero-cap">CẦU CÔNG LÝ, TRÊN ĐƯỜNG PHÁI ĐOÀN MỸ SẼ ĐI QUA</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📋 Bối cảnh</span>
+      Đầu tháng 5/1964, tin tình báo cho biết Bộ trưởng Quốc phòng Mỹ <strong>Robert McNamara</strong> — kiến trúc sư chính của chiến lược Mỹ tại Việt Nam — sẽ đến Sài Gòn thị sát tình hình chiến sự, đoàn xe dự kiến đi qua cầu Công Lý. Đây là chuyến thị sát quan trọng giữa lúc Mỹ đang cân nhắc leo thang can thiệp quân sự.
+    </div>
+    Với phong trào đấu tranh đô thị đang tìm cách gây tiếng vang trên trường quốc tế, một đòn đánh nhắm thẳng vào phái đoàn cấp cao Mỹ ngay giữa Sài Gòn sẽ là lời khẳng định mạnh mẽ: chiến tranh không chỉ diễn ra ở chiến trường xa xôi, mà ngay tại trung tâm quyền lực. Sau nhiều tuần trinh sát, Trỗi chính thức được chọn làm người trực tiếp cài đặt khối thuốc nổ khoảng 8kg dưới cầu Công Lý, đúng thời điểm đoàn xe hộ tống McNamara dự kiến đi qua.
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Chỉ huy trực tiếp — giao nhiệm vụ</div>
+    "Đây là nhiệm vụ nguy hiểm bậc nhất. Một khi khối thuốc đã đặt xuống, chỉ có tiến, không có lùi. Anh là người duy nhất trong tổ có nghề nghiệp phù hợp để tiếp cận khu vực đó mà không bị nghi ngờ."
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Vì sao mục tiêu này quan trọng?</span>
+    Robert McNamara là một trong những nhân vật quyền lực nhất trong bộ máy chiến tranh của Mỹ lúc bấy giờ. Một chiến công nhắm vào đoàn xe của ông ngay giữa Sài Gòn sẽ mang ý nghĩa biểu tượng vượt xa giá trị quân sự thuần túy — chứng minh rằng không nơi nào, kể cả trung tâm quyền lực, là an toàn tuyệt đối.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">🎯 Mục tiêu: đoàn xe Bộ trưởng Quốc phòng Mỹ</span>
+      <span class="legacy-chip">💣 Khối thuốc nổ khoảng 8kg</span>
+      <span class="legacy-chip">🕐 Thời điểm: đầu tháng 5/1964</span>
+    </div>
+  </div>
+
+  <div class="quiz fillblank reveal">
+    <span class="quiz-tag">✏️ ĐIỀN TỪ — VƯỢT ẢI</span>
+    <div class="quiz-q">Nguyễn Văn Trỗi được giao nhiệm vụ đặt mìn tại cầu Công Lý, nhằm vào đoàn xe hộ tống Bộ trưởng Quốc phòng Mỹ Robert __________ khi đi qua cầu.</div>
+    <div class="fill-row">
+      <input type="text" class="fill-input" id="fq3-input" placeholder="Nhập họ của viên Bộ trưởng..." onkeydown="if(event.key==='Enter'){event.preventDefault();checkFill('fq3',['mcnamara','mac namara','mc namara'],'Chính xác — Robert McNamara, Bộ trưởng Quốc phòng Mỹ.','Đáp án đúng là McNamara — Robert McNamara, Bộ trưởng Quốc phòng Mỹ.')}">
+      <button class="fill-btn" onclick="checkFill('fq3',['mcnamara','mac namara','mc namara'],'Chính xác — Robert McNamara, Bộ trưởng Quốc phòng Mỹ.','Đáp án đúng là McNamara — Robert McNamara, Bộ trưởng Quốc phòng Mỹ.')">Kiểm tra</button>
+    </div>
+    <div class="quiz-fb" id="fq3-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ NHẬN NHIỆM VỤ NÀY, BẠN NGHĨ GÌ...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('s3A',1)"><span class="opt-mark">A</span><div>"Biết là nguy hiểm — nhưng nếu không phải tôi thì cũng phải có người khác làm. Tôi nhận."<div class="opt-sub">⭐ Đúng khí phách của người chấp nhận hiểm nguy vì mục tiêu lớn hơn bản thân.</div></div></button>
+    <button class="opt-btn" onclick="go('s3B',0)"><span class="opt-mark">B</span><div>Xin đổi sang một nhiệm vụ ít rủi ro hơn.<div class="opt-sub">Dễ hiểu về mặt con người, nhưng không phải điều ông đã làm.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s3A">
+  <div class="chap-tag">✔ NHẬN NHIỆM VỤ KHÔNG DO DỰ</div>
+  <div class="outcome true"><span class="outcome-icon">🎯</span><strong>Đúng lịch sử.</strong> Nguyễn Văn Trỗi nhận nhiệm vụ mà không một lời do dự, dù hiểu rõ đây gần như là nhiệm vụ một chiều.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s4',0)"><span class="opt-mark">→</span><div>Chương 6 — Đêm Đặt Mìn Dưới Cầu</div></button></div>
+</div>
+<div class="scene" id="s3B">
+  <div class="chap-tag">✘ KHÔNG PHẢI CON ĐƯỜNG CỦA ÔNG</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Trỗi không né tránh nhiệm vụ nguy hiểm. Chính sự sẵn sàng đón nhận rủi ro lớn nhất mà không thoái thác mới là điều khiến ông trở thành biểu tượng sau này.</div>
+  <div class="choices-label">⚡ NHẬN LẠI NHIỆM VỤ</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s3A',0)"><span class="opt-mark">→</span><div>"Không — tôi sẽ làm nhiệm vụ này, dù biết trước hiểm nguy."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 6 — NGÒI NỔ ĐẾM NGƯỢC ══════ -->
+<div class="scene" id="s4">
+  <div class="chap-tag">💣 CHƯƠNG 6 · ĐÊM 8 RẠNG 9/5/1964 — DƯỚI GẦM CẦU CÔNG LÝ</div>
+  <div class="hero-frame"><img src="images/duoi-gam-cau-dem-toi.jpg" onerror="this.style.display='none'" alt="Dưới gầm cầu ban đêm"><div class="img-hint">gợi ý ảnh: "dưới gầm cầu sông, ánh đèn pin, không khí căng thẳng"</div><div class="hero-cap">DƯỚI GẦM CẦU, GIỮA ĐÊM TỐI</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📋 Bối cảnh</span>
+      Đêm 8 rạng sáng 9/5/1964, tổ công tác quyết định hành động. Khối thuốc nổ được ngụy trang kỹ càng trong lớp vỏ bọc như vật dụng sửa chữa điện thông thường, chuyển đến gần khu vực cầu theo từng chặng nhỏ để tránh bị phát hiện.
+    </div>
+    Đêm khuya, Nguyễn Văn Trỗi lặng lẽ tiếp cận khu vực dưới cầu, mang theo khối thuốc nổ được ngụy trang kỹ lưỡng. Từng bước chân đều phải tính toán — một tiếng động sai, một ánh đèn pin bất chợt của lính gác tuần tra, cũng đủ để mọi thứ sụp đổ. Không khí đặc quánh sự im lặng, chỉ có tiếng nước chảy dưới kênh và nhịp tim dồn dập của người thợ điện trẻ.
+  </div>
+  <div class="record reveal">
+    <div class="record-who">Trỗi — tự nhủ trong bóng tối, tay vẫn thoăn thoắt với dây và kíp nổ</div>
+    "Bình tĩnh. Đúng như đã tập luyện. Đây là nghề của mình — chỉ khác lần này, sợi dây mình nối không phải để thắp sáng một căn nhà."
+  </div>
+
+  <div class="fuse-box reveal">
+    <span class="fuse-icon">⏱️</span>
+    <div class="fuse-title">GIỮ VỮNG BÌNH TĨNH</div>
+    <div class="fuse-desc">Tiếng bước chân tuần tra đang đến gần. Bạn có <b>10 giây</b> để giữ im lặng tuyệt đối trước khi họ đi khuất — bấm nút khi cảm thấy đã đủ an toàn. Bấm quá sớm dễ bị lộ, bấm quá muộn cũng nguy hiểm không kém.</div>
+    <div class="fuse-track"><div class="fuse-fill" id="fuseFill"></div></div>
+    <div class="fuse-time" id="fuseTime">10</div>
+    <button class="fuse-btn" id="fuseBtn" onclick="pressFuse()">GIỮ VỮNG!</button>
+    <div class="fuse-result" id="fuseResult"></div>
+  </div>
+
+  <div id="s4-after" style="display:none;">
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Sự thật lịch sử</span>
+      Kế hoạch đặt mìn dưới cầu Công Lý được chuẩn bị công phu, nhắm đúng thời điểm đoàn xe hộ tống Bộ trưởng McNamara dự kiến đi qua. Đây là một trong những chiến công táo bạo nhất của lực lượng Biệt động Sài Gòn thời kỳ đô thị.
+    </div>
+    <div class="choices-label">⚡ TIẾP TỤC</div>
+    <div class="choices"><button class="opt-btn" onclick="go('s5',1)"><span class="opt-mark">→</span><div>Chương 7 — Kế Hoạch Bại Lộ, Bị Bắt</div></button></div>
+  </div>
+</div>
+
+<!-- ══════ CHƯƠNG 7 — BỊ BẮT ══════ -->
+<div class="scene" id="s5">
+  <div class="chap-tag">🚨 CHƯƠNG 7 · 9/5/1964 — KẾ HOẠCH BẠI LỘ</div>
+  <div class="hero-frame"><img src="images/bi-bat-1964.jpg" onerror="this.style.display='none'" alt="Bị bắt"><div class="img-hint">gợi ý ảnh: "cảnh sát Sài Gòn 1960, xe jeep, còng tay tư liệu"</div><div class="hero-cap">GẦN CẦU CÔNG LÝ, RẠNG SÁNG</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📚 Điều đã xảy ra</span>
+      Trước giờ đoàn xe dự kiến đi qua, kế hoạch bất ngờ bại lộ. Có nhiều giả thuyết về nguyên nhân — nhưng lực lượng an ninh Sài Gòn đã ập đến khu vực cầu Công Lý trước khi khối thuốc nổ kịp phát huy tác dụng. Chuyến thị sát của McNamara cuối cùng cũng đổi lộ trình vào phút chót.
+    </div>
+    Nguyễn Văn Trỗi bị bắt giữ ngay tại hiện trường, tay vẫn còn dính dầu mỡ của công việc chuẩn bị. Không kịp trốn thoát, không có đường lui — người thợ điện trẻ giờ đây đối diện với những kẻ thẩm vấn của chính quyền Sài Gòn, những người ngay lập tức nhận ra đây không phải một vụ án hình sự thông thường, mà là một âm mưu chính trị nghiêm trọng.
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Viên sĩ quan an ninh — khi áp giải Trỗi đi</div>
+    "Mày còn trẻ lắm. Khai ra hết những ai đứng sau vụ này, có thể còn giữ được mạng sống."
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Diễn biến sau khi bị bắt</span>
+    Ngay sau khi vụ việc bị phát hiện, tin tức về "âm mưu ám sát Bộ trưởng Quốc phòng Mỹ" nhanh chóng lan truyền trên báo chí Sài Gòn và quốc tế, khiến chính quyền càng gia tăng áp lực thẩm vấn để tìm ra toàn bộ đường dây đứng sau.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">📰 Vụ việc gây chấn động báo chí ngay lập tức</span>
+      <span class="legacy-chip">🚔 Bị bắt tại hiện trường, không kịp rút lui</span>
+    </div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Kế hoạch đặt mìn tại cầu Công Lý diễn ra vào khoảng thời gian nào?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q5')">A. Tháng 12/1963</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q5')">B. Đêm 8 rạng ngày 9/5/1964</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q5')">C. Tháng 10/1964, ngay trước khi hành quyết</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q5')">D. Đầu năm 1965</button>
+    </div>
+    <div class="quiz-fb" id="q5-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ KHI BỊ ĐE DỌA "KHAI RA CÓ THỂ SỐNG"...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('s5A',1)"><span class="opt-mark">A</span><div>Im lặng, không tiết lộ bất kỳ thông tin nào về đồng đội.<div class="opt-sub">⭐ Đúng với những gì lịch sử ghi lại — ông giữ vững im lặng đến cùng.</div></div></button>
+    <button class="opt-btn" onclick="go('s5B',0)"><span class="opt-mark">B</span><div>Thương lượng, cung cấp một phần thông tin để giữ mạng sống.<div class="opt-sub">Đây không phải điều đã xảy ra trong lịch sử.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s5A">
+  <div class="chap-tag">✔ IM LẶNG TUYỆT ĐỐI</div>
+  <div class="outcome true"><span class="outcome-icon">🔒</span><strong>Đúng lịch sử.</strong> Dù bị bắt và đối diện án tử, Nguyễn Văn Trỗi không khai báo bất kỳ thông tin nào có thể gây nguy hiểm cho tổ chức và đồng đội.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s5x',0)"><span class="opt-mark">→</span><div>Chương 8 — Phiên Tòa Quân Sự</div></button></div>
+</div>
+<div class="scene" id="s5B">
+  <div class="chap-tag">✘ KHÔNG PHẢI SỰ THẬT LỊCH SỬ</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Đây không phải điều đã xảy ra. Trỗi giữ im lặng tuyệt đối suốt quá trình bị giam giữ và thẩm vấn — không một lời khai nào gây tổn hại cho tổ chức.</div>
+  <div class="choices-label">⚡ SỬA LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s5A',0)"><span class="opt-mark">→</span><div>"Không — tôi sẽ không nói một lời nào."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 8 — PHIÊN TÒA QUÂN SỰ (MỚI, con dấu tuyên án) ══════ -->
+<div class="scene" id="s5x">
+  <div class="chap-tag">⚖️ CHƯƠNG 8 · GIỮA 1964 — PHIÊN TÒA QUÂN SỰ</div>
+  <div class="hero-frame"><img src="images/toa-an-quan-su-saigon-1964.jpg" onerror="this.style.display='none'" alt="Tòa án quân sự"><div class="img-hint">gợi ý ảnh: "phòng xử án cũ, tư liệu đen trắng thập niên 1960"</div><div class="hero-cap">TÒA ÁN QUÂN SỰ MẶT TRẬN, SÀI GÒN</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📚 Bối cảnh</span>
+      Sau khi bị bắt, Nguyễn Văn Trỗi bị đưa ra xét xử trước một tòa án quân sự đặc biệt của chính quyền Sài Gòn — hình thức xét xử nhanh gọn, thường dành cho các vụ án bị xem là đe dọa an ninh nghiêm trọng, gần như không có không gian cho việc biện hộ đầy đủ.
+    </div>
+    Trong phòng xử án, không có nhiều thời gian tranh luận. Bản án gần như đã được định sẵn trước khi phiên tòa bắt đầu — chính quyền Sài Gòn muốn xử lý nhanh chóng một vụ việc đã gây chấn động dư luận. Trỗi đứng trước vành móng ngựa, ánh mắt bình thản lạ thường đối với một người vừa tròn 24 tuổi, đối diện với một bản án gần như chắc chắn là tử hình.
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Chủ tọa phiên tòa — trước khi tuyên án</div>
+    "Bị cáo có điều gì muốn nói trước khi tòa tuyên án hay không?"
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Nguyễn Văn Trỗi bị đưa ra xét xử trước loại tòa án nào của chính quyền Sài Gòn?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q5x')">A. Tòa án dân sự thông thường</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q5x')">B. Tòa án quân sự đặc biệt, xét xử nhanh gọn</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q5x')">C. Tòa án quốc tế</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q5x')">D. Không qua xét xử, xử lý ngay tại chỗ</button>
+    </div>
+    <div class="quiz-fb" id="q5x-fb"></div>
+  </div>
+
+  <div class="verdict-box reveal">
+    <div class="verdict-desc">Bấm vào con dấu để xem bản án tòa tuyên cho Nguyễn Văn Trỗi.</div>
+    <button class="verdict-btn" id="verdictBtn" onclick="stampVerdict()">🔨 TUYÊN ÁN</button>
+    <div class="verdict-stamp"><div class="verdict-stamp-text" id="verdictStampText">TỬ HÌNH</div></div>
+  </div>
+
+  <div id="s5x-after" style="display:none;">
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Sự thật lịch sử</span>
+      Tòa tuyên án tử hình Nguyễn Văn Trỗi. Trước bản án, ông không hề tỏ ra khiếp sợ — thái độ điềm tĩnh của một thanh niên 24 tuổi trước án tử đã khiến ngay cả những người trong phòng xử cũng phải kinh ngạc.
+      <div style="margin-top:8px;">
+        <span class="legacy-chip">⚖️ Xét xử theo thủ tục quân sự khẩn cấp</span>
+        <span class="legacy-chip">🕊️ Không một lời cầu xin khoan hồng</span>
+      </div>
+    </div>
+    <div class="choices-label">⚡ TRƯỚC BẢN ÁN TỬ HÌNH...</div>
+    <div class="choices">
+      <button class="opt-btn" onclick="go('s5xA',1)"><span class="opt-mark">A</span><div>Giữ vẻ điềm tĩnh, không một lời cầu xin khoan hồng.<div class="opt-sub">⭐ Đúng thái độ mà nhiều nhân chứng đương thời mô tả về ông.</div></div></button>
+      <button class="opt-btn" onclick="go('s5xB',0)"><span class="opt-mark">B</span><div>Van xin tòa giảm án, viện lý do còn trẻ và mới lập gia đình.<div class="opt-sub">Không phải thái độ mà lịch sử ghi nhận.</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s5xA">
+  <div class="chap-tag">✔ ĐIỀM TĨNH TRƯỚC ÁN TỬ</div>
+  <div class="outcome true"><span class="outcome-icon">⚖️</span><strong>Đúng lịch sử.</strong> Trước bản án tử hình, Nguyễn Văn Trỗi không hề nao núng hay cầu xin — một thái độ khiến câu chuyện của ông càng thêm chấn động trong dư luận đương thời.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s6',0)"><span class="opt-mark">→</span><div>Chương 9 — Trong Ngục Tối, Cuộc Thẩm Vấn</div></button></div>
+</div>
+<div class="scene" id="s5xB">
+  <div class="chap-tag">✘ KHÔNG PHẢI SỰ THẬT LỊCH SỬ</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Đây không phải điều đã xảy ra. Trỗi không cầu xin khoan hồng — ông đối diện với bản án bằng sự điềm tĩnh hiếm có ở tuổi 24.</div>
+  <div class="choices-label">⚡ SỬA LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s5xA',0)"><span class="opt-mark">→</span><div>"Không — tôi sẽ đối diện với bản án này bằng chính sự điềm tĩnh của mình."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 9 — ĐÈN THẨM VẤN ══════ -->
+<div class="scene" id="s6">
+  <div class="chap-tag">🔦 CHƯƠNG 9 · THÁNG 5–10/1964 — TRONG NGỤC TỐI</div>
+  <div class="hero-frame"><img src="images/nha-tu-cho-hoa-1964.jpg" onerror="this.style.display='none'" alt="Nhà tù Chí Hòa"><div class="img-hint">gợi ý ảnh: "phòng giam cũ, song sắt, ánh sáng le lói"</div><div class="hero-cap">KHÁM CHÍ HÒA, SÀI GÒN</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📚 Bối cảnh</span>
+      Trỗi bị giam tại Khám Chí Hòa — một trong những nhà tù khét tiếng nhất Sài Gòn thời bấy giờ, nơi giam giữ nhiều tù chính trị. Suốt gần 5 tháng, ông trải qua hàng loạt cuộc thẩm vấn liên tục, xen kẽ giữa tra tấn thể xác và những màn dụ dỗ tâm lý.
+    </div>
+    Suốt nhiều tháng, Nguyễn Văn Trỗi bị giam giữ và tra khảo bằng nhiều hình thức tàn khốc. Nhưng bất chấp đòn roi, bất chấp những lời dụ dỗ xen lẫn đe dọa, ông không khai ra một cái tên nào trong tổ chức của mình. Có những lúc chính quyền Sài Gòn đưa cả vợ ông — Phan Thị Quyên — đến gặp, hy vọng tình cảm gia đình sẽ khiến ông lung lay, nhưng ông vẫn giữ vững im lặng về mọi thông tin liên quan đến tổ chức.
+  </div>
+
+  <div class="interro-lamp reveal">
+    <span class="interro-icon">💡</span>
+    <div class="interro-q">"Chỉ cần một cái tên thôi. Một cái tên, và tất cả sẽ dừng lại. Mày còn trẻ lắm, Trỗi à..."</div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Trong suốt thời gian bị giam giữ và tra khảo, thái độ của Nguyễn Văn Trỗi trước chính quyền Sài Gòn là gì?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q6')">A. Xin ân xá, nhận tội để giảm án</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q6')">B. Kiên quyết không khai báo, giữ vững lập trường đến cùng dù bị tra tấn</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q6')">C. Hợp tác một phần để đổi lấy điều kiện giam giữ tốt hơn</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q6')">D. Phủ nhận hoàn toàn việc mình tham gia kế hoạch</button>
+    </div>
+    <div class="quiz-fb" id="q6-fb"></div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Sự thật lịch sử</span>
+    Suốt gần 5 tháng bị giam cầm, Trỗi không hé một lời nào có thể gây nguy hại cho đồng đội, dù phải trải qua những đòn tra tấn khốc liệt của chính quyền Sài Gòn.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">🏚️ Giam tại Khám Chí Hòa</span>
+      <span class="legacy-chip">⏳ Gần 5 tháng thẩm vấn, tra tấn</span>
+      <span class="legacy-chip">🤐 Không một lời khai báo</span>
+    </div>
+  </div>
+
+  <div class="choices-label">⚡ TRƯỚC ÁP LỰC LIÊN TỤC...</div>
+  <div class="choices">
+    <button class="opt-btn" onclick="go('s6A',1)"><span class="opt-mark">A</span><div>Giữ vững im lặng đến hơi thở cuối cùng, không một lời khai báo.<div class="opt-sub">⭐ Đây chính là điều đã thật sự xảy ra — ý chí không gì lay chuyển nổi.</div></div></button>
+    <button class="opt-btn" onclick="go('s6B',0)"><span class="opt-mark">B</span><div>Giả vờ hợp tác để câu giờ, chờ cơ hội trốn thoát.<div class="opt-sub">Không phải điều lịch sử ghi lại.</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s6A">
+  <div class="chap-tag">✔ Ý CHÍ KHÔNG GÌ LAY CHUYỂN</div>
+  <div class="outcome true"><span class="outcome-icon">🔥</span><strong>Đúng lịch sử.</strong> Suốt gần 5 tháng bị giam cầm, Nguyễn Văn Trỗi không hé một lời nào có thể gây nguy hại cho đồng đội — dù phải đối diện với những đòn tra tấn khốc liệt nhất.</div>
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s6x',0)"><span class="opt-mark">→</span><div>Chương 10 — Làn Sóng Quốc Tế</div></button></div>
+</div>
+<div class="scene" id="s6B">
+  <div class="chap-tag">✘ KHÔNG PHẢI SỰ THẬT LỊCH SỬ</div>
+  <div class="outcome false"><span class="outcome-icon">⚠</span>Đây không phải điều đã xảy ra. Trỗi không hề giả vờ hợp tác — ông đối diện thẳng với mọi đòn tra khảo bằng sự im lặng kiên định.</div>
+  <div class="choices-label">⚡ SỬA LẠI</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s6A',0)"><span class="opt-mark">→</span><div>"Không — tôi sẽ không khuất phục, dù phải trả giá bằng mạng sống."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 10 — LÀN SÓNG QUỐC TẾ (MỚI, bảng tin điện) ══════ -->
+<div class="scene" id="s6x">
+  <div class="chap-tag">🌍 CHƯƠNG 10 · THÁNG 10/1964 — LÀN SÓNG QUỐC TẾ</div>
+  <div class="hero-frame"><img src="images/lan-song-quoc-te-1964.jpg" onerror="this.style.display='none'" alt="Làn sóng quốc tế"><div class="img-hint">gợi ý ảnh: "báo chí quốc tế thập niên 1960, phòng tin tức cũ"</div><div class="hero-cap">TIN TỨC LAN RA KHẮP THẾ GIỚI</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📚 Chi tiết ít người biết</span>
+      Câu chuyện về bản án tử hình dành cho một thợ điện trẻ tuổi tại Sài Gòn đã vượt ra ngoài biên giới Việt Nam, chạm đến cả những phong trào cách mạng ở tận Nam Mỹ, giữa lúc phong trào cánh tả Mỹ Latinh đang lên cao trong bối cảnh Chiến tranh Lạnh.
+    </div>
+    Đầu tháng 10/1964, tại Caracas, Venezuela, một nhóm du kích thuộc Lực lượng Vũ trang Giải phóng Dân tộc (FALN) bất ngờ bắt giữ Trung tá Michael Smolen — một sĩ quan liên lạc quân sự Mỹ, đưa ra yêu sách: trả tự do cho viên sĩ quan này để đổi lấy việc hoãn thi hành án tử hình đối với Nguyễn Văn Trỗi ở Sài Gòn — một sự kết nối bất ngờ giữa hai điểm nóng cách xa nhau nửa vòng trái đất, cho thấy tiếng vang của vụ án đã lan rộng đến mức nào trong phong trào cánh tả quốc tế lúc bấy giờ.
+  </div>
+
+  <div class="ticker-wrap reveal">
+    <div class="ticker-head"><span class="ticker-dot"></span> TIN ĐIỆN QUỐC TẾ — THÁNG 10/1964</div>
+    <div class="ticker-track">
+      <div class="ticker-inner">
+        <span>CARACAS:</span> Du kích Venezuela bắt giữ sĩ quan liên lạc quân sự Mỹ, yêu sách đổi mạng cho Nguyễn Văn Trỗi tại Sài Gòn &nbsp;&nbsp;•&nbsp;&nbsp;
+        <span>SÀI GÒN:</span> Dư luận trong và ngoài nước xôn xao trước bản án tử hình dành cho người thợ điện 24 tuổi &nbsp;&nbsp;•&nbsp;&nbsp;
+        <span>QUỐC TẾ:</span> Nhiều tổ chức và cá nhân gửi điện kêu gọi hoãn thi hành án &nbsp;&nbsp;•&nbsp;&nbsp;
+        <span>HAVANA:</span> Báo chí Cuba đăng tải rộng rãi vụ việc, bày tỏ tình đoàn kết &nbsp;&nbsp;•&nbsp;&nbsp;
+      </div>
+    </div>
+  </div>
+
+  <div class="record reveal">
+    <div class="record-who">Một cai ngục — nói với Trỗi qua song sắt, giọng có phần ngạc nhiên</div>
+    "Mày biết không, tận bên Nam Mỹ người ta còn bắt cả sĩ quan Mỹ để đòi đổi mạng cho mày đó. Mày là ai mà dữ vậy?"
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Sự kiện quốc tế nào diễn ra vào tháng 10/1964 nhằm cố gắng cứu mạng Nguyễn Văn Trỗi?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q6x')">A. Liên Hợp Quốc ra nghị quyết yêu cầu hoãn án</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q6x')">B. Du kích tại Venezuela bắt giữ một sĩ quan liên lạc quân sự Mỹ để đòi đổi mạng cho ông</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q6x')">C. Chính phủ Pháp can thiệp ngoại giao trực tiếp</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q6x')">D. Một cuộc biểu tình lớn nổ ra ngay tại Washington</button>
+    </div>
+    <div class="quiz-fb" id="q6x-fb"></div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Sự thật lịch sử</span>
+    Dù nỗ lực đổi mạng từ Venezuela từng làm dấy lên hy vọng hoãn thi hành án, cuối cùng chính quyền Sài Gòn vẫn quyết định xử bắn Nguyễn Văn Trỗi trước khi cuộc trao đổi có thể hoàn tất. Viên sĩ quan Mỹ bị bắt giữ sau đó được phía du kích trả tự do.
+    <div style="margin-top:8px;">
+      <span class="legacy-chip">🌎 Vụ bắt giữ tại Caracas, Venezuela</span>
+      <span class="legacy-chip">📡 Vụ án gây tiếng vang khắp thế giới</span>
+      <span class="legacy-chip">🇨🇺 Báo chí Cuba, Mỹ Latinh đồng loạt đưa tin</span>
+    </div>
+  </div>
+
+  <div class="quiz arrange reveal">
+    <span class="quiz-tag">🔀 SẮP XẾP — VƯỢT ẢI</span>
+    <div class="quiz-q">Bấm vào các mốc sau theo đúng trình tự thời gian đã diễn ra:</div>
+    <div class="arrange-pool" id="ar1-pool">
+      <button class="arrange-chip" data-pos="1" onclick="pickArrange('ar1',this)">Đặt mìn dưới gầm cầu Công Lý</button>
+      <button class="arrange-chip" data-pos="3" onclick="pickArrange('ar1',this)">Bị đưa ra tòa án quân sự đặc biệt</button>
+      <button class="arrange-chip" data-pos="0" onclick="pickArrange('ar1',this)">Trinh sát nhiều lần khu vực cầu Công Lý</button>
+      <button class="arrange-chip" data-pos="4" onclick="pickArrange('ar1',this)">Du kích Venezuela bắt sĩ quan Mỹ để đổi mạng</button>
+      <button class="arrange-chip" data-pos="2" onclick="pickArrange('ar1',this)">Bị bắt gần cầu Công Lý</button>
+    </div>
+    <div class="arrange-answer" id="ar1-answer"><span class="arrange-placeholder">Bấm chip theo thứ tự bạn cho là đúng...</span></div>
+    <div class="arrange-actions">
+      <button class="fill-btn ghost" onclick="resetArrange('ar1')">↺ Làm lại</button>
+      <button class="fill-btn" onclick="checkArrange('ar1',5,'Chuẩn xác! Đúng trình tự: trinh sát → đặt mìn → bị bắt → tòa án → vụ đổi mạng ở Venezuela.')">Kiểm tra</button>
+    </div>
+    <div class="quiz-fb" id="ar1-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ TIẾP TỤC</div>
+  <div class="choices"><button class="opt-btn" onclick="go('s7',1)"><span class="opt-mark">→</span><div>Chương 11 — Pháp Trường Khám Chí Hòa</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 11 — LỜI CUỐI, TYPEWRITER ══════ -->
+<div class="scene" id="s7">
+  <div class="chap-tag">🕊️ CHƯƠNG 11 · 15/10/1964 — PHÁP TRƯỜNG KHÁM CHÍ HÒA</div>
+  <div class="hero-frame"><img src="images/phap-truong-chi-hoa-1964.jpg" onerror="this.style.display='none'" alt="Pháp trường Chí Hòa"><div class="img-hint">gợi ý ảnh: "sân nhà tù cũ, buổi sáng sớm, tư liệu lịch sử"</div><div class="hero-cap">SÂN NHÀ GIAM, SÁNG SỚM 15/10/1964</div></div>
+
+  <div class="story reveal">
+    <div class="info-card">
+      <span class="info-tag">📚 Bối cảnh</span>
+      Sáng 15/10/1964, Nguyễn Văn Trỗi bị đưa ra pháp trường tại khám Chí Hòa để thi hành án tử hình bằng xử bắn. Ông vừa tròn 24 tuổi — bản án được thi hành gấp rút, chỉ hơn 5 tháng sau ngày bị bắt.
+    </div>
+    Buổi sáng hôm đó, sân nhà giam vắng lặng khác thường. Trước giờ hành quyết, các nhân viên định bịt mắt ông theo thông lệ. Trỗi từ chối — ông muốn nhìn thẳng vào những họng súng, muốn nhìn thấy quê hương lần cuối bằng chính đôi mắt của mình, không qua một tấm vải che. Ông cũng từ chối lời đề nghị làm lễ sám hối tôn giáo cuối cùng theo thủ tục thường lệ.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🔎 KIỂM CHỨNG</span>
+    <div class="quiz-q">Trước giờ hành quyết, Nguyễn Văn Trỗi đã từ chối điều gì mà đội thi hành án định thực hiện theo thông lệ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q7')">A. Từ chối ăn bữa ăn cuối cùng</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,true,'q7')">B. Từ chối bị bịt mắt, muốn nhìn thẳng vào giờ phút cuối cùng</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q7')">C. Từ chối lời cầu nguyện cuối cùng</button>
+      <button class="quiz-opt" onclick="ansQuiz(this,false,'q7')">D. Từ chối viết di thư cho gia đình</button>
+    </div>
+    <div class="quiz-fb" id="q7-fb"></div>
+  </div>
+
+  <div class="final-words">
+    <div class="final-words-text" id="finalWordsText"><span class="final-cursor"></span></div>
+  </div>
+  <div style="text-align:center;margin-top:-10px;" class="reveal" id="finalWordsBtnWrap">
+    <button class="opt-btn" style="display:inline-flex;" onclick="playFinalWords()">▶ NGHE LẠI LỜI CUỐI CÙNG</button>
+  </div>
+
+  <div id="s7-after" style="display:none;">
+    <div class="fact reveal">
+      <span class="fact-tag">📖 Sự thật lịch sử</span>
+      Theo nhiều tư liệu để lại, trước lúc bị bắn, Nguyễn Văn Trỗi đã hô vang <strong>"Việt Nam muôn năm!"</strong> nhiều lần. Cái chết của ông ở tuổi 24 đã trở thành biểu tượng bất khuất, truyền cảm hứng cho phong trào thanh niên đấu tranh khắp cả nước trong những năm sau đó.
+      <div style="margin-top:8px;">
+        <span class="legacy-chip">📅 Hy sinh ngày 15/10/1964, tuổi 24</span>
+        <span class="legacy-chip">👁️ Từ chối bịt mắt trước pháp trường</span>
+        <span class="legacy-chip">🔥 Là chiến sĩ Biệt động Sài Gòn đầu tiên bị xử tử công khai gây chấn động dư luận quốc tế</span>
+      </div>
+    </div>
+    <div class="choices-label">⚡ TIẾP TỤC</div>
+    <div class="choices"><button class="opt-btn" onclick="go('final',1)"><span class="opt-mark">✓</span><div>🔥 <strong>XEM DI SẢN CỦA NGUYỄN VĂN TRỖI</strong></div></button></div>
+  </div>
+</div>
+
+<!-- ══════ FINAL — NGỌN LỬA BẤT DIỆT ══════ -->
+<div class="scene" id="final">
+  <div class="flame-wrap">
+    <div class="flame-icon">🔥</div>
+    <div class="flame-h">NGỌN LỬA BẤT DIỆT</div>
+    <div class="flame-desc" id="flameDesc">Từ một cậu bé nghèo ở làng Thanh Quýt, Quảng Nam, đến người thợ điện Sài Gòn, rồi chiến sĩ Biệt động Thành hy sinh ở tuổi 24 — hành trình của Nguyễn Văn Trỗi cho thấy một người bình thường vẫn có thể trở thành biểu tượng bất khuất, soi đường cho biết bao thế hệ thanh niên Việt Nam sau này.</div>
+
+    <div class="legacy-list">
+      <span class="legacy-chip">🌾 Xuất thân từ làng Thanh Quýt, Điện Bàn, Quảng Nam</span>
+      <span class="legacy-chip">🏙️ Tên đường, tên cầu Nguyễn Văn Trỗi tại nhiều tỉnh, thành (trong đó có chính cầu Công Lý xưa)</span>
+      <span class="legacy-chip">🎓 Nhiều trường học mang tên ông</span>
+      <span class="legacy-chip">🏆 Danh hiệu Anh hùng Lực lượng vũ trang nhân dân</span>
+      <span class="legacy-chip">📖 Biểu tượng "Sống như Anh" cho thế hệ thanh niên</span>
+      <span class="legacy-chip">🌎 Vụ án từng gây tiếng vang tới tận Venezuela</span>
+    </div>
+
+    <div class="testament reveal">
+      <span class="testament-tag">📜 BA ĐIỀU CÒN MÃI</span>
+      <strong style="display:block;margin-top:12px;color:var(--amber);">1. MỘT NGƯỜI BÌNH THƯỜNG CŨNG CÓ THỂ LÀM NÊN ĐIỀU PHI THƯỜNG</strong>
+      Nguyễn Văn Trỗi không phải là tướng lĩnh, không phải nhà lãnh đạo — chỉ là một thợ điện trẻ. Nhưng khi đứng trước lựa chọn, ông đã chọn hành động thay vì im lặng.
+      <strong style="display:block;margin-top:12px;color:var(--amber);">2. IM LẶNG CŨNG LÀ MỘT HÌNH THỨC CỦA LÒNG DŨNG CẢM</strong>
+      Suốt gần 5 tháng bị giam cầm và tra tấn, sự im lặng kiên định của ông đã bảo vệ được biết bao đồng đội — một dạng dũng cảm không cần đến vũ khí.
+      <strong style="display:block;margin-top:12px;color:var(--amber);">3. CÁI CHẾT KHÔNG PHẢI LÀ KẾT THÚC, MÀ LÀ SỰ TIẾP NỐI</strong>
+      Câu chuyện của ông trở thành nguồn cảm hứng cho phong trào "Sống như Anh" — một thế hệ thanh niên tự soi mình vào tấm gương của một người thợ điện 24 tuổi.
+    </div>
+
+    <div class="btn-row" style="margin-top:22px;">
+      <button class="btn-ghost" onclick="restart()">↺ XEM LẠI TỪ ĐẦU</button>
+      <a href="#" class="btn-solid">📖 CÂU CHUYỆN KHÁC</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .wrap -->
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-page">
+  <button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button>
+  <div class="ref-title">📚 NGUỒN THAM KHẢO</div>
+  <div class="ref-sub">Ngày tháng, sự kiện, số liệu trong trang này được đối chiếu từ các nguồn dưới đây. Các đoạn hội thoại là dựng lại minh họa dựa trên tinh thần lịch sử, không phải nguyên văn ghi âm/ghi chép — trừ câu nói cuối cùng vốn đã được nhiều tư liệu ghi nhận.</div>
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">Quyết định truy tặng danh hiệu Anh hùng Lực lượng vũ trang nhân dân — Nhà nước CHXHCN Việt Nam</div>
+    <div class="ref-item">Sách "Sống như Anh" — Trần Đình Vân, ghi theo lời kể của bà Phan Thị Quyên</div>
+    <div class="ref-item">Tư liệu Bảo tàng Chứng tích Chiến tranh, TP.HCM</div>
+    <div class="ref-item">Hồ sơ báo chí quốc tế năm 1964 về vụ hành quyết và các phong trào phản đối liên quan, bao gồm vụ bắt giữ sĩ quan Mỹ tại Venezuela</div>
+  </div>
+  <div class="ref-group">
+    <div class="ref-group-h">Ghi chú về phương pháp thể hiện</div>
+    <div class="ref-item">Ngày tháng, địa điểm, kết quả sự kiện: dựa trên tư liệu lịch sử đã công bố rộng rãi</div>
+    <div class="ref-item">Hội thoại giữa các nhân vật (trừ lời cuối cùng đã được ghi nhận rộng rãi): dựng lại nhằm minh họa bối cảnh, không phải trích dẫn nguyên văn có ghi chép</div>
+    <div class="ref-item">Một số chi tiết về nguyên nhân bại lộ kế hoạch, cũng như diễn biến cụ thể của vụ đổi mạng tại Venezuela, còn có nhiều dị bản khác nhau trong các nguồn sử liệu; bài viết trình bày theo cách tiếp cận phổ biến nhất</div>
+    <div class="ref-item">Chi tiết về thời thơ ấu và gia đình ở Quảng Nam được ghi lại sơ lược trong các nguồn phổ biến, một số tình huống được dựng lại mang tính minh họa</div>
+  </div>
+</div>
+</div>
+
+<script>
+// ===== BẢNG MẠCH NỀN — dòng điện chạy theo đường mạch PCB =====
+const cvs=document.getElementById('circuitCanvas');
+const cctx=cvs.getContext('2d');
+function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
+resizeCvs();window.addEventListener('resize',resizeCvs);
+
+let traces=[];
+function buildTraces(){
+  traces=[];
+  const cols=Math.ceil(window.innerWidth/140)+1;
+  const rows=Math.ceil(window.innerHeight/160)+1;
+  for(let i=0;i<cols;i++){
+    for(let j=0;j<rows;j++){
+      if(Math.random()<0.4){
+        const x=i*140+Math.random()*40;
+        const y=j*160+Math.random()*40;
+        const horiz=Math.random()<0.5;
+        const len=60+Math.random()*80;
+        traces.push({
+          x1:x,y1:y,
+          x2: horiz? x+len : x,
+          y2: horiz? y : y+len,
+          progress:Math.random(),
+          speed:0.002+Math.random()*0.004,
+          hue: Math.random()<0.75 ? '154,163,171' : '229,56,59'
+        });
+      }
+    }
+  }
+}
+buildTraces();
+window.addEventListener('resize',buildTraces);
+
+function drawCircuit(){
+  cctx.clearRect(0,0,cvs.width,cvs.height);
+  cctx.strokeStyle='rgba(154,163,171,0.08)';
+  cctx.lineWidth=1;
+  traces.forEach(t=>{
+    cctx.beginPath();cctx.moveTo(t.x1,t.y1);cctx.lineTo(t.x2,t.y2);cctx.stroke();
+  });
+  traces.forEach(t=>{
+    t.progress+=t.speed;
+    if(t.progress>1)t.progress=0;
+    const px=t.x1+(t.x2-t.x1)*t.progress;
+    const py=t.y1+(t.y2-t.y1)*t.progress;
+    const grad=cctx.createRadialGradient(px,py,0,px,py,10);
+    grad.addColorStop(0,`rgba(${t.hue},0.9)`);
+    grad.addColorStop(1,`rgba(${t.hue},0)`);
+    cctx.fillStyle=grad;
+    cctx.beginPath();cctx.arc(px,py,10,0,Math.PI*2);cctx.fill();
+    cctx.fillStyle=`rgba(${t.hue},1)`;
+    cctx.beginPath();cctx.arc(px,py,1.6,0,Math.PI*2);cctx.fill();
+  });
+  requestAnimationFrame(drawCircuit);
+}
+drawCircuit();
+
+// ===== REVEAL =====
+const revealObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));}
+initReveal();
+
+// ===== STATE =====
+let willpower=0,streak=0,quizAnswered={},quizAttempts={},quizLockedTemp={};
+
+function bumpWill(delta){
+  willpower=Math.max(0,Math.min(100,willpower+delta));
+  const needle=document.getElementById('willNeedle');
+  const num=document.getElementById('willNum');
+  const angle=-90+(willpower/100)*180;
+  needle.style.transform=`translateX(-50%) rotate(${angle}deg)`;
+  num.textContent=willpower+'%';
+}
+
+function addStreak(){
+  streak++;
+  document.getElementById('streakCount').textContent=streak;
+  const note=document.getElementById('streakNote');
+  note.classList.add('show');
+  clearTimeout(window._streakT);
+  window._streakT=setTimeout(()=>note.classList.remove('show'),2500);
+}
+function resetStreakVisual(){
+  document.getElementById('streakNote').classList.remove('show');
+}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+// ===== CHƯƠNG STEP (thanh chương cố định) =====
+const chapters=[
+  {id:'sPre',label:'Quảng Nam'},
+  {id:'s1',label:'Thợ Điện'},
+  {id:'s2',label:'Giác Ngộ'},
+  {id:'s2x',label:'Trinh Sát'},
+  {id:'s3',label:'Nhiệm Vụ'},
+  {id:'s4',label:'Đặt Mìn'},
+  {id:'s5',label:'Bị Bắt'},
+  {id:'s5x',label:'Tòa Án'},
+  {id:'s6',label:'Ngục Tối'},
+  {id:'s6x',label:'Quốc Tế'},
+  {id:'s7',label:'Pháp Trường'}
+];
+const sceneToChap={
+  sPre:0,sPreA:0,sPreB:0,
+  s1:1,s1A:1,s1B:1,
+  s2:2,s2A:2,s2B:2,
+  s2x:3,s2xA:3,s2xB:3,
+  s3:4,s3A:4,s3B:4,
+  s4:5,
+  s5:6,s5A:6,s5B:6,
+  s5x:7,s5xA:7,s5xB:7,
+  s6:8,s6A:8,s6B:8,
+  s6x:9,
+  s7:10,
+  final:10
+};
+function renderChstep(){
+  const wrap=document.getElementById('chstepWrap');
+  wrap.innerHTML=chapters.map((c,i)=>`<div class="chstep-item"><div class="chstep-dot todo" id="csd-${i}">${i+1}</div><div class="chstep-label">${c.label}</div></div>`).join('');
+}
+function updateChstep(sceneId){
+  const cur=sceneToChap[sceneId];
+  if(cur===undefined)return;
+  chapters.forEach((c,i)=>{
+    const dot=document.getElementById('csd-'+i);
+    if(!dot)return;
+    dot.className='chstep-dot '+(i<cur?'done':i===cur?'now':'todo');
+  });
+}
+renderChstep();
+updateChstep('sPre');
+
+const sceneProgress={
+  cover:0,
+  sPre:4,sPreA:8,sPreB:6,
+  s1:14,s1A:18,s1B:16,
+  s2:26,s2A:32,s2B:29,
+  s2x:38,s2xA:42,s2xB:40,
+  s3:48,s3A:54,s3B:51,
+  s4:60,
+  s5:68,s5A:73,s5B:70,
+  s5x:78,s5xA:82,s5xB:80,
+  s6:86,s6A:90,s6B:88,
+  s6x:94,
+  s7:98,
+  final:100
+};
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+let sceneRewarded={};
+
+function go(id,willDelta){
+  if(!sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    if(willDelta===1){bumpWill(16);addStreak();}
+    else if(willDelta===0){bumpWill(-8);resetStreakVisual();streak=0;document.getElementById('streakCount').textContent=0;}
+  }
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(()=>{el.querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));},100);
+  }
+  document.getElementById('prog').style.width=(sceneProgress[id]||0)+'%';
+  updateChstep(id);
+  if(id==='s7' && !sceneRewarded['s7_typed']){
+    sceneRewarded['s7_typed']=true;
+    setTimeout(playFinalWords,700);
+  }
+  if(id==='s4' && !sceneRewarded['s4_fuse']){
+    sceneRewarded['s4_fuse']=true;
+    setTimeout(startFuse,500);
+  }
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+// ===== QUIZ =====
+const quizFb={
+  q0:{ok:'Đúng! Ông sinh năm 1940 tại làng Thanh Quýt, Điện Bàn, Quảng Nam.',no:'Đáp án B — năm 1940, làng Thanh Quýt, Điện Bàn, Quảng Nam.'},
+  q1:{ok:'Đúng! Ông làm thợ điện, gắn bó với nhà máy điện Chợ Quán tại Sài Gòn.',no:'Đáp án B — thợ điện, làm việc tại nhà máy điện Chợ Quán.'},
+  q2:{ok:'Phan Thị Quyên — người vợ trẻ, sau này trở thành biểu tượng của lòng chung thủy, được biết đến qua cuốn sách "Sống như Anh".',no:'Đáp án B — Phan Thị Quyên, vợ của Nguyễn Văn Trỗi.'},
+  q2x:{ok:'Nghề thợ điện cho phép ông tiếp cận cột điện, gầm cầu một cách hợp lý, không gây nghi ngờ khi trinh sát nhiều lần.',no:'Đáp án B — nghề thợ điện là vỏ bọc hoàn hảo để tiếp cận khu vực mục tiêu nhiều lần.'},
+  q3:{ok:'Kế hoạch nhắm vào đoàn xe hộ tống Bộ trưởng Quốc phòng Mỹ Robert McNamara khi đi qua cầu Công Lý.',no:'Đáp án B — nhắm vào đoàn xe của Robert McNamara.'},
+  q5:{ok:'Đêm 8 rạng ngày 9/5/1964 — thời điểm ông tiếp cận cầu Công Lý để thực hiện nhiệm vụ.',no:'Đáp án B — đêm 8 rạng 9/5/1964.'},
+  q5x:{ok:'Ông bị xét xử trước một tòa án quân sự đặc biệt, xét xử nhanh gọn, dành cho các vụ án bị xem là đe dọa an ninh nghiêm trọng.',no:'Đáp án B — tòa án quân sự đặc biệt, xét xử nhanh gọn.'},
+  q6:{ok:'Ông kiên quyết không khai báo, giữ vững lập trường suốt quá trình bị giam giữ và tra khảo.',no:'Đáp án B — kiên quyết không khai báo dù bị tra tấn.'},
+  q6x:{ok:'Du kích tại Venezuela bắt giữ một sĩ quan liên lạc quân sự Mỹ, yêu sách đổi mạng cho Nguyễn Văn Trỗi — một sự kết nối bất ngờ giữa hai điểm nóng cách xa nửa vòng trái đất.',no:'Đáp án B — vụ bắt giữ sĩ quan Mỹ tại Venezuela nhằm đổi mạng cho ông.'},
+  q7:{ok:'Ông từ chối bị bịt mắt, muốn nhìn thẳng vào giờ phút cuối cùng của đời mình.',no:'Đáp án B — từ chối bị bịt mắt trước khi hành quyết.'}
+};
+const QUIZ_MAX_ATTEMPTS=2, RETRY_SECONDS=3;
+
+// Đếm ngược "thử lại sau vài giây" dùng chung cho mọi dạng câu hỏi vượt ải
+function lockRetry(fbEl,baseMsg,onUnlock,seconds){
+  seconds=seconds||RETRY_SECONDS;
+  let s=seconds;
+  fbEl.textContent='✘ '+baseMsg+' — thử lại sau '+s+'s...';
+  fbEl.className='quiz-fb show wait';
+  const t=setInterval(()=>{
+    s--;
+    if(s<=0){
+      clearInterval(t);
+      fbEl.className='quiz-fb';
+      fbEl.textContent='';
+      onUnlock();
+    } else {
+      fbEl.textContent='✘ '+baseMsg+' — thử lại sau '+s+'s...';
+    }
+  },1000);
+}
+
+function ansQuiz(btn,correct,id){
+  if(quizAnswered[id]||quizLockedTemp[id])return;
+  const cont=btn.parentElement;
+  const fb=document.getElementById(id+'-fb');
+  cont.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+  if(correct){
+    quizAnswered[id]=true;
+    btn.classList.add('right');bumpWill(6);addStreak();
+    fb.textContent='✔ '+quizFb[id].ok;fb.className='quiz-fb show ok';
+  } else {
+    btn.classList.add('wrong');bumpWill(-4);
+    quizAttempts[id]=(quizAttempts[id]||0)+1;
+    if(quizAttempts[id]>=QUIZ_MAX_ATTEMPTS){
+      quizAnswered[id]=true;
+      cont.querySelectorAll('.quiz-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(',true,'))b.classList.add('right');});
+      fb.textContent='✘ '+quizFb[id].no;fb.className='quiz-fb show no';
+    } else {
+      quizLockedTemp[id]=true;
+      lockRetry(fb,'Chưa đúng, xem lại đoạn vừa đọc nhé',()=>{
+        quizLockedTemp[id]=false;
+        cont.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.classList.remove('wrong','right');});
+      });
+    }
+  }
+}
+
+// ===== ĐIỀN TỪ — dạng câu hỏi vượt ải mới =====
+const fillAnswered={},fillAttempts={},fillLockedTemp={};
+function normalizeVN(s){return (s||'').trim().toLowerCase().replace(/\s+/g,' ');}
+function checkFill(id,accepted,okMsg,noMsg){
+  if(fillAnswered[id]||fillLockedTemp[id])return;
+  const inp=document.getElementById(id+'-input');
+  const fb=document.getElementById(id+'-fb');
+  const val=normalizeVN(inp.value);
+  const ok=val.length>0 && accepted.some(a=>normalizeVN(a)===val);
+  if(ok){
+    fillAnswered[id]=true;
+    inp.disabled=true;
+    bumpWill(10);addStreak();
+    fb.textContent='✔ '+okMsg;fb.className='quiz-fb show ok';
+  } else {
+    bumpWill(-4);
+    fillAttempts[id]=(fillAttempts[id]||0)+1;
+    if(fillAttempts[id]>=QUIZ_MAX_ATTEMPTS){
+      fillAnswered[id]=true;
+      inp.disabled=true;
+      fb.textContent='✘ '+noMsg;fb.className='quiz-fb show no';
+    } else {
+      fillLockedTemp[id]=true;
+      inp.disabled=true;
+      lockRetry(fb,'Chưa đúng',()=>{
+        fillLockedTemp[id]=false;
+        inp.disabled=false;inp.value='';inp.focus();
+      });
+    }
+  }
+}
+
+// ===== SẮP XẾP — dạng câu hỏi vượt ải mới =====
+const arrangeState={};
+function getArrangeState(id){
+  if(!arrangeState[id])arrangeState[id]={picked:[],locked:false,attempts:0};
+  return arrangeState[id];
+}
+function pickArrange(id,btn){
+  const st=getArrangeState(id);
+  if(st.locked||btn.disabled)return;
+  btn.disabled=true;btn.classList.add('picked');
+  st.picked.push({pos:parseInt(btn.dataset.pos),label:btn.textContent});
+  renderArrangeAnswer(id);
+}
+function renderArrangeAnswer(id){
+  const st=getArrangeState(id);
+  const ans=document.getElementById(id+'-answer');
+  if(st.picked.length===0){
+    ans.innerHTML='<span class="arrange-placeholder">Bấm chip theo thứ tự bạn cho là đúng...</span>';
+    return;
+  }
+  ans.innerHTML=st.picked.map((p,i)=>'<div class="arrange-slot">'+(i+1)+'. '+p.label+'</div>').join('');
+}
+function resetArrange(id){
+  const st=getArrangeState(id);
+  if(st.locked)return;
+  st.picked=[];
+  document.querySelectorAll('#'+id+'-pool .arrange-chip').forEach(b=>{b.disabled=false;b.classList.remove('picked');});
+  renderArrangeAnswer(id);
+  const fb=document.getElementById(id+'-fb');
+  fb.className='quiz-fb';fb.textContent='';
+}
+function checkArrange(id,total,okMsg){
+  const st=getArrangeState(id);
+  if(st.locked)return;
+  const fb=document.getElementById(id+'-fb');
+  if(st.picked.length<total){
+    fb.textContent='⚠ Hãy chọn đủ '+total+' mốc trước khi kiểm tra.';fb.className='quiz-fb show wait';
+    return;
+  }
+  const correct=st.picked.every((p,i)=>p.pos===i);
+  if(correct){
+    st.locked=true;
+    bumpWill(12);addStreak();
+    fb.textContent='✔ '+okMsg;fb.className='quiz-fb show ok';
+  } else {
+    bumpWill(-4);
+    st.attempts++;
+    if(st.attempts>=QUIZ_MAX_ATTEMPTS){
+      st.locked=true;
+      fb.textContent='✘ Chưa đúng thứ tự. '+okMsg;fb.className='quiz-fb show no';
+    } else {
+      lockRetry(fb,'Chưa đúng thứ tự',()=>{resetArrange(id);});
+    }
+  }
+}
+
+// ===== NGÒI NỔ ĐẾM NGƯỢC (kỹ xảo chương đặt mìn) =====
+let fuseInterval=null,fuseSeconds=10,fusePressed=false;
+function startFuse(){
+  fuseSeconds=10;fusePressed=false;
+  document.getElementById('fuseTime').textContent=fuseSeconds;
+  document.getElementById('fuseFill').style.width='100%';
+  document.getElementById('fuseBtn').disabled=false;
+  document.getElementById('fuseResult').className='fuse-result';
+  clearInterval(fuseInterval);
+  fuseInterval=setInterval(()=>{
+    fuseSeconds-=0.1;
+    if(fuseSeconds<=0){
+      fuseSeconds=0;
+      clearInterval(fuseInterval);
+      if(!fusePressed)fuseFail('Thời gian đã hết — bạn giữ im lặng quá lâu, nguy cơ bị phát hiện tăng cao. May mắn thay, toán tuần tra vẫn đi khuất.');
+    }
+    document.getElementById('fuseTime').textContent=fuseSeconds.toFixed(1);
+    document.getElementById('fuseFill').style.width=(fuseSeconds/10*100)+'%';
+  },100);
+}
+function pressFuse(){
+  if(fusePressed)return;
+  fusePressed=true;
+  clearInterval(fuseInterval);
+  document.getElementById('fuseBtn').disabled=true;
+  const t=fuseSeconds;
+  const res=document.getElementById('fuseResult');
+  if(t>=3&&t<=7){
+    res.textContent='✔ Thời điểm chuẩn xác! Toán tuần tra đã đi khuất, bạn tiếp tục công việc trong im lặng tuyệt đối. Đúng với sự bình tĩnh phi thường mà Nguyễn Văn Trỗi đã có trong đêm định mệnh ấy.';
+    res.className='fuse-result show ok';
+    bumpWill(20);addStreak();
+  } else {
+    res.textContent='⚠ Hơi vội hoặc hơi chậm — nhưng may mắn vẫn mỉm cười, toán tuần tra không phát hiện ra gì. Trong thực tế, sự bình tĩnh tuyệt đối là điều đã giúp kế hoạch được tiến hành trót lọt đến phút cuối.';
+    res.className='fuse-result show no';
+    bumpWill(6);
+  }
+  finishFuse();
+}
+function fuseFail(msg){
+  const res=document.getElementById('fuseResult');
+  res.textContent='⏱ '+msg;
+  res.className='fuse-result show no';
+  document.getElementById('fuseBtn').disabled=true;
+  bumpWill(8);
+  finishFuse();
+}
+function finishFuse(){
+  setTimeout(()=>{
+    document.getElementById('s4-after').style.display='block';
+    document.getElementById('s4-after').querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));
+  },900);
+}
+
+// ===== CON DẤU TUYÊN ÁN (kỹ xảo MỚI chương tòa án) =====
+function stampVerdict(){
+  document.getElementById('verdictBtn').disabled=true;
+  document.getElementById('verdictStampText').classList.add('stamped');
+  bumpWill(4);
+  setTimeout(()=>{
+    document.getElementById('s5x-after').style.display='block';
+    document.getElementById('s5x-after').querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));
+  },700);
+}
+
+
+
+// ===== TYPEWRITER LỜI CUỐI (kỹ xảo chương pháp trường) =====
+const finalQuote="Hãy nhớ lấy lời tôi... Còn giặc Mỹ thì không có hạnh phúc. Việt Nam muôn năm! Việt Nam muôn năm! Việt Nam muôn năm!";
+let typing=false;
+function playFinalWords(){
+  if(typing)return;typing=true;
+  const el=document.getElementById('finalWordsText');
+  el.innerHTML='<span class="final-cursor"></span>';
+  let i=0;
+  const speed=45;
+  function step(){
+    if(i<=finalQuote.length){
+      el.innerHTML=finalQuote.slice(0,i)+'<span class="final-cursor"></span>';
+      i++;
+      setTimeout(step,speed);
+    } else {
+      typing=false;
+      document.getElementById('s7-after').style.display='block';
+      document.getElementById('s7-after').querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));
+    }
+  }
+  step();
+}
+
+// ===== RESTART =====
+function restart(){
+  willpower=0;streak=0;quizAnswered={};quizAttempts={};quizLockedTemp={};
+  for(const k in fillAnswered)delete fillAnswered[k];
+  for(const k in fillAttempts)delete fillAttempts[k];
+  for(const k in fillLockedTemp)delete fillLockedTemp[k];
+  for(const k in arrangeState)delete arrangeState[k];
+  sceneHistory=['cover'];historyIndex=0;sceneRewarded={};
+  bumpWill(0);
+  document.getElementById('streakCount').textContent=0;
+  document.querySelectorAll('.quiz-opt').forEach(b=>{b.classList.remove('right','wrong');b.disabled=false;});
+  document.querySelectorAll('.quiz-fb').forEach(f=>{f.className='quiz-fb';f.textContent='';});
+  document.querySelectorAll('.fill-input').forEach(i=>{i.disabled=false;i.value='';});
+  document.querySelectorAll('.arrange-chip').forEach(b=>{b.disabled=false;b.classList.remove('picked');});
+  document.querySelectorAll('.arrange-answer').forEach(a=>{a.innerHTML='<span class="arrange-placeholder">Bấm chip theo thứ tự bạn cho là đúng...</span>';});
+  document.getElementById('s4-after').style.display='none';
+  document.getElementById('s5x-after').style.display='none';
+  document.getElementById('s7-after').style.display='none';
+  document.getElementById('verdictBtn').disabled=false;
+  document.getElementById('verdictStampText').classList.remove('stamped');
+  document.getElementById('finalWordsText').innerHTML='<span class="final-cursor"></span>';
+  document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  updateChstep('sPre');
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateNavButtons();
+}
+</script>
+</body>
+</html>

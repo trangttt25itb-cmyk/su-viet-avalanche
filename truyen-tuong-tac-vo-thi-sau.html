@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Võ Thị Sáu — Đóa Hoa Bất Tử Đất Đỏ | Sử Việt Tương Tác</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --rose:#c2185b;--rose-l:#f48fb1;--rose-dim:#880e4f;
+  --gold:#c9920a;--gold-l:#f4c542;
+  --red:#8B0000;
+  --parchment:#f5ead6;--parch-dim:rgba(245,234,214,0.72);--parch-faint:rgba(245,234,214,0.4);
+  --bg:#0e0a12;--surface:rgba(20,12,22,0.97);
+  --ink:#0a0508;
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--parchment);min-height:100vh;overflow-x:hidden;}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bg-particles{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 20% 20%,rgba(194,24,91,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(139,0,0,0.1) 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(30,10,20,0.6) 0%,transparent 70%);}
+.nav-map-btn{background:transparent;border:1px solid rgba(194,24,91,.32);border-radius:50%;width:34px;height:34px;color:var(--rose-l);cursor:pointer;font-size:15px;}
+.map-overlay{position:fixed;inset:0;background:rgba(6,3,8,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.map-overlay.show{display:flex;}
+.map-modal{background:radial-gradient(ellipse at 12% 88%,rgba(201,146,10,.09),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(194,24,91,.09),transparent 55%),var(--surface);border:1px solid rgba(201,146,10,.4);border-radius:16px;padding:24px 26px;max-width:820px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:14px;}
+.map-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--rose-l);}
+.map-modal-close{background:rgba(201,146,10,.15);border:1px solid rgba(201,146,10,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.jmap-note{font-size:11.5px;color:var(--parch-faint);margin-bottom:14px;}
+.map-modal svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink);stroke-width:2;filter:drop-shadow(0 0 7px rgba(201,146,10,.75));transition:opacity .7s ease;}
+.jmap-pt.locked{opacity:1;fill:rgba(245,234,214,.08);stroke:rgba(245,234,214,.35);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl{fill:#f5ead6;font-size:12px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-lbl.locked{opacity:.4;fill:var(--parch-faint);font-weight:400;}
+.jmap-yr{fill:var(--rose-l);font-size:10px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-yr.locked{opacity:.4;fill:var(--parch-faint);}
+.jmap-path{fill:none;stroke:rgba(201,146,10,0.5);stroke-width:2.5;stroke-dasharray:5 5;}
+.corner{position:fixed;width:44px;height:44px;z-index:2;pointer-events:none;border-color:rgba(194,24,91,0.32);border-style:solid;}
+.corner.tl{top:16px;left:16px;border-width:2px 0 0 2px;}.corner.tr{top:16px;right:16px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:16px;left:16px;border-width:0 0 2px 2px;}.corner.br{bottom:16px;right:16px;border-width:0 2px 2px 0;}
+.top-stripe{position:fixed;top:0;left:0;right:0;height:4px;z-index:400;background:linear-gradient(90deg,var(--red) 0%,var(--red) 45%,var(--rose) 45%,var(--rose-l) 100%);}
+nav{position:fixed;top:4px;left:0;right:0;z-index:300;height:54px;background:rgba(14,10,18,0.98);border-bottom:1px solid rgba(194,24,91,0.22);display:flex;align-items:center;justify-content:space-between;padding:0 30px;backdrop-filter:blur(14px);}
+.nav-left{display:flex;align-items:center;gap:14px;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:17px;color:var(--rose-l);letter-spacing:3px;text-decoration:none;}
+.nav-sub{font-size:11px;color:var(--parch-faint);letter-spacing:1.5px;font-family:'Space Mono',monospace;}
+.nav-back{font-size:12px;color:var(--parch-faint);letter-spacing:1px;text-decoration:none;padding:6px 14px;border:1px solid rgba(194,24,91,.32);border-radius:20px;transition:.25s;white-space:nowrap;}
+.nav-back:hover{color:var(--rose-l);border-color:var(--rose-l);background:rgba(194,24,91,.12);}
+.nav-icon-btn{background:transparent;border:1px solid rgba(194,24,91,.32);border-radius:50%;width:34px;height:34px;color:var(--rose-l);cursor:pointer;font-size:15px;}
+.prog-rail{position:fixed;top:58px;left:0;right:0;z-index:299;height:3px;background:rgba(255,255,255,0.05);}
+.prog-fill{height:100%;width:0%;transition:width .8s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--rose-dim),var(--rose),var(--gold),var(--gold-l));}
+.hud{position:fixed;top:70px;right:18px;z-index:298;}
+.hud-card{background:rgba(14,10,18,0.94);border:1px solid rgba(194,24,91,0.3);border-radius:40px;padding:7px 18px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(12px);}
+.hud-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-family:'Space Mono',monospace;}
+.hud-val{font-family:'Playfair Display',serif;font-size:21px;color:var(--rose-l);font-weight:700;min-width:32px;text-align:center;}
+.pts-pop{position:fixed;top:82px;right:96px;z-index:999;font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 18px rgba(244,197,66,.85);}
+.pts-pop.show{animation:popUp .85s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}35%{opacity:1;transform:translateY(-20px) scale(1.2);}72%{opacity:1;transform:translateY(-36px) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(.9);}}
+.streak-badge{position:fixed;top:70px;left:18px;z-index:298;background:rgba(14,10,18,0.94);border:1px solid rgba(194,24,91,0.32);border-radius:40px;padding:7px 15px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--parch-dim);backdrop-filter:blur(10px);opacity:0;transform:translateX(-10px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(255,140,0,.6);box-shadow:0 0 16px rgba(255,110,0,.25);}
+.streak-num{font-family:'Playfair Display',serif;font-size:18px;color:#ffa040;font-weight:700;}
+.combo-burst{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06);}}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(194,24,91,0.85),rgba(14,10,18,0.95));border:2px solid var(--gold-l);border-radius:20px;padding:16px 30px;box-shadow:0 0 50px rgba(244,197,66,.35);}
+.combo-title{font-size:11px;color:var(--gold-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:27px;color:#fff;font-family:'Playfair Display',serif;}
+.combo-sub{font-size:12px;color:rgba(245,234,214,0.6);margin-top:4px;}
+.gold-burst{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--gold-l);pointer-events:none;z-index:9999;box-shadow:0 0 8px rgba(244,197,66,.9);}
+
+.chapter-map{display:flex;gap:0;margin:26px 0;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);}
+.chapter-map::-webkit-scrollbar{display:none;}
+.cm-item{flex:1;min-width:64px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.cm-item:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(194,24,91,.28),rgba(194,24,91,.06));z-index:0;}
+.cm-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;z-index:1;position:relative;transition:.4s;}
+.cm-dot.done{background:var(--gold);border:2px solid var(--gold-l);color:var(--ink);}
+.cm-dot.now{background:var(--rose);border:2px solid var(--rose-l);color:#fff;animation:pulseNow 2s ease-in-out infinite;}
+@keyframes pulseNow{0%,100%{box-shadow:0 0 0 0 rgba(194,24,91,.5);}50%{box-shadow:0 0 0 7px rgba(194,24,91,0);}}
+.cm-dot.lock{background:rgba(245,234,214,.04);border:2px solid rgba(245,234,214,.1);color:var(--parch-faint);}
+.cm-year{font-size:9.5px;color:var(--rose-l);margin-top:4px;text-align:center;font-family:'Space Mono',monospace;}
+.cm-evt{font-size:8.5px;color:var(--parch-faint);margin-top:1px;text-align:center;line-height:1.3;}
+
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(194,24,91,.4),rgba(14,10,18,.9));border:2px solid rgba(201,146,10,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(194,24,91,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(194,24,91,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(201,146,10,.5),0 0 130px rgba(194,24,91,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(32px,7vw,54px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(194,24,91,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--rose-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:540px;font-size:15.5px;line-height:1.85;color:var(--parch-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--rose),var(--rose-dim));border:1px solid rgba(201,146,10,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(194,24,91,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(194,24,91,.5),0 0 40px rgba(201,146,10,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--parch-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.story-container{max-width:800px;margin:0 auto;padding:96px 22px 80px;position:relative;z-index:1;}
+.scene{display:none;animation:fadeScene .75s ease;}
+.scene.active{display:block;}
+@keyframes fadeScene{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.chapter-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(194,24,91,0.12);border:1px solid rgba(194,24,91,0.35);border-radius:30px;padding:6px 16px;font-size:12px;color:var(--rose-l);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;flex-wrap:wrap;}
+.scene-img-wrap{width:100%;height:280px;border-radius:16px;margin-bottom:26px;border:1px solid rgba(194,24,91,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.7);position:relative;overflow:hidden;background:linear-gradient(135deg,#120a16,#1c0a1a);}
+.scene-img-wrap img{width:100%;height:100%;object-fit:cover;filter:sepia(0.15) contrast(1.08);opacity:.82;}
+.scene-img-cap{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(0deg,rgba(10,5,8,.75),transparent);font-size:12px;color:var(--rose-l);letter-spacing:1px;}
+
+.spirit-bar{background:rgba(194,24,91,0.07);border:1px solid rgba(194,24,91,0.22);border-radius:11px;padding:12px 16px;margin:16px 0 22px;display:flex;align-items:center;gap:12px;}
+.spirit-label{font-size:9.5px;color:var(--rose-l);letter-spacing:2px;text-transform:uppercase;min-width:62px;font-family:'Space Mono',monospace;}
+.spirit-track{flex:1;height:7px;background:rgba(245,234,214,0.06);border-radius:4px;overflow:hidden;}
+.spirit-fill{height:100%;border-radius:4px;width:0%;background:linear-gradient(90deg,var(--rose-dim),var(--rose),var(--gold-l));transition:width .9s cubic-bezier(.4,0,.2,1);}
+.spirit-pct{font-size:11px;color:var(--gold-l);min-width:28px;text-align:right;font-family:'Space Mono',monospace;}
+
+.narrator{font-size:12px;color:var(--rose-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;opacity:.8;}
+.story-text{font-size:19px;line-height:1.92;color:rgba(245,234,214,0.92);margin-bottom:15px;}
+.story-text em{color:var(--rose-l);font-style:italic;}
+.story-text strong{color:#fff;font-weight:600;}
+
+.dialogue{background:rgba(194,24,91,0.08);border-left:3px solid var(--rose);border-radius:0 12px 12px 0;padding:16px 20px;margin:20px 0;font-size:18px;font-style:italic;color:var(--parchment);line-height:1.75;position:relative;}
+.dialogue-speaker{font-size:10px;font-style:normal;color:var(--rose-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace;}
+.src-note{display:block;font-size:11px;font-style:italic;color:var(--parch-faint);margin-top:9px;opacity:.85;}
+
+.fact-box{background:rgba(201,146,10,0.07);border:1px solid rgba(201,146,10,0.28);border-radius:12px;padding:17px 20px;margin:20px 0;font-size:15px;line-height:1.82;color:var(--parch-dim);}
+.fact-title{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;font-style:normal;display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;}
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:10px;cursor:pointer;transition:.2s;}
+.src-tag.v{background:rgba(201,146,10,.14);color:var(--gold-l);border:1px solid rgba(201,146,10,.35);}
+.src-tag:hover{transform:scale(1.06);}
+
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(194,24,91,0.12);border:1px solid rgba(194,24,91,0.22);border-radius:20px;padding:3px 11px;font-size:11px;color:var(--rose-l);margin:3px 3px 3px 0;}
+
+.quote-moment{text-align:center;padding:26px;background:rgba(194,24,91,0.07);border:1px solid rgba(194,24,91,0.22);border-radius:16px;margin:24px 0;font-family:'Playfair Display',serif;font-size:20px;color:var(--rose-l);line-height:1.7;font-style:italic;}
+.quote-src{font-size:12px;color:rgba(245,234,214,0.45);font-style:normal;font-family:'Crimson Pro',serif;margin-top:11px;display:block;}
+
+.reflect{background:rgba(201,146,10,0.05);border:1px dashed rgba(201,146,10,0.35);border-radius:14px;padding:17px 21px;margin:20px 0;}
+.reflect-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;font-family:'Space Mono',monospace;}
+.reflect-q{font-size:16px;font-style:italic;color:var(--parchment);line-height:1.68;margin-bottom:7px;}
+.reflect-note{font-size:11.5px;color:var(--parch-faint);}
+
+.counterf{margin-top:13px;}
+.counterf-btn{background:rgba(201,146,10,.08);border:1px solid rgba(201,146,10,.3);border-radius:10px;padding:10px 17px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px;}
+.counterf-btn:hover{background:rgba(201,146,10,.16);}
+.counterf-body{display:none;margin-top:11px;background:rgba(194,24,91,0.05);border-left:3px solid rgba(194,24,91,.4);border-radius:0 12px 12px 0;padding:14px 19px;font-size:14px;line-height:1.78;color:var(--parch-dim);font-style:italic;}
+.counterf-body.show{display:block;animation:reflectIn .4s ease;}
+@keyframes reflectIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.kc{background:rgba(201,146,10,0.05);border:1px solid rgba(201,146,10,0.2);border-radius:14px;padding:18px 21px;margin:22px 0;}
+.kc-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.kc-q{font-size:16.5px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:8px;}
+.kc-opt{background:rgba(245,234,214,.03);border:1px solid rgba(245,234,214,.1);border-radius:9px;padding:11px 15px;font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--parchment);cursor:pointer;text-align:left;transition:.22s;}
+.kc-opt:hover:not(:disabled){background:rgba(201,146,10,.08);border-color:rgba(201,146,10,.3);transform:translateX(4px);}
+.kc-opt.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:11px;font-size:14.5px;line-height:1.7;display:none;padding:10px 14px;border-radius:9px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(30,90,25,.16);color:#a5d6a7;}
+.kc-fb.no{background:rgba(120,0,0,.16);color:#ef9a9a;}
+
+.divider{text-align:center;color:var(--rose);opacity:.4;font-size:16px;letter-spacing:12px;margin:26px 0;}
+.choices-title{font-size:11px;color:var(--rose-l);letter-spacing:2.5px;text-transform:uppercase;margin:32px 0 14px;display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;}
+.choices-title::before,.choices-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(194,24,91,.3),transparent);}
+.choices{display:flex;flex-direction:column;gap:11px;}
+.choice-btn{background:rgba(245,234,214,.025);border:1px solid rgba(245,234,214,.12);border-radius:12px;padding:16px 20px;color:var(--parchment);font-family:'Crimson Pro',serif;font-size:16.5px;text-align:left;cursor:pointer;transition:.28s;display:flex;align-items:flex-start;gap:13px;line-height:1.55;position:relative;overflow:hidden;}
+.choice-btn:hover{background:rgba(194,24,91,0.1);border-color:rgba(194,24,91,.45);transform:translateX(6px);box-shadow:0 4px 20px rgba(0,0,0,.28);}
+.choice-letter{width:29px;height:29px;min-width:29px;border-radius:50%;background:rgba(194,24,91,.1);border:1px solid rgba(194,24,91,.4);color:var(--rose-l);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;flex-shrink:0;margin-top:1px;transition:.28s;}
+.choice-btn:hover .choice-letter{background:rgba(194,24,91,.26);border-color:var(--rose-l);}
+.choice-sub{font-size:12px;color:var(--parch-faint);font-style:italic;margin-top:4px;}
+
+.outcome{border-radius:14px;padding:20px;margin:20px 0;font-size:16.5px;line-height:1.82;}
+.outcome.good{background:rgba(194,24,91,0.1);border:1px solid rgba(194,24,91,0.3);}
+.outcome.bad{background:rgba(100,10,10,0.18);border:1px solid rgba(139,0,0,0.32);}
+.outcome-icon{font-size:29px;display:block;margin-bottom:9px;}
+
+.continue-btn{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:14px 28px;background:linear-gradient(135deg,var(--rose-dim),var(--rose));border:1px solid rgba(201,146,10,0.3);border-radius:12px;color:var(--parchment);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.continue-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(194,24,91,.4);}
+
+.gate{background:rgba(194,24,91,0.06);border:2px solid rgba(201,146,10,0.3);border-radius:16px;padding:22px 26px;margin:22px 0;text-align:center;}
+.gate-icon{font-size:44px;display:block;margin-bottom:10px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);margin-bottom:8px;}
+.gate-desc{font-size:14.5px;color:var(--parch-dim);line-height:1.72;margin-bottom:15px;}
+.gate-req{display:inline-block;background:rgba(194,24,91,0.15);border:1px solid rgba(201,146,10,0.3);border-radius:22px;padding:5px 18px;font-size:11.5px;color:var(--gold-l);margin-bottom:16px;font-family:'Space Mono',monospace;letter-spacing:1px;}
+.mq-dots{display:flex;gap:7px;margin-bottom:14px;justify-content:center;}
+.mq-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(201,146,10,.45);background:transparent;transition:.3s;}
+.mq-dot.done{background:var(--gold-l);}
+.mq-dot.now{background:var(--rose-l);border-color:var(--rose-l);}
+.challenge{background:rgba(194,24,91,0.06);border:1px solid rgba(194,24,91,0.24);border-radius:14px;padding:18px 21px;margin:16px 0;text-align:left;}
+.ch-tag{font-size:10px;color:var(--rose-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.ch-q{font-size:15.5px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.ch-opts{display:flex;flex-direction:column;gap:8px;}
+.ch-opt{background:rgba(245,234,214,.03);border:1px solid rgba(245,234,214,.1);border-radius:9px;padding:11px 15px;font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--parchment);cursor:pointer;text-align:left;transition:.22s;}
+.ch-opt:hover:not(:disabled){background:rgba(194,24,91,.1);border-color:rgba(201,146,10,.3);transform:translateX(4px);}
+.ch-opt.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.ch-opt.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.ch-opt:disabled{cursor:default;}
+.ch-fb{margin-top:10px;font-size:14.5px;line-height:1.7;display:none;padding:10px 14px;border-radius:9px;}
+.ch-fb.show{display:block;}
+.ch-fb.ok{background:rgba(30,90,25,.18);color:#a5d6a7;}
+.ch-fb.no{background:rgba(120,0,0,.18);color:#ef9a9a;}
+.unlock-btn{display:inline-flex;align-items:center;gap:9px;margin-top:12px;padding:12px 26px;background:rgba(201,146,10,0.15);border:1px solid rgba(201,146,10,0.4);border-radius:12px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;opacity:.35;pointer-events:none;}
+.unlock-btn.ready{opacity:1;pointer-events:auto;background:rgba(201,146,10,0.28);}
+.unlock-btn.ready:hover{background:rgba(201,146,10,0.45);transform:translateY(-2px);}
+.gate-locked{pointer-events:none;opacity:0.42;}
+
+.src-popup-overlay{position:fixed;inset:0;background:rgba(6,3,8,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--surface);border:1px solid rgba(201,146,10,.4);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;font-family:'Space Mono',monospace;background:rgba(201,146,10,.18);color:var(--gold-l);border:1px solid rgba(201,146,10,.4);display:inline-block;margin-bottom:12px;}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:10px;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--parch-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(245,234,214,.04);border-left:2px solid rgba(201,146,10,.4);padding:9px 13px;font-size:13px;color:var(--parch-faint);font-family:'Crimson Pro',serif;font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(201,146,10,.15);border:1px solid rgba(201,146,10,.35);color:var(--gold-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;}
+.src-popup-close:hover{background:rgba(201,146,10,.28);}
+
+.final-result{text-align:center;padding:40px 0;}
+.final-seal{width:130px;height:130px;border-radius:50%;background:rgba(194,24,91,.09);border:2px solid rgba(194,24,91,.4);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:52px;animation:bloom 2.4s ease infinite alternate;box-shadow:0 0 0 0 rgba(194,24,91,.35);}
+.final-seal{position:relative;}
+.final-seal::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:1px dashed rgba(201,146,10,.3);animation:spin 18s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes bloom{from{transform:scale(1);filter:brightness(1);}to{transform:scale(1.08);filter:brightness(1.3);}}
+.final-title{font-family:'Playfair Display',serif;font-size:32px;color:var(--rose-l);margin-bottom:12px;line-height:1.3;}
+.final-pts{font-size:52px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:10px 0;text-shadow:0 0 28px rgba(201,146,10,.5);}
+.final-rank-badge{display:inline-block;background:rgba(194,24,91,.12);border:1px solid rgba(194,24,91,.35);border-radius:30px;padding:7px 24px;font-size:13.5px;color:var(--rose-l);margin-bottom:20px;letter-spacing:1px;}
+.final-desc{font-size:16.5px;color:var(--parch-dim);line-height:1.9;max-width:530px;margin:0 auto 28px;}
+.final-achs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px;}
+.ach{background:rgba(201,146,10,.07);border:1px solid rgba(201,146,10,.26);border-radius:12px;padding:11px 14px;text-align:center;min-width:92px;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+.ach-icon{font-size:25px;display:block;margin-bottom:5px;}
+.ach-name{font-size:9.5px;color:var(--gold-l);letter-spacing:1px;font-family:'Space Mono',monospace;}
+.final-lesson{background:rgba(194,24,91,.06);border:1px solid rgba(194,24,91,.2);border-radius:14px;padding:22px 24px;text-align:left;margin:0 0 30px;font-size:15.5px;line-height:1.88;color:var(--parch-dim);}
+.fl-tag{font-size:10px;color:var(--rose-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.journal{background:rgba(201,146,10,0.05);border:1px solid rgba(201,146,10,0.25);border-radius:16px;padding:22px 24px;margin:0 0 28px;text-align:left;}
+.journal-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:13px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(245,234,214,.06);font-size:14px;color:var(--parch-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11px;padding:2px 10px;border-radius:10px;font-family:'Space Mono',monospace;white-space:nowrap;}
+.journal-status.ok{background:rgba(30,90,25,.2);color:#a5d6a7;}
+.journal-status.no{background:rgba(120,0,0,.2);color:#ef9a9a;}
+.journal-copy{margin-top:15px;background:rgba(201,146,10,.14);border:1px solid rgba(201,146,10,.35);border-radius:10px;padding:10px 20px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;}
+.journal-copy:hover{background:rgba(201,146,10,.24);}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+.restart-btn{padding:13px 28px;background:transparent;border:1px solid var(--rose);border-radius:12px;color:var(--rose-l);font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;}
+.restart-btn:hover{background:rgba(194,24,91,0.15);}
+.home-btn{padding:13px 28px;background:var(--rose-dim);border:1px solid rgba(201,146,10,0.3);border-radius:12px;color:var(--parchment);font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-block;}
+.home-btn:hover{background:var(--rose);}
+
+.ref-page{background:rgba(194,24,91,0.05);border:1px solid rgba(194,24,91,0.2);border-radius:16px;padding:24px 26px;margin:30px 0 10px;}
+.ref-page-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--rose-l);margin-bottom:6px;}
+.ref-page-sub{font-size:12.5px;color:var(--parch-faint);margin-bottom:16px;line-height:1.6;}
+.ref-group{margin-bottom:14px;}
+.ref-group-h{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--rose-l);margin-bottom:8px;font-family:'Space Mono',monospace;}
+.ref-item{font-size:13.5px;line-height:1.85;color:var(--parch-dim);padding-left:16px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold);}
+.ref-overlay{position:fixed;inset:0;background:rgba(6,3,8,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ref-overlay.show{display:flex;}
+.ref-modal{background:var(--surface);border:1px solid rgba(201,146,10,.34);border-radius:16px;padding:24px 26px;max-width:640px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto;}
+.ref-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:14px;}
+.ref-modal-close{background:rgba(201,146,10,.14);border:1px solid rgba(201,146,10,.34);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+
+@media(max-width:640px){
+  nav{padding:0 14px;}
+  .story-container{padding:88px 12px 60px;}
+  .story-text{font-size:17px;}
+  .chapter-map{margin:20px -12px;padding:0 12px 10px;}
+  .cm-item{min-width:56px;}
+  .cm-dot{width:22px;height:22px;font-size:9px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="bg-particles"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="top-stripe"></div>
+<div class="pts-pop" id="ptsPop">+0</div>
+
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--rose-dim));
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(194,24,91,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--rose-dim));
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(194,24,91,.45);
+  align-items:center;justify-content:center;">➡</button>
+
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🌺 Bản Đồ Hành Trình Đất Đỏ — Côn Đảo</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note">Các điểm dừng chân mở khóa dần khi bạn đi qua từng chương. Sơ đồ cách điệu, không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,180 C110,150 130,90 190,95 S270,140 320,130 S400,60 460,65 S540,150 590,145 S670,90 740,60"/>
+      <circle class="jmap-pt pt-datdo" cx="40" cy="180" r="6"/><text class="jmap-yr pt-datdo" x="40" y="200" text-anchor="middle">1947</text><text class="jmap-lbl pt-datdo" x="40" y="212" text-anchor="middle">🌾 Đất Đỏ</text>
+      <circle class="jmap-pt locked pt-trinhsat" cx="190" cy="95" r="6"/><text class="jmap-yr locked pt-trinhsat" x="190" y="80" text-anchor="middle">1948</text><text class="jmap-lbl locked pt-trinhsat" x="190" y="70" text-anchor="middle">🌙 Vùng ven</text>
+      <circle class="jmap-pt locked pt-cho" cx="320" cy="130" r="6"/><text class="jmap-yr locked pt-cho" x="320" y="150" text-anchor="middle">7/1949</text><text class="jmap-lbl locked pt-cho" x="320" y="162" text-anchor="middle">💥 Chợ Đất Đỏ</text>
+      <circle class="jmap-pt locked pt-chihoa" cx="460" cy="65" r="6"/><text class="jmap-yr locked pt-chihoa" x="460" y="50" text-anchor="middle">1950</text><text class="jmap-lbl locked pt-chihoa" x="460" y="40" text-anchor="middle">⚖️ Khám Chí Hòa</text>
+      <circle class="jmap-pt locked pt-condao" cx="590" cy="145" r="6"/><text class="jmap-yr locked pt-condao" x="590" y="165" text-anchor="middle">1950–52</text><text class="jmap-lbl locked pt-condao" x="590" y="177" text-anchor="middle">🏝️ Côn Đảo</text>
+      <circle class="jmap-pt locked pt-hangduong" cx="740" cy="60" r="7"/><text class="jmap-yr locked pt-hangduong" x="740" y="42" text-anchor="middle">23/1/52</text><text class="jmap-lbl locked pt-hangduong" x="722" y="32" text-anchor="middle">🌸 Hàng Dương</text>
+    </svg>
+  </div>
+</div>
+
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <span class="src-popup-badge" id="srcBadge">ĐÃ KIỂM CHỨNG</span>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<div class="streak-badge" id="streakBadge">
+  <span>🔥</span>
+  <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);">Liên tiếp</div><div class="streak-num" id="streakNum">0</div></div>
+</div>
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Trả lời liên tiếp đúng!</div>
+    <div class="combo-label" id="comboLabel">🔥 COMBO x3</div>
+    <div class="combo-sub" id="comboSub">+10 điểm thưởng</div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=11">← Quay lại</a>
+    <a class="nav-logo" href="#">🌺 SỬ VIỆT</a>
+  </div>
+  <div class="nav-sub">VÕ THỊ SÁU — ĐÓA HOA BẤT TỬ ĐẤT ĐỎ (9 Chương)</div>
+  <div style="display:flex;align-items:center;">
+    <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo" style="margin-right:8px;">📚</button>
+    <button class="nav-map-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình" style="margin-right:8px;">🌺</button>
+    <button class="nav-icon-btn" id="soundToggle" onclick="toggleSound()">🔊</button>
+  </div>
+</nav>
+<div class="prog-rail"><div class="prog-fill" id="prog"></div></div>
+<div class="hud">
+  <div class="hud-card">
+    <div><div class="hud-label">Điểm</div><div class="hud-val" id="scoreEl">0</div></div>
+    <div><div class="hud-label">Danh Hiệu</div><div style="font-size:10px;color:var(--rose-l);" id="rankEl">—</div></div>
+  </div>
+</div>
+
+<div class="story-container">
+
+<!-- ================= COVER MỞ ĐẦU ================= -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">🌺</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">VÕ THỊ SÁU<br>Đóa Hoa Bất Tử Đất Đỏ</div>
+    <div class="cover-sub">Năm 1947 — 1952 · Nữ Anh Hùng Tuổi Đôi Mươi</div>
+    <div class="cover-desc">Ngươi là Võ Thị Sáu — cô gái 14 tuổi ở làng Đất Đỏ dám nhận nhiệm vụ trinh sát đầu tiên, lập chiến công giữa lễ hội đông người, rồi bị bắt, bị kết án, và cuối cùng hiên ngang trước pháp trường Côn Đảo ở tuổi 19. Một hành trình 9 chương về lòng gan dạ, sự tính toán khôn ngoan và niềm tin không lay chuyển đến giây phút cuối cùng.</div>
+    <div class="cover-chips">
+      <span class="chip">🌺 9 chương</span>
+      <span class="chip">🎓 Kiến thức + Cửa ải</span>
+      <span class="chip">🗺️ Bản đồ hành trình</span>
+      <span class="chip">📔 Nhật ký hành trình</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">🌺 Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ================= CHƯƠNG I ================= -->
+<div class="scene" id="s1">
+<div class="chapter-badge">🌺 CHƯƠNG I · 1947 — GIÁC NGỘ Ở ĐẤT ĐỎ <span class="src-tag v" onclick="openSrcPopup('s1')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/datdo.jpg" alt="Võ Thị Sáu, Đất Đỏ 1947" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🌾 LÀNG ĐẤT ĐỎ, BÀ RỊA — 1947</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot now">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot lock">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="spirit-bar"><span style="font-size:18px;">🌺</span><span class="spirit-label">Ý Chí</span><div class="spirit-track"><div class="spirit-fill" id="spiritMeter"></div></div><span class="spirit-pct" id="spiritPct">0%</span></div>
+
+<div class="narrator">Người kể chuyện</div>
+<div class="story-text">
+  Năm 1947. <strong>Ngươi — Võ Thị Sáu</strong>, mười bốn tuổi — lớn lên giữa vùng Đất Đỏ, Long Điền, nơi bom đạn và bốt canh của thực dân Pháp phủ bóng lên từng con đường làng.
+</div>
+<div class="story-text">
+  Ngươi đã chứng kiến quá nhiều: những cuộc càn quét, những người hàng xóm bị bắt vì tình nghi theo Việt Minh, những đêm cả nhà không dám thắp đèn vì sợ máy bay do thám. Trong ngươi, một câu hỏi cứ lớn dần: <em>mình có thể làm gì, ngoài việc sợ hãi?</em>
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Anh Hai Thành — cán bộ liên lạc trong xóm</div>
+  "Sáu này, tổ chức đang cần một người thông thuộc từng lối mòn, từng bờ mương quanh đây để làm liên lạc, trinh sát. Việc này không có tuổi tối thiểu, chỉ có một điều kiện — dám hay không dám thôi."
+</div>
+<div class="fact-box">
+  <span class="fact-title">📚 BỐI CẢNH LỊCH SỬ <span class="src-tag v" onclick="openSrcPopup('s1')">xem nguồn</span></span>
+  Bà Rịa những năm 1947–1948 là một trong những vùng địch hậu bị kiểm soát gắt gao. Việc trẻ em, thiếu niên tham gia làm giao liên, trinh sát khá phổ biến trong kháng chiến — vì các em ít bị nghi ngờ, len lỏi qua các trạm gác dễ dàng hơn người lớn.
+</div>
+<div class="reflect">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Ở tuổi 14, ranh giới giữa "còn là trẻ con" và "đủ sức gánh trách nhiệm" nằm ở đâu — do tuổi tác quyết định, hay do hoàn cảnh?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm.</div>
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="s1-choices">
+  <button class="choice-btn" onclick="pickChoice('s1','s1A',15,true)"><span class="choice-letter">A</span><div>"Em nhận! Anh Hai đừng lo, từng con đường, bờ ruộng ở đây em thuộc như lòng bàn tay."<div class="choice-sub">⭐ ĐÚNG TINH THẦN LỊCH SỬ! Đây là điều Võ Thị Sáu thật sự đã làm năm 1947.</div></div></button>
+  <button class="choice-btn" onclick="pickChoice('s1','s1B',6,false)"><span class="choice-letter">B</span><div>"Nhưng em còn nhỏ quá, anh tìm người lớn hơn giúp việc này đi..."<div class="choice-sub">Do dự — con đường an toàn hơn, nhưng chậm hơn.</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s1A">
+<div class="chapter-badge">✅ LỰA CHỌN A — ĐÚNG TINH THẦN LỊCH SỬ</div>
+<div class="outcome good"><span class="outcome-icon">🌺</span><strong>Chính xác!</strong> Ngươi trở thành một trong những thành viên trẻ tuổi nhất của Đội Công an xung phong Đất Đỏ — chuyên trinh sát, đưa tin, hỗ trợ các trận đánh nhỏ phá tề, trừ gian.</div>
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s2',0)"><span class="choice-letter">→</span><div>Chương II: 1948 — Nhiệm Vụ Trinh Sát Đầu Tiên</div></button></div>
+</div>
+
+<div class="scene" id="s1B">
+<div class="chapter-badge">📍 LỰA CHỌN B — DO DỰ</div>
+<div class="outcome"><span class="outcome-icon">💭</span>Anh Hai Thành không ép, chỉ nói nhẹ: <em>"Sáu à, không phải tuổi tác quyết định ai làm được việc lớn, mà là lòng gan dạ. Em cứ nghĩ thêm."</em> Đêm đó ngươi trằn trọc, nhớ lại những khuôn mặt hoảng loạn của bà con trong các cuộc càn.</div>
+<div class="choices-title">⚡ QUYẾT ĐỊNH LẠI</div>
+<div class="choices"><button class="choice-btn" onclick="go('s1A',8)"><span class="choice-letter">→</span><div>"Anh Hai ơi, em đổi ý — em làm! Không thể đứng nhìn mãi được."</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG II ================= -->
+<div class="scene" id="s2">
+<div class="chapter-badge">🌙 CHƯƠNG II · 1948 — NHIỆM VỤ TRINH SÁT ĐẦU TIÊN <span class="src-tag v" onclick="openSrcPopup('s2')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/trinhsat.jpg" alt="Võ Thị Sáu, nhiệm vụ trinh sát 1948" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🌾 VÙNG VEN ĐẤT ĐỎ, ĐÊM TRINH SÁT</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot now">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Nhiệm vụ đầu tiên: theo dõi giờ đổi gác của một bốt lính, ghi nhớ số lượng lính, vũ khí, và đường tuần tra — để tổ đội có thể lên kế hoạch tập kích. Không giấy, không bút — mọi thứ phải nhớ trong đầu, rồi báo lại chính xác từng chi tiết.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Chú Tư Phước — đội trưởng Công an xung phong</div>
+  "Con nhớ kỹ: đi một mình, không mang theo gì khả nghi, gặp lính hỏi thì cứ nói đi mót lúa mót khoai. Nếu thấy nguy hiểm, bỏ nhiệm vụ, về ngay — tính mạng con quan trọng hơn tin tức."
+</div>
+<div class="story-text">
+  Đêm đó, khi đang nép sau lùm cây đếm bước chân lính gác, ngươi bỗng nghe tiếng chó sủa dữ dội phía sau — có người đang đi về phía ngươi.
+</div>
+<div class="reflect">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Giữ đúng kỷ luật "an toàn trước, nhiệm vụ sau" — đó là bản lĩnh hay là yếu đuối?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc2-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc2',15,'⭐ ĐÚNG TINH THẦN! Kỷ luật trinh sát luôn đặt an toàn bản thân và bí mật của tổ chức lên trên việc cố lấy thêm thông tin — một tin trinh sát chính xác nhưng an toàn còn giá trị hơn liều lĩnh.')"><span class="choice-letter">A</span><div>Bình tĩnh lùi dần trong bóng tối, rút lui theo đúng lối đã định trước, giữ bí mật tuyệt đối.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc2',5,'Không phải lựa chọn khôn ngoan. Cố nán lại để quan sát thêm khi đã bị lộ nguy cơ có thể khiến toàn bộ nhiệm vụ, thậm chí cả tổ chức, gặp nguy hiểm.')"><span class="choice-letter">B</span><div>Nán lại thêm để cố đếm cho đủ số lính, chấp nhận rủi ro bị phát hiện.</div></button>
+</div>
+<div class="ch-fb" id="sc2-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc2" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc2')">🔮 Nếu nán lại và bị phát hiện thì sao?</button>
+  <div class="counterf-body" id="cf-sc2">Nếu bị lộ ngay từ nhiệm vụ trinh sát đầu tiên, không chỉ ngươi gặp nguy hiểm mà cả mạng lưới liên lạc trong vùng có thể bị lộ theo, kéo theo nhiều người khác bị bắt oan. Kỷ luật giữ bí mật luôn là nguyên tắc sống còn của công tác tình báo kháng chiến.</div>
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Tổ chức mà Võ Thị Sáu tham gia từ năm 1947 tại Đất Đỏ có tên gọi là gì?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc2_1')">A. Đội Thiếu niên Tiền phong</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc2_1')">B. Đội Công an xung phong Đất Đỏ</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc2_1')">C. Đội Du kích Nam Kỳ khởi nghĩa</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc2_1')">D. Ban liên lạc Hội Phụ nữ cứu quốc</button>
+  </div>
+  <div class="kc-fb" id="kc2_1-fb"></div>
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s3',15)"><span class="choice-letter">→</span><div>Chương III: 14/7/1949 — Trận Đánh Lễ Quốc Khánh Pháp</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG III ================= -->
+<div class="scene" id="s3">
+<div class="chapter-badge">💥 CHƯƠNG III · 14/7/1949 — TRẬN ĐÁNH GIỮA LỄ HỘI <span class="src-tag v" onclick="openSrcPopup('s3')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/lehoi.jpg" alt="Võ Thị Sáu, chiến công 14/7/1949" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🎆 CHỢ ĐẤT ĐỎ, NGÀY 14/7/1949</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot now">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  <strong>Ngày 14/7/1949</strong> — chính quyền thực dân tổ chức lễ mừng Quốc khánh Pháp ngay tại chợ Đất Đỏ, có mặt của tên cai tổng khét tiếng ác ôn. Tổ chức giao cho tổ công tác một nhiệm vụ táo bạo: dùng lựu đạn trừng trị tên cai tổng ngay giữa buổi lễ, để răn đe bọn tay sai.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Đồng đội trong tổ — thì thầm trước giờ hành động</div>
+  "Đông người lắm, lỡ không trúng mục tiêu mà gây thương vong cho dân thường thì sao? Hay là rút lui, chờ dịp khác ít người hơn?"
+</div>
+<div class="story-text">
+  Ngươi nhìn đám đông, nhìn tên cai tổng đang cười nói giữa những người lính, rồi nhìn lại vị trí mình đã tính toán suốt nhiều ngày trinh sát — đường ném, khoảng cách, thời điểm hắn tách khỏi đám đông dân thường.
+</div>
+<div class="fact-box">
+  <span class="fact-title">📚 BỐI CẢNH LỊCH SỬ <span class="src-tag v" onclick="openSrcPopup('s3')">xem nguồn</span></span>
+  Đây là một trong những chiến công được nhắc đến nhiều nhất gắn với tên tuổi Võ Thị Sáu — hành động táo bạo giữa nơi đông người, đòi hỏi sự tính toán tỉ mỉ để hạn chế tối đa liên lụy đến người dân vô tội.
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc3-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc3',18,'⭐ ĐÚNG TINH THẦN LỊCH SỬ! Nhờ nhiều ngày trinh sát kỹ lưỡng, tổ công tác chọn đúng thời điểm mục tiêu tách khỏi đám đông để ra tay — vừa hoàn thành nhiệm vụ, vừa hạn chế tối đa rủi ro cho dân thường.')"><span class="choice-letter">A</span><div>Chờ đúng khoảnh khắc mục tiêu tách khỏi đám đông rồi mới hành động, đúng như kế hoạch đã trinh sát kỹ.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc3',5,'Hành động vội vàng giữa đám đông dày đặc có thể gây thương vong cho chính người dân mà cách mạng đang bảo vệ — đi ngược lại nguyên tắc hạn chế tổn thất cho dân thường trong tác chiến đô thị/khu dân cư.')"><span class="choice-letter">B</span><div>Ra tay ngay lập tức khi vừa thấy mục tiêu, không chờ đợi thêm để tránh lỡ cơ hội.</div></button>
+</div>
+<div class="ch-fb" id="sc3-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc3" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc3')">🔮 Nếu hành động vội vàng ngay giữa đám đông?</button>
+  <div class="counterf-body" id="cf-sc3">Ra tay khi mục tiêu còn lẫn trong đám đông dân thường có nguy cơ gây thương vong ngoài ý muốn, làm tổn hại đến chính uy tín và mục đích của cách mạng — vốn luôn đặt việc bảo vệ dân thường lên hàng đầu trong mọi kế hoạch tác chiến.</div>
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Vì sao các trận đánh táo bạo như thế này thường cần trinh sát rất kỹ trước đó?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3_1')">A. Để báo cáo thành tích với cấp trên cho đẹp hồ sơ</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc3_1')">B. Để chọn đúng thời điểm, hạn chế tối đa thương vong cho dân thường và tăng khả năng thành công</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3_1')">C. Vì luật kháng chiến bắt buộc phải trinh sát 30 ngày</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc3_1')">D. Không có lý do đặc biệt, chỉ là thói quen</button>
+  </div>
+  <div class="kc-fb" id="kc3_1-fb"></div>
+</div>
+
+<div class="quote-moment">
+  <span style="font-size:40px;display:block;margin-bottom:8px;">💥</span>
+  Chiến công vang lên khắp vùng Đất Đỏ — tên tuổi một nữ chiến sĩ trẻ tuổi bắt đầu khiến bộ máy tề ngụy trong vùng phải dè chừng.
+  <span class="quote-src">— Tinh thần sự kiện 14/7/1949, Đất Đỏ, Bà Rịa</span>
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s4',20)"><span class="choice-letter">→</span><div>Chương IV: Tháng 2/1950 — Nhiệm Vụ Cuối Cùng &amp; Bị Bắt</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG IV ================= -->
+<div class="scene" id="s4">
+<div class="chapter-badge">⚔️ CHƯƠNG IV · 2/1950 — NHIỆM VỤ CUỐI &amp; BỊ BẮT <span class="src-tag v" onclick="openSrcPopup('s4')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/bibat.jpg" alt="Võ Thị Sáu bị bắt, tháng 2/1950" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🌫️ VÙNG VEN ĐẤT ĐỎ, THÁNG 2/1950</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot now">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Sau chiến công 14/7/1949, thực dân Pháp treo thưởng lớn để truy tìm ngươi. Tháng 2/1950, trong một nhiệm vụ tiếp tục trừ gian, tổ công tác bị lộ. Lính Pháp bao vây khu vực, lùng sục từng nhà.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Một đồng đội — hoảng hốt trong lúc chạy</div>
+  "Sáu ơi, chia nhau ra chạy đi, may ra thoát được một nửa! Đừng chần chừ nữa!"
+</div>
+<div class="story-text">
+  Giữa lúc hỗn loạn, ngươi nhận ra: nếu tất cả cùng chạy về một hướng, cả tổ sẽ bị tóm gọn; nhưng nếu có người ở lại đánh lạc hướng, những người khác có cơ hội thoát.
+</div>
+<div class="reflect">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Chọn hy sinh cơ hội thoát thân của bản thân để đồng đội sống sót — đó là bản năng, hay là một lựa chọn có tính toán?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc4-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc4',18,'⭐ ĐÚNG TINH THẦN LỊCH SỬ! Chính vì kiên quyết bảo vệ đồng đội, tạo điều kiện cho người khác rút lui an toàn, Võ Thị Sáu đã bị bắt trong đợt càn quét này — một sự hy sinh cho tập thể ngay từ khoảnh khắc đầu tiên của chuỗi ngày tù đày.')"><span class="choice-letter">A</span><div>Ở lại đánh lạc hướng địch để đồng đội rút lui an toàn, chấp nhận rủi ro bị bắt.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc4',5,'Đây không phải điều đã xảy ra, và cũng không phải tinh thần của một chiến sĩ được tổ chức tin tưởng giao nhiệm vụ — bỏ mặc đồng đội để một mình thoát thân đi ngược lại kỷ luật và tình đồng chí trong kháng chiến.')"><span class="choice-letter">B</span><div>Chạy theo hướng an toàn nhất cho riêng mình, mặc kệ đồng đội tự lo.</div></button>
+</div>
+<div class="ch-fb" id="sc4-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc4" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc4')">🔮 Nếu chọn thoát thân một mình thì sao?</button>
+  <div class="counterf-body" id="cf-sc4">Nếu mỗi người chỉ lo cho bản thân trong lúc nguy cấp, các tổ công tác kháng chiến khó có thể duy trì được lòng tin và sự gắn kết cần thiết để hoạt động lâu dài trong vùng địch hậu — tinh thần "mình vì mọi người" chính là nền tảng giữ cho phong trào tồn tại.</div>
+</div>
+
+<div class="story-text">
+  Ngươi bị bắt ngay sau đó. Lính Pháp giải ngươi về khám Đất Đỏ, rồi chuyển lên khám Chí Hòa để thẩm vấn, tra tấn nhằm khai thác thông tin về đồng đội và cơ sở cách mạng trong vùng.
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s5',20)"><span class="choice-letter">→</span><div>Chương V: 1950 — Trước Tòa Án Binh Thực Dân</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG V ================= -->
+<div class="scene" id="s5">
+<div class="chapter-badge">⚖️ CHƯƠNG V · 1950 — TRƯỚC TÒA ÁN BINH <span class="src-tag v" onclick="openSrcPopup('s5')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/vothisau2.jpg" alt="Trước tòa án binh, 1950" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">⚖️ PHIÊN TÒA ÁN BINH, SÀI GÒN 1950</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot now">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Sau nhiều tháng bị giam cầm, tra tấn mà không khai thác được thông tin gì, thực dân Pháp đưa ngươi ra Tòa án binh. Chúng biết rõ ngươi chưa đủ 18 tuổi — theo chính luật pháp của họ, việc kết án tử hình người chưa thành niên là trái quy định — nhưng vẫn tìm cách hợp thức hóa bản án.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Công tố viên Pháp — trước tòa</div>
+  "Cô bé, nếu cô nhận tội, tỏ ra hối cải và khai ra những kẻ chủ mưu, tòa có thể xem xét khoan hồng. Đừng ngoan cố vô ích."
+</div>
+<div class="story-text">
+  Cả phòng xử án im lặng chờ đợi. Đây là cơ hội cuối để ngươi có thể đổi lấy một bản án nhẹ hơn — bằng cách nhận mình chỉ là nạn nhân bị lôi kéo, hoặc tỏ ra ăn năn.
+</div>
+<div class="fact-box">
+  <span class="fact-title">📚 ĐIỀU ÍT NGƯỜI BIẾT <span class="src-tag v" onclick="openSrcPopup('s5')">xem nguồn</span></span>
+  Bản án tử hình đối với một người chưa đủ tuổi thành niên đã gây tranh cãi và bị phản đối bởi chính một số luật sư, nhà báo Pháp thời bấy giờ — nhưng chính quyền thực dân vẫn giữ nguyên án, chỉ hoãn thi hành và chuyển ngươi ra giam tại Côn Đảo.
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc5-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc5',18,'⭐ ĐÚNG TINH THẦN LỊCH SỬ! Trước tòa, Võ Thị Sáu khẳng khái nhận trách nhiệm về hành động của mình, không hề tỏ ra hối cải hay cầu xin khoan hồng, đồng thời tuyên bố mình không có tội — vì yêu nước không phải là tội.')"><span class="choice-letter">A</span><div>Ngẩng cao đầu, khẳng định hành động của mình là chính nghĩa, không nhận tội, không cầu xin khoan hồng.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc5',5,'Đây không phải điều đã xảy ra. Nhận tội hay tỏ ra ăn năn để đổi lấy khoan hồng đi ngược lại toàn bộ tinh thần đấu tranh mà Võ Thị Sáu đã thể hiện suốt quá trình bị giam cầm và thẩm vấn trước đó.')"><span class="choice-letter">B</span><div>Tỏ ra hối cải, nhận mình bị lôi kéo, hy vọng đổi lấy một bản án nhẹ hơn.</div></button>
+</div>
+<div class="ch-fb" id="sc5-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc5" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc5')">🔮 Nếu chọn tỏ ra ăn năn để giảm án?</button>
+  <div class="counterf-body" id="cf-sc5">Ngay cả khi tỏ ra ăn năn, không có gì đảm bảo thực dân Pháp sẽ thực sự khoan hồng — nhiều chiến sĩ cách mạng khác từng nhận án nặng dù đã "nhận tội". Quan trọng hơn, việc phủ nhận lý tưởng của mình trước tòa sẽ đánh mất chính ý nghĩa của sự hy sinh, khiến tấm gương đấu tranh mất đi giá trị truyền cảm hứng cho những người ở lại.</div>
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Vì sao Tòa án binh Pháp không thi hành án tử hình ngay tại đất liền mà chuyển Võ Thị Sáu ra Côn Đảo?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_1')">A. Vì Côn Đảo có máy chém hiện đại hơn</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc5_1')">B. Vì lo ngại dư luận phản đối việc xử tử người chưa thành niên ngay tại đất liền</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_1')">C. Vì luật pháp Pháp bắt buộc mọi án tử hình phải thi hành ở đảo</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc5_1')">D. Vì Côn Đảo gần nơi Võ Thị Sáu sinh ra</button>
+  </div>
+  <div class="kc-fb" id="kc5_1-fb"></div>
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s6',20)"><span class="choice-letter">→</span><div>Chương VI: Côn Đảo — Những Ngày Ngục Tù Kiên Trung</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG VI ================= -->
+<div class="scene" id="s6">
+<div class="chapter-badge">🏝️ CHƯƠNG VI · CÔN ĐẢO — NGỤC TÙ KIÊN TRUNG <span class="src-tag v" onclick="openSrcPopup('s6')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/con-dao-phap-truong.jpg" alt="Nhà tù Côn Đảo" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">⛓️ NHÀ TÙ CÔN ĐẢO</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot now">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot lock">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Tại Côn Đảo, ngươi bị biệt giam — nơi được xem là "địa ngục trần gian" của hệ thống nhà tù thực dân. Xà lim ẩm thấp, chế độ hà khắc, và mỗi ngày là một cuộc chiến chỉ để giữ vững tinh thần.
+</div>
+<div class="story-text">
+  Giám thị nhà tù ra lệnh: mọi tù nhân khi giám thị đi ngang qua phải cúi đầu chào, thể hiện sự phục tùng. Nhiều tù nhân, vì sợ bị trừng phạt, đã làm theo.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Một bạn tù lớn tuổi — thì thầm khuyên nhủ</div>
+  "Sáu à, cúi đầu một chút cũng chẳng mất gì, đỡ bị đánh đập. Giữ sức mà sống, còn ngày về với cách mạng."
+</div>
+<div class="reflect">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Trong hoàn cảnh tù đày, một cử chỉ nhỏ như "cúi đầu" có thực sự chỉ là chuyện nhỏ, hay nó mang ý nghĩa lớn hơn về việc giữ vững khí tiết?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai.</div>
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc6-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc6',18,'⭐ ĐÚNG TINH THẦN LỊCH SỬ! Trong tù, Võ Thị Sáu và nhiều tù chính trị kiên quyết không cúi đầu trước giám thị, dù bị trừng phạt nặng nề — tinh thần bất khuất ấy đã truyền cảm hứng, khích lệ nhiều bạn tù khác giữ vững ý chí.')"><span class="choice-letter">A</span><div>Đứng thẳng, không cúi đầu, chấp nhận bị trừng phạt để giữ khí tiết người chiến sĩ cách mạng.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc6',5,'Đây không phải điều đã xảy ra. Cúi đầu trước cường quyền, dù chỉ là một cử chỉ nhỏ, đi ngược lại tinh thần bất khuất mà Võ Thị Sáu đã thể hiện xuyên suốt những năm tháng bị giam cầm.')"><span class="choice-letter">B</span><div>Cúi đầu chào theo lệnh giám thị để tránh bị đánh đập, giữ sức chờ ngày trở về.</div></button>
+</div>
+<div class="ch-fb" id="sc6-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc6" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc6')">🔮 Nếu chọn cúi đầu để giữ an toàn?</button>
+  <div class="counterf-body" id="cf-sc6">Nếu tù nhân chính trị đồng loạt khuất phục trước những mệnh lệnh mang tính hạ nhục như vậy, hệ thống nhà tù thực dân sẽ càng dễ dàng bẻ gãy tinh thần đấu tranh tập thể. Chính sự phản kháng âm thầm nhưng kiên định của những người như Võ Thị Sáu đã góp phần giữ lửa ý chí cho phong trào đấu tranh trong tù suốt nhiều năm.</div>
+</div>
+
+<div class="fact-box">
+  <span class="fact-title">📚 SỰ THẬT LỊCH SỬ <span class="src-tag v" onclick="openSrcPopup('s6')">xem nguồn</span></span>
+  Nhiều tài liệu, hồi ký của các cựu tù chính trị Côn Đảo kể lại rằng Võ Thị Sáu, dù tuổi đời trẻ nhất trong số họ, lại là một trong những người có tinh thần vững vàng, thường xuyên động viên các bạn tù khác không gục ngã trước đòn roi và sự đe dọa.
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Vì sao hệ thống nhà tù Côn Đảo được xem là nơi giam giữ khắc nghiệt bậc nhất trong lịch sử Việt Nam thời Pháp thuộc?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,true,'kc6_1')">A. Vì chế độ giam cầm hà khắc, tra tấn tàn bạo, cách biệt hoàn toàn với đất liền</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc6_1')">B. Vì đây là nhà tù duy nhất của Pháp ở Đông Dương</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc6_1')">C. Vì tù nhân phải tự xây nhà tù cho chính mình</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc6_1')">D. Vì chỉ giam giữ tù hình sự, không giam tù chính trị</button>
+  </div>
+  <div class="kc-fb" id="kc6_1-fb"></div>
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s7',20)"><span class="choice-letter">→</span><div>Chương VII: Đêm 22/1/1952 — Đêm Trước Ngày Ra Đi</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG VII ================= -->
+<div class="scene" id="s7">
+<div class="chapter-badge">🌸 CHƯƠNG VII · ĐÊM 22/1/1952 — ĐÊM TRƯỚC NGÀY RA ĐI <span class="src-tag v" onclick="openSrcPopup('s7')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/con-dao-phap-truong2.jpg" alt="Đêm trước ngày hành quyết, Côn Đảo" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🌸 CÔN ĐẢO, ĐÊM 22 RẠNG 23/1/1952</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot now">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot lock">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Đêm 22 rạng sáng 23/1/1952, cai ngục thông báo: sáng mai, bản án sẽ được thi hành. Ngươi ngồi trong xà lim tối, nghe tiếng sóng biển Côn Đảo vọng vào qua khe cửa sắt.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Vị linh mục được cử đến — đề nghị làm lễ cuối</div>
+  "Con có muốn ta làm lễ rửa tội, cầu nguyện cho con trước khi... trước giờ phút đó không?"
+</div>
+<div class="story-text">
+  Ngoài khung cửa sổ nhỏ, một nhành hoa lê-ki-ma dại mọc lên từ khe đất, những cánh hoa trắng nhỏ khẽ đung đưa trong gió đêm. Ngươi im lặng nhìn nó một lúc lâu.
+</div>
+<div class="reflect">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Đối diện với đêm cuối cùng của cuộc đời, điều gì khiến một người có thể bình thản thay vì hoảng loạn?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai — hãy tự hỏi bản thân.</div>
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc7-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc7',18,'⭐ ĐÚNG TINH THẦN LỊCH SỬ! Theo nhiều lời kể được truyền lại, Võ Thị Sáu đã từ chối lễ rửa tội, thay vào đó bình thản ngắm nhành hoa nhỏ trước xà lim — giữ trọn niềm tin của mình cho đến giây phút cuối cùng, không sợ hãi, không nao núng.')"><span class="choice-letter">A</span><div>Từ chối nhẹ nhàng, dành thời gian còn lại ngắm nhành hoa nhỏ, giữ tâm thế bình thản.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc7',5,'Đây không phải điều được ghi nhớ trong các lời kể lịch sử về đêm cuối của Võ Thị Sáu — hình ảnh được lưu truyền là một tâm thế bình thản, không hoảng loạn, không cầu xin.')"><span class="choice-letter">B</span><div>Hoảng loạn, van xin được hoãn thi hành án thêm một thời gian.</div></button>
+</div>
+<div class="ch-fb" id="sc7-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc7" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc7')">🔮 Nếu hoảng loạn trong đêm cuối thì sao?</button>
+  <div class="counterf-body" id="cf-sc7">Sự bình thản trong đêm cuối cùng là điều khiến câu chuyện về Võ Thị Sáu trở thành biểu tượng — nó cho thấy niềm tin vào lý tưởng đã lớn hơn cả nỗi sợ cái chết. Nếu thiếu đi sự bình thản ấy, hình ảnh được lưu truyền qua nhiều thế hệ có lẽ đã rất khác.</div>
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Loài hoa gắn liền với hình ảnh đêm cuối của Võ Thị Sáu tại Côn Đảo, theo các lời kể được truyền lại, là hoa gì?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7_1')">A. Hoa sen</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc7_1')">B. Hoa lê-ki-ma (hoa trứng gà)</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7_1')">C. Hoa phượng</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc7_1')">D. Hoa mai</button>
+  </div>
+  <div class="kc-fb" id="kc7_1-fb"></div>
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s8',20)"><span class="choice-letter">→</span><div>Chương VIII: Sáng 23/1/1952 — Pháp Trường Côn Đảo</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG VIII ================= -->
+<div class="scene" id="s8">
+<div class="chapter-badge">🕊️ CHƯƠNG VIII · SÁNG 23/1/1952 — PHÁP TRƯỜNG <span class="src-tag v" onclick="openSrcPopup('s8')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/caihoa.jpg" alt="Pháp trường Côn Đảo, 23/1/1952" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🌅 PHÁP TRƯỜNG CÔN ĐẢO, SÁNG 23/1/1952</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot done">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot now">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot lock">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Bình minh 23/1/1952. Ngươi được dẫn ra pháp trường. Trên đường đi, ngươi ngắt nhành hoa lê-ki-ma bên lối đi, cài lên mái tóc. Đội hành quyết đã chờ sẵn, súng chĩa thẳng.
+</div>
+<div class="dialogue">
+  <div class="dialogue-speaker">Viên chỉ huy đội hành quyết</div>
+  "Cô có muốn bịt mắt không? Đó là thủ tục thông thường."
+</div>
+<div class="story-text">
+  Ngươi nhìn thẳng vào họng súng, nhìn ánh mặt trời vừa ló dạng trên biển Đông, rồi nhìn những gương mặt lính đang run rẩy hơn cả người sắp bị hành quyết.
+</div>
+
+<div class="choices-title">⚡ LỰA CHỌN CỦA BẠN</div>
+<div class="choices" id="sc8-choices">
+  <button class="choice-btn" onclick="ansSC(this,true,'sc8',20,'⭐ ĐÚNG TINH THẦN LỊCH SỬ! Theo các lời kể được lưu truyền, Võ Thị Sáu từ chối bịt mắt, hiên ngang hát vang bài ca cách mạng và hô vang khẩu hiệu yêu nước cho đến giây phút cuối cùng — khiến chính đội hành quyết phải khiếp sợ trước tinh thần ấy.')"><span class="choice-letter">A</span><div>Từ chối bịt mắt, cất cao giọng hát và hô vang khẩu hiệu yêu nước, hiên ngang đối diện cái chết.</div></button>
+  <button class="choice-btn" onclick="ansSC(this,false,'sc8',6,'Đây không phải hình ảnh được lưu truyền trong lịch sử. Sự bình thản, không cần che giấu, mới chính là điều làm nên biểu tượng bất khuất của Võ Thị Sáu trước pháp trường.')"><span class="choice-letter">B</span><div>Đồng ý bịt mắt theo thủ tục, im lặng chấp nhận.</div></button>
+</div>
+<div class="ch-fb" id="sc8-fb" style="margin-top:14px;"></div>
+<div class="counterf" id="cfwrap-sc8" style="display:none;">
+  <button class="counterf-btn" onclick="toggleCounter('cf-sc8')">🔮 Nếu chọn im lặng chấp nhận bịt mắt?</button>
+  <div class="counterf-body" id="cf-sc8">Hình ảnh hiên ngang, không sợ hãi trước họng súng chính là điều khiến câu chuyện về Võ Thị Sáu vượt qua giới hạn của một sự kiện lịch sử đơn thuần, trở thành biểu tượng tinh thần được nhiều thế hệ người Việt Nam nhắc nhớ.</div>
+</div>
+
+<div class="fact-box">
+  <span class="fact-title">📚 SỰ THẬT LỊCH SỬ <span class="src-tag v" onclick="openSrcPopup('s8')">xem nguồn</span></span>
+  Võ Thị Sáu hy sinh ngày 23/1/1952, khi mới 19 tuổi — một trong những nữ chiến sĩ cách mạng trẻ tuổi nhất bị thực dân Pháp xử tử tại Côn Đảo.
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 KIẾN THỨC LỊCH SỬ</span>
+  <div class="kc-q">Võ Thị Sáu hy sinh ở tuổi bao nhiêu?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc8_1')">A. 16 tuổi</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc8_1')">B. 19 tuổi</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc8_1')">C. 22 tuổi</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc8_1')">D. 14 tuổi</button>
+  </div>
+  <div class="kc-fb" id="kc8_1-fb"></div>
+</div>
+
+<div class="choices-title">⚡ TIẾP TỤC</div>
+<div class="choices"><button class="choice-btn" onclick="go('s9',20)"><span class="choice-letter">→</span><div>Chương IX: Di Sản Bất Tử — Đóa Hoa Không Bao Giờ Tàn</div></button></div>
+</div>
+
+<!-- ================= CHƯƠNG IX ================= -->
+<div class="scene" id="s9">
+<div class="chapter-badge">🌺 CHƯƠNG IX · DI SẢN BẤT TỬ <span class="src-tag v" onclick="openSrcPopup('s9')">📖 nguồn</span></div>
+<div class="scene-img-wrap" style="height:auto;">
+  <img src="images/den-tho-vo-thi-sau.jpg" alt="Mộ Võ Thị Sáu, nghĩa trang Hàng Dương" style="width:100%;height:auto;display:block;object-fit:contain;" onerror="this.style.display='none'">
+  <div class="scene-img-cap" style="position:static;background:rgba(10,5,8,.5);">🌸 NGHĨA TRANG HÀNG DƯƠNG, CÔN ĐẢO</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">1947</div><div class="cm-evt">Giác Ngộ</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1948</div><div class="cm-evt">Trinh Sát</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">7/1949</div><div class="cm-evt">Trận Đánh</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">2/1950</div><div class="cm-evt">Bị Bắt</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1950</div><div class="cm-evt">Tòa Án</div></div>
+  <div class="cm-item"><div class="cm-dot done">6</div><div class="cm-year">Côn Đảo</div><div class="cm-evt">Ngục Tù</div></div>
+  <div class="cm-item"><div class="cm-dot done">7</div><div class="cm-year">22/1</div><div class="cm-evt">Đêm Cuối</div></div>
+  <div class="cm-item"><div class="cm-dot done">8</div><div class="cm-year">23/1/52</div><div class="cm-evt">Pháp Trường</div></div>
+  <div class="cm-item"><div class="cm-dot now">9</div><div class="cm-year">Mãi Mãi</div><div class="cm-evt">Di Sản</div></div>
+</div>
+
+<div class="story-text">
+  Ngôi mộ của ngươi tại nghĩa trang Hàng Dương, Côn Đảo, từ đó đến nay chưa từng một ngày thiếu hoa tươi. Người dân khắp nơi tìm đến, không chỉ để tưởng nhớ một liệt sĩ, mà còn xem ngươi như một biểu tượng của lòng gan dạ vượt lên tuổi tác.
+</div>
+<div class="quote-moment">
+  <span style="font-size:40px;display:block;margin-bottom:8px;">🌸</span>
+  Từ cô bé 14 tuổi ở làng Đất Đỏ dám nhận nhiệm vụ đầu tiên, đến người con gái 19 tuổi hiên ngang trước pháp trường — một hành trình ngắn ngủi về năm tháng, nhưng dài vô tận trong ký ức dân tộc.
+  <span class="quote-src">— Di sản Võ Thị Sáu, còn mãi với đất trời Côn Đảo</span>
+</div>
+<div class="fact-box">
+  <span class="fact-title">📚 DI SẢN <span class="src-tag v" onclick="openSrcPopup('s9')">xem nguồn</span></span>
+  Võ Thị Sáu được Nhà nước truy tặng danh hiệu <strong>Anh hùng Lực lượng vũ trang nhân dân</strong>. Tên ngươi được đặt cho hàng trăm ngôi trường, con đường trên khắp Việt Nam, trở thành biểu tượng quen thuộc của tinh thần yêu nước ở tuổi thanh xuân.
+  <div style="margin-top:8px;"><span class="chip">🎖️ Anh hùng LLVTND</span><span class="chip">🏫 Tên trường học khắp cả nước</span><span class="chip">🌺 Huyền thoại dân gian ở Côn Đảo</span></div>
+</div>
+
+<div class="kc">
+  <span class="kc-tag">🎓 TEST KIẾN THỨC CUỐI</span>
+  <div class="kc-q">Danh hiệu cao quý mà Nhà nước Việt Nam truy tặng cho Võ Thị Sáu là gì?</div>
+  <div class="kc-opts">
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9_1')">A. Nhà giáo Nhân dân</button>
+    <button class="kc-opt" onclick="ansKC(this,true,'kc9_1')">B. Anh hùng Lực lượng vũ trang nhân dân</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9_1')">C. Chiến sĩ thi đua toàn quốc</button>
+    <button class="kc-opt" onclick="ansKC(this,false,'kc9_1')">D. Huân chương Lao động hạng Nhất</button>
+  </div>
+  <div class="kc-fb" id="kc9_1-fb"></div>
+</div>
+
+<div class="choices-title">⚡ HOÀN THÀNH HÀNH TRÌNH</div>
+<div class="choices"><button class="choice-btn" onclick="markCorrect('s9');go('final',20)"><span class="choice-letter">✓</span><div>🎉 <strong>HÀNH TRÌNH CUỘC ĐỜI VÕ THỊ SÁU HOÀN THÀNH!</strong></div></button></div>
+</div>
+
+<!-- ================= FINAL ================= -->
+<div class="scene" id="final">
+<div class="final-result">
+  <div class="final-seal" id="finalSeal">🌸</div>
+  <div class="final-title" id="finalH">HÀNH TRÌNH HOÀN THÀNH!</div>
+  <div class="final-pts" id="finalPts">0 điểm</div>
+  <div class="final-rank-badge" id="finalRank">—</div>
+  <div class="final-desc" id="finalDesc">Bạn đã hoàn thành hành trình cùng Võ Thị Sáu!</div>
+
+  <div class="final-achs" id="finalAchs"></div>
+
+  <div class="journal" style="margin-bottom:26px;">
+    <span class="journal-tag">🌺 HÀNH TRÌNH ĐẤT ĐỎ — CÔN ĐẢO</span>
+    <div class="jmap-note" style="margin-bottom:10px;">Sơ đồ cách điệu các điểm dừng chân trong cuộc đời Võ Thị Sáu.</div>
+    <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,180 C110,150 130,90 190,95 S270,140 320,130 S400,60 460,65 S540,150 590,145 S670,90 740,60"/>
+      <circle class="jmap-pt" cx="40" cy="180" r="6"/><text class="jmap-yr" x="40" y="200" text-anchor="middle">1947</text><text class="jmap-lbl" x="40" y="212" text-anchor="middle">Đất Đỏ</text>
+      <circle class="jmap-pt" cx="190" cy="95" r="6"/><text class="jmap-yr" x="190" y="80" text-anchor="middle">1948</text><text class="jmap-lbl" x="190" y="70" text-anchor="middle">Vùng ven</text>
+      <circle class="jmap-pt" cx="320" cy="130" r="6"/><text class="jmap-yr" x="320" y="150" text-anchor="middle">7/1949</text><text class="jmap-lbl" x="320" y="162" text-anchor="middle">Chợ Đất Đỏ</text>
+      <circle class="jmap-pt" cx="460" cy="65" r="6"/><text class="jmap-yr" x="460" y="50" text-anchor="middle">1950</text><text class="jmap-lbl" x="460" y="40" text-anchor="middle">Khám Chí Hòa</text>
+      <circle class="jmap-pt" cx="590" cy="145" r="6"/><text class="jmap-yr" x="590" y="165" text-anchor="middle">1950–52</text><text class="jmap-lbl" x="590" y="177" text-anchor="middle">Côn Đảo</text>
+      <circle class="jmap-pt" cx="740" cy="60" r="7"/><text class="jmap-yr" x="740" y="42" text-anchor="middle">23/1/52</text><text class="jmap-lbl" x="722" y="32" text-anchor="middle">Hàng Dương</text>
+    </svg>
+  </div>
+
+  <div class="journal reveal" id="journalBox">
+    <span class="journal-tag">📔 NHẬT KÝ HÀNH TRÌNH CỦA BẠN</span>
+    <div id="journalList"></div>
+    <button class="journal-copy" onclick="copyJournal()">📋 Sao chép nhật ký để chia sẻ</button>
+  </div>
+
+  <div class="final-lesson">
+    <span class="fl-tag">📚 BA BÀI HỌC VƯỢT THỜI GIAN</span>
+    <strong style="display:block;margin-top:15px;color:var(--rose-l);">1. TUỔI TRẺ KHÔNG PHẢI GIỚI HẠN CỦA LÒNG DŨNG CẢM</strong>
+    Ở tuổi 14, khi nhiều người còn e dè, Võ Thị Sáu đã chọn dấn thân. <em>Trách nhiệm không chờ đến khi ta "đủ lớn" mới xuất hiện.</em>
+    <strong style="display:block;margin-top:15px;color:var(--rose-l);">2. TÍNH TOÁN KỸ LƯỠNG LÀ MỘT PHẦN CỦA LÒNG DŨNG CẢM</strong>
+    Sự gan dạ không đồng nghĩa với liều lĩnh. Mỗi trận đánh, mỗi quyết định đều đi kèm sự trinh sát, tính toán để giảm thiểu rủi ro cho người vô tội.
+    <strong style="display:block;margin-top:15px;color:var(--rose-l);">3. GIỮ VỮNG NIỀM TIN ĐẾN GIÂY PHÚT CUỐI CÙNG</strong>
+    Từ xà lim đến pháp trường, sự bình thản và hiên ngang không đến từ việc không biết sợ, mà từ việc <em>tin vào điều mình đã chọn hơn cả nỗi sợ hãi.</em>
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);font-size:18px;">Những bài học này không chỉ dành cho lịch sử — chúng là những bài học cho cuộc sống hiện tại của chúng ta.</strong>
+  </div>
+
+  <div class="btn-row">
+    <button class="restart-btn" onclick="restart()">🔄 CHƠI LẠI</button>
+    <a href="cau-chuyen.html" class="home-btn">📖 CÂU CHUYỆN KHÁC</a>
+  </div>
+</div>
+</div><!-- đóng .scene#final -->
+
+</div><!-- .story-container -->
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-modal">
+  <div class="ref-modal-head">
+    <span class="ref-page-title" style="margin-bottom:0;">📚 Nguồn Tham Khảo</span>
+    <button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button>
+  </div>
+  <div class="ref-page-sub">Các sự kiện, ngày tháng, kết quả trong trang này được đối chiếu từ các nguồn tư liệu, hồi ký, tài liệu lịch sử đã công bố. Các đoạn hội thoại (đánh dấu viền hồng) là <strong>dựng lại minh họa</strong> dựa trên tinh thần lịch sử, không phải nguyên văn ghi âm/ghi chép.</div>
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">Ban Tuyên giáo Tỉnh ủy Bà Rịa - Vũng Tàu — Tư liệu về thân thế, sự nghiệp Anh hùng LLVTND Võ Thị Sáu</div>
+    <div class="ref-item">Bảo tàng tỉnh Bà Rịa - Vũng Tàu — Hiện vật, tư liệu trưng bày về Võ Thị Sáu</div>
+    <div class="ref-item">Khu di tích lịch sử Côn Đảo — Hồ sơ tù chính trị, tư liệu nhà tù thời Pháp thuộc</div>
+    <div class="ref-item">Quyết định truy tặng danh hiệu Anh hùng Lực lượng vũ trang nhân dân — Nhà nước CHXHCN Việt Nam (1993)</div>
+    <div class="ref-item">Hồi ký của các cựu tù chính trị Côn Đảo (nhiều tác giả, do Ban Liên lạc Cựu tù chính trị Côn Đảo sưu tầm, xuất bản)</div>
+  </div>
+
+  <div class="ref-group">
+    <div class="ref-group-h">Ghi chú về phương pháp thể hiện</div>
+    <div class="ref-item">Ngày tháng, địa điểm, kết quả sự kiện chính: dựa trên tư liệu lịch sử phổ biến, đã được công bố rộng rãi</div>
+    <div class="ref-item">Hội thoại giữa các nhân vật: dựng lại nhằm mục đích minh họa, giúp người học hình dung bối cảnh — không phải trích dẫn nguyên văn có ghi chép</div>
+    <div class="ref-item">Một số chi tiết (như hoa lê-ki-ma đêm cuối) dựa theo các lời kể, hồi ức được truyền lại qua nhiều nguồn — mang tính biểu tượng, minh họa tinh thần nhân vật</div>
+  </div>
+</div>
+</div>
+
+<script>
+// ===== NỀN CÁNH HOA LÊ-KI-MA & ĐỐM SÁNG BAY =====
+const bgC=document.getElementById('bgCanvas');
+const bgCtx=bgC.getContext('2d');
+function resizeBG(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+resizeBG();window.addEventListener('resize',resizeBG);
+
+const stars2=[];
+for(let i=0;i<70;i++)stars2.push({x:Math.random(),y:Math.random(),r:Math.random()*1.3+.3,a:Math.random(),da:(Math.random()-.5)*.008});
+
+const petals=[];
+function randPetalX(){const side=Math.random()<0.5;return side?Math.random()*0.18:0.82+Math.random()*0.18;}
+for(let i=0;i<10;i++)petals.push({
+  x:randPetalX(),y:Math.random(),
+  size:5+Math.random()*5,
+  speed:0.035+Math.random()*0.05,
+  drift:(Math.random()-.5)*0.05,
+  rot:Math.random()*360,rotSpeed:(Math.random()-.5)*1.6,
+  sway:Math.random()*Math.PI*2,
+  a:0.35+Math.random()*0.35
+});
+
+function drawPetal(ctx,x,y,size,rot,alpha){
+  ctx.save();ctx.translate(x,y);ctx.rotate(rot*Math.PI/180);ctx.globalAlpha=alpha;
+  ctx.beginPath();
+  ctx.moveTo(0,-size);
+  ctx.bezierCurveTo(size*0.9,-size*0.6,size*0.9,size*0.5,0,size);
+  ctx.bezierCurveTo(-size*0.9,size*0.5,-size*0.9,-size*0.6,0,-size);
+  ctx.closePath();
+  const grad=ctx.createLinearGradient(0,-size,0,size);
+  grad.addColorStop(0,'rgba(245,234,214,0.9)');
+  grad.addColorStop(1,'rgba(244,143,177,0.55)');
+  ctx.fillStyle=grad;ctx.fill();
+  ctx.restore();
+}
+
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  stars2.forEach(s=>{
+    s.a=Math.max(.05,Math.min(.7,s.a+s.da));
+    if(s.a<=.06||s.a>=.69)s.da*=-1;
+    bgCtx.beginPath();bgCtx.arc(s.x*bgC.width,s.y*bgC.height,s.r,0,Math.PI*2);
+    bgCtx.fillStyle=`rgba(255,255,255,${s.a})`;bgCtx.fill();
+  });
+  petals.forEach(p=>{
+    p.y+=p.speed/bgC.height*60;
+    p.sway+=0.018;
+    p.x+=(p.drift+Math.sin(p.sway)*0.04)/bgC.width*60;
+    p.rot+=p.rotSpeed;
+    if(p.y>1.04){p.y=-0.04;p.x=randPetalX();}
+    if(p.x<-0.04||p.x>1.04)p.x=randPetalX();
+    drawPetal(bgCtx,p.x*bgC.width,p.y*bgC.height,p.size,p.rot,p.a);
+  });
+  requestAnimationFrame(drawBG);
+}
+drawBG();
+
+// ===== BẢN ĐỒ HÀNH TRÌNH =====
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+const mapUnlockStages={
+  s2:['pt-trinhsat'],
+  s3:['pt-cho'],
+  s5:['pt-chihoa'],
+  s6:['pt-condao'],
+  s8:['pt-hangduong']
+};
+function updateJourneyMap(id){
+  const keys=mapUnlockStages[id];if(!keys)return;
+  let unlocked=false;
+  keys.forEach(k=>{
+    document.querySelectorAll('.'+k).forEach(el=>{
+      if(el.classList.contains('locked')){el.classList.remove('locked');unlocked=true;}
+    });
+  });
+  if(unlocked)showPts('🌺 Mở khóa địa điểm mới!');
+}
+function resetJourneyMap(){
+  document.querySelectorAll('.jmap-pt,.jmap-lbl,.jmap-yr').forEach(el=>{
+    if(!el.classList.contains('pt-datdo'))el.classList.add('locked');
+  });
+}
+
+// ===== STATE =====
+let pts=0,answered={};
+let choiceCorrect={s1:false,sc2:false,sc3:false,sc4:false,sc5:false,sc6:false,sc7:false,sc8:false,s9:false};
+let kcCorrectCount=0,kcTotalCount=0;
+let streakN=0,maxStreak=0;
+let lastMilestone=0;
+
+// ===== SOUND (tổng hợp trực tiếp) =====
+let soundOn=true,actx=null;
+function getActx(){if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();return actx;}
+function toggleSound(){soundOn=!soundOn;document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';}
+function playTone(freq,dur,type='sine',vol=.12){
+  if(!soundOn)return;
+  try{const ctx=getActx();const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(ctx.destination);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start();o.stop(ctx.currentTime+dur);}catch(e){}
+}
+function soundCorrect(){playTone(660,.14,'sine',.13);setTimeout(()=>playTone(880,.18,'sine',.11),90);}
+function soundWrong(){playTone(160,.28,'sawtooth',.10);}
+function soundCombo(){playTone(440,.1,'sine',.1);setTimeout(()=>playTone(550,.1,'sine',.11),80);setTimeout(()=>playTone(660,.2,'sine',.13),160);}
+
+// ===== STREAK & COMBO =====
+function addStreak(){
+  streakN++;if(streakN>maxStreak)maxStreak=streakN;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent=streakN;
+  b.classList.add('show');
+  if(streakN>=3){b.classList.add('fire');showCombo(streakN);}else b.classList.remove('fire');
+}
+function resetStreak(){streakN=0;const b=document.getElementById('streakBadge');if(b)b.classList.remove('show','fire');}
+function showCombo(n){
+  const labels={3:'🔥 COMBO x3',4:'⚡ THẦN TỐC x4',5:'🌺 BẤT KHUẤT x5',6:'🎖️ HUYỀN THOẠI x6'};
+  const bonus={3:10,4:15,5:20,6:30}[n]||30;
+  document.getElementById('comboLabel').textContent=labels[n]||('🌺 KIÊN CƯỜNG x'+n);
+  document.getElementById('comboSub').textContent='+'+bonus+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bonus;updateScore();showPts('+'+bonus+' COMBO!');soundCombo();
+  burstParticles(window.innerWidth/2,window.innerHeight*0.44);
+}
+
+// ===== SCORE & UI =====
+function updateScore(){
+  document.getElementById('scoreEl').textContent=pts;
+  document.getElementById('rankEl').textContent=pts>=280?'🌺 Bất Khuất':pts>=180?'🔥 Kiên Cường':pts>=90?'📚 Am Hiểu':'🌱 Tìm Hiểu';
+  const pct=Math.min(100,Math.round((pts/380)*100));
+  const sf=document.getElementById('spiritMeter'),sp=document.getElementById('spiritPct');
+  if(sf)sf.style.width=pct+'%';if(sp)sp.textContent=pct+'%';
+}
+function showPts(txt){const p=document.getElementById('ptsPop');p.textContent=txt;p.className='pts-pop';void p.offsetWidth;p.className='pts-pop show';}
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+let sceneRewarded={};
+const progMap={cover:0,s1:9,s2:18,s3:28,s4:38,s5:48,s6:60,s7:72,s8:84,s9:94,final:100};
+
+function go(id,add){
+  if(add>0 && !sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPts('+'+add);pts+=add;
+  }
+  updateScore();
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.getElementById('prog').style.width=(progMap[id]||100)+'%';
+  updateJourneyMap(id);
+  if(id==='final')showFinal();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+const chapterNames={s1:'I. Giác ngộ (1947)',sc2:'II. Trinh sát đầu tiên (1948)',sc3:'III. Trận đánh 14/7/1949',sc4:'IV. Bị bắt (2/1950)',sc5:'V. Trước tòa án binh',sc6:'VI. Kiên trung trong ngục',sc7:'VII. Đêm cuối 22/1/1952',sc8:'VIII. Pháp trường 23/1/1952',s9:'IX. Di sản bất tử'};
+function markCorrect(id){choiceCorrect[id]=true;}
+function pickChoice(originId,target,points,correct){
+  if(answered[originId])return;answered[originId]=true;
+  const cont=document.getElementById(originId+'-choices');
+  if(cont)cont.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if(correct)choiceCorrect[originId]=true;
+  go(target,points);
+}
+function renderJournal(){
+  let h='';
+  for(const key in chapterNames){
+    const ok=choiceCorrect[key];
+    h+=`<div class="journal-row"><span>${chapterNames[key]}</span><span class="journal-status ${ok?'ok':'no'}">${ok?'✅ Đúng lịch sử':'○ Khác lịch sử'}</span></div>`;
+  }
+  const el=document.getElementById('journalList');if(el)el.innerHTML=h;
+}
+function copyJournal(){
+  let txt='📔 NHẬT KÝ HÀNH TRÌNH — VÕ THỊ SÁU: ĐÓA HOA BẤT TỬ ĐẤT ĐỎ\n\n';
+  for(const key in chapterNames){txt+=(choiceCorrect[key]?'✅ ':'○ ')+chapterNames[key]+'\n';}
+  txt+=`\nTổng điểm: ${pts} — ${document.getElementById('rankEl').textContent}\n`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.journal-copy');
+    if(btn){const old=btn.textContent;btn.textContent='✅ Đã sao chép!';setTimeout(()=>btn.textContent=old,1800);}
+  }).catch(()=>{});
+}
+
+function showFinal(){
+  const h=pts>=280?'🌺 BẤT KHUẤT VẸN TOÀN!':pts>=180?'🔥 TINH THẦN KIÊN CƯỜNG!':pts>=90?'📚 THẤU HIỂU LỊCH SỬ!':'🌱 HÀNH TRÌNH KHỞI ĐẦU!';
+  document.getElementById('finalH').textContent=h;
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=document.getElementById('rankEl').textContent;
+  renderJournal();
+  const d=document.getElementById('finalDesc');
+  if(pts>=280) d.textContent='Bạn đã đi trọn hành trình cùng Võ Thị Sáu với sự thấu hiểu sâu sắc — không chỉ nhớ sự kiện, mà còn cảm nhận được vì sao mỗi lựa chọn của cô lại có ý nghĩa đến vậy.';
+  else if(pts>=180) d.textContent='Bạn đã hoàn thành hành trình với nền tảng kiến thức vững chắc về cuộc đời và sự hy sinh của nữ anh hùng Đất Đỏ.';
+  else if(pts>=90) d.textContent='Bạn đã đi qua hành trình và nắm được những nét chính. Chơi lại để khám phá sâu hơn nhé!';
+  else d.textContent='Bạn vừa mới bắt đầu làm quen với câu chuyện Võ Thị Sáu. Hãy thử chơi lại để hiểu sâu hơn về hành trình của cô!';
+  const achs=[
+    {icon:'🎓',name:'Học Giả',ok:kcTotalCount>0&&(kcCorrectCount/kcTotalCount)>=0.8},
+    {icon:'🌺',name:'Ý Chí Sắt Đá',ok:Object.values(choiceCorrect).every(v=>v)},
+    {icon:'🔦',name:'Trinh Sát Giỏi',ok:choiceCorrect.sc2},
+    {icon:'💥',name:'Chiến Công',ok:choiceCorrect.sc3},
+    {icon:'⛓️',name:'Kiên Trung Ngục Tù',ok:choiceCorrect.sc6},
+    {icon:'🌸',name:'Đóa Hoa Bất Tử',ok:pts>=280}
+  ];
+  document.getElementById('finalAchs').innerHTML=achs.map(a=>`<div class="ach ${a.ok?'':'locked'}"><span class="ach-icon">${a.icon}</span><span class="ach-name">${a.name}</span></div>`).join('');
+}
+
+// ===== KNOWLEDGE CHECK =====
+const kcFB={
+  kc2_1:'Đúng! Đội Công an xung phong Đất Đỏ là nơi Võ Thị Sáu bắt đầu hoạt động cách mạng từ năm 1947.',
+  kc3_1:'Chính xác! Trinh sát kỹ giúp chọn đúng thời điểm hành động, bảo vệ dân thường và tăng khả năng thành công.',
+  kc5_1:'Đúng vậy — chuyển ra Côn Đảo một phần nhằm tránh sự chú ý và phản đối của dư luận ngay tại đất liền.',
+  kc6_1:'Chính xác — chế độ giam cầm hà khắc và sự cách biệt với đất liền khiến Côn Đảo trở thành "địa ngục trần gian".',
+  kc7_1:'Đúng! Hoa lê-ki-ma (hoa trứng gà) gắn liền với hình ảnh đêm cuối của Võ Thị Sáu trong các lời kể được truyền lại.',
+  kc8_1:'Đúng — Võ Thị Sáu hy sinh năm 1952 khi mới 19 tuổi.',
+  kc9_1:'Chính xác — Anh hùng Lực lượng vũ trang nhân dân là danh hiệu cao quý được truy tặng cho Võ Thị Sáu.'
+};
+function ansSC(btn,ok,id,points,text){
+  if(answered[id])return;answered[id]=true;
+  ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  if(ok)choiceCorrect[id]=true;
+  const cont=document.getElementById(id+'-choices');
+  cont.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  pts+=points;updateScore();showPts('+'+points);
+  const fb=document.getElementById(id+'-fb');
+  fb.innerHTML=(ok?'✅ ':'❌ ')+text;
+  fb.className='ch-fb show '+(ok?'ok':'no');
+  if(!ok){const cfWrap=document.getElementById('cfwrap-'+id);if(cfWrap)cfWrap.style.display='block';}
+}
+function ansKC(btn,ok,id){
+  if(answered[id])return;answered[id]=true;kcTotalCount++;
+  ok?soundCorrect():soundWrong();ok?addStreak():resetStreak();
+  const cont=btn.parentElement;cont.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(ok){
+    btn.classList.add('correct');pts+=8;updateScore();showPts('+8');kcCorrectCount++;
+    if(fb){fb.textContent='✅ '+kcFB[id];fb.className='kc-fb show ok';}
+  }else{
+    btn.classList.add('wrong');
+    cont.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(',true,'))b.classList.add('correct');});
+    if(fb){fb.textContent='❌ Xem lại đáp án đúng!';fb.className='kc-fb show no';}
+  }
+}
+
+// ===== PARTICLE BURST =====
+function burstParticles(x,y){
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='gold-burst';
+    p.style.left=x+'px';p.style.top=y+'px';document.body.appendChild(p);
+    const ang=Math.random()*Math.PI*2,dist=55+Math.random()*85;
+    const dx=Math.cos(ang)*dist,dy=Math.sin(ang)*dist;
+    p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}],
+      {duration:700+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'});
+    setTimeout(()=>p.remove(),1200);
+  }
+}
+
+// ===== "NẾU TÔI LÀ..." — PHẢN THỰC =====
+function toggleCounter(id){const el=document.getElementById(id);if(el)el.classList.toggle('show');}
+
+// ===== NGUỒN SỬ LIỆU =====
+const sourceDB={
+  s1:{title:'Giác ngộ cách mạng, Đất Đỏ 1947',body:'Võ Thị Sáu tham gia hoạt động cách mạng từ năm 1947, khi mới 14 tuổi, trong đội hình lực lượng vũ trang địa phương tại Đất Đỏ, Bà Rịa.',cite:'Tư liệu về thân thế, sự nghiệp Anh hùng LLVTND Võ Thị Sáu — Ban Tuyên giáo tỉnh Bà Rịa - Vũng Tàu'},
+  s2:{title:'Hoạt động trinh sát, liên lạc 1948',body:'Trong giai đoạn đầu tham gia kháng chiến, Võ Thị Sáu đảm nhận vai trò trinh sát, liên lạc, hỗ trợ các hoạt động vũ trang tại địa phương.',cite:'Tư liệu lịch sử địa phương Bà Rịa - Vũng Tàu'},
+  s3:{title:'Chiến công tại Đất Đỏ, 14/7/1949',body:'Một trong những chiến công được nhắc đến nhiều nhất gắn với tên tuổi Võ Thị Sáu là hành động trừng trị tay sai thực dân ngay giữa nơi đông người tại quê nhà.',cite:'Tư liệu về thân thế, sự nghiệp Anh hùng LLVTND Võ Thị Sáu'},
+  s4:{title:'Bị bắt, tháng 2/1950',body:'Sau một thời gian hoạt động, Võ Thị Sáu bị thực dân Pháp bắt giữ, giam tại khám Đất Đỏ rồi chuyển lên khám Chí Hòa để thẩm vấn.',cite:'Tư liệu lịch sử địa phương Bà Rịa - Vũng Tàu'},
+  s5:{title:'Tòa án binh kết án tử hình, 1950',body:'Tòa án binh thực dân Pháp kết án tử hình Võ Thị Sáu dù cô chưa đủ tuổi thành niên, sau đó chuyển ra giam tại Côn Đảo.',cite:'Tư liệu về thân thế, sự nghiệp Anh hùng LLVTND Võ Thị Sáu'},
+  s6:{title:'Những ngày tù đày tại Côn Đảo',body:'Tại nhà tù Côn Đảo, Võ Thị Sáu được nhiều bạn tù chính trị ghi nhớ với tinh thần kiên cường, bất khuất trước sự đàn áp của cai ngục.',cite:'Hồi ký của các cựu tù chính trị Côn Đảo'},
+  s7:{title:'Đêm trước ngày hành quyết, 22/1/1952',body:'Theo các lời kể được lưu truyền, đêm trước khi bị hành quyết, Võ Thị Sáu giữ tâm thế bình thản, không hoảng loạn.',cite:'Các tư liệu, lời kể được lưu truyền về những giờ phút cuối của Võ Thị Sáu'},
+  s8:{title:'Hy sinh tại pháp trường Côn Đảo, 23/1/1952',body:'Võ Thị Sáu bị thực dân Pháp xử bắn tại Côn Đảo ngày 23/1/1952, khi mới 19 tuổi.',cite:'Tư liệu về thân thế, sự nghiệp Anh hùng LLVTND Võ Thị Sáu'},
+  s9:{title:'Di sản Anh hùng Lực lượng vũ trang nhân dân',body:'Võ Thị Sáu được Nhà nước Việt Nam truy tặng danh hiệu Anh hùng Lực lượng vũ trang nhân dân, trở thành biểu tượng tinh thần yêu nước của tuổi trẻ Việt Nam.',cite:'Quyết định truy tặng danh hiệu Anh hùng LLVTND — Nhà nước CHXHCN Việt Nam'}
+};
+function openSrcPopup(key){
+  const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcBadge').textContent='📖 ĐÃ KIỂM CHỨNG';
+  document.getElementById('srcTitle').textContent=d.title;
+  document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;
+  document.getElementById('srcOverlay').classList.add('show');
+  playTone(700,.08,'sine',.08);
+}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+// ===== RESTART =====
+function restart(){
+  pts=0;answered={};kcCorrectCount=0;kcTotalCount=0;lastMilestone=0;
+  sceneHistory=['cover'];historyIndex=0;sceneRewarded={};
+  streakN=0;maxStreak=0;const sb=document.getElementById('streakBadge');if(sb)sb.classList.remove('show','fire');
+  choiceCorrect={s1:false,sc2:false,sc3:false,sc4:false,sc5:false,sc6:false,sc7:false,sc8:false,s9:false};
+  document.querySelectorAll('[id$="-choices"]').forEach(c=>c.querySelectorAll('.choice-btn').forEach(b=>b.disabled=false));
+  document.querySelectorAll('.ch-opt,.kc-opt').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+  document.querySelectorAll('.ch-fb,.kc-fb').forEach(f=>{f.className=f.classList.contains('ch-fb')?'ch-fb':'kc-fb';f.innerHTML='';});
+  document.querySelectorAll('.counterf-body').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('[id^="cfwrap-"]').forEach(el=>el.style.display='none');
+  updateScore();document.getElementById('prog').style.width='0%';
+  resetJourneyMap();
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateNavButtons();
+}
+updateScore();
+</script>
+</body>
+</html>

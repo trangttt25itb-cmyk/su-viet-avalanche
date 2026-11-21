@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lý Thái Tổ — Dời Đô Thăng Long | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --gold:#c9922a;
+  --gold-l:#f0c060;
+  --gold-dim:#7a5510;
+  --crimson:#8b1a1a;
+  --crimson-l:#d44444;
+  --lacquer:#1a0a0a;
+  --jade:#1e5c3a;
+  --jade-l:#3fa866;
+  --ink:#0a0505;
+  --parch:#f5ead0;
+  --parch-dim:rgba(245,234,208,0.75);
+  --parch-faint:rgba(245,234,208,0.4);
+  --bg:#070304;
+  --panel:rgba(10,4,4,0.96);
+  --dragon:#c9922a;
+}
+
+body{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  background:var(--bg);color:var(--parch);
+  min-height:100vh;overflow-x:hidden;
+}
+
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,146,42,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 70% at 10% 50%,rgba(139,26,26,0.05) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 90% 80%,rgba(201,146,42,0.04) 0%,transparent 50%);
+}
+
+#lanternCanvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
+
+.top-banner{
+  position:fixed;top:0;left:0;right:0;height:4px;z-index:400;
+  background:linear-gradient(90deg,#8b1a1a,#c9922a,#f0c060,#c9922a,#8b1a1a);
+}
+
+nav{
+  position:fixed;top:4px;left:0;right:0;z-index:300;
+  background:rgba(7,3,4,0.97);
+  border-bottom:1px solid rgba(201,146,42,0.2);
+  padding:13px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(16px);
+}
+.nav-logo{
+  font-family:'Cinzel',serif;font-size:16px;
+  color:var(--gold-l);text-decoration:none;letter-spacing:4px;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo::before{content:'🐉';font-size:15px;}
+.nav-back{font-size:12px;color:var(--parch-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;}
+.nav-back:hover{color:var(--gold-l);}
+
+.prog-bar{position:fixed;top:57px;left:0;right:0;z-index:299;height:3px;background:rgba(255,255,255,0.03);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--crimson),var(--gold),var(--gold-l));transition:width 1s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(201,146,42,0.5);}
+
+.hud-score{
+  position:fixed;top:66px;right:20px;z-index:298;
+  background:rgba(10,4,4,0.94);
+  border:1px solid rgba(201,146,42,0.3);
+  border-radius:12px;padding:8px 16px;
+  display:flex;align-items:center;gap:14px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 24px rgba(0,0,0,0.5),inset 0 1px 0 rgba(201,146,42,0.08);
+}
+.hud-pts{font-family:'Cinzel',serif;font-size:22px;color:var(--gold-l);font-weight:700;min-width:36px;text-align:center;transition:transform .25s;}
+.hud-pts.pop{transform:scale(1.5);}
+.hud-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);}
+.hud-rank{font-size:12px;color:#e8a060;margin-top:2px;}
+
+.hud-streak{
+  position:fixed;top:66px;left:20px;z-index:298;
+  background:rgba(10,4,4,0.94);border:1px solid rgba(201,146,42,0.25);
+  border-radius:12px;padding:8px 16px;
+  display:flex;align-items:center;gap:8px;
+  backdrop-filter:blur(12px);
+  opacity:0;transform:translateX(-14px);transition:all .4s;
+}
+.hud-streak.show{opacity:1;transform:translateX(0);}
+.hud-streak.blaze{border-color:rgba(255,140,0,0.7);box-shadow:0 0 20px rgba(255,120,0,0.25);}
+.streak-n{font-family:'Cinzel',serif;font-size:20px;color:#ff9040;font-weight:700;}
+
+.wrap{max-width:820px;margin:0 auto;padding:90px 24px 80px;position:relative;z-index:2;}
+
+/* GLOBAL TIMELINE BAR (dùng chung mọi chương) */
+.tl{display:flex;align-items:flex-start;gap:0;margin:0 0 26px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}
+.tl::-webkit-scrollbar{display:none;}
+.tl-item{flex:1;min-width:78px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(201,146,42,.3),rgba(201,146,42,.08));z-index:0;}
+.tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.tl-dot.done{background:var(--gold-dim);border:2px solid var(--gold);color:var(--ink);}
+.tl-dot.current{background:var(--crimson);border:2px solid var(--gold-l);color:#fff;box-shadow:0 0 20px rgba(201,146,42,.7);animation:goldPulse 2s infinite;}
+@keyframes goldPulse{0%,100%{box-shadow:0 0 20px rgba(201,146,42,.7);}50%{box-shadow:0 0 35px rgba(240,192,96,1),0 0 55px rgba(201,146,42,.4);}}
+.tl-dot.todo{background:rgba(245,234,208,.04);border:2px solid rgba(245,234,208,.12);color:var(--parch-faint);}
+.tl-year{font-size:10.5px;color:var(--gold-l);margin-top:6px;text-align:center;letter-spacing:.5px;}
+.tl-event{font-size:9.5px;color:var(--parch-faint);margin-top:3px;text-align:center;line-height:1.3;padding:0 3px;}
+
+.scene{display:none;}
+.scene.active{display:block;animation:fadeRise .7s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeRise{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.chap{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,26,26,0.15);
+  border:1px solid rgba(201,146,42,0.35);
+  border-radius:30px;padding:6px 20px;
+  font-family:'Cinzel',serif;font-size:11px;color:var(--gold-l);
+  letter-spacing:2.5px;margin-bottom:24px;
+}
+
+.hero-wrap{
+  width:100%;height:270px;border-radius:18px;margin-bottom:28px;
+  border:1px solid rgba(201,146,42,0.25);overflow:hidden;
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8),inset 0 0 60px rgba(201,146,42,0.04);
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-wrap svg{width:100%;height:100%;}
+.hero-simple{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;}
+.hero-simple .hs-emoji{font-size:64px;filter:drop-shadow(0 0 20px rgba(201,146,42,.5));}
+.hero-simple .hs-title{font-family:'Cinzel',serif;font-size:19px;color:var(--gold-l);letter-spacing:3px;}
+.hero-simple .hs-sub{font-family:'Cormorant Garamond',serif;font-size:12px;color:rgba(240,192,96,.5);letter-spacing:2px;}
+
+.story{font-size:19px;line-height:2;color:rgba(245,234,208,.9);margin-bottom:18px;clear:both;}
+.story em{color:#f0c060;font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+
+.sidebar-fact{
+  float:right;width:210px;margin:0 0 18px 22px;
+  background:rgba(139,26,26,0.1);
+  border:1px solid rgba(201,146,42,0.28);
+  border-radius:12px;padding:14px 16px;
+  font-size:13.5px;line-height:1.75;color:var(--parch-dim);
+}
+.sidebar-fact .sf-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+
+.dlg{
+  background:rgba(139,26,26,0.08);
+  border-left:3px solid rgba(201,146,42,0.6);
+  border-radius:0 14px 14px 0;
+  padding:18px 24px;margin:24px 0;
+  font-style:italic;font-size:18.5px;line-height:1.8;
+  color:var(--parch);position:relative;
+}
+.dlg::before{content:'"';position:absolute;top:-8px;left:14px;font-size:56px;color:rgba(201,146,42,.12);font-family:'Cinzel',serif;line-height:1;}
+.dlg-who{font-size:10px;font-style:normal;color:#e8a060;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+
+.fact{background:rgba(201,146,42,0.07);border:1px solid rgba(201,146,42,0.28);border-radius:12px;padding:18px 22px;margin:22px 0;font-size:15px;line-height:1.85;color:var(--parch-dim);}
+.fact .f-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block;}
+
+.outcome{border-radius:14px;padding:22px;margin:22px 0;font-size:17px;line-height:1.85;}
+.outcome.good{background:rgba(30,92,58,0.12);border:1px solid rgba(62,168,102,0.3);}
+.outcome.bad{background:rgba(100,10,10,0.18);border:1px solid rgba(139,26,26,0.4);}
+.outcome-icon{font-size:32px;display:block;margin-bottom:10px;}
+
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(201,146,42,0.1);border:1px solid rgba(201,146,42,0.22);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--gold-l);margin:3px 3px 3px 0;animation:chipIn .4s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes chipIn{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+
+.legend-box{text-align:center;padding:28px;background:rgba(201,146,42,0.07);border:1px solid rgba(201,146,42,0.25);border-radius:16px;margin:28px 0;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold-l);line-height:1.75;font-style:italic;}
+.legend-icon{font-size:46px;display:block;margin-bottom:12px;}
+
+.choices-label{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin:34px 0 14px;display:flex;align-items:center;gap:10px;}
+.choices-label::before,.choices-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,146,42,.3),transparent);}
+.choices{display:flex;flex-direction:column;gap:12px;}
+
+.c-btn{
+  background:rgba(245,234,208,.03);border:1px solid rgba(245,234,208,.12);
+  border-radius:12px;padding:18px 22px;
+  color:var(--parch);font-family:'Cormorant Garamond',serif;font-size:17px;
+  text-align:left;cursor:pointer;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:flex-start;gap:14px;line-height:1.55;
+  position:relative;overflow:hidden;
+}
+.c-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(139,26,26,.08),transparent);opacity:0;transition:opacity .3s;}
+.c-btn:hover{background:rgba(139,26,26,0.14);border-color:rgba(201,146,42,.5);transform:translateX(8px);box-shadow:0 4px 20px rgba(0,0,0,.3),-4px 0 0 rgba(201,146,42,.5);}
+.c-btn:hover::before{opacity:1;}
+.c-letter{width:30px;height:30px;min-width:30px;border-radius:50%;background:rgba(201,146,42,.12);border:1px solid rgba(201,146,42,.4);color:var(--gold-l);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;flex-shrink:0;margin-top:2px;transition:all .3s;}
+.c-btn:hover .c-letter{background:rgba(201,146,42,.28);border-color:var(--gold-l);}
+.c-sub{font-size:13px;color:var(--parch-faint);font-style:italic;margin-top:4px;}
+
+.cont-btn{display:inline-flex;align-items:center;gap:10px;margin-top:28px;padding:15px 34px;background:rgba(139,26,26,0.5);border:1px solid rgba(201,146,42,0.45);border-radius:12px;color:var(--parch);font-family:'Cormorant Garamond',serif;font-size:17px;cursor:pointer;transition:all .3s;letter-spacing:.5px;}
+.cont-btn:hover{background:var(--crimson);transform:translateY(-3px);box-shadow:0 10px 30px rgba(139,26,26,.4);}
+
+.pts-popup{position:fixed;top:80px;right:100px;z-index:999;font-family:'Cinzel',serif;font-size:22px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 20px rgba(201,146,42,.8);}
+.pts-popup.show{animation:ptsPop .9s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes ptsPop{0%{opacity:0;transform:translateY(0) scale(.8);}30%{opacity:1;transform:translateY(-20px) scale(1.2);}70%{opacity:1;transform:translateY(-35px) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(.9);}}
+
+.combo-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.2);}70%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1);}}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(139,26,26,0.95),rgba(10,4,4,0.97));border:2px solid var(--gold-l);border-radius:20px;padding:20px 36px;box-shadow:0 0 60px rgba(201,146,42,0.5);}
+.combo-title{font-size:11px;color:var(--gold-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-family:'Cinzel',serif;font-size:30px;color:#f0c060;}
+.combo-pts{font-size:14px;color:rgba(245,234,208,0.5);margin-top:4px;}
+
+.quiz{background:rgba(139,26,26,0.06);border:1px solid rgba(201,146,42,0.22);border-radius:14px;padding:22px 26px;margin:24px 0;}
+.quiz-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.quiz-q{font-size:17px;font-weight:600;color:#fff;margin-bottom:14px;line-height:1.55;}
+.quiz-opts{display:flex;flex-direction:column;gap:9px;}
+.q-opt{background:rgba(245,234,208,.04);border:1px solid rgba(245,234,208,.12);border-radius:9px;padding:12px 18px;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--parch);cursor:pointer;text-align:left;transition:all .25s;}
+.q-opt:hover:not(:disabled){background:rgba(139,26,26,.14);border-color:rgba(201,146,42,.35);transform:translateX(5px);}
+.q-opt.correct{background:rgba(25,80,45,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.q-opt.wrong{background:rgba(120,10,10,.3)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.q-opt:disabled{cursor:default;}
+.quiz-fb{margin-top:12px;font-size:14.5px;line-height:1.75;display:none;padding:12px 16px;border-radius:9px;}
+.quiz-fb.show{display:block;}
+.quiz-fb.ok{background:rgba(25,80,45,.18);color:#a5d6a7;}
+.quiz-fb.no{background:rgba(120,10,10,.18);color:#ef9a9a;}
+
+.drag-zone{border:2px dashed rgba(201,146,42,.3);border-radius:14px;padding:20px;margin:20px 0;background:rgba(201,146,42,0.04);}
+.drag-zone-title{font-size:11px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+.drag-items{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;min-height:44px;}
+.drag-item{
+  background:rgba(139,26,26,0.2);border:1px solid rgba(201,146,42,0.4);
+  border-radius:8px;padding:8px 16px;
+  font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--parch);
+  cursor:grab;user-select:none;transition:all .2s;
+}
+.drag-item:active{cursor:grabbing;transform:scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,.4);}
+.drag-item.placed{opacity:.4;cursor:default;}
+.drop-targets{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.drop-target{
+  background:rgba(245,234,208,0.03);border:2px dashed rgba(245,234,208,.15);
+  border-radius:10px;padding:14px;min-height:58px;
+  font-size:13px;color:var(--parch-faint);
+  transition:all .25s;display:flex;align-items:center;flex-direction:column;gap:6px;
+}
+.drop-target.over{border-color:rgba(201,146,42,.6);background:rgba(201,146,42,0.08);}
+.drop-target.correct-drop{border-color:#4caf50!important;background:rgba(25,80,45,.2)!important;}
+.drop-target.wrong-drop{border-color:#e53935!important;background:rgba(120,10,10,.18)!important;}
+.drop-target-label{font-size:10px;color:var(--gold-dim);letter-spacing:1px;text-transform:uppercase;}
+.drop-target .placed-name{font-size:14px;color:var(--parch);font-style:italic;}
+.drag-submit{margin-top:14px;padding:10px 24px;background:rgba(139,26,26,.45);border:1px solid rgba(201,146,42,.4);border-radius:9px;color:var(--parch);font-family:'Cormorant Garamond',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.drag-submit:hover{background:var(--crimson);}
+.drag-fb{margin-top:12px;font-size:14px;display:none;padding:12px;border-radius:9px;line-height:1.7;}
+.drag-fb.show{display:block;}
+
+.order-challenge{background:rgba(201,146,42,0.05);border:1px solid rgba(201,146,42,0.2);border-radius:14px;padding:22px;margin:22px 0;}
+.order-title{font-size:11px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
+.order-items{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.order-item{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(245,234,208,.04);border:1px solid rgba(245,234,208,.12);
+  border-radius:9px;padding:12px 16px;
+  font-size:15px;color:var(--parch);cursor:grab;user-select:none;transition:all .2s;
+}
+.order-item:hover{background:rgba(139,26,26,.12);border-color:rgba(201,146,42,.3);}
+.order-item.dragging{opacity:.5;transform:scale(.97);}
+.order-num{width:24px;height:24px;border-radius:50%;background:rgba(201,146,42,.15);border:1px solid rgba(201,146,42,.3);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gold-l);font-family:'Cinzel',serif;flex-shrink:0;}
+.order-check-btn{padding:10px 24px;background:rgba(139,26,26,.45);border:1px solid rgba(201,146,42,.4);border-radius:9px;color:var(--parch);font-family:'Cormorant Garamond',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.order-check-btn:hover{background:var(--crimson);}
+.order-fb{margin-top:12px;font-size:14px;line-height:1.7;display:none;padding:12px;border-radius:9px;}
+.order-fb.show{display:block;}
+
+.fill-challenge{background:rgba(139,26,26,0.07);border:1px solid rgba(201,146,42,0.2);border-radius:14px;padding:22px 26px;margin:22px 0;}
+.fill-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.fill-q{font-size:17px;color:#fff;margin-bottom:14px;line-height:1.7;font-weight:600;}
+.fill-input{
+  background:rgba(245,234,208,.06);border:1px solid rgba(245,234,208,.2);
+  border-radius:8px;padding:10px 16px;
+  font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--parch);
+  width:100%;max-width:360px;outline:none;transition:border-color .25s;
+}
+.fill-input:focus{border-color:rgba(201,146,42,.6);}
+.fill-submit{margin-top:10px;padding:9px 22px;background:rgba(139,26,26,.4);border:1px solid rgba(201,146,42,.35);border-radius:8px;color:var(--parch);font-family:'Cormorant Garamond',serif;font-size:15px;cursor:pointer;transition:.3s;margin-left:8px;}
+.fill-submit:hover{background:var(--crimson);}
+.fill-fb{margin-top:10px;font-size:14px;line-height:1.7;display:none;padding:10px 14px;border-radius:8px;}
+.fill-fb.show{display:block;}
+
+.pic-quiz{background:rgba(201,146,42,0.06);border:1px solid rgba(201,146,42,0.22);border-radius:14px;padding:22px;margin:22px 0;}
+.pic-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.pic-opt{
+  background:rgba(245,234,208,.04);border:2px solid rgba(245,234,208,.1);
+  border-radius:10px;padding:14px;text-align:center;
+  cursor:pointer;transition:all .25s;
+  font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--parch);
+}
+.pic-opt:hover{border-color:rgba(201,146,42,.4);background:rgba(139,26,26,.1);}
+.pic-opt .pic-emoji{font-size:32px;display:block;margin-bottom:6px;}
+.pic-opt.correct-pic{border-color:#4caf50!important;background:rgba(25,80,45,.22)!important;color:#a5d6a7!important;}
+.pic-opt.wrong-pic{border-color:#e53935!important;background:rgba(120,10,10,.22)!important;color:#ef9a9a!important;}
+.pic-opt:disabled{cursor:default;}
+
+.gate{
+  background:rgba(10,4,4,.97);border:2px solid rgba(201,146,42,.5);
+  border-radius:18px;padding:32px;margin:28px 0;text-align:center;
+  box-shadow:0 0 40px rgba(201,146,42,.08),inset 0 0 40px rgba(0,0,0,.5);
+}
+.gate-icon{font-size:52px;display:block;margin-bottom:16px;animation:gateGlow 3s ease-in-out infinite;}
+@keyframes gateGlow{0%,100%{filter:drop-shadow(0 0 8px rgba(201,146,42,.4));}50%{filter:drop-shadow(0 0 20px rgba(240,192,96,.8));}}
+.gate-title{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-l);margin-bottom:8px;letter-spacing:2px;}
+.gate-sub{font-size:14px;color:var(--parch-faint);margin-bottom:20px;line-height:1.7;}
+
+.dragon-seal{
+  position:fixed;bottom:20px;right:20px;z-index:500;
+  max-width:290px;
+  background:rgba(10,4,4,0.97);border:1px solid rgba(201,146,42,0.45);
+  border-radius:16px 16px 4px 16px;padding:16px 18px 14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(201,146,42,.08);
+  opacity:0;transform:translateY(18px) scale(0.96);
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+.dragon-seal.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.ds-avatar{font-size:26px;display:block;margin-bottom:5px;}
+.ds-name{font-size:9px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.ds-text{font-size:13.5px;line-height:1.65;color:var(--parch-dim);font-style:italic;}
+.ds-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--parch-faint);font-size:15px;cursor:pointer;padding:2px 6px;transition:color .2s;}
+.ds-close:hover{color:var(--parch);}
+
+.journey-meter{background:rgba(201,146,42,0.05);border:1px solid rgba(201,146,42,0.18);border-radius:12px;padding:14px 18px;margin:20px 0;display:flex;align-items:center;gap:14px;}
+.jm-label{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;min-width:70px;}
+.jm-track{flex:1;height:10px;background:rgba(245,234,208,.05);border-radius:5px;overflow:hidden;position:relative;}
+.jm-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--crimson),var(--gold),var(--gold-l));transition:width 1s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(201,146,42,.4);}
+.jm-icon{font-size:18px;}
+
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+.final{text-align:center;padding:40px 0;}
+.final-seal{width:140px;height:140px;border-radius:50%;background:rgba(139,26,26,.12);border:2px solid rgba(201,146,42,.5);margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:56px;animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(201,146,42,.2);}50%{box-shadow:0 0 70px rgba(201,146,42,.5),0 0 100px rgba(139,26,26,.15);}}
+.final-title{font-family:'Cinzel',serif;font-size:28px;color:var(--gold-l);margin-bottom:10px;letter-spacing:2px;line-height:1.3;}
+.final-pts{font-family:'Cinzel',serif;font-size:52px;color:var(--gold);margin:12px 0;text-shadow:0 0 30px rgba(201,146,42,.5);}
+.final-rank{display:inline-block;background:rgba(139,26,26,.14);border:1px solid rgba(201,146,42,.35);border-radius:30px;padding:7px 24px;font-family:'Cinzel',serif;font-size:13px;color:var(--gold-l);margin-bottom:24px;letter-spacing:1px;}
+.final-desc{font-size:17px;color:var(--parch-dim);line-height:1.9;max-width:540px;margin:0 auto 28px;}
+.final-lesson{background:rgba(201,146,42,.05);border:1px solid rgba(201,146,42,.18);border-radius:14px;padding:24px 28px;text-align:left;margin:0 0 34px;font-size:16px;line-height:1.9;color:var(--parch-dim);}
+.fl-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+
+.achievements{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:20px 0 28px;}
+.ach{background:rgba(139,26,26,.1);border:1px solid rgba(201,146,42,.28);border-radius:12px;padding:14px 16px;text-align:center;min-width:100px;animation:achIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+@keyframes achIn{from{opacity:0;transform:translateY(20px) scale(.8);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ach-icon{font-size:28px;display:block;margin-bottom:6px;}
+.ach-name{font-size:11px;color:var(--gold-l);letter-spacing:.5px;}
+
+.btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.btn-restart{padding:13px 28px;background:transparent;border:1px solid rgba(201,146,42,.35);border-radius:10px;color:var(--gold-l);font-family:'Cormorant Garamond',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.btn-restart:hover{background:rgba(201,146,42,.12);}
+.btn-home{padding:13px 28px;background:rgba(139,26,26,.45);border:1px solid rgba(201,146,42,.35);border-radius:10px;color:var(--parch);font-family:'Cormorant Garamond',serif;font-size:16px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-home:hover{background:var(--crimson);}
+
+.sep{text-align:center;margin:28px 0 8px;font-size:16px;color:rgba(201,146,42,.25);letter-spacing:8px;}
+
+.ref-page{background:rgba(201,146,42,0.05);border:1px solid rgba(201,146,42,0.2);border-radius:16px;padding:26px 28px;margin:40px 0 10px;}
+.ref-title{font-family:'Cinzel',serif;font-size:17px;color:var(--gold-l);margin-bottom:6px;letter-spacing:1.5px;}
+.ref-sub{font-size:13px;color:var(--parch-faint);margin-bottom:16px;line-height:1.6;}
+.ref-item{font-size:14px;line-height:1.9;color:var(--parch-dim);padding-left:16px;position:relative;margin-bottom:4px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold-dim);}
+
+@media(max-width:640px){
+  nav{padding:12px 16px;}
+  .wrap{padding:78px 14px 60px;}
+  .sidebar-fact{float:none;width:100%;margin:0 0 16px;}
+  .hero-wrap{height:190px;}
+  .story{font-size:17px;}
+  .drop-targets{grid-template-columns:1fr;}
+  .pic-grid{grid-template-columns:1fr 1fr;}
+  .dragon-seal{max-width:230px;bottom:14px;right:14px;}
+  .tl-item{min-width:64px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="lanternCanvas"></canvas>
+<div class="top-banner"></div>
+<div class="ambient"></div>
+<div class="pts-popup" id="ptsPopup">+0</div>
+
+<div class="dragon-seal" id="dragonSeal">
+  <button class="ds-close" onclick="closeSeal()">✕</button>
+  <span class="ds-avatar">🐉</span>
+  <div class="ds-name">Cố Vấn Hoàng Cung</div>
+  <div class="ds-text" id="sealText">Bệ hạ hãy suy nghĩ thận trọng trước mỗi quyết định!</div>
+</div>
+
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Liên tiếp xuất sắc!</div>
+    <div class="combo-label" id="comboLabel">🐉 COMBO x2</div>
+    <div class="combo-pts" id="comboPts">+điểm thưởng!</div>
+  </div>
+</div>
+
+<div class="hud-streak" id="streakBadge">
+  <span>🔥</span>
+  <div>
+    <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim)">Streak</div>
+    <div class="streak-n" id="streakN">0</div>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">SỬ VIỆT</a>
+  <a href="cau-chuyen-detail.html?id=24" class="nav-back">← Về câu chuyện</a>
+</nav>
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+
+<div class="hud-score">
+  <div>
+    <div class="hud-label">Điểm tích lũy</div>
+    <div class="hud-pts" id="scoreNum">0</div>
+  </div>
+  <div>
+    <div class="hud-label">Danh hiệu</div>
+    <div class="hud-rank" id="scoreRank">—</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- THANH TIẾN TRÌNH DÙNG CHUNG CHO CẢ 9 CHƯƠNG -->
+<div class="tl" id="tlBar"></div>
+
+<!-- ══ SCENE 0: TUỔI THƠ NƠI CỬA PHẬT ══ -->
+<div class="scene active" id="s0">
+  <div class="chap">☸️ Chương I · ~974–990 — Tuổi Thơ Nơi Cửa Phật</div>
+
+  <div class="hero-wrap" style="background:radial-gradient(ellipse at 50% 30%,rgba(201,146,42,.14),transparent 60%),linear-gradient(180deg,#0a0508,#150a08);">
+    <div class="hero-simple">
+      <span class="hs-emoji">☸️</span>
+      <span class="hs-title">CHÙA CỔ PHÁP</span>
+      <span class="hs-sub">Đình Bảng, Bắc Ninh • Cuối thế kỷ 10</span>
+    </div>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">📚 Bối cảnh</span>
+      Lý Công Uẩn sinh năm 974, mồ côi từ nhỏ. Ông được nhà sư <strong>Lý Khánh Văn</strong> ở chùa Cổ Pháp nhận nuôi, rồi được cao tăng <strong>Vạn Hạnh</strong> — bậc thầy uyên bác cả về Phật pháp lẫn thế sự — kèm cặp dạy dỗ.
+    </div>
+    Cậu bé Lý Công Uẩn lớn lên giữa tiếng chuông chùa và mùi trầm hương. Không cha, không mẹ bên cạnh, nhưng cậu được sư Vạn Hạnh dạy chữ, dạy đạo lý, và cả binh thư — điều hiếm thấy với một chú tiểu trong chùa. Ánh mắt cậu từ nhỏ đã có gì đó khác thường, khiến người lớn xung quanh phải để ý.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Sư Vạn Hạnh, nhìn cậu bé Công Uẩn</div>
+    "Đứa trẻ này diện mạo khác thường, sau này ắt làm nên nghiệp lớn, gánh vác được thiên hạ. Ta phải dạy nó cho trọn cả đạo lẫn đời."
+  </div>
+
+  <div class="fact reveal">
+    <span class="f-tag">📖 Giai thoại dân gian</span>
+    Tương truyền thuở nhỏ Lý Công Uẩn từng bị phạt trói ở chùa vì một lỗi nhỏ, nhưng đêm đó thần hộ pháp trong chùa đã tự tay cởi trói cho cậu — dân gian coi đây là điềm báo "chân mệnh thiên tử không thể bị trói buộc". Đây là truyền thuyết, không phải chính sử, nhưng cho thấy hình ảnh Lý Công Uẩn đã được thần thánh hóa từ rất sớm trong dân gian.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra kiến thức — Câu 1/2</span>
+    <div class="quiz-q">Lý Công Uẩn được nhà sư nào nhận nuôi từ nhỏ tại chùa Cổ Pháp?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'q0_1')">A. Sư Vạn Hạnh</button>
+      <button class="q-opt" onclick="ansQ(this,true,'q0_1')">B. Sư Lý Khánh Văn</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q0_1')">C. Sư Không Lộ</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q0_1')">D. Sư Từ Đạo Hạnh</button>
+    </div>
+    <div class="quiz-fb" id="q0_1-fb"></div>
+  </div>
+
+  <div class="fill-challenge reveal">
+    <span class="fill-tag">✍️ Điền vào chỗ trống — Câu 2/2</span>
+    <div class="fill-q">Người thầy dạy dỗ Lý Công Uẩn cả Phật pháp lẫn thế sự, sau này còn giúp ông lên ngôi, tên là sư <strong>???</strong> Hạnh.</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+      <input class="fill-input" id="fill0" placeholder="Điền tên..." onkeypress="if(event.key==='Enter')checkFill('fill0','vạn','fill0-fb','Đúng! Sư Vạn Hạnh — bậc cao tăng có công lớn giúp Lý Công Uẩn lên ngôi năm 1009.')">
+      <button class="fill-submit" onclick="checkFill('fill0','vạn','fill0-fb','Đúng! Sư Vạn Hạnh — bậc cao tăng có công lớn giúp Lý Công Uẩn lên ngôi năm 1009.')">Kiểm tra</button>
+    </div>
+    <div class="fill-fb" id="fill0-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Trưởng thành giữa cửa chùa, cậu bé Công Uẩn nên chuyên tâm vào điều gì?</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s_quan',18)">
+      <span class="c-letter">A</span>
+      <div>Vừa học đạo lý nhà Phật, vừa học thêm binh thư, xử thế để chuẩn bị gánh vác việc lớn.<div class="c-sub">Đúng hướng — đây chính là nền tảng giúp ông trở thành minh quân sau này!</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s0_bad1',6)">
+      <span class="c-letter">B</span>
+      <div>Chỉ chuyên tâm tụng kinh niệm Phật, không màng thế sự.<div class="c-sub">An yên, nhưng sẽ khó gánh vác việc triều chính sau này...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s0_bad1">
+  <div class="chap">📍 Lựa chọn B · Chỉ Chuyên Tu</div>
+  <div class="outcome bad"><span class="outcome-icon">📿</span>Chỉ chuyên tâm kinh kệ là con đường của một vị cao tăng — nhưng sư Vạn Hạnh nhìn thấy ở cậu bé này một <strong>sứ mệnh khác</strong>: gánh vác vận mệnh cả một dân tộc. Ông dạy cả đạo lẫn đời cho Công Uẩn.</div>
+  <div class="choices-label">⚡ Nghe lời thầy dạy...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s_quan',10)"><span class="c-letter">→</span><div>Học cả đạo lẫn đời — chuẩn bị cho việc lớn!</div></button></div>
+</div>
+
+<!-- ══ SCENE s_quan: ĐIỆN TIỀN CHỈ HUY SỨ ══ -->
+<div class="scene" id="s_quan">
+  <div class="chap">🛡️ Chương II · ~1005–1009 — Điện Tiền Chỉ Huy Sứ</div>
+
+  <div class="hero-wrap" style="background:radial-gradient(ellipse at 50% 30%,rgba(139,26,26,.18),transparent 60%),linear-gradient(180deg,#0a0505,#170808);">
+    <div class="hero-simple">
+      <span class="hs-emoji">🛡️</span>
+      <span class="hs-title">HOA LƯ — TRIỀU TIỀN LÊ</span>
+      <span class="hs-sub">Cấm vệ quân • Đầu thế kỷ 11</span>
+    </div>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">📚 Bối cảnh</span>
+      Trưởng thành, Lý Công Uẩn vào triều Tiền Lê, lập nhiều công trạng, được phong <strong>Điện tiền chỉ huy sứ</strong> — thống lĩnh quân cấm vệ, trực tiếp bảo vệ vua và kinh thành Hoa Lư.
+    </div>
+    Vua <strong>Lê Long Đĩnh</strong> — sử sách gọi là Lê Ngọa Triều vì bệnh tật phải nằm khi thiết triều — cai trị ngày càng hà khắc, khiến lòng dân oán thán. Là người nắm quân cấm vệ trong tay, Lý Công Uẩn hoàn toàn có thể ra tay bất cứ lúc nào.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Một cận thần thì thầm</div>
+    "Ngài đang nắm cấm quân trong tay, lòng dân thì oán than vua. Đây chính là thời cơ để ngài đoạt lấy ngôi báu, cứu lấy thiên hạ..."
+  </div>
+
+  <div class="story reveal">
+    Lý Công Uẩn im lặng. Đoạt ngôi khi vua còn sống là tiếm nghịch, trái đạo làm tôi — dù vua có tàn bạo đến đâu. Nhưng ông cũng hiểu: đất nước đang cần một sự thay đổi, chỉ là <em>chưa phải lúc</em>.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra — Câu 1/1</span>
+    <div class="quiz-q">Lý Công Uẩn giữ chức vụ gì trong triều đình nhà Tiền Lê trước khi lên ngôi vua?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'qq_1')">A. Thái sư</button>
+      <button class="q-opt" onclick="ansQ(this,true,'qq_1')">B. Điện tiền chỉ huy sứ — thống lĩnh quân cấm vệ</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qq_1')">C. Tể tướng</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qq_1')">D. Thứ sử Giao Châu</button>
+    </div>
+    <div class="quiz-fb" id="qq_1-fb"></div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="f-tag">📖 Vì sao gọi là "Ngọa Triều"?</span>
+    Lê Long Đĩnh mắc bệnh nặng, đến mức không ngồi thiết triều được mà phải nằm khi tiếp quan lại — dân gian và sử sách sau này gọi ông là "Lê Ngọa Triều". Sự cai trị hà khắc cuối đời ông khiến lòng dân ly tán, tạo tiền đề cho một cuộc chuyển giao quyền lực.
+  </div>
+
+  <div class="choices-label">⚡ Trước lời rủ rê tạo phản, bạn quyết định...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s1',20)">
+      <span class="c-letter">A</span>
+      <div>Giữ trọn đạo làm tôi, không manh động — chờ đúng thời điểm chính danh mới hành động.<div class="c-sub">Đúng lịch sử! Chính sự chín chắn này khiến triều thần sau đó tin tưởng suy tôn ông.</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s_quan_bad1',6)">
+      <span class="c-letter">B</span>
+      <div>Nhân lúc nắm quân trong tay, ra tay soán ngôi ngay lập tức.<div class="c-sub">Đây không phải điều đã xảy ra — tiếm nghịch khi vua còn sống sẽ mất lòng thiên hạ...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s_quan_bad1">
+  <div class="chap">📍 Lựa chọn B · Manh Động</div>
+  <div class="outcome bad"><span class="outcome-icon">⚔️</span>Đây không phải điều đã xảy ra. Soán ngôi khi vua còn tại vị, dù vua có bạo ngược, vẫn là hành động trái đạo — dễ khiến thiên hạ coi là tiếm nghịch chứ không phải chính danh. Lý Công Uẩn hiểu rằng thời cơ chính danh quan trọng hơn tốc độ.</div>
+  <div class="choices-label">⚡ Giữ vững đạo làm tôi...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1',10)"><span class="c-letter">→</span><div>Chờ đúng thời cơ chính danh — không manh động!</div></button></div>
+</div>
+
+<!-- ══ SCENE 1: LÝ CÔNG UẨN LÊN NGÔI ══ -->
+<div class="scene" id="s1">
+  <div class="chap">👑 Chương III · Năm 1009 — Kẻ Thường Dân Lên Ngôi</div>
+
+  <div class="hero-wrap">
+    <svg viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="moonRed" cx="50%" cy="20%" r="50%"><stop offset="0%" stop-color="#c92a2a" stop-opacity="0.1"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <radialGradient id="torchGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ff8c30" stop-opacity="0.6"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <filter id="glow1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="820" height="270" fill="#070304"/>
+      <rect width="820" height="270" fill="url(#moonRed)"/>
+      <circle cx="80" cy="25" r="1.2" fill="#fff" opacity=".6"><animate attributeName="opacity" values=".6;.1;.6" dur="2.3s" repeatCount="indefinite"/></circle>
+      <circle cx="210" cy="18" r="1" fill="#fff" opacity=".4"><animate attributeName="opacity" values=".4;.9;.4" dur="3.7s" repeatCount="indefinite"/></circle>
+      <circle cx="380" cy="35" r="1.4" fill="#fff" opacity=".5"><animate attributeName="opacity" values=".5;.1;.5" dur="2.9s" repeatCount="indefinite"/></circle>
+      <circle cx="550" cy="20" r="1" fill="#fff" opacity=".45"><animate attributeName="opacity" values=".45;.8;.45" dur="1.8s" repeatCount="indefinite"/></circle>
+      <circle cx="700" cy="30" r="1.2" fill="#fff" opacity=".55"><animate attributeName="opacity" values=".55;.1;.55" dur="4.1s" repeatCount="indefinite"/></circle>
+      <path d="M0,180 Q80,130 160,155 Q240,120 320,148 Q400,125 480,145 Q560,118 640,140 Q720,120 820,135 L820,270 L0,270Z" fill="#100505" opacity=".9"/>
+      <path d="M0,195 Q100,165 200,180 Q320,158 420,175 Q520,155 620,168 Q720,150 820,162 L820,270 L0,270Z" fill="#0a0303" opacity=".95"/>
+      <rect x="340" y="148" width="140" height="55" rx="2" fill="#180808" stroke="#5a2a10" stroke-width="1.5" opacity=".85"/>
+      <path d="M320,148 L410,118 L500,148Z" fill="#200a0a" stroke="#8b4020" stroke-width="1.5" opacity=".9"/>
+      <path d="M328,148 L410,122 L492,148Z" fill="#2a0c0c" opacity=".8"/>
+      <path d="M390,118 Q410,108 430,118" stroke="#c9922a" stroke-width="2" fill="none" opacity=".7"/>
+      <rect x="290" y="165" width="50" height="38" rx="1" fill="#150707" stroke="#4a1a08" stroke-width="1" opacity=".8"/>
+      <path d="M280,165 L315,150 L350,165Z" fill="#1c0909" stroke="#6a2a10" stroke-width="1" opacity=".85"/>
+      <rect x="480" y="165" width="50" height="38" rx="1" fill="#150707" stroke="#4a1a08" stroke-width="1" opacity=".8"/>
+      <path d="M470,165 L505,150 L540,165Z" fill="#1c0909" stroke="#6a2a10" stroke-width="1" opacity=".85"/>
+      <rect x="385" y="170" width="22" height="33" rx="1" fill="#0a0303" stroke="#5a2a10" stroke-width="1" opacity=".9"/>
+      <rect x="413" y="170" width="22" height="33" rx="1" fill="#0a0303" stroke="#5a2a10" stroke-width="1" opacity=".9"/>
+      <rect x="355" y="168" width="4" height="20" fill="#7a3a10" opacity=".7"/>
+      <rect x="461" y="168" width="4" height="20" fill="#7a3a10" opacity=".7"/>
+      <circle cx="357" cy="166" r="6" fill="url(#torchGlow)" opacity=".8" filter="url(#glow1)">
+        <animate attributeName="opacity" values=".8;1;.5;.9;.8" dur="1.4s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="6;9;6;8;6" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="463" cy="166" r="6" fill="url(#torchGlow)" opacity=".7" filter="url(#glow1)">
+        <animate attributeName="opacity" values=".5;.9;.7;1;.5" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="r" values="6;8;6;9;6" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <ellipse cx="410" cy="138" rx="9" ry="12" fill="#8b1a1a" opacity=".8" filter="url(#glow1)">
+        <animate attributeName="opacity" values=".8;1;.6;.9;.8" dur="2.2s" repeatCount="indefinite"/>
+      </ellipse>
+      <line x1="410" y1="118" x2="410" y2="126" stroke="#c9922a" stroke-width="1.5" opacity=".6"/>
+      <text x="410" y="62" text-anchor="middle" font-family="serif" font-size="22" fill="#c9922a" opacity=".95" letter-spacing="4">HOA LƯ KINH ĐÔ</text>
+      <text x="410" y="84" text-anchor="middle" font-family="serif" font-size="12" fill="#f0c060" opacity=".55" letter-spacing="2">1009 • Ninh Bình • Nhà Tiền Lê</text>
+      <rect x="0" y="230" width="820" height="40" fill="#070304" opacity=".55"/>
+    </svg>
+  </div>
+
+  <div class="journey-meter reveal">
+    <span class="jm-icon">🏯</span>
+    <span class="jm-label">Hành Trình</span>
+    <div class="jm-track"><div class="jm-fill" id="jmFill" style="width:5%"></div></div>
+    <span id="jmPct" style="font-size:12px;color:var(--gold-l);min-width:32px;text-align:right;">5%</span>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">📚 Bối cảnh</span>
+      Năm 1009, vua Lê Long Đĩnh băng hà. Triều thần — dẫn đầu bởi thái sư Đào Cam Mộc và sư Vạn Hạnh — đồng lòng suy tôn Lý Công Uẩn lên ngôi hoàng đế, mở đầu triều Lý.
+    </div>
+    Ngươi — <strong>Lý Công Uẩn</strong> — vừa được trăm quan tôn lên ngôi hoàng đế. Trước mắt là cả một đất nước còn mang thương tích của thời loạn. Kinh đô Hoa Lư nằm giữa vùng núi non hiểm trở của Ninh Bình — từng là lợi thế phòng thủ thời chiến, nhưng bây giờ đất nước cần <em>phát triển</em>, không chỉ phòng thủ.
+  </div>
+
+  <div class="story reveal">Quan thái sư Đào Cam Mộc tâu trước ngai vàng:</div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Thái Sư Đào Cam Mộc</div>
+    "Tâu bệ hạ, Hoa Lư tuy hiểm trở nhưng chật hẹp, đất không màu mỡ, khó mở mang dân số. Bệ hạ mới lên ngôi, thiên hạ trông đợi một khí tượng mới. Xin bệ hạ nghĩ đến việc dời đô..."
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra kiến thức — Câu 1/3</span>
+    <div class="quiz-q">Lý Công Uẩn lên ngôi năm nào và mở đầu triều đại nào trong lịch sử Việt Nam?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'q1')">A. Năm 968, mở đầu nhà Đinh</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q1')">B. Năm 980, mở đầu nhà Tiền Lê</button>
+      <button class="q-opt" onclick="ansQ(this,true,'q1')">C. Năm 1009, mở đầu nhà Lý — triều đại kéo dài 215 năm</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q1')">D. Năm 1054, đặt tên nước là Đại Việt</button>
+    </div>
+    <div class="quiz-fb" id="q1-fb"></div>
+  </div>
+
+  <div class="fill-challenge reveal" id="fill1-container">
+    <span class="fill-tag">✍️ Điền vào chỗ trống — Câu 2/3</span>
+    <div class="fill-q">Lý Công Uẩn được nhà sư <strong>Vạn Hạnh</strong> nuôi dưỡng từ nhỏ. Sư Vạn Hạnh thuộc thiền phái nào của Phật giáo Việt Nam thời bấy giờ?</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+      <input class="fill-input" id="fill1" placeholder="Gõ tên thiền phái..." style="max-width:280px;" onkeypress="if(event.key==='Enter')checkFill('fill1','thảo đường','fill1-fb','Đúng! Sư Vạn Hạnh thuộc thiền phái Thảo Đường (hay Thiền phái Tì-ni-đa-lưu-chi) — một dòng thiền rất có ảnh hưởng thời Lý.')">
+      <button class="fill-submit" onclick="checkFill('fill1','thảo đường','fill1-fb','Đúng! Sư Vạn Hạnh thuộc thiền phái Thảo Đường — một dòng thiền rất có ảnh hưởng thời Lý.')">Kiểm tra</button>
+    </div>
+    <div class="fill-fb" id="fill1-fb"></div>
+    <div style="font-size:12px;color:var(--parch-faint);margin-top:8px;">💡 Gợi ý: Tên một loại cây cỏ</div>
+  </div>
+
+  <div class="pic-quiz reveal" id="pq1-container">
+    <span class="quiz-tag">🖼️ Nhận diện — Câu 3/3</span>
+    <div class="quiz-q">Đây là những biểu tượng nào liên quan đến triều đại nhà Lý? Chọn tất cả đáp án đúng:</div>
+    <div class="pic-grid">
+      <button class="pic-opt" onclick="picAns(this,'right','pq1')" data-id="pq1">
+        <span class="pic-emoji">🐉</span>
+        Rồng thăng thiên<br><small style="color:var(--parch-faint)">(biểu tượng kinh đô)</small>
+      </button>
+      <button class="pic-opt" onclick="picAns(this,'right','pq1')" data-id="pq1">
+        <span class="pic-emoji">☸️</span>
+        Phật giáo<br><small style="color:var(--parch-faint)">(quốc giáo triều Lý)</small>
+      </button>
+      <button class="pic-opt" onclick="picAns(this,'wrong','pq1')" data-id="pq1">
+        <span class="pic-emoji">⚡</span>
+        Nỏ thần Kim Quy<br><small style="color:var(--parch-faint)">(thời An Dương Vương)</small>
+      </button>
+      <button class="pic-opt" onclick="picAns(this,'right','pq1')" data-id="pq1">
+        <span class="pic-emoji">🏯</span>
+        Thành Thăng Long<br><small style="color:var(--parch-faint)">(kinh đô mới)</small>
+      </button>
+    </div>
+    <div class="quiz-fb" id="pq1-fb" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="sep">❦ ❦ ❦</div>
+
+  <div class="choices-label">⚡ Trước lời tâu của thái sư về dời đô, bạn quyết định...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s2',20)">
+      <span class="c-letter">A</span>
+      <div>Xem xét dời đô ngay — Hoa Lư đã hoàn thành vai trò lịch sử, đất nước cần một tầm nhìn mới.<div class="c-sub">Lịch sử đã chứng minh đây là quyết định vĩ đại nhất!</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s1_bad1',5)">
+      <span class="c-letter">B</span>
+      <div>Giữ nguyên Hoa Lư — tổ tiên đã chọn nơi này, không nên thay đổi.<div class="c-sub">Bảo thủ — Hoa Lư quá chật hẹp, không nuôi được đế chế lớn...</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s1_bad2',10)">
+      <span class="c-letter">C</span>
+      <div>Cần nhiều năm khảo sát trước khi quyết — dời đô không thể vội vàng.<div class="c-sub">Thận trọng là đúng — nhưng thực tế Lý Thái Tổ quyết định rất nhanh...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s1_bad1">
+  <div class="chap">📍 Lựa chọn B · Bảo Thủ</div>
+  <div class="outcome bad"><span class="outcome-icon">🏔️</span><strong>Sai lầm chiến lược!</strong> Hoa Lư ở giữa vùng núi non Ninh Bình — đất chật, dân thưa, khó mở rộng thương mại và kiểm soát đất nước. Lý Thái Tổ hiểu rằng một đế chế vĩ đại cần trung tâm <em>trống rải, dễ phát triển</em>.</div>
+  <div class="choices-label">⚡ Nghe lời thái sư...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',10)"><span class="c-letter">→</span><div>Dời đô — đất nước cần tầm nhìn xa!</div></button></div>
+</div>
+<div class="scene" id="s1_bad2">
+  <div class="chap">📍 Lựa chọn C · Thận Trọng</div>
+  <div class="outcome bad"><span class="outcome-icon">⏳</span>Thận trọng là đức tính tốt, nhưng <strong>cơ hội lịch sử không chờ đợi</strong>. Lý Thái Tổ đã khảo sát đất Đại La từ trước và ra <em>Chiếu Dời Đô</em> chỉ một năm sau khi lên ngôi.</div>
+  <div class="choices-label">⚡ Hành động quyết đoán...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',10)"><span class="c-letter">→</span><div>Năm 1010 — Viết Chiếu Dời Đô!</div></button></div>
+</div>
+
+<!-- ══ SCENE 2: CHIẾU DỜI ĐÔ — THÁCH THỨC KÉO THẢ ══ -->
+<div class="scene" id="s2">
+  <div class="chap">📜 Chương IV · Năm 1010 — Chiếu Dời Đô Vang Trời</div>
+
+  <div class="hero-wrap">
+    <svg viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="scrollGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3d1a05"/><stop offset="100%" stop-color="#1a0a02"/></linearGradient>
+        <filter id="inkBlur"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="820" height="270" fill="#080303"/>
+      <ellipse cx="410" cy="135" rx="300" ry="100" fill="#c9922a" opacity=".04"/>
+      <rect x="160" y="55" width="500" height="160" rx="8" fill="url(#scrollGrad)" stroke="#8b5010" stroke-width="2" opacity=".9"/>
+      <rect x="168" y="63" width="484" height="144" rx="6" fill="#2a1005" opacity=".7"/>
+      <rect x="150" y="48" width="20" height="174" rx="10" fill="#5a3010" stroke="#c9922a" stroke-width="1.5" opacity=".8"/>
+      <rect x="650" y="48" width="20" height="174" rx="10" fill="#5a3010" stroke="#c9922a" stroke-width="1.5" opacity=".8"/>
+      <text x="410" y="98" text-anchor="middle" font-family="serif" font-size="24" fill="#c9922a" opacity=".9" letter-spacing="6">CHIẾU DỜI ĐÔ</text>
+      <text x="410" y="122" text-anchor="middle" font-family="serif" font-size="12" fill="#f0c060" opacity=".55" letter-spacing="2">Lý Thái Tổ • Năm Canh Tuất 1010</text>
+      <line x1="220" y1="138" x2="600" y2="138" stroke="#8b5010" stroke-width="1" opacity=".4"/>
+      <text x="410" y="155" text-anchor="middle" font-family="serif" font-size="13" fill="#d4a870" opacity=".7" letter-spacing="1">"...thành Đại La ở vào nơi trung tâm trời đất..."</text>
+      <line x1="220" y1="168" x2="600" y2="168" stroke="#8b5010" stroke-width="1" opacity=".25"/>
+      <text x="410" y="184" text-anchor="middle" font-family="serif" font-size="11" fill="#8b6040" opacity=".5" letter-spacing="1">"...đất rộng mà bằng phẳng, thế đất cao mà sáng sủa..."</text>
+      <circle cx="590" cy="175" r="22" fill="#8b1a1a" opacity=".7" stroke="#c9922a" stroke-width="1.5"/>
+      <text x="590" y="179" text-anchor="middle" font-family="serif" font-size="12" fill="#f0c060" opacity=".9">璽</text>
+      <line x1="220" y1="80" x2="235" y2="115" stroke="#5a3010" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+      <path d="M235,115 L228,125 L238,120Z" fill="#3a1a05" opacity=".8"/>
+      <circle cx="235" cy="118" r="4" fill="#1a0a02" opacity=".5" filter="url(#inkBlur)"/>
+    </svg>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">📜 Chiếu Dời Đô</span>
+      Đây là một trong những <strong>văn bản lịch sử quan trọng nhất</strong> của Việt Nam. Lý Thái Tổ lập luận dựa trên: <em>địa lý phong thủy</em>, <em>lịch sử các triều đại Trung Hoa</em>, và <em>lợi ích dài hạn của dân tộc</em>.
+    </div>
+    Ngươi cầm bút lông, mài mực thơm, soạn bản <em>Chiếu Dời Đô</em> — một văn kiện lịch sử sẽ thay đổi vận mệnh dân tộc. Trong chiếu, ngươi lập luận: thành <strong>Đại La</strong> (tên cũ của vùng Hà Nội) là <em>"nơi trung tâm trời đất, được thế rồng cuộn hổ ngồi, chính giữa nam bắc đông tây"</em>.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra — Câu 1/4 chương IV</span>
+    <div class="quiz-q">Trong Chiếu Dời Đô, Lý Thái Tổ so sánh việc dời đô với hành động của các vương triều nào để thuyết phục quần thần?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'q2_1')">A. Các triều đại Việt Nam trước như Đinh, Lê</button>
+      <button class="q-opt" onclick="ansQ(this,true,'q2_1')">B. Các triều đại Trung Hoa như nhà Thương, nhà Chu từng dời đô để phát triển</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q2_1')">C. Đế chế Khmer ở phương Nam</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q2_1')">D. Ông không so sánh với ai — tự thuyết phục bằng phong thủy</button>
+    </div>
+    <div class="quiz-fb" id="q2_1-fb"></div>
+  </div>
+
+  <div class="drag-zone reveal" id="dragChallenge1">
+    <div class="drag-zone-title">🏹 Thử Thách: Ghép lý do dời đô với loại lập luận đúng</div>
+    <div style="font-size:13px;color:var(--parch-faint);margin-bottom:14px;">Kéo mỗi lý do vào ô "Địa lý" hoặc "Chính trị" tương ứng</div>
+
+    <div class="drag-items" id="dragItems1">
+      <div class="drag-item" draggable="true" data-val="geo" id="di_1" ondragstart="dragStart(event,'di_1','geo')">🌊 Đất bằng phẳng, cao ráo</div>
+      <div class="drag-item" draggable="true" data-val="pol" id="di_2" ondragstart="dragStart(event,'di_2','pol')">👑 Muôn đời con cháu hưởng thái bình</div>
+      <div class="drag-item" draggable="true" data-val="geo" id="di_3" ondragstart="dragStart(event,'di_3','geo')">🗺️ Trung tâm nam bắc đông tây</div>
+      <div class="drag-item" draggable="true" data-val="pol" id="di_4" ondragstart="dragStart(event,'di_4','pol')">📈 Dân không bị lụt lội, muôn vật phong phú</div>
+    </div>
+
+    <div class="drop-targets" id="dropTargets1">
+      <div class="drop-target" id="dt_geo" ondragover="dragOver(event)" ondrop="dropItem(event,'dt_geo','geo')" ondragleave="dragLeave(event)">
+        <div class="drop-target-label">🌏 Lý do Địa lý</div>
+        <div class="placed-name" id="dt_geo_placed" style="display:none"></div>
+      </div>
+      <div class="drop-target" id="dt_pol" ondragover="dragOver(event)" ondrop="dropItem(event,'dt_pol','pol')" ondragleave="dragLeave(event)">
+        <div class="drop-target-label">⚔️ Lý do Chính trị</div>
+        <div class="placed-name" id="dt_pol_placed" style="display:none"></div>
+      </div>
+    </div>
+
+    <button class="drag-submit" onclick="checkDrag1()">✓ Kiểm tra</button>
+    <div class="drag-fb" id="drag1-fb"></div>
+  </div>
+
+  <div class="fill-challenge reveal">
+    <span class="fill-tag">✍️ Điền chỗ trống — Câu 3/4 chương IV</span>
+    <div class="fill-q">Chiếu Dời Đô viết: "Thành Đại La... ở vào nơi trung tâm trời đất, được cái thế <strong>rồng cuộn hổ ngồi</strong>..." — Đây là cụm từ chỉ điều gì trong phong thủy Á Đông?</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+      <input class="fill-input" id="fill2" placeholder="Điền câu trả lời..." onkeypress="if(event.key==='Enter')checkFill('fill2','thế đất','fill2-fb','Đúng! Rồng cuộn hổ ngồi là mô tả thế đất phong thủy cực tốt — địa thế vừa hùng mạnh vừa vững chắc, phù hợp làm kinh đô.')">
+      <button class="fill-submit" onclick="checkFill('fill2','thế đất','fill2-fb','Đúng! Rồng cuộn hổ ngồi là mô tả thế đất phong thủy cực tốt — địa thế vừa hùng mạnh vừa vững chắc, phù hợp làm kinh đô.')">Kiểm tra</button>
+    </div>
+    <div class="fill-fb" id="fill2-fb"></div>
+    <div style="font-size:12px;color:var(--parch-faint);margin-top:8px;">💡 Gợi ý: 2 chữ, liên quan đến địa hình</div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="f-tag">🌏 Tại sao chọn Đại La?</span>
+    Đại La (vùng Hà Nội ngày nay) là <strong>nơi hội tụ của hệ thống sông Hồng</strong> — giao thông thuận lợi, đất đai màu mỡ, có thể mở rộng về mọi hướng. Đây là trung tâm địa lý tự nhiên của vùng đồng bằng Bắc Bộ.
+    <div style="margin-top:10px;">
+      <span class="chip">🌊 Sông Hồng - Sông Tô Lịch</span>
+      <span class="chip">🏔️ Núi Nùng (Long Đỗ)</span>
+      <span class="chip">📐 Trung tâm đồng bằng</span>
+      <span class="chip">🚢 Thương mại thuận tiện</span>
+    </div>
+  </div>
+
+  <div class="choices-label">⚡ Bạn viết Chiếu Dời Đô xong — triều thần phản ứng thế nào?</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s3',20)">
+      <span class="c-letter">A</span>
+      <div>Hầu hết triều thần đồng ý — chiếu văn quá thuyết phục, lập luận chặt chẽ về cả phong thủy lẫn lịch sử.<div class="c-sub">Đúng! Chiếu Dời Đô thuyết phục gần như toàn bộ quần thần.</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s2_b1',8)">
+      <span class="c-letter">B</span>
+      <div>Nhiều quan phản đối dữ dội — Hoa Lư là kinh đô linh thiêng, không thể bỏ.<div class="c-sub">Không chính xác về lịch sử — hầu như không có ghi chép về phản đối lớn</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s2_b2',12)">
+      <span class="c-letter">C</span>
+      <div>Dân chúng sợ hãi — họ không muốn rời quê hương, bất ổn xã hội có thể xảy ra.<div class="c-sub">Một lo ngại hợp lý, nhưng thực tế lịch sử không ghi nhận điều này...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s2_b1">
+  <div class="chap">📍 Lựa chọn B · Phản đối</div>
+  <div class="outcome bad"><span class="outcome-icon">📜</span>Theo ghi chép lịch sử, <strong>Chiếu Dời Đô được chấp thuận nhanh chóng</strong>. Lý Thái Tổ lập luận quá thuyết phục — kết hợp cả lý lẽ thực tế và huyền thoại phong thủy. Triều thần đồng thuận.</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',10)"><span class="c-letter">→</span><div>Lên thuyền rồng tiến về Đại La!</div></button></div>
+</div>
+<div class="scene" id="s2_b2">
+  <div class="chap">📍 Lựa chọn C · Lo Lắng Dân Tâm</div>
+  <div class="outcome bad"><span class="outcome-icon">🚣</span>Lo ngại hợp lý — nhưng <strong>Lý Thái Tổ cũng cân nhắc điều này</strong>. Ông hiểu rằng đất tốt hơn, dân sẽ sống tốt hơn. Dời đô là đầu tư cho tương lai ngàn năm!</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',10)"><span class="c-letter">→</span><div>Tiến về Đại La — rồng sẽ bay lên!</div></button></div>
+</div>
+
+<!-- ══ SCENE 3: RỒNG BAY LÊN ══ -->
+<div class="scene" id="s3">
+  <div class="chap">🐉 Chương V · Năm 1010 — Rồng Vàng Hiện Ra</div>
+
+  <div class="hero-wrap" style="background:linear-gradient(180deg,#060210 0%,#100510 60%,#180305 100%);">
+    <svg viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="dragonGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c9922a" stop-opacity="0.3"/><stop offset="70%" stop-color="#c9922a" stop-opacity="0.05"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <filter id="dragonFilter"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="dragonBlur"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="820" height="270" fill="#060210"/>
+      <ellipse cx="410" cy="80" rx="360" ry="60" fill="#150512" opacity=".7"/>
+      <ellipse cx="300" cy="60" rx="220" ry="40" fill="#1a0618" opacity=".6"/>
+      <ellipse cx="560" cy="70" rx="200" ry="35" fill="#1a0618" opacity=".5"/>
+      <path d="M400,35 L390,70 L400,70 L385,105" stroke="#f0c060" stroke-width="2" fill="none" opacity=".0" filter="url(#dragonFilter)">
+        <animate attributeName="opacity" values="0;0;0.9;0;0;0;0.6;0;0" dur="5s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 100,200 Q 200,140 320,110 Q 440,80 560,120 Q 680,155 750,100" stroke="#c9922a" stroke-width="6" fill="none" opacity=".0" filter="url(#dragonFilter)">
+        <animate attributeName="opacity" values="0;0.8;1;0.6;0.9;0" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+        <animate attributeName="d" values="M 100,200 Q 200,140 320,110 Q 440,80 560,120 Q 680,155 750,100;M 100,190 Q 200,130 320,100 Q 440,70 560,110 Q 680,145 750,90;M 100,200 Q 200,140 320,110 Q 440,80 560,120 Q 680,155 750,100" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+      </path>
+      <path d="M 100,200 Q 200,140 320,110 Q 440,80 560,120 Q 680,155 750,100" stroke="#f0c060" stroke-width="16" fill="none" opacity=".0" filter="url(#dragonBlur)">
+        <animate attributeName="opacity" values="0;0.3;0.5;0.2;0.4;0" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+      </path>
+      <circle cx="250" cy="135" r="5" fill="#f0c060" opacity="0" filter="url(#dragonFilter)">
+        <animate attributeName="opacity" values="0;0;0.9;0;0" dur="4s" repeatCount="indefinite" begin="0.8s"/>
+      </circle>
+      <circle cx="370" cy="108" r="5" fill="#f0c060" opacity="0" filter="url(#dragonFilter)">
+        <animate attributeName="opacity" values="0;0;0.9;0;0" dur="4s" repeatCount="indefinite" begin="1s"/>
+      </circle>
+      <circle cx="490" cy="108" r="5" fill="#f0c060" opacity="0" filter="url(#dragonFilter)">
+        <animate attributeName="opacity" values="0;0;0.9;0;0" dur="4s" repeatCount="indefinite" begin="1.2s"/>
+      </circle>
+      <circle cx="620" cy="135" r="5" fill="#f0c060" opacity="0" filter="url(#dragonFilter)">
+        <animate attributeName="opacity" values="0;0;0.9;0;0" dur="4s" repeatCount="indefinite" begin="1.4s"/>
+      </circle>
+      <path d="M0,215 Q100,205 200,215 Q300,207 400,215 Q500,207 600,215 Q700,207 820,215 L820,270 L0,270Z" fill="#0a1520" opacity=".9"/>
+      <path d="M180,215 Q220,205 260,215 L255,225 L185,225Z" fill="#1a0a05" stroke="#5a3010" stroke-width="1" opacity=".8"/>
+      <rect x="215" y="200" width="3" height="18" fill="#8b5010" opacity=".6"/>
+      <path d="M520,213 Q570,203 610,213 L605,223 L525,223Z" fill="#1a0a05" stroke="#5a3010" stroke-width="1" opacity=".8"/>
+      <ellipse cx="410" cy="135" rx="250" ry="80" fill="url(#dragonGlow)"/>
+      <text x="410" y="56" text-anchor="middle" font-family="serif" font-size="20" fill="#f0c060" opacity=".9" letter-spacing="4">RỒNG VÀNG HIỆN RA</text>
+      <text x="410" y="76" text-anchor="middle" font-family="serif" font-size="12" fill="#c9922a" opacity=".6" letter-spacing="2">Trên thuyền rồng của Lý Thái Tổ • Mùa thu 1010</text>
+    </svg>
+  </div>
+
+  <div class="story reveal">
+    Ngươi đứng trên thuyền rồng, hạm đội uy nghi xuôi dòng sông Hồng tiến về vùng đất Đại La. Đúng lúc thuyền cập bến, một điều kỳ diệu xảy ra: <em>một con rồng vàng xuất hiện từ mây mù, bay lên cao rồi biến mất vào trời xanh</em>. Triều thần xôn xao, coi đây là <strong>điềm lành trời báo</strong>: vùng đất này được thần linh phù hộ.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Lý Thái Tổ — phán trước triều thần</div>
+    "Đây chính là điềm lành! Ta đặt tên kinh đô mới này là <strong>THĂNG LONG</strong> — có nghĩa là <em>Rồng Bay Lên</em>. Từ hôm nay, Thăng Long là kinh đô muôn đời của nước Đại Cồ Việt!"
+  </div>
+
+  <div class="order-challenge reveal" id="orderChallenge1">
+    <div class="order-title">⚡ Thử Thách Đặc Biệt: Sắp xếp đúng trình tự các sự kiện</div>
+    <div style="font-size:13px;color:var(--parch-faint);margin-bottom:14px;">Kéo để sắp xếp đúng thứ tự thời gian (từ sớm nhất đến muộn nhất)</div>
+    <div class="order-items" id="orderList1">
+      <div class="order-item" draggable="true" data-pos="3" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>Lý Thái Tổ đặt tên Thăng Long khi rồng hiện ra</span>
+      </div>
+      <div class="order-item" draggable="true" data-pos="1" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>Lý Công Uẩn được tôn lên ngôi vua năm 1009</span>
+      </div>
+      <div class="order-item" draggable="true" data-pos="4" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>Xây dựng cung điện, chùa chiền ở Thăng Long</span>
+      </div>
+      <div class="order-item" draggable="true" data-pos="2" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>Soạn và ban Chiếu Dời Đô</span>
+      </div>
+    </div>
+    <button class="order-check-btn" onclick="checkOrder('orderList1','order1-fb',[1,2,3,4])">✓ Kiểm tra thứ tự</button>
+    <div class="order-fb" id="order1-fb"></div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra — Câu 2 chương V</span>
+    <div class="quiz-q">"Thăng Long" có nghĩa là gì? Và tên này đã được dùng liên tục đến năm nào?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'q3_1')">A. Đất thiêng — dùng mãi đến ngày nay</button>
+      <button class="q-opt" onclick="ansQ(this,true,'q3_1')">B. Rồng Bay Lên — tên chính thức từ 1010 đến 1831 khi vua Minh Mạng đổi thành Hà Nội</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q3_1')">C. Thành Vàng — dùng đến 1945</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q3_1')">D. Long Thành — từ 1010 đến 1400</button>
+    </div>
+    <div class="quiz-fb" id="q3_1-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Rồng vàng hiện ra — bạn đặt tên kinh đô như thế nào?</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s4',25)">
+      <span class="c-letter">A</span>
+      <div>Thăng Long — Rồng Bay Lên! Đây là điềm trời báo, kinh đô sẽ hùng mạnh như rồng soar.<div class="c-sub">Đúng lịch sử! Tên gọi vang danh 821 năm.</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s3_b1',8)">
+      <span class="c-letter">B</span>
+      <div>Long Thành — Thành Rồng. Trang trọng và uy nghi hơn.<div class="c-sub">Đây cũng là tên thường dùng — nhưng Thăng Long mang ý nghĩa sâu sắc hơn về "bay lên"</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s3_b2',5)">
+      <span class="c-letter">C</span>
+      <div>Đại La — giữ nguyên tên cũ để tôn trọng lịch sử vùng đất.<div class="c-sub">Thực tế Lý Thái Tổ đã đổi tên — muốn thể hiện tầm nhìn mới!</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s3_b1">
+  <div class="chap">📍 Long Thành</div>
+  <div class="outcome bad"><span class="outcome-icon">🐉</span>Long Thành là tên hay, nhưng <strong>Thăng Long — Rồng Bay Lên — mang thông điệp mạnh mẽ hơn</strong>: không chỉ là thành của rồng, mà là nơi rồng <em>cất cánh</em> — tượng trưng cho đất nước hùng cường vươn lên!</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4',12)"><span class="c-letter">→</span><div>Đặt tên Thăng Long — Rồng Bay Lên!</div></button></div>
+</div>
+<div class="scene" id="s3_b2">
+  <div class="chap">📍 Giữ Đại La</div>
+  <div class="outcome bad"><span class="outcome-icon">📜</span>Đại La là tên từ thời nhà Đường Trung Hoa đặt — <strong>tên thực dân!</strong> Lý Thái Tổ muốn khẳng định chủ quyền Việt Nam bằng tên mới, mang hồn dân tộc: Thăng Long!</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4',8)"><span class="c-letter">→</span><div>Đặt tên Thăng Long — khẳng định chủ quyền!</div></button></div>
+</div>
+
+<!-- ══ SCENE 4: XÂY THĂNG LONG ══ -->
+<div class="scene" id="s4">
+  <div class="chap">🏯 Chương VI · 1010–1028 — Xây Dựng Đế Đô</div>
+
+  <div class="hero-wrap" style="background:linear-gradient(180deg,#030810 0%,#080f05 60%,#0f1a05 100%);">
+    <svg viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="cityGlow" cx="50%" cy="60%" r="50%"><stop offset="0%" stop-color="#c9922a" stop-opacity="0.12"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <filter id="cityBlur"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="820" height="270" fill="#030508"/>
+      <rect width="820" height="270" fill="url(#cityGlow)"/>
+      <circle cx="60" cy="20" r="1" fill="#fff" opacity=".5"><animate attributeName="opacity" values=".5;.1;.5" dur="2.5s" repeatCount="indefinite"/></circle>
+      <circle cx="200" cy="30" r="1.3" fill="#fff" opacity=".6"><animate attributeName="opacity" values=".6;.2;.6" dur="3.2s" repeatCount="indefinite"/></circle>
+      <circle cx="650" cy="18" r="1" fill="#fff" opacity=".4"><animate attributeName="opacity" values=".4;.8;.4" dur="4.1s" repeatCount="indefinite"/></circle>
+      <circle cx="760" cy="35" r="1.2" fill="#fff" opacity=".55"><animate attributeName="opacity" values=".55;.1;.55" dur="2.8s" repeatCount="indefinite"/></circle>
+      <path d="M0,175 Q70,140 140,162 Q220,130 300,155 Q380,128 460,150 Q540,128 620,148 Q700,125 820,142 L820,270 L0,270Z" fill="#060a06" opacity=".85"/>
+      <path d="M0,205 Q120,195 240,205 Q360,197 480,205 Q600,198 720,205 L820,202 L820,270 L0,270Z" fill="#040705" opacity=".95"/>
+      <rect x="120" y="160" width="580" height="60" rx="2" fill="#0a1205" stroke="#2a4020" stroke-width="1.5" opacity=".8"/>
+      <rect x="330" y="115" width="160" height="60" rx="2" fill="#100a02" stroke="#7a4a10" stroke-width="1.5" opacity=".85"/>
+      <path d="M310,115 L410,85 L510,115Z" fill="#1a0c03" stroke="#c9922a" stroke-width="1.5" opacity=".9"/>
+      <path d="M375,85 Q395,75 415,85" stroke="#c9922a" stroke-width="2.5" fill="none" opacity=".7" filter="url(#cityBlur)"/>
+      <path d="M395,88 Q410,78 425,88" stroke="#f0c060" stroke-width="1.5" fill="none" opacity=".5"/>
+      <rect x="200" y="140" width="110" height="40" rx="1" fill="#0e0902" stroke="#5a3808" stroke-width="1" opacity=".8"/>
+      <path d="M190,140 L255,122 L320,140Z" fill="#150c03" stroke="#8b5010" stroke-width="1" opacity=".85"/>
+      <rect x="510" y="140" width="110" height="40" rx="1" fill="#0e0902" stroke="#5a3808" stroke-width="1" opacity=".8"/>
+      <path d="M500,140 L565,122 L630,140Z" fill="#150c03" stroke="#8b5010" stroke-width="1" opacity=".85"/>
+      <rect x="165" y="178" width="12" height="27" fill="#1a0c03" stroke="#4a2808" stroke-width="1" opacity=".6"/>
+      <ellipse cx="171" cy="178" rx="14" ry="10" fill="#200e04" stroke="#7a4810" stroke-width="1" opacity=".7"/>
+      <circle cx="145" cy="157" r="5" fill="#ff8030" opacity=".7" filter="url(#cityBlur)"><animate attributeName="opacity" values=".7;1;.5;.8;.7" dur="1.5s" repeatCount="indefinite"/></circle>
+      <circle cx="255" cy="157" r="4" fill="#ff8030" opacity=".6" filter="url(#cityBlur)"><animate attributeName="opacity" values=".6;.9;.4;.7;.6" dur="2.1s" repeatCount="indefinite"/></circle>
+      <circle cx="380" cy="157" r="4" fill="#ff8030" opacity=".65" filter="url(#cityBlur)"><animate attributeName="opacity" values=".65;.9;.4;.7;.65" dur="1.8s" repeatCount="indefinite"/></circle>
+      <circle cx="445" cy="157" r="4" fill="#ff8030" opacity=".6" filter="url(#cityBlur)"><animate attributeName="opacity" values=".4;.8;.6;.9;.4" dur="2.4s" repeatCount="indefinite"/></circle>
+      <circle cx="570" cy="157" r="4" fill="#ff8030" opacity=".55" filter="url(#cityBlur)"><animate attributeName="opacity" values=".55;.9;.3;.7;.55" dur="1.6s" repeatCount="indefinite"/></circle>
+      <circle cx="680" cy="157" r="5" fill="#ff8030" opacity=".7" filter="url(#cityBlur)"><animate attributeName="opacity" values=".7;1;.5;.8;.7" dur="1.3s" repeatCount="indefinite"/></circle>
+      <ellipse cx="390" cy="102" rx="10" ry="14" fill="#8b1a1a" stroke="#c9922a" stroke-width="1" opacity=".8" filter="url(#cityBlur)"><animate attributeName="opacity" values=".8;1;.6;.9;.8" dur="2.3s" repeatCount="indefinite"/></ellipse>
+      <ellipse cx="430" cy="102" rx="10" ry="14" fill="#8b1a1a" stroke="#c9922a" stroke-width="1" opacity=".75" filter="url(#cityBlur)"><animate attributeName="opacity" values=".5;.8;.75;1;.5" dur="2.8s" repeatCount="indefinite"/></ellipse>
+      <text x="410" y="55" text-anchor="middle" font-family="serif" font-size="21" fill="#c9922a" opacity=".95" letter-spacing="4">KINH THÀNH THĂNG LONG</text>
+      <text x="410" y="74" text-anchor="middle" font-family="serif" font-size="12" fill="#f0c060" opacity=".5" letter-spacing="2">Đế đô ngàn năm • 1010</text>
+      <rect x="0" y="235" width="820" height="35" fill="#030508" opacity=".5"/>
+    </svg>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">🏗️ Thăng Long ban đầu</span>
+      Lý Thái Tổ xây dựng: Điện Càn Nguyên (chính điện), cung Long An, Long Thụy (hậu cung), Thái Miếu, và nhiều chùa. Quy mô <strong>3 vòng thành: Kinh thành — Hoàng thành — Cấm thành</strong>.
+    </div>
+    Là vua, ngươi phải quyết định <em>ưu tiên xây dựng gì trước</em>. Ngân khố chưa đầy, dân lực chưa dồi dào — mỗi quyết định đều có cái giá của nó. Quan Nội Thị Sảnh tâu: ngân khố chỉ đủ cho <strong>ba công trình lớn</strong> trong năm đầu.
+  </div>
+
+  <div class="order-challenge reveal" id="buildPriority">
+    <div class="order-title">🏗️ Thử Thách Chiến Lược: Sắp xếp ưu tiên xây dựng theo tầm quan trọng</div>
+    <div style="font-size:13px;color:var(--parch-faint);margin-bottom:14px;">Kéo để xếp từ ưu tiên CAO NHẤT xuống thấp nhất — đây không có đáp án tuyệt đối, hãy lý luận như một hoàng đế!</div>
+    <div class="order-items" id="buildList">
+      <div class="order-item" draggable="true" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>🏯 Thành quách — phòng thủ quân sự, bảo vệ triều đình</span>
+      </div>
+      <div class="order-item" draggable="true" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>⛩️ Chùa chiền — Phật giáo là hồn dân tộc, gắn kết lòng dân</span>
+      </div>
+      <div class="order-item" draggable="true" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>📜 Văn Miếu — đào tạo nhân tài cai trị đất nước</span>
+      </div>
+      <div class="order-item" draggable="true" ondragstart="orderDragStart(event)" ondragover="orderDragOver(event)" ondrop="orderDrop(event)">
+        <div class="order-num">?</div>
+        <span>🌾 Kênh đào — tưới tiêu, kinh tế nông nghiệp nuôi dân</span>
+      </div>
+    </div>
+    <button class="order-check-btn" onclick="checkBuildPriority()">✓ Xem nhận xét của hoàng đế</button>
+    <div class="order-fb" id="build-fb"></div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiến thức nâng cao — Câu 2 chương VI</span>
+    <div class="quiz-q">Lý Thái Tổ xây Văn Miếu năm 1070 (thực ra là vua Lý Thánh Tông). Tuy nhiên, <strong>công trình nổi tiếng nhất</strong> gắn với tên Lý Thái Tổ ở Thăng Long là gì?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'q4_1')">A. Tháp Báo Thiên</button>
+      <button class="q-opt" onclick="ansQ(this,true,'q4_1')">B. Chùa Hưng Thiên (trong cung) và Thắng Nghiêm (ngoài thành) — hai chùa đầu tiên của Thăng Long</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q4_1')">C. Chùa Một Cột (Diên Hựu)</button>
+      <button class="q-opt" onclick="ansQ(this,false,'q4_1')">D. Quốc Tử Giám</button>
+    </div>
+    <div class="quiz-fb" id="q4_1-fb"></div>
+  </div>
+
+  <div class="fill-challenge reveal">
+    <span class="fill-tag">✍️ Câu hỏi chuyên sâu — Câu 3 chương VI</span>
+    <div class="fill-q">Thăng Long được tổ chức thành 3 vòng thành từ ngoài vào trong: Kinh thành → Hoàng thành → <strong>???</strong> thành (nơi vua ở riêng tư)</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+      <input class="fill-input" id="fill3" placeholder="Tên vòng thành thứ ba..." onkeypress="if(event.key==='Enter')checkFill('fill3','cấm','fill3-fb','Đúng! Cấm thành là khu vực tuyệt mật, chỉ hoàng gia mới được vào. Đây là trung tâm quyền lực tuyệt đối của cả đế chế.')">
+      <button class="fill-submit" onclick="checkFill('fill3','cấm','fill3-fb','Đúng! Cấm thành là khu vực tuyệt mật, chỉ hoàng gia mới được vào. Đây là trung tâm quyền lực tuyệt đối của cả đế chế.')">Kiểm tra</button>
+    </div>
+    <div class="fill-fb" id="fill3-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Sau nhiều năm trị vì, Thăng Long đã thành hình. Điều nào ngươi tự hào nhất?</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s_dao',20)">
+      <span class="c-letter">A</span>
+      <div>Xây dựng nền tảng pháp luật và chính sách khoan hòa — nền móng cho một triều đại thịnh trị lâu dài.<div class="c-sub">Đây là di sản vĩ đại nhất bên cạnh việc dời đô!</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s4_b1',10)">
+      <span class="c-letter">B</span>
+      <div>Quy mô kinh thành nguy nga — thể hiện sức mạnh và uy quyền của đế chế.<div class="c-sub">Quan trọng, nhưng chính sách trị dân mới là nền tảng bền vững</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s4_b2',12)">
+      <span class="c-letter">C</span>
+      <div>Xây dựng nhiều chùa — Phật giáo làm nền tảng tinh thần cho đất nước thịnh trị.<div class="c-sub">Đúng một phần — hãy xem chương tiếp để hiểu rõ hơn về chính sách sùng Phật, an dân</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s4_b1">
+  <div class="chap">📍 Kiến Trúc</div>
+  <div class="outcome bad"><span class="outcome-icon">🏯</span>Kiến trúc rực rỡ rất quan trọng — nhưng <strong>chính sách khoan hòa, an dân</strong> mới là di sản trí tuệ thật sự, đặt nền móng cho một triều đại thịnh trị suốt 215 năm.</div>
+  <div class="choices"><button class="c-btn" onclick="go('s_dao',10)"><span class="c-letter">→</span><div>Chương VII — Sùng Đạo, An Dân</div></button></div>
+</div>
+<div class="scene" id="s4_b2">
+  <div class="chap">📍 Phật Giáo</div>
+  <div class="outcome bad"><span class="outcome-icon">☸️</span>Triều Lý đúng là rất sùng Phật — điều này sẽ được kể rõ hơn ở chương tiếp theo, nơi ngươi trực tiếp định hình chính sách trị nước dựa trên tinh thần từ bi của đạo Phật.</div>
+  <div class="choices"><button class="c-btn" onclick="go('s_dao',10)"><span class="c-letter">→</span><div>Chương VII — Sùng Đạo, An Dân</div></button></div>
+</div>
+
+<!-- ══ SCENE s_dao: SÙNG ĐẠO, AN DÂN ══ -->
+<div class="scene" id="s_dao">
+  <div class="chap">☸️ Chương VII · ~1010–1025 — Sùng Đạo, An Dân</div>
+
+  <div class="hero-wrap" style="background:radial-gradient(ellipse at 50% 30%,rgba(201,146,42,.16),transparent 60%),linear-gradient(180deg,#0a0808,#151008);">
+    <div class="hero-simple">
+      <span class="hs-emoji">🙏</span>
+      <span class="hs-title">CHÍNH SÁCH KHOAN HÒA</span>
+      <span class="hs-sub">Thăng Long • Những năm trị vì thái bình</span>
+    </div>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">📚 Bối cảnh</span>
+      Sau khi ổn định kinh đô mới, Lý Thái Tổ lấy <strong>Phật giáo</strong> làm nền tảng tinh thần trị nước — xây nhiều chùa, ba lần đại xá thiên hạ (ân xá tù nhân), giảm nhẹ hình phạt cho dân.
+    </div>
+    Một buổi thiết triều, hai luồng ý kiến trái ngược được tâu lên: dùng hình luật nghiêm khắc để răn đe thiên hạ, hay lấy đức độ khoan hòa để thu phục lòng dân?
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Một vị quan pháp gia tâu lên</div>
+    "Tâu bệ hạ, thiên hạ mới yên, lòng người còn nhiều kẻ manh tâm. Nên dùng hình luật thật nghiêm để răn đe, tránh loạn lạc tái diễn."
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Nhà sư cố vấn đáp lại</div>
+    "Hình phạt hà khắc chỉ khiến dân sợ mà không phục. Đức Phật dạy lấy từ bi cảm hóa lòng người — bệ hạ vốn xuất thân cửa Phật, hẳn hiểu điều này hơn ai hết."
+  </div>
+
+  <div class="fact reveal">
+    <span class="f-tag">📖 Ghi chú sử học</span>
+    Sử sách ghi nhận Lý Thái Tổ ba lần đại xá thiên hạ trong thời gian trị vì — một chính sách khoan hồng hiếm thấy ở các vị vua khai quốc, thể hiện rõ tinh thần từ bi Phật giáo trong đường lối cai trị của ông.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="quiz-q">Tôn giáo nào được xem là quốc giáo, có ảnh hưởng sâu rộng nhất đến đường lối trị nước dưới triều Lý?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'qd_1')">A. Nho giáo</button>
+      <button class="q-opt" onclick="ansQ(this,true,'qd_1')">B. Phật giáo</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qd_1')">C. Đạo giáo</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qd_1')">D. Tín ngưỡng thờ Mẫu</button>
+    </div>
+    <div class="quiz-fb" id="qd_1-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Trước hai luồng ý kiến, bạn — hoàng đế — quyết định...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s_bang',20)">
+      <span class="c-letter">A</span>
+      <div>Lấy đức trị dân, khoan hòa hình phạt, đại xá cho những tội nhẹ để cảm hóa lòng người.<div class="c-sub">Đúng lịch sử! Đây chính là đường lối Lý Thái Tổ theo đuổi suốt triều đại.</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s_dao_bad1',6)">
+      <span class="c-letter">B</span>
+      <div>Dùng hình luật thật nghiêm khắc để răn đe, dẹp mọi mầm mống bất ổn.<div class="c-sub">Đây không phải đường lối thực tế của Lý Thái Tổ...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s_dao_bad1">
+  <div class="chap">📍 Lựa chọn B · Nghiêm Hình</div>
+  <div class="outcome bad"><span class="outcome-icon">⚖️</span>Đây không phải đường lối của Lý Thái Tổ. Ông vốn xuất thân cửa Phật, tin rằng đức độ và khoan hòa mới thu phục được lòng dân lâu bền — điều mà hình luật hà khắc không làm được.</div>
+  <div class="choices-label">⚡ Chọn lại con đường nhân đức...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s_bang',10)"><span class="c-letter">→</span><div>Lấy đức trị dân — theo đúng tinh thần từ bi!</div></button></div>
+</div>
+
+<!-- ══ SCENE s_bang: BĂNG HÀ, TRUYỀN NGÔI ══ -->
+<div class="scene" id="s_bang">
+  <div class="chap">🕊️ Chương VIII · Năm 1028 — Băng Hà, Truyền Ngôi</div>
+
+  <div class="hero-wrap" style="background:radial-gradient(ellipse at 50% 40%,rgba(139,26,26,.15),transparent 60%),linear-gradient(180deg,#080405,#120608);">
+    <div class="hero-simple">
+      <span class="hs-emoji">🕊️</span>
+      <span class="hs-title">CUNG LONG AN, THĂNG LONG</span>
+      <span class="hs-sub">Năm 1028 • Sau 19 năm trị vì</span>
+    </div>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">📚 Bối cảnh</span>
+      Sau 19 năm trị vì, Lý Thái Tổ băng hà năm 1028, thọ 54 tuổi, truyền ngôi cho thái tử <strong>Lý Phật Mã</strong> (sau là Lý Thái Tông). Ngay sau đó, ba hoàng tử khác dấy binh tranh ngôi — sử gọi là <em>"loạn tam vương"</em> — nhưng nhanh chóng bị dẹp yên.
+    </div>
+    Những ngày cuối đời, ngươi cho triệu thái tử vào cung, dặn dò những lời tâm huyết cuối cùng — những lời sẽ định hình cách trị nước của cả một triều đại sau khi ngươi không còn nữa.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Lý Thái Tổ dặn dò thái tử Lý Phật Mã</div>
+    "Con hãy nhớ: cơ đồ này không phải của riêng ai, mà là của muôn dân. Giữ vững đức trị, thương dân như con đẻ — thì cơ nghiệp mới bền lâu được."
+  </div>
+
+  <div class="fact reveal">
+    <span class="f-tag">📖 Loạn Tam Vương — phép thử đầu tiên</span>
+    Ngay khi Lý Thái Tổ vừa mất, ba hoàng tử khác đã mang quân làm phản, tranh giành ngôi báu với thái tử. Lý Phật Mã bình tĩnh dẹp yên cuộc loạn, giữ vững cơ đồ cha để lại — chứng tỏ nền móng mà Lý Thái Tổ xây dựng đã đủ vững chắc để vượt qua khủng hoảng kế vị đầu tiên của triều Lý.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="quiz-q">Ai là người kế vị Lý Thái Tổ, trở thành vị vua thứ hai của nhà Lý?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,true,'qb_1')">A. Lý Phật Mã (Lý Thái Tông)</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qb_1')">B. Lý Nhật Tôn (Lý Thánh Tông)</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qb_1')">C. Lý Càn Đức (Lý Nhân Tông)</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qb_1')">D. Lý Dương Hoán (Lý Anh Tông)</button>
+    </div>
+    <div class="quiz-fb" id="qb_1-fb"></div>
+  </div>
+
+  <div class="legend-box reveal">
+    <span class="legend-icon">🕯️</span>
+    Mười chín năm trị vì, một Chiếu Dời Đô, một kinh đô ngàn năm — Lý Thái Tổ khép lại cuộc đời mình, nhưng mở ra một triều đại sẽ còn kéo dài 215 năm nữa.
+  </div>
+
+  <div class="choices-label">⚡ Tiếp tục</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s5',20)">
+      <span class="c-letter">→</span>
+      <div>Chương IX: Di Sản Ngàn Năm</div>
+    </button>
+  </div>
+</div>
+
+<!-- ══ SCENE 5: DI SẢN NGÀN NĂM — THỬ THÁCH CUỐI ══ -->
+<div class="scene" id="s5">
+  <div class="chap">⭐ Chương IX · Di Sản Ngàn Năm</div>
+
+  <div class="hero-wrap" style="background:linear-gradient(180deg,#060210 0%,#0c0505 50%,#060a03 100%);">
+    <svg viewBox="0 0 820 270" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="hanoiGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c9922a" stop-opacity="0.15"/><stop offset="60%" stop-color="#8b1a1a" stop-opacity="0.05"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <filter id="hanoiBlur"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="820" height="270" fill="#040210"/>
+      <rect width="820" height="270" fill="url(#hanoiGlow)"/>
+      <ellipse cx="410" cy="200" rx="380" ry="80" fill="#c9922a" opacity=".05" filter="url(#hanoiBlur)"/>
+      <rect x="375" y="160" width="50" height="55" rx="2" fill="#0c0505" stroke="#5a3010" stroke-width="1" opacity=".8"/>
+      <rect x="382" y="145" width="36" height="20" rx="1" fill="#0c0505" stroke="#4a2808" stroke-width="1" opacity=".8"/>
+      <path d="M400,130 L382,148 L418,148Z" fill="#0c0505" stroke="#7a4010" stroke-width="1.5" opacity=".85"/>
+      <ellipse cx="400" cy="215" rx="140" ry="18" fill="#0a1a20" opacity=".7"/>
+      <ellipse cx="400" cy="213" rx="120" ry="14" fill="#0c1e28" opacity=".5"/>
+      <ellipse cx="400" cy="217" rx="50" ry="5" fill="#c9922a" opacity=".08" filter="url(#hanoiBlur)"/>
+      <rect x="155" y="145" width="12" height="70" rx="1" fill="#0a0505" stroke="#3a2010" stroke-width="1" opacity=".7"/>
+      <rect x="167" y="145" width="28" height="18" rx="1" fill="#8b1a1a" opacity=".7"/>
+      <rect x="630" y="170" width="60" height="45" rx="1" fill="#0a0505" stroke="#3a1a05" stroke-width="1" opacity=".7"/>
+      <path d="M620,170 L660,152 L700,170Z" fill="#100708" stroke="#5a2808" stroke-width="1" opacity=".8"/>
+      <circle cx="660" cy="165" r="12" fill="none" stroke="#7a4010" stroke-width="2" opacity=".6"/>
+      <circle cx="200" cy="25" r="1.2" fill="#fff" opacity=".5"><animate attributeName="opacity" values=".5;.1;.5" dur="2.7s" repeatCount="indefinite"/></circle>
+      <circle cx="410" cy="20" r="1.4" fill="#f0c060" opacity=".7"><animate attributeName="opacity" values=".7;.2;.7" dur="3.2s" repeatCount="indefinite"/></circle>
+      <circle cx="620" cy="35" r="1" fill="#fff" opacity=".4"><animate attributeName="opacity" values=".4;.8;.4" dur="2.1s" repeatCount="indefinite"/></circle>
+      <ellipse cx="300" cy="140" rx="7" ry="10" fill="#8b1a1a" opacity="0" filter="url(#hanoiBlur)">
+        <animate attributeName="opacity" values="0;0.7;0.4;0" dur="6s" repeatCount="indefinite" begin="0s"/>
+        <animate attributeName="cy" values="220;100;50" dur="6s" repeatCount="indefinite" begin="0s"/>
+      </ellipse>
+      <ellipse cx="520" cy="160" rx="6" ry="9" fill="#c9922a" opacity="0" filter="url(#hanoiBlur)">
+        <animate attributeName="opacity" values="0;0.6;0.3;0" dur="8s" repeatCount="indefinite" begin="2s"/>
+        <animate attributeName="cy" values="230;80;40" dur="8s" repeatCount="indefinite" begin="2s"/>
+      </ellipse>
+      <ellipse cx="440" cy="180" rx="7" ry="10" fill="#8b1a1a" opacity="0" filter="url(#hanoiBlur)">
+        <animate attributeName="opacity" values="0;0.8;0.4;0" dur="7s" repeatCount="indefinite" begin="4s"/>
+        <animate attributeName="cy" values="240;90;45" dur="7s" repeatCount="indefinite" begin="4s"/>
+      </ellipse>
+      <text x="410" y="58" text-anchor="middle" font-family="serif" font-size="20" fill="#c9922a" opacity=".95" letter-spacing="4">HÀ NỘI — 1000 NĂM</text>
+      <text x="410" y="78" text-anchor="middle" font-family="serif" font-size="12" fill="#f0c060" opacity=".5" letter-spacing="2">Thăng Long 1010 → Hà Nội 2010 → mãi mãi</text>
+    </svg>
+  </div>
+
+  <div class="story reveal">
+    <div class="sidebar-fact">
+      <span class="sf-tag">🏆 Di sản</span>
+      Thăng Long là kinh đô của Việt Nam trong <strong>hơn 700 năm</strong> (1010–1802). Năm 1831 đổi thành Hà Nội. Năm 2010, Hà Nội kỷ niệm <strong>1000 năm Thăng Long</strong>.
+    </div>
+    Chiếu Dời Đô trở thành áng văn bất hủ trong lịch sử Việt Nam. Thăng Long trở thành <strong>trung tâm văn hóa, chính trị, kinh tế</strong> của dân tộc suốt nhiều thế kỷ. Khu Hoàng thành Thăng Long ngày nay được UNESCO công nhận là Di sản Văn hóa Thế giới.
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🏆 Thử thách kiến thức cuối — Câu 1/4</span>
+    <div class="quiz-q">Khu Hoàng thành Thăng Long được UNESCO công nhận là Di sản Văn hóa Thế giới năm nào, và điều gì đặc biệt khiến nó được công nhận?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'qf1')">A. 2003 — vì là kinh đô lâu đời nhất Đông Nam Á</button>
+      <button class="q-opt" onclick="ansQ(this,true,'qf1')">B. 2010 — vì là chứng tích độc đáo của quá trình giao thoa văn hóa và sự phát triển nhà nước phong kiến Việt Nam suốt 13 thế kỷ</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qf1')">C. 2015 — vì phát hiện nhiều hiện vật đồ gốm sứ thời Lý</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qf1')">D. 1998 — cùng đợt với Hội An và Mỹ Sơn</button>
+    </div>
+    <div class="quiz-fb" id="qf1-fb"></div>
+  </div>
+
+  <div class="quiz reveal">
+    <span class="quiz-tag">🏆 Câu 2/4 — Nâng cao</span>
+    <div class="quiz-q">Triều đại nhà Lý có bao nhiêu đời vua và chấm dứt vào năm nào?</div>
+    <div class="quiz-opts">
+      <button class="q-opt" onclick="ansQ(this,false,'qf2')">A. 7 đời vua, năm 1225 khi nhà Trần lên thay</button>
+      <button class="q-opt" onclick="ansQ(this,true,'qf2')">B. 9 đời vua, năm 1225 khi vua Lý Chiêu Hoàng nhường ngôi cho Trần Cảnh</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qf2')">C. 11 đời vua, năm 1258 khi quân Nguyên Mông xâm lược</button>
+      <button class="q-opt" onclick="ansQ(this,false,'qf2')">D. 8 đời vua, năm 1206</button>
+    </div>
+    <div class="quiz-fb" id="qf2-fb"></div>
+  </div>
+
+  <div class="fill-challenge reveal">
+    <span class="fill-tag">✍️ Câu 3/4 — Văn học lịch sử</span>
+    <div class="fill-q">Chiếu Dời Đô được Lý Thái Tổ viết bằng chữ <strong>Hán</strong>. Câu mở đầu nổi tiếng: "Xưa nhà Thương đến vua Bàn Canh năm lần dời đô, nhà Chu đến vua Thành Vương ba lần dời đô..." — đây thuộc thể loại văn bản gì?</div>
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+      <input class="fill-input" id="fill4" placeholder="Thể loại văn bản..." onkeypress="if(event.key==='Enter')checkFill('fill4','chiếu','fill4-fb','Đúng! Chiếu là thể loại văn bản hành chính thời phong kiến — do vua ban ra cho thần dân. Đây là một trong những tờ chiếu vĩ đại nhất lịch sử Việt Nam.')">
+      <button class="fill-submit" onclick="checkFill('fill4','chiếu','fill4-fb','Đúng! Chiếu là thể loại văn bản hành chính thời phong kiến — do vua ban ra cho thần dân. Đây là một trong những tờ chiếu vĩ đại nhất lịch sử Việt Nam.')">Kiểm tra</button>
+    </div>
+    <div class="fill-fb" id="fill4-fb"></div>
+  </div>
+
+  <div class="pic-quiz reveal">
+    <span class="quiz-tag">🖼️ Nhận diện di tích — Câu 4/4</span>
+    <div class="quiz-q">Công trình nào dưới đây được xây dựng dưới thời nhà LÝ (không phải thời khác)?</div>
+    <div class="pic-grid">
+      <button class="pic-opt" onclick="picAns(this,'right','pqf')" data-id="pqf">
+        <span class="pic-emoji">☸️</span>
+        Chùa Diên Hựu<br>(Chùa Một Cột)<br><small style="color:var(--parch-faint)">— Lý Thái Tông, 1049</small>
+      </button>
+      <button class="pic-opt" onclick="picAns(this,'wrong','pqf')" data-id="pqf">
+        <span class="pic-emoji">🗺️</span>
+        Văn Miếu Quốc Tử Giám<br>(khu giảng dạy)<br><small style="color:var(--parch-faint)">— Lý Nhân Tông, 1076</small>
+      </button>
+      <button class="pic-opt" onclick="picAns(this,'wrong','pqf')" data-id="pqf">
+        <span class="pic-emoji">⚔️</span>
+        Đền Trần Nam Định<br><small style="color:var(--parch-faint)">— Thời nhà Trần, sau 1225</small>
+      </button>
+      <button class="pic-opt" onclick="picAns(this,'right','pqf')" data-id="pqf">
+        <span class="pic-emoji">📜</span>
+        Hình Thư — bộ luật đầu tiên<br><small style="color:var(--parch-faint)">— Lý Thái Tông, 1042 (triều Lý)</small>
+      </button>
+    </div>
+    <div class="quiz-fb" id="pqf-fb" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="legend-box reveal">
+    <span class="legend-icon">🐉</span>
+    "Thăng Long là nơi thượng đô của kinh sư muôn đời. Trẫm muốn nhân địa lợi ấy mà định nơi ở. Các khanh nghĩ thế nào?"
+    <br><br>
+    <span style="font-size:14px;color:rgba(245,234,208,0.55);font-style:normal;font-family:'Cormorant Garamond',serif;">— Lý Thái Tổ, Chiếu Dời Đô, 1010</span>
+  </div>
+
+  <div class="choices-label">⚡ Điều gì là di sản vĩ đại nhất của Lý Thái Tổ?</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('final',30)">
+      <span class="c-letter">A</span>
+      <div>Tầm nhìn chiến lược: chọn đúng vị trí cho kinh đô ngàn năm — nền tảng cho sự phát triển của cả dân tộc Việt.<div class="c-sub">+30 điểm hoàn thành hành trình!</div></div>
+    </button>
+    <button class="c-btn" onclick="go('final',15)">
+      <span class="c-letter">B</span>
+      <div>Xây dựng nhà nước có pháp luật — Hình thư đặt nền móng cho nhà nước pháp quyền Việt Nam.<div class="c-sub">Đúng một phần — nhưng Hình thư là của Lý Thái Tông (con trai)</div></div>
+    </button>
+    <button class="c-btn" onclick="go('final',10)">
+      <span class="c-letter">C</span>
+      <div>Thống nhất đất nước bằng Phật giáo — tôn giáo làm cầu nối các tộc người và vùng đất.<div class="c-sub">Quan trọng — nhưng thiên đô mới là quyết sách lớn nhất</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- ══ FINAL ══ -->
+<div class="scene" id="final">
+  <div class="final">
+    <div class="final-seal" id="finalSeal">🐉</div>
+    <div class="final-title" id="finalTitle">Hành Trình Kết Thúc!</div>
+    <div class="final-pts" id="finalPts">0</div>
+    <div class="final-rank" id="finalRank">—</div>
+    <div class="final-desc" id="finalDesc">...</div>
+
+    <div class="achievements" id="achievements"></div>
+
+    <div class="final-lesson">
+      <span class="fl-tag">📚 Bài học từ Lý Thái Tổ — Kẻ thường dân dời ngôi rồng</span>
+      <strong>Ba bài học muôn đời:</strong><br><br>
+      <strong>1. Tầm nhìn vượt thế hệ:</strong> Dời đô không phải quyết định cho hôm nay — mà cho ngàn năm sau. Lý Thái Tổ hỏi: "Nơi nào sẽ tốt nhất cho <em>con cháu muôn đời</em>?" — không phải "nơi nào tiện nhất cho ta".<br><br>
+      <strong>2. Dám thay đổi truyền thống:</strong> Hoa Lư là kinh đô của cha ông. Thay đổi đòi hỏi dũng khí — nhưng bảo thủ không phải là trung thành, mà là sợ hãi trước cái mới.<br><br>
+      <strong>3. Thuyết phục bằng lý lẽ, cai trị bằng đức độ:</strong> Chiếu Dời Đô là bài học về nghệ thuật lãnh đạo — không độc đoán ra lệnh, mà <em>giải thích, thuyết phục, chia sẻ tầm nhìn</em>; còn chính sách khoan hòa suốt 19 năm trị vì cho thấy sức mạnh thật sự nằm ở lòng dân, không phải hình phạt.
+    </div>
+
+    <div class="fact" style="text-align:left;">
+      <span class="f-tag">🌏 Thăng Long ngày nay</span>
+      Khu di tích Hoàng thành Thăng Long tại Ba Đình, Hà Nội là <strong>Di sản Văn hóa Thế giới UNESCO từ 2010</strong>. Dưới lòng đất Hà Nội vẫn còn ẩn giấu hàng nghìn hiện vật từ thời Lý — mỗi năm khảo cổ học lại mở thêm trang sử mới.
+      <div style="margin-top:10px;">
+        <span class="chip">🏯 UNESCO 2010</span>
+        <span class="chip">🐉 1010–1831: 821 năm Thăng Long</span>
+        <span class="chip">📜 Chiếu Dời Đô bất hủ</span>
+        <span class="chip">🏛️ Ba Đình, Hà Nội</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-restart" onclick="restart()">🔄 Chơi lại</button>
+      <button class="btn-restart" onclick="openLeaderboard()">🏆 Bảng xếp hạng</button>
+      <a href="cau-chuyen-detail.html?id=25" class="btn-home">📖 Câu chuyện khác</a>
+    </div>
+  </div>
+</div>
+
+<div class="ref-page reveal">
+  <div class="ref-title">📚 Nguồn Tham Khảo</div>
+  <div class="ref-sub">Sự kiện, ngày tháng, nội dung Chiếu Dời Đô được đối chiếu từ các nguồn dưới đây. Hội thoại giữa các nhân vật là dựng lại minh họa dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.</div>
+  <div class="ref-item">Đại Việt Sử Ký Toàn Thư — Ngô Sĩ Liên và các sử thần triều Hậu Lê</div>
+  <div class="ref-item">Toàn văn Chiếu Dời Đô (bản dịch), Viện Sử học Việt Nam</div>
+  <div class="ref-item">Hồ sơ Di sản Văn hóa Thế giới UNESCO — Khu Trung tâm Hoàng thành Thăng Long, 2010</div>
+  <div class="ref-item">Sự kiện "loạn tam vương" 1028: Đại Việt Sử Ký Toàn Thư, Bản kỷ, quyển II</div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- ═══════════ JAVASCRIPT ═══════════ -->
+<script>
+// ─── LANTERN PARTICLES ────────────────────────────
+const lc=document.getElementById('lanternCanvas');
+const lctx=lc.getContext('2d');
+let lanterns=[];
+function resizeLc(){lc.width=window.innerWidth;lc.height=window.innerHeight;}
+resizeLc();window.addEventListener('resize',resizeLc);
+
+function spawnLantern(){
+  lanterns.push({
+    x:80+Math.random()*(window.innerWidth-160),
+    y:window.innerHeight+30,
+    r:4+Math.random()*5,
+    speed:0.4+Math.random()*0.6,
+    wobble:Math.random()*Math.PI*2,
+    wobbleSpeed:0.01+Math.random()*0.02,
+    alpha:0,
+    color:Math.random()<0.6?'#8b1a1a':'#c9922a'
+  });
+}
+
+function drawLanterns(){
+  lctx.clearRect(0,0,lc.width,lc.height);
+  lanterns=lanterns.filter(l=>{
+    l.y-=l.speed;l.wobble+=l.wobbleSpeed;
+    l.x+=Math.sin(l.wobble)*0.5;
+    l.alpha=l.y<window.innerHeight*0.8?Math.min(l.alpha+0.02,0.7):l.alpha;
+    if(l.y<-20)return false;
+    lctx.save();
+    lctx.globalAlpha=l.alpha*(l.y/window.innerHeight);
+    lctx.shadowColor=l.color;lctx.shadowBlur=12;
+    lctx.fillStyle=l.color;
+    lctx.beginPath();lctx.ellipse(l.x,l.y,l.r,l.r*1.4,0,0,Math.PI*2);lctx.fill();
+    lctx.restore();
+    return true;
+  });
+  requestAnimationFrame(drawLanterns);
+}
+setInterval(spawnLantern,2000);drawLanterns();
+
+// ─── SCROLL REVEAL ────────────────────────────────
+const revObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.12});
+function initReveal(){document.querySelectorAll('.reveal:not(.visible)').forEach(el=>revObs.observe(el));}
+initReveal();
+
+// ─── AUDIO ────────────────────────────────────────
+let actx=null;
+function getA(){if(!actx)try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}return actx;}
+function tone(f,t,dur,vol,type){
+  const a=getA();if(!a)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.connect(g);g.connect(a.destination);
+  o.type=type||'sine';o.frequency.value=f;
+  g.gain.setValueAtTime(vol||0.06,a.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+(dur||0.4));
+  o.start(a.currentTime+(t||0));o.stop(a.currentTime+(t||0)+(dur||0.4));
+}
+function playOk(){tone(523,0,.12,.09);tone(659,.1,.18,.09);tone(784,.22,.25,.09);}
+function playWrong(){tone(200,0,.4,.06);}
+function playCombo(){tone(440,0,.08,.08);tone(550,.07,.1,.1);tone(660,.16,.2,.12);tone(880,.28,.25,.12);}
+function playGong(){
+  const a=getA();if(!a)return;
+  const b=a.createOscillator(),g=a.createGain();
+  b.connect(g);g.connect(a.destination);
+  b.type='sine';b.frequency.setValueAtTime(110,a.currentTime);
+  b.frequency.exponentialRampToValueAtTime(80,a.currentTime+1.5);
+  g.gain.setValueAtTime(0.12,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+2);
+  b.start();b.stop(a.currentTime+2);
+}
+
+// ─── STATE ────────────────────────────────────────
+let pts=0,streak=0,maxStreak=0,correct=0,totalQ=0;
+let qAnswered={};
+const sceneProgress={
+  s0:6,s0_bad1:9,
+  s_quan:17,s_quan_bad1:20,
+  s1:28,s1_bad1:31,s1_bad2:31,
+  s2:39,s2_b1:42,s2_b2:42,
+  s3:50,s3_b1:53,s3_b2:53,
+  s4:61,s4_b1:64,s4_b2:64,
+  s_dao:72,s_dao_bad1:75,
+  s_bang:83,
+  s5:94,final:100
+};
+// Ánh xạ mọi scene về 1 trong 9 mốc chương (dùng cho thanh timeline)
+const sceneToChapter={
+  s0:0,s0_bad1:0,
+  s_quan:1,s_quan_bad1:1,
+  s1:2,s1_bad1:2,s1_bad2:2,
+  s2:3,s2_b1:3,s2_b2:3,
+  s3:4,s3_b1:4,s3_b2:4,
+  s4:5,s4_b1:5,s4_b2:5,
+  s_dao:6,s_dao_bad1:6,
+  s_bang:7,
+  s5:8,final:8
+};
+const chapters=[
+  {y:'~974',l:'Tuổi Thơ'},
+  {y:'~1005',l:'Phò Tiền Lê'},
+  {y:'1009',l:'Lên Ngôi'},
+  {y:'1010',l:'Dời Đô'},
+  {y:'1010',l:'Thăng Long'},
+  {y:'1010-28',l:'Xây Dựng'},
+  {y:'~1020',l:'Sùng Đạo'},
+  {y:'1028',l:'Băng Hà'},
+  {y:'Di Sản',l:'Ngàn Năm'}
+];
+function renderTL(sceneId){
+  const idx=sceneToChapter[sceneId];
+  if(idx===undefined)return;
+  const bar=document.getElementById('tlBar');
+  bar.innerHTML=chapters.map((c,i)=>{
+    const cls=i<idx?'done':(i===idx?'current':'todo');
+    return `<div class="tl-item"><div class="tl-dot ${cls}">${i+1}</div><div class="tl-year">${c.y}</div><div class="tl-event">${c.l}</div></div>`;
+  }).join('');
+}
+renderTL('s0');
+
+// ─── GO (scene change) ───────────────────────────
+function go(id,addPts){
+  if(addPts>0){pts+=addPts;showPop('+'+addPts);updateScore();}
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(()=>{el.querySelectorAll('.reveal').forEach(r=>{if(!r.classList.contains('visible'))revObs.observe(r);});},100);
+  }
+  const pct=sceneProgress[id]||0;
+  document.getElementById('prog').style.width=pct+'%';
+  renderTL(id);
+  if(id==='final')buildFinal();
+  maybeShowSeal();
+}
+
+function showPop(t){
+  const p=document.getElementById('ptsPopup');
+  p.textContent=t;p.className='pts-popup';void p.offsetWidth;p.className='pts-popup show';
+}
+
+function updateScore(){
+  const el=document.getElementById('scoreNum');
+  el.textContent=pts;el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),280);
+  document.getElementById('scoreRank').textContent=getRank(pts).short;
+}
+
+function getRank(p){
+  if(p>=140)return{short:'Thiên Tử',emoji:'🐉',full:'Vĩ đại! Bạn có tầm nhìn và quyết đoán của Lý Thái Tổ — người đã dời đô từ vùng núi hiểm trở ra vùng đồng bằng trù phú, đặt nền móng cho Hà Nội ngàn năm!'};
+  if(p>=90)return{short:'Hoàng Đế',emoji:'👑',full:'Xuất sắc! Bạn hiểu tầm nhìn chiến lược của người lãnh đạo vĩ đại. Hãy học thêm về Chiếu Dời Đô — một áng văn chính luận bất hủ!'};
+  if(p>=45)return{short:'Quan Đại Thần',emoji:'📜',full:'Tốt! Bạn đã đồng hành cùng Lý Thái Tổ qua hành trình thiên đô. Thử chơi lại để hiểu sâu hơn về những quyết định lịch sử!'};
+  return{short:'Thư Sinh',emoji:'📚',full:'Bạn đã bắt đầu hành trình học sử! Mỗi lần thử lại là một lần hiểu thêm về vị hoàng đế đã đặt nền móng cho Hà Nội 1000 năm.'};
+}
+
+// ─── STREAK & COMBO ───────────────────────────────
+function addStreak(){
+  streak++;if(streak>maxStreak)maxStreak=streak;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakN').textContent=streak;
+  b.classList.add('show');
+  if(streak>=3){b.classList.add('blaze');showCombo(streak);}
+  else b.classList.remove('blaze');
+}
+function resetStreak(){streak=0;document.getElementById('streakBadge').classList.remove('show','blaze');}
+
+function showCombo(n){
+  const lbls={3:'🔥 COMBO ×3',4:'⚡ THẦN TỐC ×4',5:'💥 ĐẾ VƯƠNG ×5',6:'🌟 THIÊN TỬ ×6'};
+  const bon={3:12,4:18,5:25,6:35};
+  const lbl=lbls[n]||('🐉 HUYỀN THOẠI ×'+n);
+  const b=bon[n]||35;
+  document.getElementById('comboLabel').textContent=lbl;
+  document.getElementById('comboPts').textContent='+'+b+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=b;updateScore();showPop('+'+b+' COMBO!');
+  playCombo();
+}
+
+// ─── DRAGON SEAL (advisor) ───────────────────────
+const sealMsgs=[
+  "Kẻ lãnh đạo vĩ đại không xây dựng cho mình — họ xây dựng cho hậu thế.",
+  "Chiếu Dời Đô không chỉ là lệnh vua — đó là một áng văn thuyết phục toàn dân.",
+  "Thăng Long — Rồng Bay Lên — tên gọi này đã sống 821 năm. Đó là sức mạnh của ngôn ngữ.",
+  "Lý Thái Tổ mồ côi từ nhỏ, nhưng tầm nhìn của ông rộng cả ngàn năm.",
+  "Đại La được chọn không phải vì đẹp — mà vì đó là trung tâm địa lý tự nhiên của dân tộc.",
+  "Một quyết định đúng hôm nay có thể nuôi sống cả ngàn thế hệ sau.",
+  "Đức trị dân bền hơn hình phạt — đó là bài học ông mang theo từ cửa Phật vào chốn triều đình."
+];
+let sealCnt=0,sealTimeout=null;
+function showSeal(msg){
+  document.getElementById('sealText').textContent=msg||sealMsgs[Math.floor(Math.random()*sealMsgs.length)];
+  document.getElementById('dragonSeal').classList.add('show');
+  if(sealTimeout)clearTimeout(sealTimeout);
+  sealTimeout=setTimeout(closeSeal,7000);
+}
+function closeSeal(){document.getElementById('dragonSeal').classList.remove('show');}
+function maybeShowSeal(){sealCnt++;if(sealCnt%3===0)setTimeout(showSeal,900);}
+
+// ─── QUIZ HANDLERS ────────────────────────────────
+const qFeedback={
+  q0_1:{ok:'Đúng! Sư Lý Khánh Văn nuôi dưỡng cậu bé Công Uẩn tại chùa Cổ Pháp — sau đó sư Vạn Hạnh tiếp tục dạy dỗ, kèm cặp thêm.',no:'Đáp án B: Sư Lý Khánh Văn nhận nuôi Lý Công Uẩn từ nhỏ tại chùa Cổ Pháp, Đình Bảng.'},
+  qq_1:{ok:'Chính xác! Điện tiền chỉ huy sứ là chức thống lĩnh quân cấm vệ — vị trí quyền lực then chốt giúp ông được triều thần tin tưởng khi lên ngôi sau này.',no:'Đáp án B: Điện tiền chỉ huy sứ — chức vụ thống lĩnh quân cấm vệ bảo vệ vua và kinh thành Hoa Lư.'},
+  q1:{ok:'Đúng! Lý Công Uẩn lên ngôi 1009, lập nhà Lý kéo dài 215 năm (1009–1225) — một trong những triều đại thịnh trị nhất Việt Nam.',no:'Đáp án C: Năm 1009, nhà Lý. Triều Lý kéo dài 215 năm với 9 đời vua.'},
+  q2_1:{ok:'Chính xác! Lý Thái Tổ trích dẫn các triều đại Trung Hoa dời đô thành công để thuyết phục quần thần rằng dời đô là hành động sáng suốt, không phải phản loạn.',no:'Đáp án B. Ông dùng tiền lệ của nhà Thương (5 lần dời đô) và nhà Chu (3 lần) — chứng minh dời đô là truyền thống của các triều đại thịnh trị.'},
+  q3_1:{ok:'Chính xác! Thăng Long = Rồng Bay Lên. Tên này dùng từ 1010 đến 1831 khi vua Minh Mạng đổi thành Hà Nội — Sông ở trong (nội) phía Nam Núi (hà).',no:'Đáp án B. Thăng Long nghĩa là Rồng Bay Lên. Năm 1831, vua Minh Mạng đổi tên thành Hà Nội (Sông Bên Trong).'},
+  q4_1:{ok:'Đúng! Lý Thái Tổ xây ngay hai chùa đầu tiên khi đặt chân tới Thăng Long — thể hiện vai trò trung tâm của Phật giáo trong triều Lý.',no:'Đáp án B. Chùa Hưng Thiên và Thắng Nghiêm là hai chùa đầu tiên của Thăng Long, xây năm 1010. Chùa Diên Hựu (Một Cột) là thời Lý Thái Tông 1049.'},
+  qd_1:{ok:'Đúng! Phật giáo là quốc giáo triều Lý — ảnh hưởng sâu rộng đến cả kiến trúc, nghệ thuật lẫn đường lối trị nước khoan hòa.',no:'Đáp án B: Phật giáo — quốc giáo triều Lý, ảnh hưởng sâu rộng đến đường lối trị nước.'},
+  qb_1:{ok:'Chính xác! Lý Phật Mã lên ngôi, lấy hiệu Lý Thái Tông — vị vua thứ hai của triều Lý, người dẹp yên loạn tam vương và ban Hình thư năm 1042.',no:'Đáp án A: Lý Phật Mã (Lý Thái Tông) — con trai trưởng, kế vị Lý Thái Tổ năm 1028.'},
+  qf1:{ok:'Tuyệt vời! 2010 — đúng dịp kỷ niệm 1000 năm Thăng Long. UNESCO ghi nhận giá trị "giao thoa văn hóa liên tục" suốt 13 thế kỷ.',no:'Đáp án B. Năm 2010, đúng dịp kỷ niệm 1000 năm Thăng Long. Đây là Di sản Thế giới có giá trị đặc biệt về sự giao thoa văn hóa liên tục.'},
+  qf2:{ok:'Hoàn hảo! 9 đời vua, kết thúc 1225 khi Lý Chiêu Hoàng (nữ vua cuối) nhường ngôi cho chồng là Trần Cảnh — mở đầu nhà Trần.',no:'Đáp án B: 9 đời vua (1009–1225). Triều Lý kết thúc khi vua Lý Chiêu Hoàng nhường ngôi cho Trần Cảnh năm 1225.'}
+};
+
+function ansQ(btn,isRight,id){
+  if(qAnswered[id])return;
+  qAnswered[id]=true;totalQ++;
+  btn.parentElement.querySelectorAll('.q-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(isRight){
+    btn.classList.add('correct');pts+=6;correct++;updateScore();showPop('+6');
+    fb.textContent='✅ '+qFeedback[id].ok;fb.className='quiz-fb show ok';
+    addStreak();playOk();
+  } else {
+    btn.classList.add('wrong');
+    btn.parentElement.querySelectorAll('.q-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');});
+    fb.textContent='❌ '+qFeedback[id].no;fb.className='quiz-fb show no';
+    resetStreak();playWrong();setTimeout(showSeal,700);
+  }
+}
+
+// ─── FILL IN BLANK ────────────────────────────────
+const fillAnswered={};
+function checkFill(inputId,keyword,fbId,okMsg){
+  if(fillAnswered[inputId])return;
+  const val=document.getElementById(inputId).value.trim().toLowerCase();
+  const fb=document.getElementById(fbId);
+  if(val.includes(keyword.toLowerCase())){
+    fillAnswered[inputId]=true;
+    totalQ++;correct++;pts+=8;updateScore();showPop('+8');
+    fb.textContent='✅ '+okMsg;fb.className='fill-fb show ok';
+    document.getElementById(inputId).style.borderColor='#4caf50';
+    addStreak();playOk();
+  } else {
+    fb.textContent='❌ Chưa đúng. Thử lại — gợi ý đã có bên dưới!';fb.className='fill-fb show no';
+    playWrong();
+  }
+}
+
+// ─── PICTURE QUIZ ─────────────────────────────────
+const picAnswered={};
+function picAns(btn,result,id){
+  if(picAnswered[id])return;
+  picAnswered[id]=true;totalQ++;
+  document.querySelectorAll(`[data-id="${id}"]`).forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(result==='right'){
+    btn.classList.add('correct-pic');pts+=7;correct++;updateScore();showPop('+7');
+    fb.textContent='✅ Chính xác! +7 điểm.';fb.className='quiz-fb show ok';
+    addStreak();playOk();
+  } else {
+    btn.classList.add('wrong-pic');
+    fb.textContent='❌ Không phải! Chọn lại — các đáp án màu xanh là đúng.';fb.className='quiz-fb show no';
+    resetStreak();playWrong();
+  }
+}
+
+// ─── DRAG AND DROP ────────────────────────────────
+let dragData={item:null,val:null};
+let dtDropped={};
+function dragStart(e,itemId,val){
+  dragData={item:itemId,val:val};
+  e.dataTransfer.effectAllowed='move';
+}
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function dragLeave(e){e.currentTarget.classList.remove('over');}
+function dropItem(e,targetId,expectedVal){
+  e.preventDefault();
+  e.currentTarget.classList.remove('over');
+  if(!dragData.item)return;
+  const srcEl=document.getElementById(dragData.item);
+  const placedEl=document.getElementById(targetId+'_placed');
+  placedEl.textContent=srcEl.textContent.trim();
+  placedEl.style.display='block';
+  srcEl.classList.add('placed');
+  dtDropped[targetId]=dragData.val;
+  dragData={item:null,val:null};
+}
+function checkDrag1(){
+  if(!dtDropped['dt_geo']&&!dtDropped['dt_pol']){
+    document.getElementById('drag1-fb').textContent='⚠️ Hãy kéo ít nhất một item vào ô trước!';document.getElementById('drag1-fb').className='drag-fb show no';return;
+  }
+  let score=0;
+  const fb=document.getElementById('drag1-fb');
+  if(dtDropped['dt_geo']==='geo')score+=2;
+  if(dtDropped['dt_pol']==='pol')score+=2;
+  if(score>=2){
+    pts+=score*3;totalQ++;correct++;updateScore();showPop('+'+(score*3));
+    fb.textContent='✅ Tốt! Địa lý: vị trí, địa hình. Chính trị: lợi ích quốc gia, tương lai dân tộc. +'+score*3+' điểm!';
+    fb.className='drag-fb show ok';addStreak();playOk();
+  } else {
+    fb.textContent='❌ Chưa đúng — hãy suy nghĩ lại: địa lý là những gì thuộc đất đai, vị trí; chính trị là những gì thuộc quyền lợi quốc gia.';
+    fb.className='drag-fb show no';playWrong();
+  }
+}
+
+// ─── ORDER CHALLENGE ─────────────────────────────
+let orderDragSrc=null;
+function orderDragStart(e){
+  orderDragSrc=e.currentTarget;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function orderDragOver(e){
+  e.preventDefault();
+  if(e.currentTarget!==orderDragSrc){
+    const list=e.currentTarget.parentElement;
+    const items=[...list.querySelectorAll('.order-item')];
+    const srcIdx=items.indexOf(orderDragSrc);
+    const tgtIdx=items.indexOf(e.currentTarget);
+    if(srcIdx>-1&&tgtIdx>-1&&srcIdx!==tgtIdx){
+      if(srcIdx<tgtIdx)list.insertBefore(orderDragSrc,e.currentTarget.nextSibling);
+      else list.insertBefore(orderDragSrc,e.currentTarget);
+    }
+  }
+}
+function orderDrop(e){
+  e.preventDefault();
+  if(orderDragSrc)orderDragSrc.classList.remove('dragging');
+  orderDragSrc=null;
+  updateOrderNums(e.currentTarget.parentElement);
+}
+function updateOrderNums(list){
+  [...list.querySelectorAll('.order-item')].forEach((el,i)=>{
+    const n=el.querySelector('.order-num');if(n)n.textContent=i+1;
+  });
+}
+
+function checkOrder(listId,fbId,correct){
+  const list=document.getElementById(listId);
+  if(!list)return;
+  const items=[...list.querySelectorAll('.order-item')];
+  const positions=items.map(el=>parseInt(el.dataset.pos));
+  let isCorrect=true;
+  for(let i=0;i<positions.length-1;i++){if(positions[i]>positions[i+1]){isCorrect=false;break;}}
+  const fb=document.getElementById(fbId);
+  if(isCorrect){
+    pts+=10;totalQ++;correct++;updateScore();showPop('+10');
+    fb.textContent='✅ Xuất sắc! Thứ tự đúng hoàn toàn. +10 điểm!';
+    fb.className='order-fb show ok';addStreak();playOk();playGong();
+    items.forEach(el=>el.style.borderColor='rgba(76,175,80,.5)');
+  } else {
+    fb.textContent='❌ Thứ tự chưa đúng. Đáp án: (1) Lên ngôi 1009 → (2) Chiếu Dời Đô → (3) Đặt tên Thăng Long → (4) Xây dựng kinh đô';
+    fb.className='order-fb show no';playWrong();
+    items.forEach(el=>el.style.borderColor='rgba(229,57,53,.35)');
+  }
+}
+
+function checkBuildPriority(){
+  const list=document.getElementById('buildList');
+  const items=[...list.querySelectorAll('.order-item')];
+  const fb=document.getElementById('build-fb');
+  const first=items[0].querySelector('span').textContent;
+  let msg='';
+  if(first.includes('Thành quách')){msg='🏯 Phòng thủ trước tiên — tư duy quân sự sắc bén! An ninh là nền tảng của mọi phát triển. Lý Thái Tổ cũng xây thành trước tiên.';}
+  else if(first.includes('Chùa chiền')){msg='☸️ Lòng dân trước tiên — tư duy văn hóa sâu sắc! Triều Lý nổi tiếng sùng Phật, và chùa thực sự là hai công trình đầu tiên được xây.';}
+  else if(first.includes('Văn Miếu')){msg='📜 Nhân tài trước tiên — tầm nhìn dài hạn xuất sắc! Nhưng thực tế Văn Miếu là thời Lý Thánh Tông (1070), không phải Lý Thái Tổ.';}
+  else{msg='🌾 Kinh tế trước tiên — thực tế và cần thiết! Dân có ăn mới có thể làm tất cả. Tuy nhiên kênh đào thường đến sau khi an ninh được bảo đảm.';}
+  msg+=' Không có câu trả lời tuyệt đối — đây là nghệ thuật cai trị!';
+  pts+=8;totalQ++;correct++;updateScore();showPop('+8');
+  fb.textContent='🏆 '+msg;fb.className='order-fb show ok';
+  playOk();addStreak();
+}
+
+// ─── ACHIEVEMENTS ─────────────────────────────────
+const allAch=[
+  {icon:'📜',name:'Sử Gia',cond:()=>correct>=5},
+  {icon:'🐉',name:'Long Vũ',cond:()=>pts>=100},
+  {icon:'👑',name:'Thiên Tử',cond:()=>pts>=150},
+  {icon:'🔥',name:'Liên Hoàn',cond:()=>maxStreak>=3},
+  {icon:'⭐',name:'Toàn Mỹ',cond:()=>correct>=8&&totalQ>=8},
+  {icon:'🏯',name:'Thăng Long',cond:()=>totalQ>=10},
+];
+
+function buildFinal(){
+  const r=getRank(pts);
+  awardExp(pts, document.title);
+  document.getElementById('finalSeal').textContent=r.emoji;
+  document.getElementById('finalTitle').textContent=r.short==='Thiên Tử'?'🐉 Thiên Tử Anh Minh!':r.short==='Hoàng Đế'?'👑 Hoàng Đế Sáng Suốt!':r.short==='Quan Đại Thần'?'📜 Quan Đại Thần Tài Năng!':'📚 Thư Sinh Nhiệt Huyết!';
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=r.short;
+  document.getElementById('finalDesc').textContent=r.full;
+  const wrap=document.getElementById('achievements');wrap.innerHTML='';
+  allAch.forEach((a,i)=>{
+    const locked=!a.cond();
+    const d=document.createElement('div');
+    d.className='ach'+(locked?' locked':'');
+    d.style.animationDelay=(i*.1)+'s';
+    d.innerHTML=`<span class="ach-icon">${a.icon}</span><div class="ach-name">${locked?'???':a.name}</div>`;
+    wrap.appendChild(d);
+  });
+  playGong();
+  setTimeout(()=>showSeal("Hành trình của ngươi đã viết lên trang sử! Hà Nội ngàn năm — là chứng nhân của tầm nhìn vĩ đại một con người."),1000);
+}
+
+function restart(){
+  pts=0;streak=0;maxStreak=0;correct=0;totalQ=0;
+  qAnswered={};fillAnswered={};picAnswered['pq1']=false;picAnswered['pqf']=false;
+  dtDropped={};
+  updateScore();
+  document.getElementById('prog').style.width='6%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s0').classList.add('active');
+  renderTL('s0');
+  document.getElementById('streakBadge').classList.remove('show','blaze');
+  closeSeal();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─── EXP / LEADERBOARD (đồng bộ với các trang khác) ───
+const API = 'http://localhost:3000/api';
+async function awardExp(amount, storyTitle) {
+  const token = localStorage.getItem('token');
+  if (!token || !amount) return;
+  try {
+    await fetch(`${API}/exp/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ amount, source_type: 'GAME', note: storyTitle || '' })
+    });
+  } catch (err) { console.warn('Không thể cộng EXP:', err.message); }
+}
+async function openLeaderboard() {
+  let modal = document.getElementById('lb-modal-ltt');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'lb-modal-ltt';
+    modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(4,2,2,0.75);z-index:9997;align-items:center;justify-content:center;';
+    modal.innerHTML = `<div style="background:#0a0404;border:1px solid rgba(201,146,42,0.35);border-radius:16px;width:90%;max-width:420px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;">
+      <div style="background:#8b1a1a;color:#f5ead0;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="font-family:'Cinzel',serif;font-size:18px;color:#f0c060;">🏆 Bảng Xếp Hạng</h3>
+        <span style="cursor:pointer;" onclick="document.getElementById('lb-modal-ltt').style.display='none'">✕</span>
+      </div>
+      <div id="lb-content-ltt" style="padding:16px 20px;overflow-y:auto;color:#f5ead0;"><div style="text-align:center;opacity:.5;padding:20px;">Đang tải...</div></div></div>`;
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+  const content = document.getElementById('lb-content-ltt');
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API}/leaderboard`, { headers: token ? { 'Authorization': 'Bearer ' + token } : {} });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Lỗi tải bảng xếp hạng');
+    const rows = data.data || [];
+    content.innerHTML = rows.length === 0 ? '<div style="text-align:center;opacity:.5;padding:20px;">Chưa có dữ liệu.</div>' :
+      rows.map((r, i) => `<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid rgba(201,146,42,.15);">
+        <div style="width:26px;color:#f0c060;font-weight:700;">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div style="flex:1;">${r.fullname||r.username||'Ẩn danh'}</div>
+        <div style="color:#c9922a;">${r.exp ?? r.points ?? 0} EXP</div></div>`).join('');
+  } catch (err) {
+    content.innerHTML = `<div style="text-align:center;opacity:.5;padding:20px;">Không tải được (${err.message})</div>`;
+  }
+}
+
+// ─── INITIAL GREETING ─────────────────────────────
+setTimeout(()=>showSeal("Chào mừng đến với hành trình Lý Thái Tổ! Từ cậu bé cửa chùa Cổ Pháp đến vị Thiên Tử dời đô — ta sẽ đồng hành cùng ngươi!"),2500);
+</script>
+</body>
+</html>

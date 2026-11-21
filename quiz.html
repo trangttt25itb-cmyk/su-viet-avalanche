@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thử Thách Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+.lb-modal { display:none; position:fixed; inset:0; background:rgba(10,6,3,0.8); z-index:9997; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+.lb-modal.show { display:flex; }
+.lb-box { background:linear-gradient(160deg,#2b1c10,#1a0f05); border:3px solid #e8b64a; border-radius:22px; width:92%; max-width:460px; max-height:82vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 24px 70px rgba(0,0,0,0.6); }
+.lb-header { background:linear-gradient(120deg,#f4d374,#d69a3e); padding:18px 20px; text-align:center; position:relative; }
+.lb-header h3 { font-family:'Poppins',sans-serif; font-size:19px; font-weight:900; letter-spacing:2px; color:#2a1608; }
+.lb-close { cursor:pointer; position:absolute; top:14px; right:18px; font-size:18px; color:rgba(42,22,8,0.6); transition:0.2s; }
+.lb-close:hover { color:#2a1608; transform:scale(1.15); }
+.lb-deco { text-align:center; color:#e8b64a; letter-spacing:14px; font-size:11px; padding:10px 0 4px; opacity:0.6; }
+.lb-content { padding:8px 18px 20px; overflow-y:auto; }
+.lb-loading, .lb-empty { text-align:center; color:#a8875a; padding:28px 0; font-size:14px; font-family:'Poppins',sans-serif; }
+.lb-row { display:flex; align-items:center; gap:14px; padding:12px 14px; border-radius:14px; margin-bottom:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(232,182,74,0.18); transition:0.2s; }
+.lb-row:hover { background:rgba(255,255,255,0.08); }
+.lb-row.top1 { border-left:4px solid #f4d374; }
+.lb-row.top2 { border-left:4px solid #c9d3dc; }
+.lb-row.top3 { border-left:4px solid #d0925a; }
+.lb-row.me { border:2px solid #c0392b; background:rgba(192,57,43,0.15); }
+.lb-avatar { width:42px; height:42px; min-width:42px; border-radius:50%; background:linear-gradient(135deg,#e8b64a,#c9861f); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:#2a1608; font-family:'Poppins',sans-serif; position:relative; }
+.lb-medal { position:absolute; top:-8px; left:-8px; font-size:16px; }
+.lb-rank-num { width:24px; text-align:center; font-weight:800; font-size:13px; color:#a8875a; font-family:'Poppins',sans-serif; }
+.lb-info { flex:1; min-width:0; }
+.lb-name { font-weight:800; color:#fff; font-size:14.5px; font-family:'Poppins',sans-serif; display:flex; align-items:center; gap:8px; }
+.lb-tag { font-size:10px; font-weight:700; color:#fff; background:#c0392b; padding:2px 8px; border-radius:20px; }
+.lb-title { font-size:11.5px; color:rgba(255,255,255,0.45); font-style:italic; font-family:'Poppins',sans-serif; margin-top:1px; }
+.lb-exp-wrap { text-align:right; }
+.lb-exp { font-size:14px; color:#f4d374; font-weight:800; font-family:'Poppins',sans-serif; white-space:nowrap; }
+.lb-lv { font-size:11px; color:rgba(255,255,255,0.4); font-family:'Poppins',sans-serif; }
+.lb-myrank { margin-top:6px; padding:14px; background:rgba(232,182,74,0.08); border:2px dashed #e8b64a; border-radius:14px; text-align:center; font-size:14px; color:#f4d374; font-family:'Poppins',sans-serif; }
+.lb-myrank strong { color:#fff; }
+.count-btn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: 2px solid #c8a96e;
+  background: #fff;
+  color: #8B0000;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.count-btn:hover { background: #fff8e7; }
+.count-btn.active {
+  background: #8B0000;
+  color: #fff;
+  border-color: #8B0000;
+  box-shadow: 0 4px 14px rgba(139,0,0,0.3);
+}
+.diff-btn {
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 2px solid #c8a96e;
+  background: #fff;
+  color: #8B0000;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.diff-btn:hover { background: #fff8e7; }
+.diff-btn.active {
+  background: #a9761f;
+  color: #fff;
+  border-color: #a9761f;
+  box-shadow: 0 4px 14px rgba(169,118,31,0.3);
+}
+.score-medallion {
+  position: relative;
+  margin: 18px auto 26px;
+  width: 260px;
+  padding: 26px 10px 16px;
+  background: radial-gradient(circle at 50% 30%, #fff8e7, #f4e2b8 75%);
+  border: 4px solid #8B0000;
+  border-radius: 50% / 32%;
+  box-shadow: 0 10px 28px rgba(139,0,0,0.3), inset 0 0 0 3px #e8b64a, inset 0 0 0 8px rgba(139,0,0,0.12);
+}
+.score-medallion::before {
+  content: '❖';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #8B0000;
+  color: #f4d374;
+  width: 34px;
+  height: 34px;
+  line-height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  border: 2px solid #e8b64a;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+}
+.score-medallion .score-num {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #8B0000;
+  line-height: 1;
+  font-family: 'Poppins', sans-serif;
+}
+.score-medallion .score-max {
+  color: #8a6d3b;
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 4px;
+  font-family: 'Poppins', sans-serif;
+}
+.score-medallion .score-deco {
+  color: #a9761f;
+  letter-spacing: 6px;
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 6px;
+}
+.scroll-diagnosis {
+  position: relative;
+  max-width: 520px;
+  margin: 30px auto;
+  transform-origin: top center;
+  animation: scrollUnroll 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes scrollUnroll {
+  0%   { transform: scaleY(0.04); opacity: 0; }
+  55%  { transform: scaleY(1.06); opacity: 1; }
+  100% { transform: scaleY(1); }
+}
+.scroll-diagnosis {
+  position: relative;
+  max-width: 520px;
+  margin: 34px auto 26px;
+  transform-origin: top center;
+  animation: scrollUnroll 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes scrollUnroll {
+  0%   { transform: scaleY(0.04); opacity: 0; }
+  55%  { transform: scaleY(1.06); opacity: 1; }
+  100% { transform: scaleY(1); }
+}
+.scroll-diagnosis .scroll-rod {
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(180deg,#c8912f 0%,#8a5a1e 45%,#5c3a17 75%,#3d2510 100%);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.45), inset 0 2px 4px rgba(255,220,150,0.4), inset 0 -3px 4px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 3;
+  margin-bottom: 8px;
+}
+.scroll-diagnosis .scroll-rod::before,
+.scroll-diagnosis .scroll-rod::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  width: 18px;
+  height: 32px;
+  background: radial-gradient(circle at 35% 30%, #e8c073, #8a5a1e 60%, #4a2f10 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.45);
+}
+.scroll-diagnosis .scroll-rod::before { left: -11px; }
+.scroll-diagnosis .scroll-rod::after  { right: -11px; }
+
+.scroll-diagnosis .scroll-paper {
+  background: linear-gradient(180deg,#fdf3d8,#f2e0ac);
+  border-left: 3px solid #d9c69a;
+  border-right: 3px solid #d9c69a;
+  padding: 34px 30px 22px;
+  box-shadow: inset 0 0 36px rgba(90,50,10,0.18);
+  position: relative;
+}
+/* Hoa văn 4 góc kiểu cuộn thư pháp */
+.scroll-diagnosis .scroll-paper::before,
+.scroll-diagnosis .scroll-paper::after {
+  content: '❧';
+  position: absolute;
+  font-size: 26px;
+  color: rgba(169,118,31,0.35);
+  line-height: 1;
+}
+.scroll-diagnosis .scroll-paper::before { top: 8px; left: 10px; }
+.scroll-diagnosis .scroll-paper::after  { top: 8px; right: 10px; transform: scaleX(-1); }
+
+.scroll-diagnosis .scroll-badge {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  background: linear-gradient(180deg,#b5180c 0%,#8a0f06 55%,#6e0d06 100%);
+  color: #ffe9b0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 3px;
+  padding: 7px 34px;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  box-shadow: 0 5px 14px rgba(0,0,0,0.45);
+  clip-path: polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
+  border-top: 1px solid rgba(255,233,176,0.5);
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+}
+
+/* ===== NAVBAR ĐỒNG BỘ VỚI CÁC TRANG KHÁC ===== */
+.navbar-sv{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;align-items:center;gap:28px;padding:14px 28px;background:linear-gradient(#2c1b12,#241610);border-top:3px solid #c8a96e;border-bottom:3px solid #c8a96e;}
+.corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+.corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+.corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+.corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+.corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+.navbar-sv .logo{display:flex;align-items:center;gap:12px;color:#c8a96e;font-size:28px;font-weight:700;font-family:'Libre Baskerville',serif;letter-spacing:1px;text-decoration:none;flex-shrink:0;}
+.navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+.nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+.nav-menu-sv>li{position:relative;}
+.nav-menu-sv .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:rgba(255,255,255,.85);font-size:14px;font-weight:700;padding:8px 18px;border-radius:10px;transition:.2s;position:relative;min-width:96px;justify-content:center;}
+.nav-menu-sv .nav-ic{font-size:18px;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji",sans-serif;}
+.nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+.nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+.nav-menu-sv .nav-item.active::after{content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid #f4c542;}
+.quiz-nav-container .nav-item{
+  background:linear-gradient(160deg,#fff8e7,#f2e0ac);
+  border:2px solid #c8a96e;
+  border-radius:14px;
+  color:#5c3a17;
+  font-weight:700;
+  font-size:16px;
+  padding:14px 20px;
+  box-shadow:0 3px 10px rgba(139,0,0,0.08);
+  transition:.25s;
+}
+.quiz-nav-container .nav-item:hover{
+  border-color:#8B0000;
+  transform:translateY(-3px);
+  box-shadow:0 8px 20px rgba(139,0,0,0.18);
+}
+.quiz-nav-container .nav-item.active{
+  background:linear-gradient(135deg,#8B0000,#a9261a);
+  color:#fff;
+  border-color:#f4c542;
+  box-shadow:0 6px 18px rgba(139,0,0,0.35);
+}
+.quiz-nav-container .nav-arrow{
+  background:linear-gradient(160deg,#fff8e7,#f2e0ac);
+  border:2px solid #c8a96e;
+  color:#8B0000;
+  border-radius:50%;
+  width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  cursor:pointer;
+  transition:.25s;
+}
+.quiz-nav-container .nav-arrow:hover{
+  background:#8B0000;color:#fff;border-color:#8B0000;
+}
+.caret{font-size:10px;opacity:.8;}
+.has-dropdown .dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:.25s;z-index:999;}
+.has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+.dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+.dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+.dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+.nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+.nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+.nav-search-sv input::placeholder{color:#999;}
+.nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+.nav-user-item{position:relative;}
+.nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:30px;transition:background .25s;}
+.nav-user-trigger:hover{background:rgba(200,169,110,.15);}
+.nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;border:2px solid #c8a96e;overflow:hidden;}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+.nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nav-user-dropdown{display:none;position:absolute;top:calc(100% + 14px);right:0;background:#fff;border:1.5px solid rgba(200,169,110,.4);border-radius:14px;padding:14px;min-width:220px;box-shadow:0 10px 40px rgba(44,27,18,.18);z-index:2000;}
+.nav-user-dropdown.open{display:block;}
+.nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.nav-dropdown-avatar{width:40px;height:40px;border-radius:50%;background:#c8a96e;color:#2c1b12;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.nav-dropdown-divider{height:1px;background:rgba(200,169,110,.3);margin:10px 0;}
+.nav-dropdown-logout{display:flex;align-items:center;gap:8px;color:#c0392b;font-size:13px;font-weight:700;text-decoration:none;padding:6px 4px;border-radius:8px;cursor:pointer;}
+.nav-dropdown-logout:hover{background:rgba(192,57,43,.08);}
+.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:0;}
+.nav-toggle span{display:block;width:26px;height:3px;background:#c8a96e;border-radius:3px;transition:0.3s;}
+.nav-toggle.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+.nav-toggle.open span:nth-child(2){opacity:0;}
+.nav-toggle.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+body{padding-top:82px;}
+@media(max-width:1000px){
+  .nav-menu-sv{display:none !important;}
+  .nav-menu-sv.open{
+    display:flex !important;
+    flex-direction:column;
+    position:fixed;top:78px;left:0;right:0;
+    margin:0;padding:16px;
+    background:#2c1b12;
+    border-bottom:3px solid #c8a96e;
+    z-index:998;
+    gap:6px;
+  }
+  .nav-menu-sv.open .nav-item{
+    min-width:0;width:100%;
+    flex-direction:row;
+    justify-content:flex-start;
+    gap:10px;
+    padding:12px 14px;
+  }
+  .nav-menu-sv.open .has-dropdown .dropdown-menu{
+    position:static;
+    transform:none;
+    opacity:1;visibility:visible;
+    display:none;
+    box-shadow:none;
+    margin-top:4px;
+  }
+  .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+  .nav-search-sv{display:none !important;}
+      .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+      .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+      .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+      .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .nav-user-email-text{display:none !important;}
+  .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;justify-content:space-between;}
+  .navbar-sv .logo{font-size:20px;gap:8px;}
+  .navbar-sv .logo img{width:38px;height:38px;}
+  .nav-right-sv{gap:8px;flex-shrink:0;}
+  .nav-toggle{display:flex !important;flex-shrink:0;}
+}
+</style>
+</head>
+<body style="background: var(--cream);background-image:url('images/bg.png');background-size:cover;background-position:center;background-attachment:fixed;">
+
+    <header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="Logo Sử Việt">
+        SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+          <li class="mobile-search-item" style="display:none;">
+            <div class="nav-search-mobile">
+              <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+              <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+            </div>
+          </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz.html" class="nav-item active"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+            <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+            <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+            <span style="color:#c8a96e; font-size:10px;">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+            <div class="nav-dropdown-info">
+                <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+                <div>
+                    <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+                    <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+                </div>
+            </div>
+            <div class="nav-dropdown-divider"></div>
+            <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+<button onclick="openLeaderboard()" style="position:fixed;bottom:24px;right:24px;z-index:9996;padding:14px 22px;background:#8B0000;color:white;border:none;border-radius:50px;font-weight:700;font-size:15px;font-family:'Poppins',sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(139,0,0,0.4);display:flex;align-items:center;gap:8px;">
+  🏆 Bảng xếp hạng
+</button>
+    <div class="quiz-nav-container"> 
+        <button class="nav-arrow" onclick="scrollNav(-1)">&#10094;</button> 
+        <div class="quiz-nav-scroll" id="navScroll"> 
+            <button class="nav-item active" onclick="loadTopic('van-lang', event)">01. Văn Lang</button>
+            <button class="nav-item" onclick="loadTopic('bac-thuoc', event)">02. Bắc Thuộc</button>
+            <button class="nav-item" onclick="loadTopic('ly-tran', event)">03. Lý - Trần</button>
+            <button class="nav-item" onclick="loadTopic('le-nguyen', event)">04. Lê - Nguyễn</button>
+            <button class="nav-item" onclick="loadTopic('khang-chien-phap', event)">05. Chống Pháp</button>
+          <button class="nav-item" onclick="loadTopic('khang-chien-my', event)">06. Chống Mỹ</button>
+          <button class="nav-item" onclick="loadTopic('ngo-dinh-tienle', event)">07. Ngô-Đinh-Tiền Lê</button>
+          <button class="nav-item" onclick="loadTopic('ho-thuoc-minh', event)">08. Nhà Hồ-Thuộc Minh</button>
+
+          <button class="nav-item" onclick="loadTopic('tong-on', event)" style="background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;font-weight:800;">🔥 Tổng Ôn</button>
+        </div>
+        <button class="nav-arrow" onclick="scrollNav(1)">&#10095;</button> 
+    </div>
+
+  <main class="main-quiz-wrapper">
+  <button class="nav-arrow" onclick="changeQuestion(-1)">&#10094;</button>
+  <div style="width:100%;max-width:700px;">
+
+   <div id="ready-screen" style="display:flex;align-items:center;justify-content:center;min-height:70vh;padding:20px;">
+  <div class="ready-card">
+    <div class="ready-banner">◆ CHỌN CHỦ ĐỀ ◆</div>
+    <p class="ready-sub">Chọn chủ đề bạn muốn thử thách kiến thức lịch sử của mình</p>
+    <div class="ready-icon-wrap">
+      <img id="ready-icon" src="images/icon-van-lang2.png">
+    </div>
+    <div id="ready-title" class="ready-title">Văn Lang</div>
+    
+    <div class="ready-stats">
+      <div class="ready-stat-box">
+        <div class="ready-stat-icon">📝</div>
+        <div class="ready-stat-val" id="ready-count">30</div>
+        <div class="ready-stat-label">Câu hỏi</div>
+      </div>
+      <div class="ready-stat-box">
+        <div class="ready-stat-icon">⏱️</div>
+        <div class="ready-stat-val">15s</div>
+        <div class="ready-stat-label">Mỗi câu</div>
+      </div>
+      <div class="ready-stat-box">
+        <div class="ready-stat-icon">🏆</div>
+        <div class="ready-stat-val">10đ</div>
+        <div class="ready-stat-label">Mỗi câu đúng</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:center;margin:14px 0 6px;">
+      <button class="count-btn" data-count="10" onclick="selectQuestionCount(10)">10 câu</button>
+      <button class="count-btn" data-count="20" onclick="selectQuestionCount(20)">20 câu</button>
+      <button class="count-btn active" data-count="30" onclick="selectQuestionCount(30)">30 câu</button>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin:6px 0 6px;">
+      <button class="diff-btn active" data-diff="all" onclick="selectDifficulty('all')">Tất cả</button>
+      <button class="diff-btn" data-diff="easy" onclick="selectDifficulty('easy')">Dễ</button>
+      <button class="diff-btn" data-diff="medium" onclick="selectDifficulty('medium')">Trung bình</button>
+      <button class="diff-btn" data-diff="hard" onclick="selectDifficulty('hard')">Khó</button>
+    </div>
+
+    <button onclick="startQuizNow()" class="ready-start-btn">BẮT ĐẦU THỬ THÁCH →</button>
+  </div>
+</div>
+  
+
+    <!-- QUIZ -->
+    <section class="quiz" id="quiz-section" style="display:none;">
+    </section>
+
+  </div>
+  <button class="nav-arrow" onclick="changeQuestion(1)">&#10095;</button>
+</main>
+<footer style="background:#2c1b12; color:white; padding:50px 80px 0;">
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;">
+        <div>
+            <h3 style="color:#f4c542; font-size:28px; font-weight:700; margin-bottom:12px; font-family:'Libre Baskerville',serif;">SỬ VIỆT</h3>
+            <p style="color:rgba(255,255,255,0.6); line-height:1.8; max-width:260px; font-size:14px;">
+                Website học lịch sử Việt Nam tương tác — khám phá hàng nghìn năm văn hiến dân tộc.
+            </p>
+        </div>
+        <div>
+            <h4 style="color:#f4c542; margin-bottom:16px;">Khám phá</h4>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
+                <li><a href="index.html" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">Trang chủ</a></li>
+                <li><a href="cau-chuyen.html" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">Học qua câu chuyện</a></li>
+                <li><a href="quiz.html" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">Quiz thử thách</a></li>
+                <li><a href="game.html" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">Trò chơi lịch sử</a></li>
+                <li><a href="train-nghiem-nguoi-dung.html" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">📊 Đánh giá</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color:#f4c542; margin-bottom:16px;">Thông tin</h4>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:10px; font-size:14px; color:rgba(255,255,255,0.7);">
+                <li>🏫 Trường: <strong style="color:white;">ĐH CNTT & TT VIỆT HÀN</strong></li>
+                <li>👥 Nhóm: <strong style="color:white;">CMW</strong></li>
+                <li>🏆 Cuộc thi: <strong style="color:white;">Best Web Design</strong></li>
+                <li>📅 Năm: <strong style="color:white;">2026</strong></li>
+            </ul>
+        </div>
+    </div>
+    <div style="border-top:1px solid rgba(200,169,110,0.25); padding:16px 0; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#c8a96e; font-size:14px; font-weight:600;">
+            📖 Hiểu sử – Yêu nước – Tự hào dân tộc
+        </div>
+        <div style="display:flex; gap:20px; align-items:center;">
+            <a href="#" style="color:rgba(255,255,255,0.5); font-size:20px; text-decoration:none;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">f</a>
+            <a href="#" style="color:rgba(255,255,255,0.5); font-size:20px; text-decoration:none;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">▶</a>
+            <a href="#" style="color:rgba(255,255,255,0.5); font-size:20px; text-decoration:none;" onmouseover="this.style.color='#c8a96e'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">🌐</a>
+        </div>
+    </div>
+    <div style="text-align:center; color:rgba(255,255,255,0.3); font-size:12px; padding:10px 0 20px;">
+        © 2026 Sử Việt — Tự hào lịch sử Việt Nam
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+(function() {
+    const user = localStorage.getItem('suVietUser');
+    const token = localStorage.getItem('token');
+    if (!user || !token) {
+        localStorage.setItem('redirectAfterLogin', window.location.href);
+        window.location.href = 'login-signup.html';
+    }
+})();
+
+function toggleUserMenu(trigger){
+  const dropdown = document.getElementById('navUserDropdown');
+  dropdown.classList.toggle('open');
+  trigger.setAttribute('aria-expanded', dropdown.classList.contains('open') ? 'true' : 'false');
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.nav-user-item')) document.getElementById('navUserDropdown')?.classList.remove('open');
+});
+function doLogout(){ localStorage.removeItem('suVietUser'); }
+(function(){
+  const raw = localStorage.getItem('suVietUser');
+  if(!raw) return;
+  const u = JSON.parse(raw);
+  const email = u.email || '';
+  const name = u.name || email.split('@')[0] || 'Người dùng';
+  const initial = name[0]?.toUpperCase() || 'U';
+  document.getElementById('navEmailText').textContent = email;
+  document.getElementById('navDropEmail').textContent = email;
+  document.getElementById('navDropName').textContent = name;
+  document.getElementById('navAvatarCircle').textContent = initial;
+  document.getElementById('navDropAvatar').textContent = initial;
+})();
+function toggleMobileNav() {
+  const menu = document.querySelector('.nav-menu-sv');
+  const btn = document.getElementById('navToggle');
+  if (!menu || !btn) return;
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false');
+}
+</script>
+<script src="daily-seed.js"></script>
+<script src="script.js?v=99"></script>
+<script>
+window.addEventListener('load', function(){
+  const params = new URLSearchParams(window.location.search);
+  const topic = params.get('topic');
+  if (!topic) return;
+  const btn = [...document.querySelectorAll('.quiz-nav-scroll .nav-item')]
+    .find(b => (b.getAttribute('onclick') || '').includes("loadTopic('" + topic + "'"));
+  if (btn && !btn.classList.contains('active')) {
+    btn.click();
+  }
+});
+</script>
+<script src="search-data.js"></script>
+<script src="search-engine.js"></script>
+<script>
+(function(){
+  window.SuVietSearch = window.SuVietSearch || {};
+  window.SuVietSearch.resolveLocal = function(item){
+    if (item.type !== "quiz") return null;
+    const btn = [...document.querySelectorAll(".quiz-nav-scroll .nav-item")]
+      .find(b => (b.getAttribute("onclick") || "").includes("loadTopic('" + item.id + "'"));
+    if (!btn) return null;
+    if (!btn.classList.contains("active")) {
+      btn.click();
+    }
+    return btn;
+  };
+})();
+</script>
+<script>
+function doNavSearchMobile() {
+    const mobileInput = document.getElementById('navSearchInputMobile');
+    const desktopInput = document.getElementById('navSearchInput');
+    if (mobileInput && desktopInput) desktopInput.value = mobileInput.value;
+    if (typeof doNavSearch === 'function') doNavSearch();
+}
+document.getElementById('navSearchInputMobile')?.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doNavSearchMobile();
+});
+</script>
+</body>
+</html>

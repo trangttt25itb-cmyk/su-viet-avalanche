@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="48" fill="#2b1a10"/>
+  <circle cx="256" cy="220" r="130" fill="#a0261c" stroke="#f1d58a" stroke-width="10"/>
+  <text x="256" y="250" font-family="Georgia, serif" font-size="110" font-weight="bold" text-anchor="middle" fill="#f1d58a">2</text>
+  <text x="256" y="420" font-family="Georgia, serif" font-size="38" text-anchor="middle" fill="#f1d58a">Người kể sử</text>
+  <text x="256" y="465" font-family="Georgia, serif" font-size="26" text-anchor="middle" fill="#c9b27a">SỬ VIỆT</text>
+</svg>

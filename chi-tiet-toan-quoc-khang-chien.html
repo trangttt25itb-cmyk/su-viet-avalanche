@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toàn Quốc Kháng Chiến | Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main: #8B0000;
+            --gold: #d4af37;
+            --dark: #1e1206;
+            --bg-light: #f8f4ea;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: #333; }
+
+        .navbar-sv{
+          position:sticky;top:0;left:0;width:100%;z-index:1000;
+          display:flex;align-items:center;gap:28px;
+          padding:10px 28px;
+          background:linear-gradient(#2c1b12,#241610);
+          border-top:3px solid #c8a96e;
+          border-bottom:3px solid #c8a96e;
+        }
+        .corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+        .corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+        .corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+        .corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+        .corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+        .navbar-sv .logo{
+          display:flex;align-items:center;gap:12px;
+          color:#c8a96e;font-size:28px;font-weight:700;
+          font-family:'Libre Baskerville',serif;letter-spacing:1px;
+          text-decoration:none;flex-shrink:0;
+        }
+        .navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+        .nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+        .nav-menu-sv>li{position:relative;}
+        .nav-menu-sv .nav-item{
+          display:flex;flex-direction:column;align-items:center;gap:4px;
+          text-decoration:none;color:rgba(255,255,255,.85);
+          font-size:14px;font-weight:700;
+          padding:8px 18px;border-radius:10px;transition:.2s;
+          position:relative;min-width:96px;justify-content:center;
+          border:none;background:none;
+        }
+        .nav-ic{font-size:18px;line-height:1;}
+        .nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+        .nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+        .nav-menu-sv .nav-item.active::after{
+          content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+          width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+          border-bottom:6px solid #f4c542;
+        }
+        .caret{font-size:10px;opacity:.8;}
+        .has-dropdown .dropdown-menu{
+          position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);
+          background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;
+          min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+          opacity:0;visibility:hidden;transition:.25s;z-index:999;
+        }
+        .has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+        .dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+        .dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+        .dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+        .nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+        .nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+        .nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+        .nav-search-sv input::placeholder{color:#999;}
+        .nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+        .nav-user-item{position:relative;}
+        .nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;}
+        .nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:500;}
+        .nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;}
+        .nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-user-dropdown{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border-radius:12px;min-width:220px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:999;}
+        .nav-user-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+        .nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+        .nav-dropdown-avatar{width:44px;height:44px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;}
+        .nav-dropdown-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-dropdown-divider{height:1px;background:#eee;margin:8px 0;}
+        .nav-dropdown-logout{display:block;color:#8B0000;text-decoration:none;font-weight:600;font-size:13px;}
+        .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+        .nav-toggle span{width:24px;height:2px;background:#c8a96e;display:block;}
+        @media(max-width:1000px){
+          .nav-menu-sv{display:none !important;}
+          .nav-menu-sv.open{
+            display:flex !important;flex-direction:column;
+            position:fixed;top:78px;left:0;right:0;margin:0;padding:16px;
+            background:#2c1b12;border-bottom:3px solid #c8a96e;z-index:998;gap:6px;
+          }
+          .nav-menu-sv.open .nav-item{min-width:0;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;}
+          .nav-menu-sv.open .has-dropdown .dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;display:none;box-shadow:none;margin-top:4px;}
+          .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+          .nav-search-sv{display:none !important;}
+          .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+          .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+          .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+          .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+          .nav-user-email-text{display:none !important;}
+          .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;}
+          .navbar-sv .logo{font-size:20px;gap:8px;}
+          .navbar-sv .logo img{width:38px;height:38px;}
+          .nav-right-sv{gap:8px;flex-shrink:0;}
+          .nav-toggle{display:flex !important;flex-shrink:0;}
+        }
+
+        .hero {
+            background: linear-gradient(to right, rgba(0,0,0,0.82) 45%, rgba(0,0,0,0.25) 100%),
+                        url('images/toanquockhangchien-hero.jpg') center/cover no-repeat;
+            min-height: 420px;
+            display: flex; align-items: center;
+            padding: 60px 80px;
+            color: white;
+            border-bottom: 3px solid var(--gold);
+            background-color: #2a1a0a;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212,175,55,0.25);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 12px; font-weight: 500;
+            padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 14px; letter-spacing: 0.5px;
+        }
+        .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.05; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .hero .subtitle { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.85); margin-bottom: 22px; max-width: 520px; line-height: 1.65; }
+        .hero-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 13px; }
+
+        .breadcrumb { padding: 14px 80px; font-size: 13px; color: #888; border-bottom: 1px solid #e8e2d4; background: white; }
+        .breadcrumb a { color: var(--main); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 6px; }
+
+        .page-layout {
+            display: grid; grid-template-columns: 1fr 300px;
+            gap: 26px; padding: 30px 80px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .content-box {
+            background: white; border-radius: 16px;
+            padding: 28px 32px; margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .content-box h2 {
+            color: var(--main); font-size: 17px; font-weight: 700;
+            margin-bottom: 18px; display: flex; align-items: center; gap: 9px;
+            padding-bottom: 12px; border-bottom: 2px solid #f5ede0;
+        }
+        .content-box p { font-size: 14px; line-height: 1.9; color: #444; margin-bottom: 14px; }
+        .content-box p:last-child { margin-bottom: 0; }
+
+        /* INLINE IMAGES */
+        .inline-img-right {
+            float: right; width: 250px;
+            margin: 0 0 16px 22px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-right img { width: 100%; display: block; }
+        .inline-img-left {
+            float: left; width: 250px;
+            margin: 0 22px 16px 0;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-left img { width: 100%; display: block; }
+        .img-cap { background: #f8f4ea; font-size: 11px; color: #888; text-align: center; padding: 6px 8px; font-style: italic; }
+        .img-banner { width: 100%; border-radius: 12px; overflow: hidden; margin: 18px 0; box-shadow: 0 3px 12px rgba(0,0,0,0.1); border: 2px solid #ede7d3; }
+        .img-banner img { width: 100%; display: block; max-height: 280px; object-fit: cover; }
+        .clearfix::after { content: ''; display: table; clear: both; }
+
+        /* TIMELINE */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+            width: 2px; background: linear-gradient(to bottom, var(--gold), #e8d4a8); border-radius: 2px;
+        }
+        .tl-item { position: relative; margin-bottom: 28px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: 2px solid white; box-shadow: 0 0 0 2px var(--gold); }
+        .tl-dot.red { background: var(--main); box-shadow: 0 0 0 2px var(--main); }
+        .tl-dot.green { background: #2a8a2a; box-shadow: 0 0 0 2px #2a8a2a; }
+        .tl-year { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .tl-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .tl-text { font-size: 13px; color: #555; line-height: 1.7; }
+
+        /* QUOTE */
+        .quote-block {
+            background: #fffbf0; border-left: 4px solid var(--gold);
+            border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0;
+        }
+        .quote-block p { font-size: 14px; font-style: italic; color: #555; line-height: 1.8; margin-bottom: 8px; }
+        .quote-source { font-size: 12px; color: #999; font-weight: 500; }
+
+        /* TAGS */
+        .trait-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .trait-tag { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .trait-red   { background: #fdeaea; color: #8b0000; }
+        .trait-gold  { background: #fdf3d0; color: #8a6800; }
+        .trait-blue  { background: #e6f0fb; color: #1a5fa8; }
+        .trait-green { background: #eaf5e0; color: #2a6e1a; }
+
+        /* ACHIEVE GRID */
+        .achieve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .achieve-card { background: #fffdf7; border: 1px solid #ede7d3; border-radius: 12px; padding: 16px; }
+        .achieve-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .achieve-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #222; }
+        .achieve-text { font-size: 12px; color: #666; line-height: 1.6; }
+
+        /* STAT CARDS */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+        .stat-card { background: linear-gradient(135deg, #fffdf7, #f8f4ea); border: 1px solid #ede7d3; border-radius: 14px; padding: 20px 16px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 800; color: var(--main); display: block; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: #666; line-height: 1.4; }
+
+        /* CAUSE GRID */
+        .cause-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .cause-card { border-radius: 12px; padding: 18px 16px; }
+        .cause-card.economy { background: #f0f7e6; border: 2px solid #8fb86a; }
+        .cause-card.politics { background: #fdf3d0; border: 2px solid var(--gold); }
+        .cause-card.military  { background: #fdeaea; border: 2px solid #c0392b; }
+        .cause-card.culture  { background: #e6f0fb; border: 2px solid #5a9bd4; }
+        .cause-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+        .cause-card.economy .cause-title { color: #2a6e1a; }
+        .cause-card.politics .cause-title { color: #8a6800; }
+        .cause-card.military .cause-title { color: #8b0000; }
+        .cause-card.culture .cause-title { color: #1a5fa8; }
+        .cause-text { font-size: 12px; color: #555; line-height: 1.6; }
+
+        /* LESSON BOX */
+        .lesson-box { background: linear-gradient(135deg, #1e1206, #3a2010); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .lesson-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+        .lesson-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+        /* LEGACY BOX */
+        .legacy-box { background: linear-gradient(135deg, #0a2010, #1a4a2a); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .legacy-box .lesson-title { color: #7dffaa; }
+
+        .hl { background: #fff2cc; padding: 1px 6px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #7a5a00; }
+
+        /* SIDEBAR */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { background: white; border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .sidebar-box h3 { font-size: 14px; font-weight: 700; color: var(--main); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #f5ede0; display: flex; align-items: center; gap: 7px; }
+
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table tr { border-bottom: 1px solid #f2ede0; }
+        .info-table tr:last-child { border-bottom: none; }
+        .info-table td { padding: 9px 0; font-size: 13px; vertical-align: top; }
+        .info-table td:first-child { color: #888; width: 44%; padding-right: 8px; }
+        .info-table td:last-child { font-weight: 500; color: #222; }
+
+        .legacy-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f2ede0; }
+        .legacy-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .legacy-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .legacy-text { font-size: 12px; color: #555; line-height: 1.6; }
+        .legacy-text strong { color: #222; font-size: 13px; display: block; margin-bottom: 2px; }
+
+        .char-mini { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f2ede0; text-decoration: none; color: inherit; transition: 0.2s; border-radius: 8px; }
+        .char-mini:last-child { border-bottom: none; }
+        .char-mini:hover { background: #f9f4ec; padding-left: 6px; }
+        .char-mini-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #ede7d3; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .char-mini-info { flex: 1; }
+        .char-mini-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .char-mini-desc { font-size: 11px; color: #888; }
+        .char-mini-arrow { font-size: 14px; color: #ccc; }
+
+        .heritage-card {
+            margin-bottom: 16px; border: 1px solid #ede7d3;
+            border-radius: 12px; overflow: hidden; background: #fffdf7; transition: 0.2s;
+        }
+        .heritage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .heritage-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .heritage-content { padding: 12px; }
+        .heritage-content strong { display: block; font-size: 13px; color: #222; margin-bottom: 6px; }
+        .heritage-content p { font-size: 12px; color: #666; line-height: 1.6; margin: 0; }
+
+        .btn-back { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--main); color: white; border-radius: 9px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: var(--gold); color: #1e1206; }
+
+        footer { background: var(--dark); color: #bbb; padding: 28px 80px; margin-top: 10px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .footer-bottom a { color: #888; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Sử Việt">
+      SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+      <li class="mobile-search-item" style="display:none;">
+        <div class="nav-search-mobile">
+          <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+          <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+        </div>
+      </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item active" aria-current="page"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm" autocomplete="off">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng" onkeydown="if(event.key==='Enter'||event.key===' '){this.click();}">
+          <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+          <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+          <span style="color:#c8a96e; font-size:10px;" aria-hidden="true">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+          <div class="nav-dropdown-info">
+            <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+            <div>
+              <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+              <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+            </div>
+          </div>
+          <div class="nav-dropdown-divider"></div>
+          <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+    <div>
+        <div class="hero-badge">🏛️ SỰ KIỆN LỊCH SỬ</div>
+        <h1>TOÀN QUỐC KHÁNG CHIẾN</h1>
+        <p class="subtitle">Đêm 19/12/1946, hưởng ứng Lời kêu gọi của Chủ tịch Hồ Chí Minh, quân và dân cả nước nhất tề đứng lên với tinh thần "Quyết tử để Tổ quốc quyết sinh", mở đầu cuộc kháng chiến trường kỳ 9 năm chống thực dân Pháp xâm lược</p>
+        <div class="hero-tags">
+            <span class="hero-tag">📅 Đêm 19/12/1946</span>
+            <span class="hero-tag">📍 Hà Nội và các đô thị cả nước</span>
+            <span class="hero-tag">🏛️ Lời kêu gọi của Chủ tịch Hồ Chí Minh</span>
+            <span class="hero-tag">⚔️ Võ Nguyên Giáp tổng chỉ huy</span>
+        </div>
+    </div>
+</section>
+
+<div class="breadcrumb">
+    <a href="index.html">Trang chủ</a>
+    <span>›</span>
+    <a href="chong-phap.html">Kháng chiến chống Pháp</a>
+    <span>›</span>
+    Toàn quốc kháng chiến
+</div>
+
+<div class="page-layout">
+    <div class="main-col">
+
+        <!-- GIỚI THIỆU -->
+        <div class="content-box">
+            <h2>📖 GIỚI THIỆU</h2>
+            <div class="clearfix">
+                <div class="inline-img-right">
+                    <img src="images/toanquockhangchien.jpg" alt="Toàn quốc kháng chiến" onerror="this.parentElement.style.display='none'">
+                    <div class="img-cap">Quân và dân Hà Nội chiến đấu trong những ngày đầu Toàn quốc kháng chiến</div>
+                </div>
+                <p>
+                    Sau ngày <span class="hl">2/9/1945</span>, nước Việt Nam Dân chủ Cộng hòa vừa ra đời đã phải đối mặt với dã tâm quay lại xâm lược của thực dân Pháp. Để tranh thủ thời gian hòa bình chuẩn bị lực lượng, Chính phủ ta đã ký Hiệp định Sơ bộ (6/3/1946) và Tạm ước (14/9/1946), nhưng thực dân Pháp càng nhân nhượng càng lấn tới.
+                </p>
+                <p>
+                    Đầu tháng 12/1946, quân Pháp liên tục gây hấn tại Hà Nội, bắn phá nhiều khu phố, chiếm trụ sở của chính quyền cách mạng. Ngày 18 và 19/12/1946, Pháp liên tiếp gửi tối hậu thư đòi Chính phủ ta <span class="hl">giải tán lực lượng tự vệ</span>, giao quyền kiểm soát Thủ đô cho chúng.
+                </p>
+                <p>
+                    Trước tình thế đó, trong hai ngày 18-19/12/1946, Ban Thường vụ Trung ương Đảng họp tại làng <span class="hl">Vạn Phúc (Hà Đông)</span> quyết định phát động kháng chiến toàn quốc. Đêm 19/12/1946, Chủ tịch Hồ Chí Minh thay mặt Trung ương Đảng và Chính phủ ra <span class="hl">"Lời kêu gọi toàn quốc kháng chiến"</span>, khẳng định ý chí sắt đá của cả dân tộc.
+                </p>
+            </div>
+            <div class="quote-block">
+                <p>Chúng ta muốn hòa bình, chúng ta phải nhân nhượng. Nhưng chúng ta càng nhân nhượng, thực dân Pháp càng lấn tới... Không! Chúng ta thà hy sinh tất cả, chứ nhất định không chịu mất nước, nhất định không chịu làm nô lệ.</p>
+                <span class="quote-source">— Lời kêu gọi Toàn quốc kháng chiến, Chủ tịch Hồ Chí Minh</span>
+            </div>
+            <div class="trait-tags">
+                <span class="trait-tag trait-gold">🏛️ Hội nghị Vạn Phúc</span>
+                <span class="trait-tag trait-green">🤝 Toàn dân, toàn diện, trường kỳ</span>
+                <span class="trait-tag trait-blue">⚔️ Quyết tử để Tổ quốc quyết sinh</span>
+                <span class="trait-tag trait-red">🔥 Thà hy sinh tất cả</span>
+            </div>
+        </div>
+
+        <!-- SỐ LIỆU NỔI BẬT -->
+        <div class="content-box">
+            <h2>📊 DẤU MỐC & CON SỐ</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">20h03</span>
+                    <span class="stat-label">Giờ pháo đài Láng nổ súng, mở đầu kháng chiến (19/12/1946)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">60</span>
+                    <span class="stat-label">Ngày đêm quân dân Hà Nội giam chân địch (19/12/1946 – 17/2/1947)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">2.000+</span>
+                    <span class="stat-label">Quân Pháp bị tiêu diệt trong 60 ngày đêm khói lửa</span>
+                </div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">12.000</span>
+                    <span class="stat-label">Quân Pháp huy động tấn công Việt Bắc Thu Đông 1947</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">9</span>
+                    <span class="stat-label">Năm kháng chiến trường kỳ chống thực dân Pháp (1946 – 1954)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1954</span>
+                    <span class="stat-label">Năm chiến thắng Điện Biên Phủ, kết thúc kháng chiến</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BIỂU HIỆN CỦA HÀO KHÍ -->
+        <div class="content-box">
+            <h2>⚡ BỐI CẢNH & NGUYÊN NHÂN BÙNG NỔ</h2>
+            <p>Toàn quốc kháng chiến không phải là một quyết định bột phát — đó là kết quả tất yếu sau nhiều tháng thực dân Pháp bội ước, lấn tới, đẩy dân tộc ta vào thế không còn con đường nào khác ngoài cầm súng chiến đấu.</p>
+
+            <div class="cause-grid">
+                <div class="cause-card politics">
+                    <div class="cause-title">🏛️ Pháp bội ước Hiệp định, Tạm ước</div>
+                    <div class="cause-text">Dù ta đã ký Hiệp định Sơ bộ (6/3/1946) và Tạm ước (14/9/1946) để nhân nhượng, giữ hòa bình, thực dân Pháp vẫn không ngừng vi phạm, ráo riết chuẩn bị quay lại xâm lược toàn bộ nước ta.</div>
+                </div>
+                <div class="cause-card military">
+                    <div class="cause-title">⚔️ Tối hậu thư 18-19/12/1946</div>
+                    <div class="cause-text">Pháp liên tiếp gửi tối hậu thư đòi Chính phủ ta giải tán lực lượng tự vệ, giao quyền kiểm soát an ninh, trật tự tại Hà Nội cho chúng — hành động xâm phạm trắng trợn chủ quyền.</div>
+                </div>
+                <div class="cause-card culture">
+                    <div class="cause-title">🕊️ Nhân nhượng đến giới hạn cuối cùng</div>
+                    <div class="cause-text">Ta đã kiên trì đàm phán, nhân nhượng tối đa để tránh chiến tranh, nhưng "càng nhân nhượng, thực dân Pháp càng lấn tới" — hòa bình không còn khả năng gìn giữ.</div>
+                </div>
+                <div class="cause-card economy">
+                    <div class="cause-title">🔥 Ý chí thà hy sinh, không chịu mất nước</div>
+                    <div class="cause-text">Trước nguy cơ mất độc lập vừa giành được, toàn Đảng, toàn dân, toàn quân đồng lòng quyết tâm "thà hy sinh tất cả, chứ nhất định không chịu mất nước, không chịu làm nô lệ".</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIỄN BIẾN LỊCH SỬ -->
+        <div class="content-box">
+            <h2>📜 DIỄN BIẾN LỊCH SỬ</h2>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">6/3 – 14/9/1946</div>
+                    <div class="tl-title">Nhân nhượng để chuẩn bị lực lượng</div>
+                    <div class="tl-text">Chính phủ ta ký Hiệp định Sơ bộ và Tạm ước với Pháp nhằm tranh thủ thời gian hòa bình, chuẩn bị tiềm lực mọi mặt. Thực dân Pháp lợi dụng thời gian đó để tăng cường lực lượng xâm lược.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">Đầu 12/1946</div>
+                    <div class="tl-title">Pháp gây hấn tại Hà Nội</div>
+                    <div class="tl-text">Quân Pháp liên tục dùng đại bác, súng cối bắn phá nhiều khu phố, tàn sát dân thường, chiếm một số trụ sở của chính quyền cách mạng, đẩy tình hình vào thế căng thẳng cực độ.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">18 – 19/12/1946</div>
+                    <div class="tl-title">Hội nghị Vạn Phúc — quyết định kháng chiến toàn quốc</div>
+                    <div class="tl-text">Trước tối hậu thư của Pháp đòi giải giáp lực lượng tự vệ, Ban Thường vụ Trung ương Đảng họp tại làng Vạn Phúc (Hà Đông), quyết định phát động kháng chiến toàn quốc và thông qua Lời kêu gọi do Chủ tịch Hồ Chí Minh soạn thảo.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">20h03, 19/12/1946</div>
+                    <div class="tl-title">Hà Nội nổ súng mở đầu kháng chiến toàn quốc</div>
+                    <div class="tl-text">Pháo đài Láng bắn loạt đạn đầu tiên vào các mục tiêu trong thành phố. Quân Pháp tiến công Bắc Bộ phủ, các chiến sĩ cảm tử ôm bom ba càng lao vào xe tăng địch. Cùng đêm, Hải Phòng, Nam Định, Huế, Đà Nẵng, Sài Gòn... đồng loạt đứng lên.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">Sáng 20/12/1946</div>
+                    <div class="tl-title">Lời kêu gọi vang lên trên sóng phát thanh</div>
+                    <div class="tl-text">Đài Tiếng nói Việt Nam phát đi "Lời kêu gọi toàn quốc kháng chiến" của Chủ tịch Hồ Chí Minh tới đồng bào và chiến sĩ cả nước, khẳng định ý chí "thà hy sinh tất cả chứ nhất định không chịu mất nước".</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">19/12/1946 – 17/2/1947</div>
+                    <div class="tl-title">60 ngày đêm khói lửa giữa lòng Hà Nội</div>
+                    <div class="tl-text">Trung đoàn Thủ đô cùng lực lượng tự vệ chiến đấu ngoan cường từng căn nhà, góc phố, tiêu diệt hơn 2.000 quân địch, giam chân Pháp để cơ quan đầu não và bộ đội chủ lực rút lên Việt Bắc an toàn.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">7/10 – 22/12/1947</div>
+                    <div class="tl-title">Chiến thắng Việt Bắc Thu Đông</div>
+                    <div class="tl-text">Pháp huy động khoảng 12.000 quân, chia nhiều cánh tấn công lên Việt Bắc hòng tiêu diệt cơ quan đầu não kháng chiến. Quân và dân ta chiến đấu kiên cường, đập tan chiến lược "đánh nhanh thắng nhanh", bảo vệ vững chắc căn cứ địa Việt Bắc.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NHỮNG THÀNH TỰU -->
+        <div class="content-box">
+            <h2>🏆 THÀNH TỰU & DẤU ẤN</h2>
+            <p>
+                Toàn quốc kháng chiến đã để lại những dấu ấn sâu đậm trong lịch sử dân tộc — không chỉ về mặt quân sự mà còn về đường lối chiến lược và tinh thần đoàn kết toàn dân.
+            </p>
+            <div class="achieve-grid">
+                <div class="achieve-card">
+                    <span class="achieve-icon">🛡️</span>
+                    <div class="achieve-title">60 ngày đêm giam chân địch giữa Thủ đô</div>
+                    <div class="achieve-text">Trung đoàn Thủ đô cùng nhân dân Hà Nội biến mỗi ngôi nhà thành pháo đài, mỗi đường phố thành chiến tuyến, tạo điều kiện để cơ quan đầu não kháng chiến rút lên Việt Bắc an toàn.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">⚓</span>
+                    <div class="achieve-title">Chiến thắng Việt Bắc Thu Đông 1947</div>
+                    <div class="achieve-text">Đập tan cuộc tấn công quy mô lớn của Pháp lên căn cứ địa Việt Bắc, đánh bại hoàn toàn chiến lược "đánh nhanh thắng nhanh", buộc Pháp phải chuyển sang đánh lâu dài.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">📜</span>
+                    <div class="achieve-title">"Lời kêu gọi toàn quốc kháng chiến" bất hủ</div>
+                    <div class="achieve-text">Văn kiện lịch sử của Chủ tịch Hồ Chí Minh trở thành lời hịch cứu quốc, kết tinh khát vọng độc lập tự do của cả dân tộc, còn vang vọng đến ngày nay.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">🤝</span>
+                    <div class="achieve-title">Đường lối kháng chiến toàn dân, toàn diện</div>
+                    <div class="achieve-text">Xác lập đường lối chiến tranh nhân dân — toàn dân, toàn diện, trường kỳ, dựa vào sức mình là chính — nền tảng dẫn tới thắng lợi Điện Biên Phủ năm 1954.</div>
+                </div>
+            </div>
+
+            <div class="quote-block" style="margin-top:20px;">
+                <p>Từ đêm 19/12/1946, cả dân tộc Việt Nam đã đứng lên như một, biến lời hiệu triệu của Chủ tịch Hồ Chí Minh thành sức mạnh của toàn dân — mở đầu chín năm trường kỳ đi đến thắng lợi Điện Biên Phủ.</p>
+                <span class="quote-source">— Nhận định của các nhà sử học Việt Nam hiện đại</span>
+            </div>
+        </div>
+
+        <!-- Ý NGHĨA -->
+        <div class="content-box">
+            <h2>💡 Ý NGHĨA LỊCH SỬ</h2>
+            <p>
+                Toàn quốc kháng chiến thể hiện ý chí <span class="hl">"thà hy sinh tất cả chứ nhất định không chịu mất nước"</span> của cả dân tộc, mở đầu cho đường lối kháng chiến toàn dân, toàn diện, trường kỳ, dựa vào sức mình là chính — kim chỉ nam xuyên suốt chín năm chống Pháp.
+            </p>
+            <p>
+                60 ngày đêm giam chân địch tại Hà Nội đã tạo điều kiện để Trung ương Đảng, Chính phủ và bộ đội chủ lực rút lên <span class="hl">Việt Bắc</span>, xây dựng nơi đây thành căn cứ địa vững chắc — "thủ đô kháng chiến" — cho cuộc trường kỳ kháng chiến sau này.
+            </p>
+            <div class="quote-block">
+                <p>Từ đêm cả Hà Nội vùng đứng lên, phải đến tám năm sau nhân dân mới lại được đón Chủ tịch Hồ Chí Minh và Trung ương Đảng trở về — hành trình ấy khẳng định bản lĩnh của một dân tộc không khuất phục trước ngoại xâm.</p>
+                <span class="quote-source">— Nhận định lịch sử Việt Nam</span>
+            </div>
+            <div class="lesson-box">
+                <div class="lesson-title">🔥 Bài học "Quyết tử để Tổ quốc quyết sinh"</div>
+                <div class="lesson-text">Tinh thần của Trung đoàn Thủ đô trong 60 ngày đêm khói lửa trở thành biểu tượng cho ý chí sẵn sàng hy sinh vì độc lập dân tộc — bài học về lòng quả cảm được truyền dạy đến nhiều thế hệ sau.</div>
+            </div>
+            <div class="legacy-box" style="margin-top:14px;">
+                <div class="lesson-title">🏅 Di sản tinh thần</div>
+                <div class="lesson-text">Việt Bắc từ căn cứ địa kháng chiến trở thành biểu tượng của ý chí tự lực cánh sinh, còn Lời kêu gọi toàn quốc kháng chiến vẫn được giảng dạy, nhắc nhớ như một áng hùng văn về lòng yêu nước.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="sidebar-box">
+            <h3>📋 THÔNG TIN CƠ BẢN</h3>
+            <table class="info-table">
+                <tr><td>Sự kiện</td><td>Toàn quốc kháng chiến</td></tr>
+                <tr><td>Thời điểm bùng nổ</td><td>Đêm 19/12/1946</td></tr>
+                <tr><td>Nơi nổ súng đầu tiên</td><td>Hà Nội</td></tr>
+                <tr><td>Người phát động</td><td>Chủ tịch Hồ Chí Minh</td></tr>
+                <tr><td>Tổng chỉ huy</td><td>Võ Nguyên Giáp</td></tr>
+                <tr><td>Kẻ thù</td><td>Thực dân Pháp</td></tr>
+                <tr><td>Nơi soạn Lời kêu gọi</td><td>Vạn Phúc, Hà Đông</td></tr>
+                <tr><td>Trận mở đầu</td><td>60 ngày đêm Hà Nội</td></tr>
+                <tr><td>Căn cứ địa kháng chiến</td><td>Việt Bắc</td></tr>
+                <tr><td>Thời gian kháng chiến</td><td>1946 – 1954 (9 năm)</td></tr>
+            </table>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>🏛️ DI SẢN & DI TÍCH</h3>
+
+            <div class="heritage-card">
+                <img src="images/nhaluuniemvanphuc.jpg" alt="Nhà lưu niệm Bác Hồ tại Vạn Phúc" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Nhà lưu niệm Bác Hồ — Vạn Phúc, Hà Đông</strong>
+                    <p>Nơi Chủ tịch Hồ Chí Minh chủ trì hội nghị và soạn thảo "Lời kêu gọi toàn quốc kháng chiến" trong hai ngày 18-19/12/1946. Di tích lịch sử cấp Quốc gia.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/bacbophu.jpg" alt="Di tích Bắc Bộ phủ" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Bắc Bộ phủ — Hà Nội</strong>
+                    <p>Nơi diễn ra trận đánh mở đầu đêm 19/12/1946, nay là Nhà khách Chính phủ số 12 Ngô Quyền, gắn liền với chiến công của các chiến sĩ cảm tử quân Thủ đô.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/atkdinhhoa.jpg" alt="Khu di tích ATK Định Hóa" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Khu di tích ATK Định Hóa — Thái Nguyên</strong>
+                    <p>Trung tâm căn cứ địa Việt Bắc, nơi Chủ tịch Hồ Chí Minh và Trung ương Đảng, Chính phủ sống và làm việc, lãnh đạo cuộc kháng chiến trường kỳ chống Pháp.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sidebar-box">
+            <h3>👑 NHÂN VẬT LIÊN QUAN</h3>
+            <a href="cau-chuyen-detail.html?id=7" class="char-mini">
+                <div class="char-mini-avatar" style="background: #6a3a1a;">🕊️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Hồ Chí Minh</div>
+                    <div class="char-mini-desc">Người ra Lời kêu gọi toàn quốc kháng chiến</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-vo-nguyen-giap.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #2a5a3a;">🛡️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Võ Nguyên Giáp</div>
+                    <div class="char-mini-desc">Bộ trưởng Bộ Quốc phòng, Tổng chỉ huy kháng chiến</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>✨ SỰ THẬT THÚ VỊ</h3>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">📻</div>
+                <div class="legacy-text">
+                    <strong>Phát trên sóng radio</strong>
+                    Lời kêu gọi được Đài Tiếng nói Việt Nam phát đi sáng 20/12/1946, ngay sau khi tiếng súng đầu tiên vang lên tại Hà Nội đêm hôm trước.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🏠</div>
+                <div class="legacy-text">
+                    <strong>Mỗi ngôi nhà là một pháo đài</strong>
+                    Người dân Hà Nội dùng tủ, giường, bàn ghế lập chiến lũy trên phố; các đường giao liên đào xuyên tường nhiều căn nhà để tránh hỏa lực địch.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">💣</div>
+                <div class="legacy-text">
+                    <strong>Bom ba càng cảm tử</strong>
+                    Trước xe tăng Pháp, các chiến sĩ cảm tử quân ôm bom ba càng lao thẳng vào phá hủy chiến xa ngay trong trận đánh Bắc Bộ phủ đêm 19/12/1946.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🚣</div>
+                <div class="legacy-text">
+                    <strong>Vượt sông Hồng rút lui an toàn</strong>
+                    Đêm 17/2/1947, nhân dân làng Tứ Tổng huy động hàng chục thuyền đưa Trung đoàn Thủ đô vượt sông an toàn, kết thúc 60 ngày đêm giam chân địch.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">📖</div>
+                <div class="legacy-text">
+                    <strong>Áng hùng văn cứu quốc</strong>
+                    "Lời kêu gọi toàn quốc kháng chiến" được ví như lời hịch cứu quốc, câu nói "Thà hy sinh tất cả..." vẫn được nhắc đến như biểu tượng ý chí dân tộc.
+                </div>
+            </div>
+        </div>
+
+        <a href="chong-phap.html" class="btn-back">← Quay lại Kháng chiến chống Pháp</a>
+
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        <span>© 2025 Sử Việt. Bảo lưu mọi quyền.</span>
+        <span><a href="#">Chính sách</a> · <a href="#">Điều khoản</a></span>
+    </div>
+</footer>
+<script src="nav.js"></script>
+<script src="search-data.js"></script>
+<script src="search-engine.js"></script>
+</body>
+</html>

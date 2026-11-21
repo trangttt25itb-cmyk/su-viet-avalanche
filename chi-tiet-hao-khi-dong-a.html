@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hào Khí Đông A | Sử Việt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main: #8B0000;
+            --gold: #d4af37;
+            --dark: #1e1206;
+            --bg-light: #f8f4ea;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-light); color: #333; }
+
+        .navbar-sv{
+          position:sticky;top:0;left:0;width:100%;z-index:1000;
+          display:flex;align-items:center;gap:28px;
+          padding:10px 28px;
+          background:linear-gradient(#2c1b12,#241610);
+          border-top:3px solid #c8a96e;
+          border-bottom:3px solid #c8a96e;
+        }
+        .corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+        .corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+        .corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+        .corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+        .corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+        .navbar-sv .logo{
+          display:flex;align-items:center;gap:12px;
+          color:#c8a96e;font-size:28px;font-weight:700;
+          font-family:'Libre Baskerville',serif;letter-spacing:1px;
+          text-decoration:none;flex-shrink:0;
+        }
+        .navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+        .nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+        .nav-menu-sv>li{position:relative;}
+        .nav-menu-sv .nav-item{
+          display:flex;flex-direction:column;align-items:center;gap:4px;
+          text-decoration:none;color:rgba(255,255,255,.85);
+          font-size:14px;font-weight:700;
+          padding:8px 18px;border-radius:10px;transition:.2s;
+          position:relative;min-width:96px;justify-content:center;
+          border:none;background:none;
+        }
+        .nav-ic{font-size:18px;line-height:1;}
+        .nav-menu-sv .nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+        .nav-menu-sv .nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+        .nav-menu-sv .nav-item.active::after{
+          content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+          width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;
+          border-bottom:6px solid #f4c542;
+        }
+        .caret{font-size:10px;opacity:.8;}
+        .has-dropdown .dropdown-menu{
+          position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);
+          background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;
+          min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);
+          opacity:0;visibility:hidden;transition:.25s;z-index:999;
+        }
+        .has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+        .dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+        .dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+        .dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+        .nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+        .nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+        .nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+        .nav-search-sv input::placeholder{color:#999;}
+        .nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+        .nav-user-item{position:relative;}
+        .nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;}
+        .nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:500;}
+        .nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;}
+        .nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-user-dropdown{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border-radius:12px;min-width:220px;padding:14px;box-shadow:0 16px 40px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(-8px);transition:.2s;z-index:999;}
+        .nav-user-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
+        .nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+        .nav-dropdown-avatar{width:44px;height:44px;border-radius:50%;background:#c8a96e;color:#2c1b12;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;}
+        .nav-dropdown-avatar img{width:100%;height:100%;object-fit:cover;}
+        .nav-dropdown-divider{height:1px;background:#eee;margin:8px 0;}
+        .nav-dropdown-logout{display:block;color:#8B0000;text-decoration:none;font-weight:600;font-size:13px;}
+        .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;}
+        .nav-toggle span{width:24px;height:2px;background:#c8a96e;display:block;}
+        @media(max-width:1000px){
+          .nav-menu-sv{display:none !important;}
+          .nav-menu-sv.open{
+            display:flex !important;flex-direction:column;
+            position:fixed;top:78px;left:0;right:0;margin:0;padding:16px;
+            background:#2c1b12;border-bottom:3px solid #c8a96e;z-index:998;gap:6px;
+          }
+          .nav-menu-sv.open .nav-item{min-width:0;width:100%;flex-direction:row;justify-content:flex-start;gap:10px;padding:12px 14px;}
+          .nav-menu-sv.open .has-dropdown .dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;display:none;box-shadow:none;margin-top:4px;}
+          .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+          .nav-search-sv{display:none !important;}
+          .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+          .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+          .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+          .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+          .nav-user-email-text{display:none !important;}
+          .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;}
+          .navbar-sv .logo{font-size:20px;gap:8px;}
+          .navbar-sv .logo img{width:38px;height:38px;}
+          .nav-right-sv{gap:8px;flex-shrink:0;}
+          .nav-toggle{display:flex !important;flex-shrink:0;}
+        }
+
+        .hero {
+            background: linear-gradient(to right, rgba(0,0,0,0.82) 45%, rgba(0,0,0,0.25) 100%),
+                        url('images/dongA-hero.WEBP') center/cover no-repeat;
+            min-height: 420px;
+            display: flex; align-items: center;
+            padding: 60px 80px;
+            color: white;
+            border-bottom: 3px solid var(--gold);
+            background-color: #2a1a0a;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(212,175,55,0.25);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 12px; font-weight: 500;
+            padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 14px; letter-spacing: 0.5px;
+        }
+        .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.05; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .hero .subtitle { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.85); margin-bottom: 22px; max-width: 520px; line-height: 1.65; }
+        .hero-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-tag { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 13px; }
+
+        .breadcrumb { padding: 14px 80px; font-size: 13px; color: #888; border-bottom: 1px solid #e8e2d4; background: white; }
+        .breadcrumb a { color: var(--main); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { margin: 0 6px; }
+
+        .page-layout {
+            display: grid; grid-template-columns: 1fr 300px;
+            gap: 26px; padding: 30px 80px;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .content-box {
+            background: white; border-radius: 16px;
+            padding: 28px 32px; margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .content-box h2 {
+            color: var(--main); font-size: 17px; font-weight: 700;
+            margin-bottom: 18px; display: flex; align-items: center; gap: 9px;
+            padding-bottom: 12px; border-bottom: 2px solid #f5ede0;
+        }
+        .content-box p { font-size: 14px; line-height: 1.9; color: #444; margin-bottom: 14px; }
+        .content-box p:last-child { margin-bottom: 0; }
+
+        /* INLINE IMAGES */
+        .inline-img-right {
+            float: right; width: 250px;
+            margin: 0 0 16px 22px;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-right img { width: 100%; display: block; }
+        .inline-img-left {
+            float: left; width: 250px;
+            margin: 0 22px 16px 0;
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+            border: 2px solid #ede7d3;
+        }
+        .inline-img-left img { width: 100%; display: block; }
+        .img-cap { background: #f8f4ea; font-size: 11px; color: #888; text-align: center; padding: 6px 8px; font-style: italic; }
+        .img-banner { width: 100%; border-radius: 12px; overflow: hidden; margin: 18px 0; box-shadow: 0 3px 12px rgba(0,0,0,0.1); border: 2px solid #ede7d3; }
+        .img-banner img { width: 100%; display: block; max-height: 280px; object-fit: cover; }
+        .clearfix::after { content: ''; display: table; clear: both; }
+
+        /* TIMELINE */
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+            width: 2px; background: linear-gradient(to bottom, var(--gold), #e8d4a8); border-radius: 2px;
+        }
+        .tl-item { position: relative; margin-bottom: 28px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--gold); border: 2px solid white; box-shadow: 0 0 0 2px var(--gold); }
+        .tl-dot.red { background: var(--main); box-shadow: 0 0 0 2px var(--main); }
+        .tl-dot.green { background: #2a8a2a; box-shadow: 0 0 0 2px #2a8a2a; }
+        .tl-year { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .tl-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .tl-text { font-size: 13px; color: #555; line-height: 1.7; }
+
+        /* QUOTE */
+        .quote-block {
+            background: #fffbf0; border-left: 4px solid var(--gold);
+            border-radius: 0 12px 12px 0; padding: 18px 22px; margin: 18px 0;
+        }
+        .quote-block p { font-size: 14px; font-style: italic; color: #555; line-height: 1.8; margin-bottom: 8px; }
+        .quote-source { font-size: 12px; color: #999; font-weight: 500; }
+
+        /* TAGS */
+        .trait-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .trait-tag { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .trait-red   { background: #fdeaea; color: #8b0000; }
+        .trait-gold  { background: #fdf3d0; color: #8a6800; }
+        .trait-blue  { background: #e6f0fb; color: #1a5fa8; }
+        .trait-green { background: #eaf5e0; color: #2a6e1a; }
+
+        /* ACHIEVE GRID */
+        .achieve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .achieve-card { background: #fffdf7; border: 1px solid #ede7d3; border-radius: 12px; padding: 16px; }
+        .achieve-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .achieve-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #222; }
+        .achieve-text { font-size: 12px; color: #666; line-height: 1.6; }
+
+        /* STAT CARDS */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+        .stat-card { background: linear-gradient(135deg, #fffdf7, #f8f4ea); border: 1px solid #ede7d3; border-radius: 14px; padding: 20px 16px; text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 800; color: var(--main); display: block; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: #666; line-height: 1.4; }
+
+        /* CAUSE GRID */
+        .cause-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .cause-card { border-radius: 12px; padding: 18px 16px; }
+        .cause-card.economy { background: #f0f7e6; border: 2px solid #8fb86a; }
+        .cause-card.politics { background: #fdf3d0; border: 2px solid var(--gold); }
+        .cause-card.military  { background: #fdeaea; border: 2px solid #c0392b; }
+        .cause-card.culture  { background: #e6f0fb; border: 2px solid #5a9bd4; }
+        .cause-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+        .cause-card.economy .cause-title { color: #2a6e1a; }
+        .cause-card.politics .cause-title { color: #8a6800; }
+        .cause-card.military .cause-title { color: #8b0000; }
+        .cause-card.culture .cause-title { color: #1a5fa8; }
+        .cause-text { font-size: 12px; color: #555; line-height: 1.6; }
+
+        /* LESSON BOX */
+        .lesson-box { background: linear-gradient(135deg, #1e1206, #3a2010); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .lesson-title { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+        .lesson-text { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+        /* LEGACY BOX */
+        .legacy-box { background: linear-gradient(135deg, #0a2010, #1a4a2a); border-radius: 14px; padding: 22px 24px; margin-top: 14px; color: white; }
+        .legacy-box .lesson-title { color: #7dffaa; }
+
+        .hl { background: #fff2cc; padding: 1px 6px; border-radius: 4px; font-weight: 600; font-size: 13px; color: #7a5a00; }
+
+        /* SIDEBAR */
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-box { background: white; border-radius: 16px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .sidebar-box h3 { font-size: 14px; font-weight: 700; color: var(--main); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #f5ede0; display: flex; align-items: center; gap: 7px; }
+
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table tr { border-bottom: 1px solid #f2ede0; }
+        .info-table tr:last-child { border-bottom: none; }
+        .info-table td { padding: 9px 0; font-size: 13px; vertical-align: top; }
+        .info-table td:first-child { color: #888; width: 44%; padding-right: 8px; }
+        .info-table td:last-child { font-weight: 500; color: #222; }
+
+        .legacy-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f2ede0; }
+        .legacy-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .legacy-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+        .legacy-text { font-size: 12px; color: #555; line-height: 1.6; }
+        .legacy-text strong { color: #222; font-size: 13px; display: block; margin-bottom: 2px; }
+
+        .char-mini { display: flex; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f2ede0; text-decoration: none; color: inherit; transition: 0.2s; border-radius: 8px; }
+        .char-mini:last-child { border-bottom: none; }
+        .char-mini:hover { background: #f9f4ec; padding-left: 6px; }
+        .char-mini-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #ede7d3; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; }
+        .char-mini-info { flex: 1; }
+        .char-mini-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+        .char-mini-desc { font-size: 11px; color: #888; }
+        .char-mini-arrow { font-size: 14px; color: #ccc; }
+
+        .heritage-card {
+            margin-bottom: 16px; border: 1px solid #ede7d3;
+            border-radius: 12px; overflow: hidden; background: #fffdf7; transition: 0.2s;
+        }
+        .heritage-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .heritage-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .heritage-content { padding: 12px; }
+        .heritage-content strong { display: block; font-size: 13px; color: #222; margin-bottom: 6px; }
+        .heritage-content p { font-size: 12px; color: #666; line-height: 1.6; margin: 0; }
+
+        .btn-back { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--main); color: white; border-radius: 9px; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.2s; }
+        .btn-back:hover { background: var(--gold); color: #1e1206; }
+
+        footer { background: var(--dark); color: #bbb; padding: 28px 80px; margin-top: 10px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .footer-bottom a { color: #888; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Logo Sử Việt">
+      SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+      <li class="mobile-search-item" style="display:none;">
+        <div class="nav-search-mobile">
+          <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+          <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+        </div>
+      </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item active" aria-current="page"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz-langding.html" class="nav-item"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm" autocomplete="off">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="Menu người dùng" onkeydown="if(event.key==='Enter'||event.key===' '){this.click();}">
+          <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+          <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+          <span style="color:#c8a96e; font-size:10px;" aria-hidden="true">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+          <div class="nav-dropdown-info">
+            <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+            <div>
+              <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+              <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+            </div>
+          </div>
+          <div class="nav-dropdown-divider"></div>
+          <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Mở menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+    <div>
+        <div class="hero-badge">🏛️ SỰ KIỆN LỊCH SỬ</div>
+        <h1>HÀO KHÍ ĐÔNG A</h1>
+        <p class="subtitle">Biểu tượng cho tinh thần tự tôn dân tộc thời nhà Trần — khí thế "vua tôi đồng lòng, anh em hòa thuận" đã ba lần đánh tan đế quốc Nguyên Mông hung bạo nhất thế giới thế kỷ XIII</p>
+        <div class="hero-tags">
+            <span class="hero-tag">📅 Thế kỷ XIII (1258 – 1288)</span>
+            <span class="hero-tag">📍 Đại Việt thời nhà Trần</span>
+            <span class="hero-tag">🏛️ Ba lần kháng chiến chống Nguyên Mông</span>
+            <span class="hero-tag">⚔️ Trần Hưng Đạo tổng chỉ huy</span>
+        </div>
+    </div>
+</section>
+
+<div class="breadcrumb">
+    <a href="index.html">Trang chủ</a>
+    <span>›</span>
+    <a href="ly-tran.html">Lý – Trần</a>
+    <span>›</span>
+    Hào Khí Đông A
+</div>
+
+<div class="page-layout">
+    <div class="main-col">
+
+        <!-- GIỚI THIỆU -->
+        <div class="content-box">
+            <h2>📖 GIỚI THIỆU</h2>
+            <div class="clearfix">
+                <div class="inline-img-right">
+                    <img src="images/tran.jpg" alt="Hào khí Đông A" onerror="this.parentElement.style.display='none'">
+                    <div class="img-cap">Quân dân Đại Việt thời Trần — biểu tượng của Hào khí Đông A</div>
+                </div>
+                <p>
+                    <span class="hl">Đông A</span> là chữ chiết tự từ họ Trần (陳) — bao gồm bộ Phụ (阝) bên trái và chữ Đông (東) bên phải. Ghép hai bộ phận này lại tạo thành chữ Trần, nên "Đông A" trở thành cách gọi ẩn dụ, đầy chất thơ dành cho vương triều nhà Trần thế kỷ XIII.
+                </p>
+                <p>
+                    "Hào khí Đông A" không đơn thuần là tên gọi một dòng họ hoàng tộc, mà đã trở thành biểu tượng cho một <span class="hl">khí thế chiến đấu oanh liệt</span>, một ý chí sắt đá kết tinh từ tinh thần tự cường của mọi tầng lớp nhân dân Đại Việt.
+                </p>
+                <p>
+                    Chính hào khí ấy đã giúp một quốc gia nhỏ bé <span class="hl">ba lần đánh tan</span> đế quốc Nguyên Mông — thế lực quân sự từng chinh phục gần như toàn bộ lục địa Á-Âu — vào các năm 1258, 1285 và 1288, làm nên một trong những trang sử quân sự chói lọi nhất của dân tộc Việt.
+                </p>
+            </div>
+            <div class="trait-tags">
+                <span class="trait-tag trait-gold">🏛️ Chiết tự từ họ Trần</span>
+                <span class="trait-tag trait-green">🤝 Vua tôi đồng lòng</span>
+                <span class="trait-tag trait-blue">⚔️ Ba lần thắng Nguyên Mông</span>
+                <span class="trait-tag trait-red">🔥 Ý chí Sát Thát</span>
+            </div>
+        </div>
+
+        <!-- SỐ LIỆU NỔI BẬT -->
+        <div class="content-box">
+            <h2>📊 DẤU MỐC & CON SỐ</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Lần đại xâm lược của Nguyên Mông (1258, 1285, 1288)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1285</span>
+                    <span class="stat-label">Năm diễn ra Hội nghị Diên Hồng</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1288</span>
+                    <span class="stat-label">Năm đại thắng Bạch Đằng, chôn vùi quân Nguyên</span>
+                </div>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <span class="stat-number">2</span>
+                    <span class="stat-label">Chữ "Sát Thát" xăm trên cánh tay binh sĩ</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Số lần đế quốc Nguyên Mông khuất phục được Đại Việt</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">30+</span>
+                    <span class="stat-label">Năm ổn định hòa bình sau ba lần kháng chiến</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BIỂU HIỆN CỦA HÀO KHÍ -->
+        <div class="content-box">
+            <h2>⚡ BIỂU HIỆN CỦA HÀO KHÍ ĐÔNG A</h2>
+            <p>Hào khí Đông A không phải một khái niệm trừu tượng — nó được thể hiện cụ thể qua tinh thần đoàn kết, ý chí chiến đấu và sự đồng lòng xuyên suốt mọi tầng lớp trong xã hội Đại Việt thời Trần.</p>
+
+            <div class="cause-grid">
+                <div class="cause-card politics">
+                    <div class="cause-title">🏛️ Vua tôi đồng lòng</div>
+                    <div class="cause-text">Triều đình nhà Trần tổ chức các hội nghị quân sự quan trọng như hội nghị Bình Than, quy tụ tướng lĩnh bàn kế đánh giặc, xóa bỏ khoảng cách giữa vua và bề tôi trước vận mệnh đất nước.</div>
+                </div>
+                <div class="cause-card culture">
+                    <div class="cause-title">🎭 Diên Hồng đồng thanh</div>
+                    <div class="cause-text">Năm 1285, các bậc phụ lão khắp nơi quy tụ về kinh thành, khi vua hỏi nên hòa hay đánh, vạn người cùng đồng thanh hô vang "Đánh!" — thể hiện ý chí toàn dân không khuất phục.</div>
+                </div>
+                <div class="cause-card military">
+                    <div class="cause-title">⚔️ Sát Thát quyết tử</div>
+                    <div class="cause-text">Hàng vạn binh sĩ tự nguyện xăm lên cánh tay hai chữ "Sát Thát" (giết giặc Mông Cổ), thề quyết tử bảo vệ giang sơn — biểu tượng mạnh mẽ nhất của ý chí quân đội nhà Trần.</div>
+                </div>
+                <div class="cause-card economy">
+                    <div class="cause-title">🌾 Vườn không nhà trống</div>
+                    <div class="cause-text">Nhân dân tự nguyện rút lui, tiêu thổ kháng chiến, không để lại lương thực cho giặc — sự hy sinh và đồng lòng của toàn dân góp phần làm giặc kiệt quệ trước khi bị phản công.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIỄN BIẾN LỊCH SỬ -->
+        <div class="content-box">
+            <h2>📜 DIỄN BIẾN LỊCH SỬ</h2>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">1258 SCN</div>
+                    <div class="tl-title">Cuộc xâm lược lần thứ nhất</div>
+                    <div class="tl-text">Quân Mông Cổ tràn vào Đại Việt, chiếm kinh thành Thăng Long. Vua tôi nhà Trần thực hiện kế "vườn không nhà trống", rút lui bảo toàn lực lượng rồi phản công đánh bại quân giặc ngay trong năm đó.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1282</div>
+                    <div class="tl-title">Hội nghị Bình Than</div>
+                    <div class="tl-text">Trước nguy cơ Nguyên Mông xâm lược lần hai, triều đình nhà Trần triệu tập các vương hầu, tướng lĩnh để bàn kế sách đánh giặc — mở đầu cho tinh thần chuẩn bị toàn diện chống ngoại xâm.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot green"></div>
+                    <div class="tl-year">1285</div>
+                    <div class="tl-title">Hội nghị Diên Hồng — toàn dân quyết đánh</div>
+                    <div class="tl-text">Thượng hoàng Trần Thánh Tông triệu tập các bậc phụ lão trong cả nước về điện Diên Hồng hỏi ý kiến hòa hay đánh trước cuộc xâm lược lần thứ hai của Nguyên Mông. Muôn người đồng thanh hô "Đánh!" — khẳng định ý chí toàn dân tộc.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1285</div>
+                    <div class="tl-title">Kháng chiến lần thứ hai — phản công thắng lợi</div>
+                    <div class="tl-text">Dưới sự chỉ huy của Trần Hưng Đạo, quân dân Đại Việt kiên cường rút lui chiến lược rồi phản công dồn dập, giành các chiến thắng vang dội tại Chương Dương, Hàm Tử, Tây Kết, đánh bật quân Nguyên ra khỏi bờ cõi.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-year">1287 – 1288</div>
+                    <div class="tl-title">Cuộc xâm lược lần thứ ba</div>
+                    <div class="tl-text">Nguyên Mông huy động đại quân cùng đoàn thuyền lương lớn hòng dứt điểm Đại Việt. Trần Hưng Đạo tiếp tục vận dụng chiến lược rút lui, tiêu hao lực lượng địch, chờ thời cơ phản công quyết định.</div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot red"></div>
+                    <div class="tl-year">Tháng 4/1288</div>
+                    <div class="tl-title">Đại thắng Bạch Đằng — chôn vùi quân Nguyên</div>
+                    <div class="tl-text">Trần Hưng Đạo bố trí trận địa cọc ngầm trên sông Bạch Đằng, lợi dụng thủy triều nhử đoàn thuyền giặc vào bãi cọc rồi tổng phản công. Quân Nguyên đại bại, tướng Ô Mã Nhi bị bắt sống — chấm dứt hoàn toàn mưu đồ xâm lược của Nguyên Mông.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NHỮNG THÀNH TỰU -->
+        <div class="content-box">
+            <h2>🏆 THÀNH TỰU & DẤU ẤN</h2>
+            <p>
+                Hào khí Đông A đã để lại những dấu ấn sâu đậm trong lịch sử dân tộc — không chỉ về mặt quân sự mà còn về tư tưởng, văn hóa và tinh thần đoàn kết dân tộc.
+            </p>
+            <div class="achieve-grid">
+                <div class="achieve-card">
+                    <span class="achieve-icon">🛡️</span>
+                    <div class="achieve-title">Ba lần đánh bại đế quốc hùng mạnh nhất</div>
+                    <div class="achieve-text">Đại Việt là một trong số ít quốc gia trên thế giới ba lần đánh bại đế quốc Nguyên Mông — thế lực đã từng chinh phục Trung Hoa, Trung Á và tiến sâu vào châu Âu.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">⚓</span>
+                    <div class="achieve-title">Nghệ thuật quân sự trận địa cọc Bạch Đằng</div>
+                    <div class="achieve-text">Trận Bạch Đằng năm 1288 do Trần Hưng Đạo chỉ huy trở thành mẫu mực kinh điển về nghệ thuật lợi dụng địa hình, thủy triều để tiêu diệt hạm đội đối phương, được sử sách ghi nhận muôn đời.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">📜</span>
+                    <div class="achieve-title">Áng văn "Hịch tướng sĩ" bất hủ</div>
+                    <div class="achieve-text">Trần Hưng Đạo viết "Hịch tướng sĩ" khích lệ tinh thần tướng sĩ trước giặc ngoại xâm — áng văn chính luận kiệt xuất, sục sôi lòng yêu nước, còn lưu truyền đến ngày nay.</div>
+                </div>
+                <div class="achieve-card">
+                    <span class="achieve-icon">🤝</span>
+                    <div class="achieve-title">Biểu tượng đại đoàn kết toàn dân tộc</div>
+                    <div class="achieve-text">Hội nghị Diên Hồng và phong trào "Sát Thát" cho thấy sức mạnh chiến thắng không chỉ đến từ quân đội, mà từ sự đồng lòng của vua, quan, tướng sĩ và toàn thể nhân dân.</div>
+                </div>
+            </div>
+
+            <div class="quote-block" style="margin-top:20px;">
+                <p>Hào khí Đông A là kết tinh của tinh thần dân tộc thời Trần — nơi ý chí của một vị vua, một vị tướng và một cụ già áo vải đều hòa chung làm một trước vận mệnh giang sơn. Đó là bài học vượt thời gian về sức mạnh của sự đồng lòng.</p>
+                <span class="quote-source">— Nhận định của các nhà sử học Việt Nam hiện đại</span>
+            </div>
+        </div>
+
+        <!-- Ý NGHĨA -->
+        <div class="content-box">
+            <h2>💡 Ý NGHĨA LỊCH SỬ</h2>
+            <p>
+                Chiến thắng ba lần trước Nguyên Mông không chỉ bảo vệ vững chắc chủ quyền độc lập của Đại Việt, mà còn góp phần <span class="hl">chặn đứng vó ngựa xâm lược</span> đang đe dọa toàn bộ khu vực Đông Nam Á, gián tiếp bảo vệ hòa bình cho các quốc gia lân cận.
+            </p>
+            <p>
+                Hào khí Đông A đã đi vào thơ ca, sử sách như một khúc tráng ca bất tử về <span class="hl">sức mạnh đại đoàn kết dân tộc</span>. Đó không chỉ là chiến công quân sự, mà còn là minh chứng rằng một quốc gia nhỏ, nếu biết đồng lòng, hoàn toàn có thể đánh bại một đế chế khổng lồ.
+            </p>
+            <div class="quote-block">
+                <p>Từ Diên Hồng đến Bạch Đằng, hào khí ấy đã chứng minh: sức mạnh của một dân tộc không nằm ở quy mô lãnh thổ hay quân số, mà nằm ở ý chí thống nhất từ triều đình đến thôn xóm.</p>
+                <span class="quote-source">— Nhận định lịch sử Việt Nam</span>
+            </div>
+            <div class="lesson-box">
+                <div class="lesson-title">🔥 Ý nghĩa cái tên "Đông A"</div>
+                <div class="lesson-text">Từ một chữ chiết tự đơn thuần của họ Trần, "Đông A" đã vượt lên trở thành biểu tượng tinh thần của cả một thời đại — nơi khí phách của dòng họ hòa quyện với khí phách của cả dân tộc trong giờ phút sinh tử của đất nước.</div>
+            </div>
+            <div class="legacy-box" style="margin-top:14px;">
+                <div class="lesson-title">🏅 Di sản tinh thần</div>
+                <div class="lesson-text">Hào khí Đông A trở thành nguồn cảm hứng bất tận cho các thế hệ sau — từ tinh thần "Sát Thát" thời Trần đến các phong trào yêu nước về sau, tất cả đều mang chung một mạch nguồn: ý chí không khuất phục trước ngoại xâm.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="sidebar-box">
+            <h3>📋 THÔNG TIN CƠ BẢN</h3>
+            <table class="info-table">
+                <tr><td>Tên biểu tượng</td><td>Hào khí Đông A</td></tr>
+                <tr><td>Chiết tự</td><td>Đông (東) + A (阝) = Trần (陳)</td></tr>
+                <tr><td>Triều đại</td><td>Nhà Trần</td></tr>
+                <tr><td>Tổng chỉ huy</td><td>Trần Hưng Đạo</td></tr>
+                <tr><td>Thời gian</td><td>Thế kỷ XIII (1258 – 1288)</td></tr>
+                <tr><td>Kẻ thù</td><td>Đế quốc Nguyên Mông</td></tr>
+                <tr><td>Số lần xâm lược</td><td>3 (1258, 1285, 1288)</td></tr>
+                <tr><td>Trận quyết định</td><td>Bạch Đằng (1288)</td></tr>
+                <tr><td>Hội nghị tiêu biểu</td><td>Diên Hồng, Bình Than</td></tr>
+                <tr><td>Tác phẩm tiêu biểu</td><td>Hịch tướng sĩ</td></tr>
+            </table>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>🏛️ DI SẢN & DI TÍCH</h3>
+
+            <div class="heritage-card">
+                <img src="images/bachdanggiang.jpg" alt="Khu di tích Bạch Đằng Giang" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Khu di tích Bạch Đằng Giang — Hải Phòng</strong>
+                    <p>Nơi diễn ra trận thủy chiến Bạch Đằng năm 1288, gắn liền với chiến công của Trần Hưng Đạo. Di tích lịch sử cấp Quốc gia, lưu giữ dấu tích bãi cọc ngầm lừng danh.</p>
+                </div>
+            </div>
+
+            
+
+            <div class="heritage-card">
+                <img src="images/diendienhong.jpg" alt="Di tích Điện Diên Hồng" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Điện Diên Hồng — Thăng Long</strong>
+                    <p>Nơi diễn ra hội nghị Diên Hồng năm 1285, biểu tượng cho tinh thần dân chủ và đồng lòng của toàn dân tộc trước vận mệnh đất nước.</p>
+                </div>
+            </div>
+
+            <div class="heritage-card">
+                <img src="images/denatran.jpg" alt="Đền A Sào — Thái Bình" onerror="this.parentElement.style.display='none'">
+                <div class="heritage-content">
+                    <strong>Đền A Sào — Thái Bình</strong>
+                    <p>Gắn liền với căn cứ hậu cần quân lương của nhà Trần trong ba cuộc kháng chiến chống Nguyên Mông, nơi thờ Hưng Đạo Đại Vương và các tướng lĩnh nhà Trần.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sidebar-box">
+            <h3>👑 NHÂN VẬT LIÊN QUAN</h3>
+            <a href="chi-tiet-tran-hung-dao.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #6a3a1a;">🛡️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Trần Hưng Đạo</div>
+                    <div class="char-mini-desc">Quốc công Tiết chế, tổng chỉ huy kháng chiến</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-tran-thanh-tong.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #2a5a3a;">👑</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Trần Thánh Tông</div>
+                    <div class="char-mini-desc">Người triệu tập hội nghị Diên Hồng</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-tran-nhan-tong.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #5a4a7a;">🕊️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Trần Nhân Tông</div>
+                    <div class="char-mini-desc">Vua trực tiếp lãnh đạo kháng chiến 1285 & 1288</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+            <a href="chi-tiet-tran-quoc-toan.html" class="char-mini">
+                <div class="char-mini-avatar" style="background: #8a2a2a;">⚔️</div>
+                <div class="char-mini-info">
+                    <div class="char-mini-name">Trần Quốc Toản</div>
+                    <div class="char-mini-desc">Thiếu niên anh hùng với lá cờ "Phá cường địch"</div>
+                </div>
+                <span class="char-mini-arrow">›</span>
+            </a>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>✨ SỰ THẬT THÚ VỊ</h3>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🈷️</div>
+                <div class="legacy-text">
+                    <strong>Nguồn gốc chữ "Đông A"</strong>
+                    "Đông A" là chiết tự của chữ Trần (陳): ghép bộ Phụ (阝) và chữ Đông (東) lại thành họ Trần.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">✍️</div>
+                <div class="legacy-text">
+                    <strong>Hai chữ "Sát Thát"</strong>
+                    Hàng vạn binh sĩ nhà Trần tự nguyện xăm chữ "Sát Thát" lên tay, thể hiện quyết tâm giết giặc Mông Cổ đến cùng.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🗣️</div>
+                <div class="legacy-text">
+                    <strong>Tiếng hô Diên Hồng</strong>
+                    Hội nghị Diên Hồng 1285 quy tụ các bô lão cả nước — muôn người đồng thanh hô "Đánh!" khi được vua hỏi ý kiến.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">🌊</div>
+                <div class="legacy-text">
+                    <strong>Cọc ngầm Bạch Đằng</strong>
+                    Trần Hưng Đạo tái hiện chiến thuật của Ngô Quyền năm 938, bố trí bãi cọc ngầm nhấn chìm hạm đội Nguyên Mông năm 1288.
+                </div>
+            </div>
+
+            <div class="legacy-item">
+                <div class="legacy-icon">📖</div>
+                <div class="legacy-text">
+                    <strong>Hịch tướng sĩ</strong>
+                    Áng văn chính luận của Trần Hưng Đạo kêu gọi tướng sĩ luyện tập, cảnh giác trước giặc — vẫn được giảng dạy trong nhà trường đến ngày nay.
+                </div>
+            </div>
+        </div>
+
+        <a href="ly-tran.html" class="btn-back">← Quay lại Lý – Trần</a>
+
+    </div>
+</div>
+
+<footer>
+    <div class="footer-bottom">
+        <span>© 2025 Sử Việt. Bảo lưu mọi quyền.</span>
+        <span><a href="#">Chính sách</a> · <a href="#">Điều khoản</a></span>
+    </div>
+</footer>
+<script src="nav.js"></script>
+<script src="search-data.js"></script>
+<script src="search-engine.js"></script>
+</body>
+</html>

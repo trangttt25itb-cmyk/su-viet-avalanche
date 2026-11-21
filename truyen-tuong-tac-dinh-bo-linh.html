@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đinh Bộ Lĩnh — Từ Cờ Lau Đến Đế Vương | Sử Việt</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --gold:#c9920a;
+  --gold-l:#f4c542;
+  --gold-dim:#7a5a10;
+  --red:#8B0000;
+  --red-l:#c94040;
+  --bronze:#8B6914;
+  --jade:#1a6b4a;
+  --jade-l:#2aaa74;
+  --ink:#0a0603;
+  --parch:#f5ead6;
+  --parch-dim:rgba(245,234,214,0.75);
+  --parch-faint:rgba(245,234,214,0.4);
+  --bg:#060402;
+  --panel:rgba(15,9,3,0.95);
+}
+
+body{
+  font-family:'Crimson Pro',Georgia,serif;
+  background:var(--bg);
+  color:var(--parch);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.fire-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.fp{position:absolute;top:-20px;border-radius:50%;opacity:0;background:radial-gradient(circle,rgba(245,234,214,0.9),rgba(245,234,214,0.15) 70%);filter:blur(0.6px);animation:reedFall linear infinite;}
+@keyframes reedFall{
+  0%{opacity:0;transform:translateY(0) translateX(0) rotate(0deg);}
+  10%{opacity:.85;}
+  50%{transform:translateY(50vh) translateX(25px) rotate(180deg);}
+  90%{opacity:.4;}
+  100%{opacity:0;transform:translateY(105vh) translateX(-20px) rotate(360deg);}
+}
+
+.arrow-deco{position:fixed;pointer-events:none;z-index:0;font-size:16px;opacity:0;animation:arrowFly linear infinite;}
+@keyframes arrowFly{
+  0%{opacity:0;transform:translateX(-120px);}
+  10%{opacity:.5;}
+  90%{opacity:.2;}
+  100%{opacity:0;transform:translateX(calc(100vw + 120px));}
+}
+
+.ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 15%,rgba(201,146,10,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 80%,rgba(139,0,0,0.1) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 50% at 50% 100%,rgba(139,0,0,0.06) 0%,transparent 70%);
+}
+
+.bamboo-border{position:fixed;inset:0;pointer-events:none;z-index:1;}
+.bamboo-border::before,.bamboo-border::after{
+  content:'';position:absolute;top:0;bottom:0;width:6px;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(26,107,74,0.0) 0px,
+    rgba(26,107,74,0.0) 40px,
+    rgba(26,107,74,0.15) 40px,
+    rgba(26,107,74,0.15) 44px,
+    rgba(26,107,74,0.08) 44px,
+    rgba(26,107,74,0.08) 84px
+  );
+}
+.bamboo-border::before{left:10px;}
+.bamboo-border::after{right:10px;}
+
+.deco-corner{position:fixed;width:40px;height:40px;border-color:rgba(201,146,10,0.35);border-style:solid;z-index:2;pointer-events:none;}
+.deco-corner.tl{top:16px;left:20px;border-width:2px 0 0 2px;}
+.deco-corner.tr{top:16px;right:20px;border-width:2px 2px 0 0;}
+.deco-corner.bl{bottom:16px;left:20px;border-width:0 0 2px 2px;}
+.deco-corner.br{bottom:16px;right:20px;border-width:0 2px 2px 0;}
+
+.drum-stripe{
+  position:fixed;top:0;left:0;right:0;height:4px;z-index:300;
+  background:repeating-linear-gradient(90deg,#8B0000 0,#8B0000 20px,#c9920a 20px,#c9920a 24px,#8B0000 24px,#8B0000 44px);
+  opacity:.8;
+}
+
+nav{
+  position:fixed;top:4px;left:0;right:0;z-index:200;
+  background:rgba(6,4,2,0.97);
+  border-bottom:1px solid rgba(201,146,10,0.25);
+  padding:13px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(12px);
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-size:17px;color:var(--gold-l);
+  text-decoration:none;letter-spacing:3px;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo::before{content:'⚔';font-size:15px;}
+.nav-back{font-size:13px;color:var(--parch-faint);text-decoration:none;letter-spacing:1px;transition:color .3s;}
+.nav-left{display:flex;align-items:center;gap:16px;}
+.nav-back:hover{color:var(--gold-l);}
+.nav-mid{font-size:11px;color:var(--parch-faint);letter-spacing:1.5px;}
+
+.prog-bar{position:fixed;top:59px;left:0;right:0;z-index:199;height:3px;background:rgba(255,255,255,.04);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold),var(--gold-l));transition:width .8s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px rgba(201,146,10,.5);}
+
+.score-badge{
+  position:fixed;top:70px;right:24px;z-index:198;
+  background:rgba(6,4,2,0.95);
+  border:1px solid rgba(201,146,10,0.35);
+  border-radius:40px;padding:8px 18px;
+  display:flex;align-items:center;gap:12px;
+  font-size:13px;color:var(--parch-dim);
+  backdrop-filter:blur(12px);
+}
+.score-num{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-l);font-weight:700;min-width:34px;text-align:center;transition:transform .3s;}
+.score-num.bump{transform:scale(1.4);}
+.score-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);}
+
+.streak-badge{
+  position:fixed;top:70px;left:24px;z-index:198;
+  background:rgba(6,4,2,0.95);
+  border:1px solid rgba(201,146,10,0.25);
+  border-radius:40px;padding:8px 16px;
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--parch-dim);
+  backdrop-filter:blur(12px);
+  opacity:0;transform:translateX(-10px);transition:all .4s;
+}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(255,120,20,.7);}
+.streak-num{font-family:'Playfair Display',serif;font-size:19px;color:#ff9040;font-weight:700;}
+
+.power-bar{
+  position:fixed;bottom:20px;right:24px;left:auto;transform:none;
+  z-index:198;
+  background:rgba(6,4,2,0.95);
+  border:1px solid rgba(201,146,10,0.3);
+  border-radius:30px;padding:8px 20px;
+  display:flex;align-items:center;gap:12px;
+  backdrop-filter:blur(12px);
+  min-width:260px;
+}
+.power-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);white-space:nowrap;}
+.power-track{flex:1;height:7px;background:rgba(245,234,214,.07);border-radius:4px;overflow:hidden;}
+.power-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--red-l),var(--gold),var(--gold-l));transition:width .8s cubic-bezier(.4,0,.2,1);}
+.power-icon{font-size:18px;}
+
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(139,0,0,.4),rgba(10,6,3,.9));border:2px solid rgba(201,146,10,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(139,0,0,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(139,0,0,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(201,146,10,.5),0 0 130px rgba(139,0,0,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,58px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(139,0,0,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:520px;font-size:15.5px;line-height:1.85;color:var(--parch-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--red-l),var(--red));border:1px solid rgba(201,146,10,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(139,0,0,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(139,0,0,.5),0 0 40px rgba(201,146,10,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--parch-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:800px;margin:0 auto;padding:86px 24px 90px;position:relative;z-index:2;}
+
+/* TIMELINE — MỘT KHỐI DUY NHẤT, CẬP NHẬT BẰNG JS THAY VÌ LẶP LẠI TRONG TỪNG CHƯƠNG */
+.tl-fixed{max-width:800px;margin:0 auto;padding:70px 24px 0;position:relative;z-index:2;}
+.tl{display:flex;align-items:flex-start;gap:0;margin:14px 0 6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}
+.tl::-webkit-scrollbar{display:none;}
+.tl-item{flex:1;min-width:78px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(201,146,10,.3),rgba(201,146,10,.1));z-index:0;}
+.tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.tl-dot.done{background:var(--gold-dim);border:2px solid var(--gold);color:var(--ink);}
+.tl-dot.current{background:var(--red);border:2px solid var(--gold-l);color:#fff;animation:pulseRed 2s infinite;}
+@keyframes pulseRed{0%,100%{box-shadow:0 0 18px rgba(201,146,10,.5);}50%{box-shadow:0 0 30px rgba(201,146,10,.9),0 0 50px rgba(139,0,0,.4);}}
+.tl-dot.todo{background:rgba(245,234,214,.05);border:2px solid rgba(245,234,214,.15);color:var(--parch-faint);}
+.tl-year{font-size:10px;color:var(--gold-dim);margin-top:5px;text-align:center;}
+.tl-event{font-size:9.5px;color:var(--parch-faint);margin-top:2px;text-align:center;line-height:1.3;padding:0 3px;}
+
+.scene{display:none;}
+.scene.active{display:block;animation:fadeUp .6s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.chap{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.3);
+  border-radius:30px;padding:6px 18px;
+  font-size:12px;color:#d4a574;letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:22px;
+}
+
+.hero-img{
+  width:100%;height:280px;object-fit:cover;border-radius:14px;
+  margin-bottom:26px;
+  border:1px solid rgba(201,146,10,0.25);
+  box-shadow:0 20px 60px rgba(0,0,0,.85),0 0 0 1px rgba(201,146,10,.06);
+  filter:sepia(.2) contrast(1.08);
+  transition:filter .4s;
+}
+.hero-img:hover{filter:sepia(.08) contrast(1.12);}
+.hero-wrap{position:relative;margin-bottom:26px;}
+.hero-wrap .hero-img{margin-bottom:0;}
+.img-hint{position:absolute;bottom:8px;right:12px;z-index:2;font-size:9.5px;color:rgba(245,234,214,.55);font-family:monospace;background:rgba(0,0,0,.4);padding:3px 8px;border-radius:8px;}
+
+.edu-pill{
+  float:right;width:210px;margin:0 0 18px 22px;
+  background:rgba(201,146,10,0.07);border:1px solid rgba(201,146,10,0.25);
+  border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.7;color:var(--parch-dim);
+}
+.edu-pill .edu-tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;}
+
+.story{font-size:18.5px;line-height:1.95;color:rgba(245,234,214,.9);margin-bottom:16px;}
+.story em{color:#d4a574;font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+
+.dlg{
+  background:rgba(201,146,10,0.07);border-left:3px solid var(--gold-dim);
+  border-radius:0 12px 12px 0;padding:15px 20px;margin:20px 0;
+  font-style:italic;font-size:17.5px;line-height:1.75;color:var(--parch);position:relative;
+}
+.dlg::before{content:'"';position:absolute;top:-10px;left:12px;font-size:56px;color:rgba(201,146,10,.12);font-family:'Playfair Display',serif;line-height:1;}
+.dlg-who{font-size:11px;font-style:normal;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;}
+
+.fact{
+  background:rgba(139,0,0,0.1);border:1px solid rgba(139,0,0,0.28);
+  border-radius:12px;padding:17px 20px;margin:20px 0;
+  font-size:14.5px;line-height:1.8;color:var(--parch-dim);
+}
+.fact-tag{font-size:11px;color:#e57373;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;}
+
+.outcome{border-radius:14px;padding:20px;margin:20px 0;font-size:16.5px;line-height:1.8;}
+.outcome.bad{background:rgba(139,0,0,0.13);border:1px solid rgba(139,0,0,0.3);}
+.outcome.good{background:rgba(26,107,74,0.1);border:1px solid rgba(26,107,74,0.3);}
+.outcome.gold{background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.3);}
+.outcome-icon{font-size:30px;display:block;margin-bottom:8px;}
+
+.gate{
+  background:rgba(139,0,0,0.1);
+  border:2px solid rgba(201,146,10,0.35);
+  border-radius:16px;padding:24px 26px;margin:24px 0;text-align:center;
+}
+.gate-icon{font-size:44px;display:block;margin-bottom:12px;}
+.gate-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);margin-bottom:8px;}
+.gate-desc{font-size:15px;color:var(--parch-dim);line-height:1.7;margin-bottom:16px;}
+.gate-req{display:inline-block;background:rgba(139,0,0,0.2);border:1px solid rgba(201,146,10,0.3);border-radius:20px;padding:5px 16px;font-size:13px;color:var(--gold-l);margin-bottom:16px;}
+.gate-locked{pointer-events:none;opacity:0.5;}
+
+.unlock-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-top:14px;padding:13px 28px;
+  background:rgba(201,146,10,0.15);
+  border:1px solid rgba(201,146,10,0.4);
+  border-radius:12px;color:var(--gold-l);
+  font-family:'Crimson Pro',serif;font-size:17px;
+  cursor:pointer;transition:all .3s;
+  opacity:.4;pointer-events:none;
+}
+.unlock-btn.ready{opacity:1;pointer-events:auto;background:rgba(201,146,10,0.28);}
+.unlock-btn.ready:hover{background:rgba(201,146,10,0.45);transform:translateY(-2px);}
+
+.mq-progress{display:flex;gap:6px;margin-bottom:16px;justify-content:center;}
+.mq-dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(201,146,10,.5);background:transparent;transition:all .3s;}
+.mq-dot.done{background:var(--gold-l);}
+.mq-dot.current{background:var(--red-l);border-color:var(--red-l);}
+
+.challenge{
+  background:rgba(26,107,74,0.07);border:1px solid rgba(26,107,74,0.25);
+  border-radius:14px;padding:18px 22px;margin:18px 0;text-align:left;
+}
+.challenge-tag{font-size:11px;color:var(--jade-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;}
+.challenge-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.challenge-opts{display:flex;flex-direction:column;gap:7px;}
+.ch-opt{
+  background:rgba(245,234,214,.04);border:1px solid rgba(245,234,214,.12);
+  border-radius:8px;padding:10px 15px;
+  font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--parch);
+  cursor:pointer;text-align:left;transition:all .22s;
+}
+.ch-opt:hover:not(:disabled){background:rgba(26,107,74,.12);border-color:rgba(201,146,10,.35);transform:translateX(4px);}
+.ch-opt.correct{background:rgba(20,80,20,.3)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.ch-opt.wrong{background:rgba(139,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.ch-opt:disabled{cursor:default;}
+.ch-fb{margin-top:10px;font-size:14.5px;line-height:1.7;display:none;padding:10px 13px;border-radius:8px;}
+.ch-fb.show{display:block;}
+.ch-fb.ok{background:rgba(20,80,20,.18);color:#a5d6a7;}
+.ch-fb.no{background:rgba(139,0,0,.18);color:#ef9a9a;}
+
+.kc{
+  background:rgba(201,146,10,0.06);border:1px solid rgba(201,146,10,.2);
+  border-radius:14px;padding:18px 22px;margin:22px 0;
+}
+.kc-tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;}
+.kc-q{font-size:16.5px;font-weight:600;color:#fff;margin-bottom:13px;line-height:1.5;}
+.kc-opts{display:flex;flex-direction:column;gap:7px;}
+.kc-opt{
+  background:rgba(245,234,214,.04);border:1px solid rgba(245,234,214,.12);
+  border-radius:8px;padding:10px 15px;
+  font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--parch);
+  cursor:pointer;text-align:left;transition:all .22s;
+}
+.kc-opt:hover:not(:disabled){background:rgba(201,146,10,.1);border-color:rgba(201,146,10,.3);transform:translateX(4px);}
+.kc-opt.correct{background:rgba(20,80,20,.25)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.kc-opt.wrong{background:rgba(139,0,0,.25)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.kc-opt:disabled{cursor:default;}
+.kc-fb{margin-top:11px;font-size:14.5px;line-height:1.7;display:none;padding:10px 13px;border-radius:8px;}
+.kc-fb.show{display:block;}
+.kc-fb.ok{background:rgba(20,80,20,.15);color:#a5d6a7;}
+.kc-fb.no{background:rgba(139,0,0,.15);color:#ef9a9a;}
+
+.arrange-zone{display:flex;flex-direction:column;gap:7px;min-height:60px;margin:10px 0;}
+.arr-item{
+  background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.28);
+  border-radius:8px;padding:9px 13px;
+  font-family:'Crimson Pro',serif;font-size:14.5px;color:var(--parch);
+  cursor:grab;display:flex;align-items:center;gap:9px;user-select:none;transition:all .18s;
+}
+.arr-item:hover{background:rgba(201,146,10,0.18);transform:translateX(3px);}
+.arr-item.dragging{opacity:.5;cursor:grabbing;}
+.arr-handle{color:var(--gold-dim);font-size:11px;letter-spacing:1px;}
+.arr-check-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  margin-top:10px;padding:10px 20px;
+  background:rgba(26,107,74,0.28);border:1px solid rgba(26,107,74,0.5);
+  border-radius:9px;color:var(--jade-l);
+  font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;
+}
+.arr-check-btn:hover{background:rgba(26,107,74,0.45);}
+
+.fill-blank{margin:16px 0;}
+.fill-q{font-size:16px;font-weight:600;color:#fff;margin-bottom:12px;line-height:1.6;}
+.fill-q span.blank{
+  display:inline-block;min-width:80px;border-bottom:2px solid var(--gold-dim);
+  padding:2px 8px;color:var(--gold-l);font-style:italic;
+}
+.fill-input{
+  background:rgba(245,234,214,0.06);border:1px solid rgba(201,146,10,0.35);
+  border-radius:8px;padding:10px 14px;
+  font-family:'Crimson Pro',serif;font-size:15.5px;color:var(--parch);
+  width:100%;margin-bottom:10px;
+  transition:border-color .25s;
+  outline:none;
+}
+.fill-input:focus{border-color:rgba(201,146,10,.7);}
+.fill-submit{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 20px;
+  background:rgba(139,0,0,0.3);border:1px solid rgba(201,146,10,0.35);
+  border-radius:8px;color:var(--parch);
+  font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.25s;
+}
+.fill-submit:hover{background:rgba(139,0,0,.5);}
+
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;}
+.match-col{display:flex;flex-direction:column;gap:7px;}
+.match-item{
+  background:rgba(245,234,214,.04);border:1px solid rgba(245,234,214,.14);
+  border-radius:8px;padding:10px 13px;
+  font-family:'Crimson Pro',serif;font-size:14.5px;color:var(--parch);
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.match-item:hover:not(.matched):not(.selected){background:rgba(201,146,10,.08);border-color:rgba(201,146,10,.3);}
+.match-item.selected{background:rgba(201,146,10,.18);border-color:var(--gold)!important;color:var(--gold-l);}
+.match-item.matched{background:rgba(20,80,20,.25);border-color:#4caf50;color:#a5d6a7;cursor:default;}
+.match-item.wrong-match{background:rgba(139,0,0,.25);border-color:#e53935;color:#ef9a9a;}
+.match-check-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  margin-top:10px;padding:10px 20px;
+  background:rgba(201,146,10,0.2);border:1px solid rgba(201,146,10,0.4);
+  border-radius:9px;color:var(--gold-l);
+  font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;
+}
+.match-check-btn:hover{background:rgba(201,146,10,0.38);}
+
+.choices-label{
+  font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;
+  margin:32px 0 13px;display:flex;align-items:center;gap:10px;
+}
+.choices-label::before,.choices-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,146,10,.3),transparent);}
+.choices{display:flex;flex-direction:column;gap:11px;}
+.c-btn{
+  background:rgba(245,234,214,.03);border:1px solid rgba(245,234,214,.13);
+  border-radius:12px;padding:17px 20px;color:var(--parch);
+  font-family:'Crimson Pro',serif;font-size:16.5px;
+  text-align:left;cursor:pointer;transition:all .28s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:flex-start;gap:13px;line-height:1.5;
+  position:relative;overflow:hidden;
+}
+.c-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,146,10,.05),transparent);opacity:0;transition:opacity .3s;}
+.c-btn:hover{background:rgba(201,146,10,0.08);border-color:rgba(201,146,10,.42);transform:translateX(7px);box-shadow:0 4px 18px rgba(0,0,0,.3),-4px 0 0 rgba(201,146,10,.4);}
+.c-btn:hover::before{opacity:1;}
+.c-letter{
+  width:29px;height:29px;min-width:29px;border-radius:50%;
+  background:rgba(201,146,10,.1);border:1px solid var(--gold-dim);
+  color:var(--gold);font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;flex-shrink:0;margin-top:2px;transition:all .3s;
+}
+.c-btn:hover .c-letter{background:rgba(201,146,10,.22);border-color:var(--gold-l);}
+.c-sub{font-size:12.5px;color:var(--parch-faint);font-style:italic;margin-top:4px;}
+
+.legend-moment{
+  text-align:center;padding:28px;
+  background:rgba(201,146,10,0.07);border:1px solid rgba(201,146,10,0.24);
+  border-radius:16px;margin:26px 0;
+  font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);
+  line-height:1.75;font-style:italic;
+}
+.legend-moment .legend-icon{font-size:46px;display:block;margin-bottom:10px;}
+
+.trivia-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(201,146,10,0.1);border:1px solid rgba(201,146,10,0.22);
+  border-radius:20px;padding:4px 11px;font-size:12px;color:var(--gold-l);margin:3px 3px 3px 0;
+}
+
+.pts-popup{
+  position:fixed;top:80px;right:90px;z-index:999;
+  font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);font-weight:700;
+  pointer-events:none;opacity:0;
+  text-shadow:0 0 18px rgba(201,146,10,.8);
+}
+.pts-popup.show{animation:popUp .9s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{
+  0%{opacity:0;transform:translateY(0) scale(.8);}
+  30%{opacity:1;transform:translateY(-18px) scale(1.2);}
+  70%{opacity:1;transform:translateY(-32px) scale(1);}
+  100%{opacity:0;transform:translateY(-48px) scale(.9);}
+}
+
+.combo-burst{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  z-index:998;pointer-events:none;font-family:'Playfair Display',serif;text-align:center;opacity:0;
+}
+.combo-burst.pop{animation:comboPop .85s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0);}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}
+  70%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.05);}
+}
+.combo-inner{background:rgba(6,4,2,.96);border:2px solid var(--gold-l);border-radius:18px;padding:18px 34px;}
+.combo-title{font-size:12px;color:var(--jade-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:30px;color:var(--gold-l);line-height:1.2;}
+.combo-pts{font-size:13px;color:rgba(245,234,214,0.55);margin-top:4px;}
+
+#advisorBox{
+  position:fixed;bottom:60px;left:24px;z-index:500;max-width:272px;
+  background:rgba(6,4,2,0.97);border:1px solid rgba(201,146,10,0.45);
+  border-radius:16px 16px 16px 4px;padding:15px 17px 13px;
+  opacity:0;transform:translateY(18px) scale(.96);
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+#advisorBox.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+.adv-avatar{font-size:28px;display:block;margin-bottom:5px;}
+.adv-name{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.adv-text{font-size:13.5px;line-height:1.65;color:var(--parch-dim);font-style:italic;}
+.adv-close{position:absolute;top:9px;right:11px;background:none;border:none;color:var(--parch-faint);font-size:15px;cursor:pointer;padding:2px 5px;transition:color .2s;}
+.adv-close:hover{color:var(--parch);}
+
+#fxCanvas{position:fixed;inset:0;pointer-events:none;z-index:997;}
+
+.final{text-align:center;padding:38px 0;}
+.final-seal{
+  width:130px;height:130px;border-radius:50%;
+  background:rgba(201,146,10,.09);border:2px solid var(--gold-dim);
+  margin:0 auto 22px;display:flex;align-items:center;justify-content:center;
+  font-size:50px;animation:sealGlow 3s ease-in-out infinite;
+}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 38px rgba(201,146,10,.18);}50%{box-shadow:0 0 65px rgba(201,146,10,.45),0 0 30px rgba(139,0,0,.2);}}
+.final-h{font-family:'Playfair Display',serif;font-size:31px;color:var(--gold-l);margin-bottom:11px;line-height:1.3;}
+.final-pts{font-size:50px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:11px 0;text-shadow:0 0 28px rgba(201,146,10,.5);}
+.final-rank{display:inline-block;background:rgba(201,146,10,.1);border:1px solid rgba(201,146,10,.32);border-radius:30px;padding:6px 22px;font-size:14px;color:#d4a574;margin-bottom:22px;letter-spacing:1px;}
+.final-desc{font-size:16.5px;color:var(--parch-dim);line-height:1.9;max-width:520px;margin:0 auto 28px;}
+.final-lesson{background:rgba(201,146,10,.06);border:1px solid rgba(201,146,10,.2);border-radius:14px;padding:20px 24px;text-align:left;margin:0 0 32px;font-size:15.5px;line-height:1.85;color:var(--parch-dim);}
+.fl-tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px;display:block;}
+.achievements{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px;}
+.ach-card{background:rgba(201,146,10,0.07);border:1px solid rgba(201,146,10,0.26);border-radius:11px;padding:11px 14px;text-align:center;min-width:96px;animation:achIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ach-card.locked{opacity:.28;filter:grayscale(1);}
+@keyframes achIn{from{opacity:0;transform:translateY(18px) scale(.8);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ach-icon{font-size:26px;display:block;margin-bottom:5px;}
+.ach-name{font-size:10.5px;color:var(--gold-l);letter-spacing:.8px;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+.btn-restart{padding:12px 26px;background:transparent;border:1px solid var(--gold-dim);border-radius:10px;color:#d4a574;font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;}
+.btn-restart:hover{background:rgba(201,146,10,.14);}
+.btn-home{padding:12px 26px;background:rgba(139,0,0,.55);border:1px solid rgba(201,146,10,.28);border-radius:10px;color:var(--parch);font-family:'Crimson Pro',serif;font-size:15.5px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:7px;}
+.btn-home:hover{background:var(--red);}
+
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+.nav-map-btn{background:transparent;border:1px solid rgba(201,146,10,.32);border-radius:50%;width:34px;height:34px;color:var(--gold-l);cursor:pointer;font-size:15px;}
+.ref-overlay{position:fixed;inset:0;background:rgba(2,1,0,.86);z-index:9980;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;backdrop-filter:blur(5px);overflow-y:auto;}
+.ref-overlay.show{display:flex;}
+.ref-panel{background:radial-gradient(ellipse at 10% 0%,rgba(139,0,0,.1),transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(201,146,10,.08),transparent 55%),var(--panel);border:1px solid rgba(201,146,10,.35);border-radius:20px;max-width:760px;width:100%;padding:34px 38px 40px;box-shadow:0 40px 100px rgba(0,0,0,.7);margin-bottom:40px;}
+.ref-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+.ref-panel-close{background:rgba(201,146,10,.14);border:1px solid rgba(201,146,10,.35);color:var(--gold-l);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;flex-shrink:0;}
+
+/* NGUỒN THAM KHẢO — khối tĩnh mới thêm, dùng lại tông màu sẵn có */
+.ref-page{background:rgba(139,0,0,0.06);border:1px solid rgba(201,146,10,0.22);border-radius:16px;padding:24px 26px;margin:14px 0 0;text-align:left;}
+.ref-page-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);margin-bottom:6px;}
+.ref-page-sub{font-size:12.5px;color:var(--parch-faint);margin-bottom:16px;line-height:1.6;}
+.ref-group{margin-bottom:14px;}
+.ref-group-h{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:#d4a574;margin-bottom:8px;}
+.ref-item{font-size:13.5px;line-height:1.8;color:var(--parch-dim);padding-left:16px;position:relative;margin-bottom:5px;}
+.ref-item::before{content:'—';position:absolute;left:0;color:var(--gold-dim);}
+
+@media(max-width:640px){
+  nav{padding:11px 14px;}
+  .wrap{padding:76px 13px 80px;}
+  .tl-fixed{padding:0 13px;}
+  .edu-pill{float:none;width:100%;margin:0 0 14px;}
+  .hero-img{height:200px;}
+  .story{font-size:17px;}
+  .match-wrap{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="fxCanvas"></canvas>
+<div class="drum-stripe"></div>
+<div class="fire-particles" id="fireParticles"></div>
+<div class="ambient"></div>
+<div class="bamboo-border"></div>
+<div class="deco-corner tl"></div>
+<div class="deco-corner tr"></div>
+<div class="deco-corner bl"></div>
+<div class="deco-corner br"></div>
+<div class="pts-popup" id="ptsPopup">+0</div>
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:297;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red-l),var(--red));
+  border:2px solid rgba(201,146,10,.55);color:#fff;font-size:22px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(139,0,0,.45);
+  align-items:center;justify-content:center;opacity:.85;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:297;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red-l),var(--red));
+  border:2px solid rgba(201,146,10,.55);color:#fff;font-size:22px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(139,0,0,.45);
+  align-items:center;justify-content:center;opacity:.85;">➡</button>
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Hào Khí Hoa Lư!</div>
+    <div class="combo-label" id="comboLabel">⚡ COMBO x3</div>
+    <div class="combo-pts" id="comboPtsLabel">+điểm thưởng!</div>
+  </div>
+</div>
+
+<div class="streak-badge" id="streakBadge">
+  <span>🔥</span>
+  <div>
+    <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim)">Streak</div>
+    <div class="streak-num" id="streakNum">0</div>
+  </div>
+</div>
+
+<div id="advisorBox">
+  <button class="adv-close" onclick="closeAdvisor()">✕</button>
+  <span class="adv-avatar">🪖</span>
+  <div class="adv-name">Đinh Điền — Cố Vấn</div>
+  <div class="adv-text" id="advisorText">Chúa công, thiên hạ đang loạn. Người có khí phách — nhưng cần cả trí mưu lẫn dũng cảm.</div>
+</div>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=X">← Quay lại</a>
+    <a class="nav-logo" href="cau-chuyen.html">SỬ VIỆT</a>
+  </div>
+  <div class="nav-mid">ĐINH BỘ LĨNH — TỪ CỜ LAU ĐẾN ĐẾ VƯƠNG (9 CHƯƠNG)</div>
+  <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+</nav>
+<div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+<div class="score-badge">
+  <div><div class="score-title">Điểm</div><div class="score-num" id="scoreNum">0</div></div>
+  <div><div class="score-title">Danh hiệu</div><div id="scoreRank" style="font-size:12px;color:#d4a574;">—</div></div>
+</div>
+<div class="power-bar">
+  <span class="power-icon">👑</span>
+  <span class="power-label">Thiên Mệnh</span>
+  <div class="power-track"><div class="power-fill" id="powerFill" style="width:0%"></div></div>
+  <span id="powerPct" style="font-size:12px;color:var(--gold-l);min-width:28px;text-align:right;">0%</span>
+</div>
+
+<!-- TIMELINE CỐ ĐỊNH — cập nhật bằng JS mỗi khi sang chương -->
+<div class="tl-fixed"><div class="tl" id="tlWrap"></div></div>
+
+<div class="wrap">
+
+<!-- ══════ COVER MỞ ĐẦU ══════ -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">👑</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">ĐINH BỘ LĨNH<br>Từ Cờ Lau Đến Đế Vương</div>
+    <div class="cover-sub">Năm ~924 — 979 · Đinh Tiên Hoàng Đế</div>
+    <div class="cover-desc">Ngươi là Đinh Bộ Lĩnh — cậu bé chăn trâu đất Hoa Lư dấy nghiệp dẹp loạn 12 sứ quân, thống nhất giang sơn sau 25 năm cát cứ, lập nên Đại Cồ Việt — nhà nước phong kiến độc lập đầu tiên của Việt Nam. Một hành trình 9 chương về ý chí, mưu lược và khát vọng đế vương.</div>
+    <div class="cover-chips">
+      <span class="chip">👑 9 chương</span>
+      <span class="chip">🎓 Kiến thức + Thử thách</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">👑 Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ══════ CHƯƠNG 1 — CỜ LAU ══════ -->
+<div class="scene" id="s1">
+  <div class="chap">🌾 Chương 1 · ~924–944 — Cậu Bé Cờ Lau</div>
+  <img class="hero-img" src="images/dinh-bo-linh-chan-trau.jpg" onerror="this.style.display='none'" alt="Đinh Bộ Lĩnh tuổi thơ" style="object-fit:contain;height:auto;">
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">📚 Bối cảnh lịch sử</span>
+      Năm 938: Ngô Quyền đánh bại quân Nam Hán trên sông Bạch Đằng — Việt Nam thoát Bắc thuộc sau 1000 năm. Nhưng năm 944, Ngô Quyền mất — đất nước lập tức rơi vào <strong>Loạn 12 Sứ Quân</strong>, cát cứ hơn 20 năm.
+    </div>
+    Ngươi là <strong>Đinh Bộ Lĩnh</strong> — sinh ra ở vùng núi Hoa Lư, Ninh Bình. Cha là nha tướng của Ngô Quyền, mất sớm. Mẹ tần tảo nuôi con. Từ nhỏ, ngươi đã <em>khác thường</em> — không chịu ngồi yên, không thích phục tùng.
+  </div>
+
+  <div class="story reveal">
+    Những buổi chiều chăn trâu trên đồng Hoa Lư, ngươi <strong>bẻ bông lau làm cờ hiệu</strong>, sai lũ bạn chắp tay đứng hai hàng, tập trận giả. Lũ trẻ chẳng hiểu sao lại nghe lời ngươi — nhưng chúng nghe. Đó là <em>thiên phú lãnh đạo</em> không ai dạy được.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Người mẹ — nhìn con với ánh mắt vừa lo vừa tự hào</div>
+    "Bộ Lĩnh ơi, con không lo chăn trâu mà cứ tập trận mãi. Nhưng mẹ thấy... con có cái gì đó rất khác. Cái gì đó lớn hơn đám trẻ chăn trâu này nhiều lắm..."
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức khởi đầu</span>
+    <div class="kc-q">Đinh Bộ Lĩnh là người khai sáng triều đại nào trong lịch sử Việt Nam?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">A. Nhà Tiền Lê</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1')">B. Nhà Đinh</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">C. Nhà Ngô</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1')">D. Nhà Lý</button>
+    </div>
+    <div class="kc-fb" id="kc1-fb"></div>
+  </div>
+
+  <div class="choices-label reveal">⚡ Khi bạn bè hỏi tại sao cứ tập trận giả, bạn trả lời...</div>
+  <div class="choices reveal">
+    <button class="c-btn" onclick="go('s1A',18)">
+      <span class="c-letter">A</span>
+      <div>"Vì ta sẽ là người thống nhất đất nước này. Bây giờ ta tập — mai ta thật!"<div class="c-sub">Khí phách của bậc đế vương — đây chính là Đinh Bộ Lĩnh!</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s1B',5)">
+      <span class="c-letter">B</span>
+      <div>"Chỉ là trò chơi thôi, chán thì thôi..."<div class="c-sub">Thiếu quyết tâm — bỏ lỡ thiên mệnh...</div></div>
+    </button>
+    <button class="c-btn" onclick="go('s1C',10)">
+      <span class="c-letter">C</span>
+      <div>"Ta muốn học cách chỉ huy — để sau này bảo vệ dân làng khỏi loạn lạc."<div class="c-sub">Tâm thiện, nhưng tầm nhìn chưa đủ lớn...</div></div>
+    </button>
+  </div>
+</div>
+
+<div class="scene" id="s1A">
+  <div class="chap">⭐ Lựa chọn A · Thiên Mệnh Đế Vương</div>
+  <img class="hero-img" src="images/hoa-lu-phong-canh.jpg" onerror="this.style.display='none'" alt="Hoa Lư" style="object-fit:contain;height:auto;">
+  <div class="outcome gold">
+    <span class="outcome-icon">🌾</span>
+    <strong>Đây chính là Đinh Bộ Lĩnh trong lịch sử!</strong> <em>Đại Việt Sử Ký Toàn Thư</em> chép: "Đinh Bộ Lĩnh hồi nhỏ thường cùng bọn trẻ chăn trâu, bắt bọn trẻ chắp tay làm hầu hai bên, rồi lấy bông lau làm cờ tập trận giả." — Trò chơi thuở nhỏ trở thành trường luyện đế vương!
+  </div>
+  <div class="fact">
+    <span class="fact-tag">📖 Sự thật lịch sử</span>
+    Đinh Bộ Lĩnh sinh khoảng năm 924 tại Hoa Lư (Ninh Bình). Cha là Đinh Công Trứ — nha tướng của Dương Đình Nghệ và sau là của Ngô Quyền. Khi cha mất, cậu bé Bộ Lĩnh ở với chú ruột, lớn lên trong vùng núi hiểm trở Hoa Lư — chính địa thế này sau này sẽ trở thành kinh đô bất khả xâm phạm.
+    <div style="margin-top:9px;">
+      <span class="trivia-chip">🏔️ Hoa Lư núi non</span>
+      <span class="trivia-chip">🌾 Cờ lau tập trận</span>
+      <span class="trivia-chip">⚔️ Năm ~924</span>
+    </div>
+  </div>
+  <div class="choices-label">⚡ Tiếp tục hành trình...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s1x',0)"><span class="c-letter">→</span><div>Chương 2 — Chú ruột nghi kỵ, buộc phải rời Hoa Lư đi tìm minh chủ...</div></button>
+  </div>
+</div>
+
+<div class="scene" id="s1B">
+  <div class="chap">📍 Lựa chọn B · Bỏ Lỡ Thiên Mệnh</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span><strong>Đinh Bộ Lĩnh không bao giờ từ bỏ!</strong> Chính những buổi tập luyện không ngừng từ nhỏ đã tôi luyện nên vị hoàng đế tương lai. Không có ý chí — không có thiên mệnh.</div>
+  <div class="choices-label">⚡ Thử lại với khí phách hơn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1A',8)"><span class="c-letter">→</span><div>"Không! Trong lòng ta đang sôi sục điều gì đó không thể nào dập tắt được!"</div></button></div>
+</div>
+
+<div class="scene" id="s1C">
+  <div class="chap">📍 Lựa chọn C · Tầm Nhìn Chưa Đủ Lớn</div>
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Tốt lòng — nhưng <strong>Đinh Bộ Lĩnh hướng đến điều lớn hơn cả dân làng</strong>. Khi đất nước tan vỡ, chỉ bảo vệ một góc nhỏ thôi chưa đủ. Cần một người dám gánh cả giang sơn!</div>
+  <div class="choices-label">⚡ Mở rộng tầm nhìn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1A',8)"><span class="c-letter">→</span><div>"Ta phải làm được nhiều hơn thế — cả đất nước này đang chờ người cứu!"</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 2 — BỐ HẢI KHẨU (MỚI) ══════ -->
+<div class="scene" id="s1x">
+  <div class="chap">⛵ Chương 2 · ~944–950 — Nương Nhờ Trần Minh Công</div>
+  <img class="hero-img" src="images/bo-hai-khau-song-nuoc.jpg" onerror="this.style.display='none'" alt="Bố Hải Khẩu">
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">📚 Bước ngoặt bắt buộc</span>
+      Thấy cháu ngày càng có uy tín và lực lượng riêng, người chú nuôi dưỡng Bộ Lĩnh sinh nghi kỵ, trở mặt. Đinh Bộ Lĩnh buộc phải dẫn con trai Đinh Liễn cùng thân tín rời Hoa Lư.
+    </div>
+    Ngươi tìm đến <strong>Trần Minh Công</strong> (Trần Lãm) — một sứ quân có thế lực đang trấn giữ vùng <em>Bố Hải Khẩu</em> (Thái Bình ngày nay). Ông đã già, các con không đủ tài gánh vác cơ nghiệp.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Trần Minh Công — khi mới gặp Đinh Bộ Lĩnh</div>
+    "Ta đã già, các con ta đều không đủ tài để gánh vác cơ nghiệp này. Nhìn ngươi, ta thấy có khí chất của kẻ làm chủ chứ không phải kẻ làm tôi."
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Bước đi khôn ngoan</span>
+    Trần Minh Công trọng dụng, giao binh quyền cho Đinh Bộ Lĩnh — coi như người kế tục sự nghiệp. Đây không phải hèn kém mà là bước đi chiến lược: <strong>tích lũy binh lực từ bên trong</strong> trước khi tách ra hành động độc lập, thay vì đối đầu ngay từ đầu với hàng chục sứ quân khác.
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Trước khi tự gây dựng lực lượng riêng, Đinh Bộ Lĩnh từng nương nhờ và phục vụ dưới trướng ai?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1x')">A. Ngô Xương Xí</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1x')">B. Trần Minh Công (Trần Lãm), sứ quân ở Bố Hải Khẩu</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1x')">C. Kiều Công Hãn</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1x')">D. Phạm Bạch Hổ</button>
+    </div>
+    <div class="kc-fb" id="kc1x-fb"></div>
+  </div>
+
+  <div class="choices-label reveal">⚡ Khi Trần Minh Công trao binh quyền, bạn sẽ...</div>
+  <div class="choices reveal">
+    <button class="c-btn" onclick="go('s1xA',18)"><span class="c-letter">A</span><div>Nhận lời phục vụ hết lòng, dùng thời gian này để rèn quân và xây dựng uy tín.<div class="c-sub">⭐ Đúng với con đường lịch sử — kiên nhẫn tích lũy trước khi vươn lên!</div></div></button>
+    <button class="c-btn" onclick="go('s1xB',6)"><span class="c-letter">B</span><div>Từ chối, lập tức tách ra xưng hùng riêng dù lực lượng còn quá mỏng.<div class="c-sub">Táo bạo nhưng liều lĩnh — dễ bị các sứ quân khác tiêu diệt sớm...</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s1xA">
+  <div class="chap">⭐ Lựa chọn A · Tích Lũy Khôn Ngoan</div>
+  <div class="outcome gold"><span class="outcome-icon">⚔️</span><strong>Đây là bước đi thực tế đã xảy ra!</strong> Dưới trướng Trần Minh Công, Đinh Bộ Lĩnh được trao binh quyền, từng bước xây dựng uy tín và lực lượng riêng — nền móng cho cơ nghiệp sau này.</div>
+  <div class="fact reveal"><span class="fact-tag">💡 Bước ngoặt</span>Sau khi Trần Minh Công qua đời, Đinh Bộ Lĩnh mang theo lực lượng đã gây dựng được, đưa Đinh Liễn cùng thân tín quay trở về Hoa Lư — nơi ông am hiểu địa thế hơn ai hết — để gây dựng cơ nghiệp riêng.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1y',0)"><span class="c-letter">→</span><div>Chương 3 — Trở Về Hoa Lư, Dựng Cờ Riêng</div></button></div>
+</div>
+
+<div class="scene" id="s1xB">
+  <div class="chap">📍 Lựa chọn B · Quá Vội Vàng</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Với lực lượng còn quá nhỏ, xưng hùng ngay lập tức là con đường dẫn đến diệt vong nhanh chóng trước các sứ quân đã có căn cứ vững chắc. <strong>Đinh Bộ Lĩnh trong lịch sử chọn con đường tích lũy trước.</strong></div>
+  <div class="choices-label">⚡ Học cách kiên nhẫn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1xA',8)"><span class="c-letter">→</span><div>"Ta sẽ chờ thời — sức mạnh thật sự cần được nuôi dưỡng, không thể vội vàng."</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 3 — VỀ HOA LƯ (MỚI) ══════ -->
+<div class="scene" id="s1y">
+  <div class="chap">🏔️ Chương 3 · ~951–960 — Về Hoa Lư, Dựng Cờ Riêng</div>
+  <img class="hero-img" src="images/hoa-lu-nui-non-hiem-tro.jpg" onerror="this.style.display='none'" alt="Hoa Lư núi non">
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">🏔️ Địa thế Hoa Lư</span>
+      Hoa Lư được bao bọc bởi những dãy núi đá vôi trùng điệp, sông suối chằng chịt — một "thành lũy tự nhiên" mà không kinh đô đồng bằng nào sánh được.
+    </div>
+    Trở về quê hương, Đinh Bộ Lĩnh nhanh chóng thu phục được hai nhân vật sẽ trở thành cánh tay phải đắc lực nhất đời mình: <strong>Nguyễn Bặc</strong> và <strong>Đinh Điền</strong>. Quân đội ngày một đông, danh tiếng "người đứng đầu Hoa Lư" lan xa.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Nguyễn Bặc — bái kiến Đinh Bộ Lĩnh</div>
+    "Chúa công, chúng tôi theo người không phải vì người có nhiều quân nhất trong 12 sứ quân — mà vì người là kẻ duy nhất dám nói thẳng: sẽ dẹp hết loạn lạc này, không chia phần, không thỏa hiệp nửa vời."
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Hai vị tướng nào gắn bó và trung thành với Đinh Bộ Lĩnh ngay từ những ngày đầu gây dựng lực lượng ở Hoa Lư?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1y')">A. Lê Hoàn và Phạm Bạch Hổ</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc1y')">B. Nguyễn Bặc và Đinh Điền</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1y')">C. Ngô Xương Xí và Kiều Công Hãn</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc1y')">D. Đỗ Thích và Trần Lãm</button>
+    </div>
+    <div class="kc-fb" id="kc1y-fb"></div>
+  </div>
+
+  <div class="choices-label reveal">⚡ Chọn nơi đặt căn cứ...</div>
+  <div class="choices reveal">
+    <button class="c-btn" onclick="go('s1yA',18)"><span class="c-letter">A</span><div>Chọn Hoa Lư hiểm trở làm căn cứ, chấp nhận đất đai không màu mỡ để đổi lấy an toàn tuyệt đối.<div class="c-sub">⭐ Đúng lịch sử! Đây là quyết định mang tính chiến lược của Đinh Bộ Lĩnh.</div></div></button>
+    <button class="c-btn" onclick="go('s1yB',6)"><span class="c-letter">B</span><div>Chuyển sang vùng đồng bằng trù phú hơn để dễ nuôi quân, bất chấp khó phòng thủ.<div class="c-sub">Giàu có hơn trước mắt, nhưng dễ bị các sứ quân mạnh tấn công...</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s1yA">
+  <div class="chap">⭐ Lựa chọn A · Lợi Thế Địa Hình</div>
+  <div class="outcome gold"><span class="outcome-icon">🏔️</span><strong>Chính xác!</strong> Hoa Lư trở thành căn cứ bất khả xâm phạm trong suốt những năm chinh chiến — và sau này còn được chọn làm kinh đô đầu tiên của nhà nước phong kiến độc lập Việt Nam.</div>
+  <div class="fact reveal"><span class="fact-tag">💡 Tầm nhìn xa</span>Quyết định này không chỉ phục vụ mục tiêu phòng thủ trước mắt, mà còn đặt nền móng lâu dài: nhiều năm sau, Hoa Lư chính thức trở thành kinh đô của Đại Cồ Việt.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2',0)"><span class="c-letter">→</span><div>Chương 4 — Năm 944–965: Dẹp 12 Sứ Quân</div></button></div>
+</div>
+
+<div class="scene" id="s1yB">
+  <div class="chap">📍 Lựa chọn B · Rủi Ro Phòng Thủ</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Đồng bằng trù phú dễ bị các sứ quân mạnh hơn nhòm ngó, tấn công trực diện. <strong>Đinh Bộ Lĩnh trong lịch sử giữ vững Hoa Lư suốt cuộc chinh chiến</strong> — sự an toàn ấy giúp ông rảnh tay tính kế đánh dẹp từng sứ quân một.</div>
+  <div class="choices-label">⚡ Giữ vững căn cứ...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s1yA',8)"><span class="c-letter">→</span><div>"Không — nền tảng vững chắc quan trọng hơn sự giàu có nhất thời!"</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 4 — DẸP LOẠN 12 SỨ QUÂN (GỐC, giữ nguyên minigame kéo-thả) ══════ -->
+<div class="scene" id="s2">
+  <div class="chap">⚔️ Chương 4 · Năm 944–965 — Dẹp Loạn 12 Sứ Quân</div>
+
+  <div class="gate" id="gate2">
+    <span class="gate-icon">🏹</span>
+    <div class="gate-title">Cửa Ải Chiến Trường</div>
+    <div class="gate-desc">Trước khi ra trận, một vị chủ tướng phải thấu hiểu thế cục. Trả lời đúng <strong>3 câu hỏi liên tiếp</strong> về 12 sứ quân để dẫn quân vào chương này!</div>
+    <div class="gate-req">⚔️ Cần đúng 3/3 — Sai quá 1 lần sẽ bị trừ điểm!</div>
+
+    <div class="mq-progress">
+      <div class="mq-dot current" id="mqd2-0"></div>
+      <div class="mq-dot" id="mqd2-1"></div>
+      <div class="mq-dot" id="mqd2-2"></div>
+    </div>
+
+    <div class="challenge" id="mq2-0">
+      <span class="challenge-tag">🗡 Câu 1/3 — Bối Cảnh</span>
+      <div class="challenge-q">Loạn 12 Sứ Quân xảy ra sau sự kiện gì khiến đất nước mất chỗ dựa?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,2,0)">A. Sau khi quân Nam Hán xâm lược lần hai</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,2,0)">B. Sau khi Ngô Quyền mất năm 944, không ai đủ sức thống nhất quyền lực</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,2,0)">C. Sau khi Đinh Bộ Lĩnh từ chối làm vua</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,2,0)">D. Sau thất bại của nhà Ngô trước người Chăm</button>
+      </div>
+      <div class="ch-fb" id="mq2fb-0"></div>
+    </div>
+
+    <div class="challenge" id="mq2-1" style="display:none">
+      <span class="challenge-tag">🗡 Câu 2/3 — Nhân Vật</span>
+      <div class="challenge-q">Sứ quân nào mạnh nhất và khó đánh nhất mà Đinh Bộ Lĩnh phải đối phó?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,2,1)">A. Kiều Công Hãn</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,2,1)">B. Nguyễn Khoan</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,2,1)">C. Ngô Xương Xí — người cuối cùng chịu khuất phục năm 966</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,2,1)">D. Phạm Bạch Hổ</button>
+      </div>
+      <div class="ch-fb" id="mq2fb-1"></div>
+    </div>
+
+    <div class="challenge" id="mq2-2" style="display:none">
+      <span class="challenge-tag">🗡 Câu 3/3 — Chiến Lược</span>
+      <div class="challenge-q">Chiến lược cốt lõi của Đinh Bộ Lĩnh khi dẹp 12 sứ quân là gì?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,2,2)">A. Tấn công đồng loạt tất cả cùng lúc để gây bất ngờ</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,2,2)">B. Đánh kẻ yếu trước, chiêu hàng kẻ khôn, cô lập kẻ mạnh — từng bước một</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,2,2)">C. Nhờ nhà Tống ở phương Bắc hỗ trợ quân sự</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,2,2)">D. Chờ các sứ quân đánh nhau kiệt sức rồi mới ra tay</button>
+      </div>
+      <div class="ch-fb" id="mq2fb-2"></div>
+    </div>
+
+    <button class="unlock-btn" id="gate2-unlock" onclick="unlockGate('s2-content','gate2')">⚔️ Ra Trận — Mở Chương 4</button>
+  </div>
+
+  <div id="s2-content" class="gate-locked">
+    <img class="hero-img" src="images/loan-12-su-quan.jpg" onerror="this.style.display='none'" alt="Loạn 12 sứ quân">
+
+    <div class="story reveal">
+      <div class="edu-pill">
+        <span class="edu-tag">⚔️ 12 Sứ Quân</span>
+        12 thủ lĩnh chiếm giữ các vùng: <strong>Ngô Xương Xí</strong> (Bình Kiều), <strong>Kiều Công Hãn</strong> (Phong Châu), <strong>Nguyễn Khoan</strong> (Tam Đới)... Họ liên tục đánh nhau. Dân lầm than gần 25 năm.
+      </div>
+      Ngươi đã trưởng thành. Căn cứ Hoa Lư ngày càng lớn mạnh. Đinh Điền và Nguyễn Bặc — hai tướng tài nhất — đứng trước mặt ngươi với bản đồ 12 sứ quân trải ra trên bàn đá.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Nguyễn Bặc — tướng lĩnh tài ba</div>
+      "Chúa công, 12 sứ quân không đều sức. Có kẻ chỉ giữ một huyện nhỏ, có kẻ hùng cứ một phủ lớn. Nếu ta biết chọn thứ tự tấn công đúng đắn, ta đủ sức thống nhất giang sơn. Sai — ta sẽ bị kéo vào chiến tranh kiệt sức."
+    </div>
+
+    <div class="gate" id="gate2b" style="margin-top:20px;">
+      <span class="gate-icon">🗺️</span>
+      <div class="gate-title">Thử Thách Sắp Xếp — Kế Hoạch Dẹp Loạn</div>
+      <div class="gate-desc">Hãy sắp xếp đúng <strong>thứ tự chiến lược</strong> mà Đinh Bộ Lĩnh đã dùng để dẹp 12 sứ quân. Kéo thả các bước vào đúng vị trí!</div>
+      <div class="gate-req">🗺️ Sắp xếp đúng 4 bước chiến lược</div>
+      <div class="challenge">
+        <span class="challenge-tag">📋 Kéo thả để sắp xếp thứ tự đúng</span>
+        <div class="arrange-zone" id="arr-zone-2b">
+          <div class="arr-item" draggable="true" data-val="2" id="arr2b-0"><span class="arr-handle">≡</span>Đánh các sứ quân nhỏ yếu, tích lũy lực lượng và danh tiếng</div>
+          <div class="arr-item" draggable="true" data-val="4" id="arr2b-1"><span class="arr-handle">≡</span>Ngô Xương Xí — sứ quân cuối cùng — chịu đầu hàng năm 966</div>
+          <div class="arr-item" draggable="true" data-val="1" id="arr2b-2"><span class="arr-handle">≡</span>Xây dựng căn cứ vững chắc ở Hoa Lư, huấn luyện quân đội</div>
+          <div class="arr-item" draggable="true" data-val="3" id="arr2b-3"><span class="arr-handle">≡</span>Gửi sứ chiêu hàng các sứ quân mạnh, cô lập kẻ ngoan cố</div>
+        </div>
+        <button class="arr-check-btn" onclick="checkArrange('arr-zone-2b','arr2b-fb','gate2b','s2-content2')">🗺️ Xác nhận chiến lược</button>
+        <div class="ch-fb" id="arr2b-fb"></div>
+      </div>
+      <button class="unlock-btn" id="gate2b-unlock" onclick="unlockGate('s2-content2','gate2b')">⚔️ Triển Khai Kế Hoạch</button>
+    </div>
+
+    <div id="s2-content2" class="gate-locked">
+      <div class="kc reveal" style="margin-top:16px;">
+        <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+        <div class="kc-q">Đinh Bộ Lĩnh dẹp xong 12 sứ quân sau bao nhiêu năm chinh chiến?</div>
+        <div class="kc-opts">
+          <button class="kc-opt" onclick="ansKC(this,false,'kc2')">A. 5 năm (950–955)</button>
+          <button class="kc-opt" onclick="ansKC(this,false,'kc2')">B. 10 năm (956–966)</button>
+          <button class="kc-opt" onclick="ansKC(this,true,'kc2')">C. Khoảng 15–20 năm (944–966)</button>
+          <button class="kc-opt" onclick="ansKC(this,false,'kc2')">D. 30 năm (936–966)</button>
+        </div>
+        <div class="kc-fb" id="kc2-fb"></div>
+      </div>
+
+      <div class="fact reveal">
+        <span class="fact-tag">📖 Chiến thắng vang dội</span>
+        Đinh Bộ Lĩnh không chỉ dùng vũ lực — ngài <strong>chiêu dụ và trọng dụng</strong> những người chịu quy phục. Phạm Bạch Hổ — một trong 12 sứ quân — sau khi hàng phục được phong tước cao, trở thành tướng trung thành. Đây là nghệ thuật <em>"thu phục nhân tâm"</em> của bậc đế vương.
+      </div>
+
+      <div class="choices-label">⚡ Khi một sứ quân yếu chủ động xin hàng, bạn sẽ...</div>
+      <div class="choices">
+        <button class="c-btn" onclick="go('s2A',22)"><span class="c-letter">A</span><div>Tiếp nhận, phong chức, đối đãi như anh em — lòng người quý hơn đất đai.<div class="c-sub">Đây chính là phong cách Đinh Bộ Lĩnh — vừa nghiêm khắc vừa nhân hậu!</div></div></button>
+        <button class="c-btn" onclick="go('s2B',5)"><span class="c-letter">B</span><div>Tước vũ khí, không tin tưởng — ai đã phản một lần thì có thể phản lần nữa.<div class="c-sub">Nghi kỵ quá mức — khó thu phục được thiên hạ...</div></div></button>
+        <button class="c-btn" onclick="go('s2C',10)"><span class="c-letter">C</span><div>Chờ xem họ có thực lòng hay không — thử thách trước khi tin tưởng hoàn toàn.<div class="c-sub">Thận trọng tốt, nhưng cơ hội trời trao không nên để vuột.</div></div></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s2A">
+  <div class="chap">⭐ Lựa chọn A · Thu Phục Nhân Tâm</div>
+  <!-- 🖼️ CẦN ẢNH: "Đinh Bộ Lĩnh chiêu hàng tướng địch" / EN: "medieval Vietnamese general accepting surrender" -->
+  <img class="hero-img" src="images/dinh-bo-linh-thu-phuc.jpg" onerror="this.style.display='none'" alt="Thu phục nhân tâm" style="object-fit:contain;height:auto;">
+  <div class="outcome gold"><span class="outcome-icon">🤝</span><strong>Xuất sắc! Đây là bí quyết thành công của Đinh Bộ Lĩnh.</strong> Thay vì tiêu diệt tất cả, ngài <em>chuyển thù thành bạn</em> — tạo ra một tập thể đoàn kết đa dạng.</div>
+  <div class="fact"><span class="fact-tag">📖 Tư liệu</span>Sau khi dẹp yên, Đinh Bộ Lĩnh trọng dụng nhiều người từng là sứ quân đối thủ. <strong>Phạm Bạch Hổ</strong> được phong "Thân Vệ Đại Tướng Quân". Sự bao dung này khiến tất cả các cựu sứ quân đều trung thành với triều Đinh.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3',0)"><span class="c-letter">→</span><div>Chương 5 — Năm 966: Giang Sơn Thống Nhất</div></button></div>
+</div>
+
+<div class="scene" id="s2B">
+  <div class="chap">📍 Lựa chọn B · Nghi Kỵ Quá Mức</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Không tin ai thì không ai theo. <strong>Đinh Bộ Lĩnh biết cách đọc lòng người</strong> — và khi họ đã thực lòng quy phục, ngài mở lòng đón nhận.</div>
+  <div class="choices-label">⚡ Học cách bao dung...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2A',10)"><span class="c-letter">→</span><div>"Ta sẽ tin — nhưng ta sẽ luôn quan sát. Tin người là sức mạnh, không phải điểm yếu!"</div></button></div>
+</div>
+
+<div class="scene" id="s2C">
+  <div class="chap">📍 Lựa chọn C · Thận Trọng Có Lý</div>
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Thận trọng là tốt, nhưng <strong>người xin quy phục đã hạ vũ khí — đó là tín hiệu rõ ràng nhất</strong>. Đinh Bộ Lĩnh quyết đoán tiếp nhận ngay để củng cố thế lực.</div>
+  <div class="choices-label">⚡ Quyết đoán hơn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s2A',10)"><span class="c-letter">→</span><div>"Tiếp nhận! Lòng thành đã tỏ — ta không thể để mất người tài!"</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 5 — THỐNG NHẤT (tách từ chương gốc, giữ nguyên minigame nối-đôi) ══════ -->
+<div class="scene" id="s3">
+  <div class="chap">🏯 Chương 5 · Năm 966 — Thống Nhất Giang Sơn</div>
+
+  <div class="gate" id="gate3">
+    <span class="gate-icon">🔗</span>
+    <div class="gate-title">Thử Thách Nối Đôi — Sứ Quân & Lãnh Địa</div>
+    <div class="gate-desc">Một vị vua phải biết đất nước của mình! Hãy nối đúng <strong>5 cặp Sứ Quân — Vùng Đất</strong> để bước vào ngày thống nhất lịch sử!</div>
+    <div class="gate-req">🔗 Nối đúng ít nhất 4/5 cặp để mở cổng</div>
+    <div class="challenge">
+      <span class="challenge-tag">🗺️ Nhấp vào cột trái rồi cột phải để nối</span>
+      <div class="match-wrap">
+        <div class="match-col" id="match-left">
+          <div class="match-item" data-id="ml-1" onclick="selectMatch(this,'left')">Kiều Công Hãn</div>
+          <div class="match-item" data-id="ml-2" onclick="selectMatch(this,'left')">Nguyễn Khoan</div>
+          <div class="match-item" data-id="ml-3" onclick="selectMatch(this,'left')">Phạm Bạch Hổ</div>
+          <div class="match-item" data-id="ml-4" onclick="selectMatch(this,'left')">Ngô Xương Xí</div>
+          <div class="match-item" data-id="ml-5" onclick="selectMatch(this,'left')">Trần Lãm</div>
+        </div>
+        <div class="match-col" id="match-right">
+          <div class="match-item" data-id="mr-3" onclick="selectMatch(this,'right')">Đằng Châu</div>
+          <div class="match-item" data-id="mr-1" onclick="selectMatch(this,'right')">Phong Châu</div>
+          <div class="match-item" data-id="mr-5" onclick="selectMatch(this,'right')">Bố Hải Khẩu</div>
+          <div class="match-item" data-id="mr-4" onclick="selectMatch(this,'right')">Bình Kiều</div>
+          <div class="match-item" data-id="mr-2" onclick="selectMatch(this,'right')">Tam Đới</div>
+        </div>
+      </div>
+      <button class="match-check-btn" onclick="checkMatch('gate3','s3-content')">🔗 Kiểm tra các cặp</button>
+      <div class="ch-fb" id="match-fb"></div>
+    </div>
+    <button class="unlock-btn" id="gate3-unlock" onclick="unlockGate('s3-content','gate3')">🏯 Mở Ngày Thống Nhất</button>
+  </div>
+
+  <div id="s3-content" class="gate-locked">
+   <img class="hero-img" src="images/dinhbolinh.png" onerror="this.style.display='none'" alt="Thống nhất giang sơn" style="object-fit:contain;height:auto;">
+    <div class="story reveal">
+      <div class="edu-pill">
+        <span class="edu-tag">🏆 Ý nghĩa lịch sử</span>
+        Năm 966: lần đầu tiên sau 25 năm loạn lạc, cả đất nước về một mối. Đây là tiền đề để xây dựng <strong>nhà nước độc lập có chủ quyền</strong> đầu tiên của Việt Nam sau thời kỳ Bắc thuộc.
+      </div>
+      Ngô Xương Xí — sứ quân cuối cùng — cúi đầu quy phục. Ba quân hò reo. Hơn 20 năm chinh chiến kết thúc. Các tướng lĩnh quây quanh ngươi, mắt sáng ngời, chờ ngươi tuyên bố điều quan trọng nhất.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Đinh Điền — cố vấn thân cận nhất</div>
+      "Chúa công ơi! Giang sơn đã về một mối! Trăm họ trông chờ người cứu vớt bấy lâu nay."
+    </div>
+
+    <div class="kc reveal">
+      <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+      <div class="kc-q">Đất nước bị chia thành 12 sứ quân cát cứ trong khoảng thời gian nào trước khi được thống nhất?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="ansKC(this,false,'kc3a')">A. Khoảng 5 năm, từ 960–965</button>
+        <button class="kc-opt" onclick="ansKC(this,true,'kc3a')">B. Hơn 20 năm, từ sau 944 đến 966</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc3a')">C. Gần 50 năm, từ 920–970</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc3a')">D. Chỉ trong vài tháng năm 965</button>
+      </div>
+      <div class="kc-fb" id="kc3a-fb"></div>
+    </div>
+
+    <div class="choices-label">⚡ Tiếp tục...</div>
+    <div class="choices"><button class="c-btn" onclick="go('s3b',18)"><span class="c-letter">→</span><div>Chương 6 — Năm 968: Lên Ngôi, Lập Nước Đại Cồ Việt</div></button></div>
+  </div>
+</div>
+
+<!-- ══════ CHƯƠNG 6 — LẬP ĐẠI CỒ VIỆT (tách ra, giữ nguyên minigame điền-từ) ══════ -->
+<div class="scene" id="s3b">
+  <div class="chap">👑 Chương 6 · Năm 968 — Lập Nước Đại Cồ Việt</div>
+  <img class="hero-img" src="images/dinh-bo-linh-len-ngoi.jpg" onerror="this.style.display='none'" alt="Xưng Hoàng Đế" style="object-fit:contain;height:auto;">
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">👑 Bước ngoặt 968</span>
+      Sau khi thống nhất, các tướng lĩnh thúc giục Đinh Bộ Lĩnh chính thức xưng vương, lập quốc hiệu để thiên hạ có chỗ quy về.
+    </div>
+    Đinh Điền tâu: "Đã đến lúc chúa công xưng vương, định đặt tên nước, xây dựng triều đình để muôn dân có chốn nương tựa! Không thể chần chừ thêm nữa!"
+  </div>
+
+  <div class="challenge reveal" style="background:rgba(201,146,10,0.06);border-color:rgba(201,146,10,0.22);">
+    <span class="challenge-tag" style="color:var(--gold);">✍️ Thử thách điền vào chỗ trống</span>
+    <div class="fill-blank">
+      <div class="fill-q">Đinh Bộ Lĩnh lên ngôi năm <span class="blank" id="blank1">___</span>, đặt tên nước là <span class="blank" id="blank2">___</span>, đóng đô tại <span class="blank" id="blank3">___</span>.</div>
+      <input type="text" class="fill-input" id="fill-year" placeholder="Năm lên ngôi (ví dụ: 968)">
+      <input type="text" class="fill-input" id="fill-name" placeholder="Tên nước (ví dụ: Đại Cồ Việt)">
+      <input type="text" class="fill-input" id="fill-capital" placeholder="Kinh đô (ví dụ: Hoa Lư)">
+      <button class="fill-submit" onclick="checkFill()">✅ Kiểm tra đáp án</button>
+      <div class="ch-fb" id="fill-fb"></div>
+    </div>
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Vì sao Đinh Bộ Lĩnh chọn Hoa Lư làm kinh đô thay vì chọn vùng đồng bằng thuận lợi hơn?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3')">A. Vì Hoa Lư gần biên giới phía Bắc, dễ quan sát giặc ngoại xâm</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc3')">B. Vì địa thế núi non hiểm trở — phòng thủ tự nhiên hoàn hảo trong giai đoạn đất nước còn chưa ổn định</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3')">C. Vì vùng đất này giàu tài nguyên nông nghiệp nhất</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc3')">D. Vì đó là nơi có dân số đông nhất</button>
+    </div>
+    <div class="kc-fb" id="kc3-fb"></div>
+  </div>
+
+  <div class="choices-label">⚡ Trước khi lên ngôi, điều quan trọng nhất bạn muốn công bố...</div>
+  <div class="choices">
+    <button class="c-btn" onclick="go('s3A',22)"><span class="c-letter">A</span><div>Tuyên bố Đại Cồ Việt là nhà nước độc lập — không phải chư hầu của bất kỳ ai, kể cả nhà Tống!<div class="c-sub">Khí phách đế vương — tự chủ và kiêu hãnh đúng mực!</div></div></button>
+    <button class="c-btn" onclick="go('s3B',8)"><span class="c-letter">B</span><div>Trước tiên xin nhà Tống phong vương để được công nhận hợp pháp.<div class="c-sub">Ngoại giao trước — nhưng mất đi khí thế độc lập ngay từ đầu...</div></div></button>
+    <button class="c-btn" onclick="go('s3C',14)"><span class="c-letter">C</span><div>Tổ chức lễ tế trời đất, cúng cáo tiên tổ — đất nước được trời ban mới bền vững.<div class="c-sub">Tâm linh quan trọng, nhưng phải xác lập vị thế chính trị trước!</div></div></button>
+  </div>
+</div>
+
+<div class="scene" id="s3A">
+  <div class="chap">⭐ Lựa chọn A · Độc Lập Tự Chủ!</div>
+  <!-- 🖼️ CẦN ẢNH: "Đinh Tiên Hoàng xưng đế" / EN: "Vietnamese emperor coronation ceremony ancient" -->
+  <img class="hero-img" src="images/dbllapdaiquoc.jpg" 
+  onerror="this.style.display='none'" alt="Xưng Hoàng Đế" style="object-fit:contain;height:auto;">
+  <div class="outcome gold"><span class="outcome-icon">🏯</span><strong>Tinh thần đế vương!</strong> Đinh Bộ Lĩnh không xin phép ai. Ngài <em>tự xưng Hoàng Đế</em> — không phải "vương" hay "thần tử" — khẳng định Đại Cồ Việt ngang hàng với Trung Hoa về địa vị.</div>
+  <div class="fact"><span class="fact-tag">📖 Sự kiện lịch sử</span>Đinh Bộ Lĩnh tự xưng <strong>"Đại Thắng Minh Hoàng Đế"</strong> — dùng tước hiệu Hoàng Đế, không phải Quốc Vương. Sau đó ông mới sai sứ sang Tống để duy trì quan hệ hòa hiếu.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4',0)"><span class="c-letter">→</span><div>Chương 7 — Năm 968–979: Xây Dựng Đại Cồ Việt</div></button></div>
+</div>
+
+<div class="scene" id="s3B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Đinh Bộ Lĩnh <em>không xin phép nhà Tống</em> — ngài <strong>tự xưng Hoàng Đế trước</strong>, rồi mới cử sứ sang Tống để thiết lập quan hệ. Độc lập không chờ ai cho phép.</div>
+  <div class="choices-label">⚡ Khí phách tự chủ...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3A',10)"><span class="c-letter">→</span><div>"Ta là Hoàng Đế của Đại Cồ Việt — điều đó không cần ai xác nhận!"</div></button></div>
+</div>
+<div class="scene" id="s3C">
+  <div class="chap">📍 Lựa chọn C</div>
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Lễ nghĩa quan trọng, nhưng <strong>tuyên bố chính trị phải đến trước</strong>. Đinh Bộ Lĩnh xưng đế ngay — cúng tế sau.</div>
+  <div class="choices-label">⚡ Xác lập vị thế trước...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s3A',10)"><span class="c-letter">→</span><div>"Xưng đế — rồi tế lễ để ăn mừng đại thắng!"</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 7 — XÂY DỰNG NHÀ NƯỚC (GỐC, giữ nguyên MQ4) ══════ -->
+<div class="scene" id="s4">
+  <div class="chap">🏛️ Chương 7 · Năm 968–979 — Xây Dựng Đại Cồ Việt</div>
+  <img class="hero-img" src="images/dinh-bo-linh-len-ngoi.jpg" onerror="this.style.display='none'" alt="Đinh Tiên Hoàng Đế xây dựng Đại Cồ Việt"  style="object-fit:contain;height:auto;">
+
+  <div class="gate" id="gate4">
+    <span class="gate-icon">🏛️</span>
+    <div class="gate-title">Thử Thách Kinh Bang Tế Thế</div>
+    <div class="gate-desc">Trị quốc khó hơn đánh trận. Trả lời đúng <strong>4 câu hỏi liên tiếp</strong> về việc xây dựng nhà nước. Mỗi câu sai bị trừ <strong>3 điểm</strong>.</div>
+    <div class="gate-req">🏛️ Cần đúng ít nhất 3/4 — Sai sẽ bị trừ điểm!</div>
+
+    <div class="mq-progress">
+      <div class="mq-dot current" id="mqd4-0"></div>
+      <div class="mq-dot" id="mqd4-1"></div>
+      <div class="mq-dot" id="mqd4-2"></div>
+      <div class="mq-dot" id="mqd4-3"></div>
+    </div>
+
+    <div class="challenge" id="mq4-0">
+      <span class="challenge-tag">🏛️ Câu 1/4 — Niên Hiệu</span>
+      <div class="challenge-q">Đinh Bộ Lĩnh đặt niên hiệu gì khi lên ngôi — niên hiệu đầu tiên của nhà nước phong kiến độc lập Việt Nam?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,4,0)">A. Thiên Phúc</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,4,0)">B. Thái Bình (968–979) — đây là niên hiệu của Đinh Tiên Hoàng</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,0)">C. Ứng Thiên</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,0)">D. Đại Định</button>
+      </div>
+      <div class="ch-fb" id="mq4fb-0"></div>
+    </div>
+
+    <div class="challenge" id="mq4-1" style="display:none">
+      <span class="challenge-tag">🏛️ Câu 2/4 — Ngoại Giao</span>
+      <div class="challenge-q">Đinh Tiên Hoàng áp dụng mô hình ngoại giao nào với nhà Tống để vừa giữ độc lập vừa tránh chiến tranh?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,4,1)">A. Tuyên chiến và thách thức nhà Tống xâm lược</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,4,1)">B. Thần phục về danh nghĩa (triều cống) — độc lập trên thực tế (tự xưng Hoàng Đế trong nước)</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,1)">C. Từ chối mọi quan hệ với nhà Tống</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,1)">D. Liên minh quân sự bình đẳng với nhà Tống</button>
+      </div>
+      <div class="ch-fb" id="mq4fb-1"></div>
+    </div>
+
+    <div class="challenge" id="mq4-2" style="display:none">
+      <span class="challenge-tag">🏛️ Câu 3/4 — Nội Trị</span>
+      <div class="challenge-q">Đinh Tiên Hoàng nổi tiếng với hình phạt nào mà lịch sử ghi lại như một biểu tượng của sự nghiêm khắc trong giai đoạn mới thống nhất?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,true,4,2)">A. Đặt vạc dầu sôi và cũi hổ — "ai phạm pháp sẽ bị luộc hoặc bị hổ xé" — để răn đe mạnh mẽ</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,2)">B. Chém đầu công khai ở chợ</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,2)">C. Lưu đày đến vùng rừng núi xa xôi</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,2)">D. Phạt đánh 100 roi trước ba quân</button>
+      </div>
+      <div class="ch-fb" id="mq4fb-2"></div>
+    </div>
+
+    <div class="challenge" id="mq4-3" style="display:none">
+      <span class="challenge-tag">🏛️ Câu 4/4 — Di Sản</span>
+      <div class="challenge-q">Tên nước "Đại Cồ Việt" được dùng từ năm 968 đến khi nào thì được đổi thành "Đại Việt"?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,4,3)">A. Năm 1009 — khi Lý Công Uẩn lên ngôi</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,3)">B. Năm 1010 — khi dời đô về Thăng Long</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,4,3)">C. Năm 1054 — khi Lý Thánh Tông đổi thành Đại Việt</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,4,3)">D. Năm 981 — khi nhà Tiền Lê lên ngôi</button>
+      </div>
+      <div class="ch-fb" id="mq4fb-3"></div>
+    </div>
+
+    <button class="unlock-btn" id="gate4-unlock" onclick="unlockGate('s4-content','gate4')">👑 Vào Triều Đinh — Mở Chương 7</button>
+  </div>
+
+  <div id="s4-content" class="gate-locked">
+    <img class="hero-img" src="images/dinh-tien-hoang-de.jpg" onerror="this.style.display='none'" alt="Đinh Tiên Hoàng Đế">
+
+    <div class="story reveal">
+      <div class="edu-pill">
+        <span class="edu-tag">🏛️ Nhà nước mới</span>
+        Đinh Tiên Hoàng xây dựng <strong>bộ máy nhà nước đầu tiên</strong>: chia đất thành đạo, lộ, phủ, châu, huyện — đặt quan cai trị từ trung ương đến địa phương.
+      </div>
+      Ngươi ngồi trên ngai vàng tại Hoa Lư, mặc long bào vàng óng ánh. Trước mặt là triều đình mới — những khuôn mặt hôm qua còn là kẻ thù, hôm nay đứng chắp tay trung thành.
+    </div>
+
+    <div class="dlg reveal">
+      <div class="dlg-who">Ngô Tử An — quan văn tài giỏi</div>
+      "Tâu Hoàng Thượng! Nhà nước mới cần bốn điều: <em>một</em> là luật pháp nghiêm minh, <em>hai</em> là quân đội chính quy có kỷ luật, <em>ba</em> là ngoại giao khéo léo với nhà Tống, <em>bốn</em> là kinh tế dân no. Xin Hoàng Thượng cho biết ưu tiên hàng đầu?"
+    </div>
+
+    <div class="kc reveal">
+      <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+      <div class="kc-q">Đinh Tiên Hoàng phong cho ai làm Thập Đạo Tướng Quân — người thứ hai trong triều, chỉ sau Hoàng Đế?</div>
+      <div class="kc-opts">
+        <button class="kc-opt" onclick="ansKC(this,false,'kc4')">A. Đinh Điền</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc4')">B. Trần Lãm</button>
+        <button class="kc-opt" onclick="ansKC(this,true,'kc4')">C. Lê Hoàn (Lê Đại Hành sau này)</button>
+        <button class="kc-opt" onclick="ansKC(this,false,'kc4')">D. Nguyễn Bặc</button>
+      </div>
+      <div class="kc-fb" id="kc4-fb"></div>
+    </div>
+
+    <div class="legend-moment reveal">
+      <span class="legend-icon">🥁</span>
+      "Ta từ cậu bé chăn trâu, lấy bông lau làm cờ — đến hôm nay dựng nên một đế quốc. Không phải vì ta tài hơn ai — mà vì ta không bao giờ chấp nhận số phận nhỏ bé mà người đời muốn vạch ra cho ta."
+      <br><br>
+      <span style="font-size:13.5px;color:rgba(245,234,214,0.5);font-style:normal;font-family:'Crimson Pro',serif;">— Đinh Tiên Hoàng Đế · Hoa Lư, 968</span>
+    </div>
+
+    <div class="choices-label">⚡ Việc đầu tiên bạn làm sau khi lên ngôi là...</div>
+    <div class="choices">
+      <button class="c-btn" onclick="go('s4A',25)"><span class="c-letter">A</span><div>Thiết lập luật pháp và hình phạt nghiêm minh — không có trật tự thì không có quốc gia.<div class="c-sub">Đây chính là điều Đinh Tiên Hoàng làm đầu tiên — vạc dầu và cũi hổ để răn đe!</div></div></button>
+      <button class="c-btn" onclick="go('s4B',10)"><span class="c-letter">B</span><div>Cử sứ sang nhà Tống để thiết lập quan hệ ngoại giao — tránh nguy cơ chiến tranh.<div class="c-sub">Ngoại giao quan trọng, nhưng nội trị mới là cái gốc.</div></div></button>
+      <button class="c-btn" onclick="go('s4C',14)"><span class="c-letter">C</span><div>Phong thưởng các tướng công thần, ổn định lòng quân trước khi lo việc lớn.<div class="c-sub">Cần thiết, nhưng không phải ưu tiên số một.</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s4A">
+  <div class="chap">⭐ Lựa chọn A · Nền Tảng Pháp Luật</div>
+  <!-- 🖼️ CẦN ẢNH: "vạc dầu cũi hổ thời phong kiến" / EN: "medieval punishment cauldron tiger cage illustration" -->
+  <img class="hero-img" src="images/vac-dau-cui-ho.jpg" onerror="this.style.display='none'" alt="Vạc dầu và cũi hổ" style="object-fit:contain;height:auto;">
+  <div class="outcome gold"><span class="outcome-icon">⚖️</span><strong>Đây chính là Đinh Tiên Hoàng!</strong> Ngài đặt vạc dầu và cũi hổ nơi công cộng, ra chiếu: <em>"Ai phạm pháp sẽ bị luộc hoặc bị hổ ăn thịt."</em> Chỉ một câu — đất nước từ loạn lạc bước sang trật tự.</div>
+  <div class="fact"><span class="fact-tag">📖 Lịch sử ghi chép</span>Sử chép không ai dám vi phạm pháp luật của Đinh Tiên Hoàng. Đồng thời ngài ra lệnh <strong>thả toàn bộ cửa ngõ ra vào, không cần đặt vệ binh gác</strong> — người dân tự giác tuân thủ trật tự.</div>
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5',0)"><span class="c-letter">→</span><div>Chương 8 — Năm 979: Bi Kịch Trong Đêm</div></button></div>
+</div>
+<div class="scene" id="s4B">
+  <div class="chap">📍 Lựa chọn B</div>
+  <div class="outcome bad"><span class="outcome-icon">⚠️</span>Ngoại giao quan trọng nhưng <strong>nội lực phải đến trước</strong>. Đinh Tiên Hoàng xây dựng pháp luật vững chắc trước, rồi mới cử sứ sang Tống.</div>
+  <div class="choices-label">⚡ Nội trị trước...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4A',12)"><span class="c-letter">→</span><div>"Vững trong, mới mạnh ngoài — pháp luật trước đã!"</div></button></div>
+</div>
+<div class="scene" id="s4C">
+  <div class="chap">📍 Lựa chọn C</div>
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Phong thưởng là cần thiết nhưng chưa đủ. <strong>Không có pháp luật, thưởng phạt chỉ là dùng tình cảm — không bền</strong>.</div>
+  <div class="choices-label">⚡ Cần cả hệ thống...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s4A',12)"><span class="c-letter">→</span><div>"Luật pháp là xương sống — không có nó, mọi thứ sẽ sụp đổ!"</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 8 — BI KỊCH (tách ra, ngắn, không minigame) ══════ -->
+<div class="scene" id="s5">
+  <div class="chap">🌙 Chương 8 · Năm 979 — Bi Kịch Trong Đêm</div>
+  <img class="hero-img" src="images/dem-bien-co-do-thich.jpg" onerror="this.style.display='none'" alt="Đêm biến cố">
+
+  <div class="story reveal">
+    <div class="edu-pill">
+      <span class="edu-tag">📚 Bối cảnh</span>
+      Trước đó, Đinh Tiên Hoàng đã lập con út Đinh Hạng Lang (còn nhỏ tuổi) làm Thái tử thay vì con trưởng Đinh Liễn — người từng vào sinh ra tử cùng cha suốt cuộc chinh chiến. Quyết định này gieo mầm bất mãn trong triều.
+    </div>
+    Đêm năm 979, sau một buổi yến tiệc, Đinh Tiên Hoàng say rượu ngủ lại trong sân điện. Một viên hoạn quan tên <strong>Đỗ Thích</strong> — theo dân gian kể lại vì nằm mộng thấy điềm lạ nên tin mình có mệnh làm vua — đã lẻn vào sát hại cả vua và Nam Việt Vương Đinh Liễn ngay trong đêm.
+  </div>
+
+  <div class="dlg reveal">
+    <div class="dlg-who">Tin dữ truyền đến triều đình sáng hôm sau</div>
+    "Bệ hạ... Bệ hạ và Nam Việt Vương đều đã... đều đã bị hại trong đêm qua rồi!"
+  </div>
+
+  <div class="kc reveal">
+    <span class="kc-tag">🎓 Kiểm tra kiến thức</span>
+    <div class="kc-q">Đinh Tiên Hoàng và con trai nào cùng bị sát hại trong biến cố năm 979?</div>
+    <div class="kc-opts">
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5pre')">A. Đinh Hạng Lang — Thái tử nhỏ tuổi</button>
+      <button class="kc-opt" onclick="ansKC(this,true,'kc5pre')">B. Đinh Liễn — Nam Việt Vương, con trưởng từng theo cha chinh chiến</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5pre')">C. Đinh Toàn — người sau đó lên ngôi khi mới 6 tuổi</button>
+      <button class="kc-opt" onclick="ansKC(this,false,'kc5pre')">D. Không có ai, chỉ một mình vua bị hại</button>
+    </div>
+    <div class="kc-fb" id="kc5pre-fb"></div>
+  </div>
+
+  <div class="fact reveal">
+    <span class="fact-tag">📖 Hậu quả ngay sau đó</span>
+    Đỗ Thích trốn trên nóc điện suốt mấy ngày, sau bị phát hiện và bị giết ngay tại chỗ. Con nhỏ Đinh Toàn (6 tuổi) được đưa lên ngôi trên danh nghĩa, nhưng thực quyền nhanh chóng rơi vào tay Lê Hoàn.
+  </div>
+
+  <div class="choices-label">⚡ Tiếp tục...</div>
+  <div class="choices"><button class="c-btn" onclick="go('s5b',18)"><span class="c-letter">→</span><div>Chương 9 — Di Sản Ngàn Năm Của Đinh Tiên Hoàng</div></button></div>
+</div>
+
+<!-- ══════ CHƯƠNG 9 — DI SẢN (tách ra, giữ nguyên MQ5 4 câu tổng kết) ══════ -->
+<div class="scene" id="s5b">
+  <div class="chap">🏆 Chương 9 · Di Sản Ngàn Năm</div>
+
+  <div class="gate" id="gate5">
+    <span class="gate-icon">🏆</span>
+    <div class="gate-title">Thử Thách Tổng Kết — Vòng Phán Xét Lịch Sử</div>
+    <div class="gate-desc">Đây là <strong>cửa ải cuối cùng và khó nhất</strong>. Bốn câu hỏi tổng hợp về toàn bộ cuộc đời Đinh Tiên Hoàng. Mỗi câu sai trừ <strong>5 điểm</strong>, mỗi câu đúng <strong>+12 điểm</strong>. Cần đúng ít nhất 3/4 để mở chương cuối!</div>
+    <div class="gate-req">🏆 3/4 đúng — Câu sai trừ 5 điểm!</div>
+
+    <div class="mq-progress">
+      <div class="mq-dot current" id="mqd5-0"></div>
+      <div class="mq-dot" id="mqd5-1"></div>
+      <div class="mq-dot" id="mqd5-2"></div>
+      <div class="mq-dot" id="mqd5-3"></div>
+    </div>
+
+    <div class="challenge" id="mq5-0">
+      <span class="challenge-tag">🏆 Câu 1/4 — Kế Thừa</span>
+      <div class="challenge-q">Sau khi Đinh Tiên Hoàng mất, ai thực sự nắm quyền kiểm soát đất nước trước khi lên ngôi lập triều đại mới?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,5,0)">A. Thái hậu Dương Vân Nga tự mình cai trị lâu dài</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,0)">B. Đinh Toàn — con trai 6 tuổi tự nắm thực quyền</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,5,0)">C. Lê Hoàn — Thập Đạo Tướng Quân nắm binh quyền, sau đó lên ngôi lập nhà Tiền Lê năm 980</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,0)">D. Nguyễn Bặc và Đinh Điền cố gắng duy trì nhà Đinh</button>
+      </div>
+      <div class="ch-fb" id="mq5fb-0"></div>
+    </div>
+
+    <div class="challenge" id="mq5-1" style="display:none">
+      <span class="challenge-tag">🏆 Câu 2/4 — So Sánh Lịch Sử</span>
+      <div class="challenge-q">Di sản lớn nhất của Đinh Tiên Hoàng mà các triều đại sau đều kế thừa là gì?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,5,1)">A. Kinh đô Hoa Lư — các triều đại sau giữ nguyên kinh đô này</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,5,1)">B. Mô hình nhà nước phong kiến trung ương tập quyền độc lập: quan lại, quân đội chính quy, ngoại giao tự chủ</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,1)">C. Pháp luật hình sự với hình phạt nặng</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,1)">D. Tên nước Đại Cồ Việt được giữ đến tận thế kỷ 13</button>
+      </div>
+      <div class="ch-fb" id="mq5fb-1"></div>
+    </div>
+
+    <div class="challenge" id="mq5-2" style="display:none">
+      <span class="challenge-tag">🏆 Câu 3/4 — Tư Tưởng Sâu Xa</span>
+      <div class="challenge-q">Tại sao Đinh Bộ Lĩnh được người đời sau đặt thụy hiệu là "Tiên Hoàng Đế" — chữ "Tiên" ở đây có nghĩa gì?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,5,2)">A. "Tiên" có nghĩa là "thần tiên" — ông được coi như thần linh</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,5,2)">B. "Tiên" có nghĩa là "đầu tiên/trước hết" — ông là Hoàng Đế đầu tiên của nhà nước phong kiến độc lập Việt Nam</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,2)">C. "Tiên" có nghĩa là "người đi trước" — tôn vinh công lao mở đường</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,2)">D. "Tiên" là tên thật của ông lúc nhỏ</button>
+      </div>
+      <div class="ch-fb" id="mq5fb-2"></div>
+    </div>
+
+    <div class="challenge" id="mq5-3" style="display:none">
+      <span class="challenge-tag">🏆 Câu 4/4 — Ghi Nhớ Hôm Nay</span>
+      <div class="challenge-q">Ngày nay, Lễ hội đền Đinh Tiên Hoàng được tổ chức ở đâu và vào tháng nào âm lịch hàng năm?</div>
+      <div class="challenge-opts">
+        <button class="ch-opt" onclick="ansMQ(this,false,5,3)">A. Tháng 3 âm lịch, tại Hà Nội</button>
+        <button class="ch-opt" onclick="ansMQ(this,true,5,3)">B. Tháng 3 âm lịch, tại Hoa Lư — Ninh Bình (ngày 10/3 âm)</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,3)">C. Tháng 8 âm lịch, tại Ninh Bình</button>
+        <button class="ch-opt" onclick="ansMQ(this,false,5,3)">D. Tháng Giêng âm lịch, trùng với Tết Nguyên Đán</button>
+      </div>
+      <div class="ch-fb" id="mq5fb-3"></div>
+    </div>
+
+    <button class="unlock-btn" id="gate5-unlock" onclick="unlockGate('s5-content','gate5')">🏆 Khám Phá Di Sản Ngàn Năm</button>
+  </div>
+
+  <div id="s5-content" class="gate-locked">
+    <img class="hero-img" src="images/den-dinh-tien-hoang.jpg" onerror="this.style.display='none'" alt="Đền Đinh Tiên Hoàng">
+
+    <div class="story reveal">
+      <div class="edu-pill">
+        <span class="edu-tag">🕯️ Nhìn lại</span>
+        Nhà Đinh chỉ tồn tại 12 năm (968–980) — ngắn ngủi so với nhiều triều đại sau. Nhưng mô hình nhà nước mà Đinh Tiên Hoàng đặt ra lại tồn tại gần một nghìn năm sau đó.
+      </div>
+      Chỉ hơn 10 năm trị vì — nhưng Đinh Tiên Hoàng đã làm được điều kỳ diệu: <em>từ một cậu bé chăn trâu không cha</em>, trở thành người <strong>thống nhất đất nước sau 25 năm loạn lạc</strong>, xây dựng nhà nước phong kiến độc lập đầu tiên, đặt nền tảng cho cả nghìn năm lịch sử tiếp theo.
+    </div>
+
+    <div class="legend-moment reveal">
+      <span class="legend-icon">👑</span>
+      "Từ bông lau cờ hiệu — đến cờ vàng đế vương. Từ đứa trẻ không cha chăn trâu ở Hoa Lư — đến Hoàng Đế đầu tiên đặt nền móng cho ngàn năm độc lập của dân tộc Việt."
+    </div>
+
+    <div class="choices-label">⚡ Di sản nào của Đinh Tiên Hoàng bạn coi là vĩ đại nhất?</div>
+    <div class="choices">
+      <button class="c-btn" onclick="go('final',35)"><span class="c-letter">A</span><div>Cả ba: thống nhất đất nước + xây dựng nhà nước độc lập + đặt nền móng mô hình quốc gia cho hậu thế.<div class="c-sub">+35 điểm! Đây là đáp án toàn diện nhất — hoàn thành hành trình!</div></div></button>
+      <button class="c-btn" onclick="go('s5end_b',10)"><span class="c-letter">B</span><div>Thống nhất 12 sứ quân — chấm dứt 25 năm loạn lạc cho dân chúng.<div class="c-sub">Đúng nhưng chỉ một phần — còn nhiều hơn thế...</div></div></button>
+      <button class="c-btn" onclick="go('s5end_c',15)"><span class="c-letter">C</span><div>Lập Đại Cồ Việt — nhà nước phong kiến độc lập đầu tiên sau hàng trăm năm Bắc thuộc.<div class="c-sub">Rất quan trọng! Nhưng còn thiếu một chiều nữa...</div></div></button>
+    </div>
+  </div>
+</div>
+
+<div class="scene" id="s5end_b">
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Đúng — nhưng chỉ một phần! Thống nhất là điều kiện cần, nhưng <strong>việc xây dựng nhà nước độc lập có hệ thống mới là di sản bất tử</strong>.</div>
+  <div class="choices-label">⚡ Nhìn toàn diện hơn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('final',22)"><span class="c-letter">→</span><div>Xem toàn bộ di sản của Đinh Tiên Hoàng...</div></button></div>
+</div>
+<div class="scene" id="s5end_c">
+  <div class="outcome bad"><span class="outcome-icon">💭</span>Xuất sắc — nhưng còn thiếu! Bên cạnh việc lập Đại Cồ Việt, <strong>mô hình nhà nước và tinh thần độc lập tự chủ</strong> mà Đinh Tiên Hoàng tạo dựng đã nuôi dưỡng cả nghìn năm lịch sử tiếp theo.</div>
+  <div class="choices-label">⚡ Nhìn toàn diện hơn...</div>
+  <div class="choices"><button class="c-btn" onclick="go('final',27)"><span class="c-letter">→</span><div>Xem di sản trọn vẹn...</div></button></div>
+</div>
+
+<!-- ══════ FINAL ══════ -->
+<div class="scene" id="final">
+  <div class="final">
+    <div class="final-seal" id="finalSeal">👑</div>
+    <div class="final-h" id="finalH">Hành Trình Hoàn Thành!</div>
+    <div class="final-pts" id="finalPts">0</div>
+    <div class="final-rank" id="finalRank">—</div>
+    <div class="final-desc" id="finalDesc">...</div>
+    <div class="achievements" id="achievements"></div>
+    <div class="final-lesson">
+      <span class="fl-tag">📚 Ba Bài Học Ngàn Năm Từ Đinh Bộ Lĩnh</span>
+      <strong>1. Tài năng lãnh đạo được rèn giũa từ sớm:</strong> Bông lau làm cờ không phải trò chơi — đó là trường luyện đế vương.<br><br>
+      <strong>2. Kiên nhẫn chiến lược hơn dũng cảm liều lĩnh:</strong> Nương nhờ người khác để tích lũy lực lượng, rồi dẹp từng sứ quân một — không hấp tấp, không đánh dàn trải.<br><br>
+      <strong>3. Thống nhất rồi phải xây dựng:</strong> Thắng trận chưa đủ — Đinh Tiên Hoàng xây dựng nhà nước có luật pháp, có ngoại giao, có tổ chức. Di sản đó tồn tại nghìn năm sau khi ngài đã mất.
+    </div>
+
+    <div class="btn-row" style="margin-top:24px;">
+      <button class="btn-restart" onclick="restart()">🔄 Chơi lại</button>
+      <a href="#" class="btn-home">📖 Câu chuyện khác</a>
+    </div>
+  </div>
+</div>
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+<div class="ref-panel">
+  <div class="ref-panel-head">
+    <div class="ref-page-title">📚 Nguồn Tham Khảo</div>
+    <button class="ref-panel-close" onclick="toggleRefPage()">✕</button>
+  </div>
+  <div class="ref-page-sub">Ngày tháng, sự kiện, số liệu trong trang này được đối chiếu từ các nguồn dưới đây. Hội thoại giữa các nhân vật là dựng lại minh họa dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.</div>
+  <div class="ref-group">
+    <div class="ref-group-h">Tài liệu chính thống</div>
+    <div class="ref-item">Đại Việt Sử Ký Toàn Thư — Ngô Sĩ Liên (bản dịch NXB Khoa học Xã hội)</div>
+    <div class="ref-item">Việt Sử Lược (khuyết danh, thời Trần)</div>
+    <div class="ref-item">Lịch Sử Việt Nam, Viện Sử học — NXB Khoa học Xã hội</div>
+    <div class="ref-item">Tư liệu Khu di tích Cố đô Hoa Lư, Ninh Bình</div>
+    <div class="ref-item">Quyết định xếp hạng Di tích Quốc gia đặc biệt — Cố đô Hoa Lư (Thủ tướng Chính phủ, 2012)</div>
+    <div class="ref-item">UNESCO — Hồ sơ Di sản Thế giới "Quần thể danh thắng Tràng An" (bao gồm Cố đô Hoa Lư), công nhận năm 2014</div>
+  </div>
+  <div class="ref-group">
+    <div class="ref-group-h">Ghi chú</div>
+    <div class="ref-item">Các mốc thời gian trước năm 968 (tuổi thơ, giai đoạn nương nhờ Trần Minh Công) chỉ được sử sách ghi lại sơ lược nên mang tính ước đoán, đã ghi rõ bằng dấu ngã (~)</div>
+    <div class="ref-item">Các đoạn hội thoại và tên nhân vật phụ (Ngô Tử An, đồng chí Thư...) được dựng lại nhằm minh họa bối cảnh, không phải trích dẫn nguyên văn</div>
+    <div class="ref-item">Một số chi tiết mang tính truyền thuyết dân gian được thêu dệt về sau không được đưa vào bài — bài chỉ giữ lại phần được sử sách chính thống (Đại Việt Sử Ký Toàn Thư) ghi nhận</div>
+  </div>
+</div>
+</div>
+</div><!-- end .wrap -->
+
+<script>
+// ── FIRE PARTICLES ──
+(function(){
+  const c=document.getElementById('fireParticles');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='fp';
+    const sz=8+Math.random()*10;
+    p.style.cssText=`left:${Math.random()*100}%;top:-20px;width:${sz}px;height:${sz}px;box-shadow:0 0 ${sz}px ${sz/2}px rgba(245,234,214,0.55);animation-duration:${10+Math.random()*12}s;animation-delay:${Math.random()*10}s;`;
+    c.appendChild(p);
+  }
+})();
+
+// ── FLYING ARROWS ──
+(function(){
+  for(let i=0;i<5;i++){
+    const a=document.createElement('div');a.className='arrow-deco';
+    a.textContent='→';
+    a.style.cssText=`top:${10+Math.random()*80}%;animation-duration:${12+Math.random()*18}s;animation-delay:${Math.random()*15}s;color:rgba(201,146,10,0.25);`;
+    document.body.appendChild(a);
+  }
+})();
+
+// ── REVEAL ──
+const revealObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));}
+initReveal();
+
+// ── STATE ──
+let pts=0,streak=0,maxStreak=0,totalCorrect=0,totalKC=0;
+let sceneRewarded={};
+let kcAnswered={};
+let mqState={2:{current:0,correct:0,errors:0},4:{current:0,correct:0,errors:0},5:{current:0,correct:0,errors:0}};
+let mqAnswered={2:[false,false,false],4:[false,false,false,false],5:[false,false,false,false]};
+let matchSelected={left:null,right:null};
+let fillDone=false;
+let arrangeDone=false;
+let fillPartialAwarded=0;
+// ── AUDIO ──
+let audioCtx=null;
+function getCtx(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return audioCtx;}
+function playTone(f,t,d,v){const ctx=getCtx();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||0.07,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+(d||0.4));o.start();o.stop(ctx.currentTime+(d||0.4));}
+function playCorrect(){playTone(523,'sine',.15,.08);setTimeout(()=>playTone(659,'sine',.2,.08),100);}
+function playWrong(){playTone(200,'sawtooth',.3,.05);}
+function playDrum(){const ctx=getCtx();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(180,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+.2);g.gain.setValueAtTime(.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.25);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.25);}
+function playCombo(){playTone(392,'sine',.1,.07);setTimeout(()=>playTone(523,'sine',.1,.09),80);setTimeout(()=>playTone(659,'sine',.2,.1),160);}
+function playUnlock(){playDrum();setTimeout(()=>playTone(880,'sine',.4,.06),100);}
+
+// ── FX CANVAS ──
+const cv=document.getElementById('fxCanvas');
+const cx=cv.getContext('2d');
+let fpArr=[];
+function resizeCv(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+resizeCv();window.addEventListener('resize',resizeCv);
+function spawnGold(n){
+  const cls=['#f4c542','#c9920a','#c94040','#fff0a0'];
+  for(let i=0;i<n;i++){
+    fpArr.push({x:window.innerWidth*0.2+Math.random()*window.innerWidth*0.6,y:window.innerHeight*0.6+Math.random()*80,vx:(Math.random()-.5)*2.5,vy:-(2+Math.random()*3.5),r:2+Math.random()*4,alpha:1,color:cls[Math.floor(Math.random()*cls.length)],delay:i*30});
+  }
+}
+function animFx(){
+  if(fpArr.length===0){cx.clearRect(0,0,cv.width,cv.height);return;}
+  cx.clearRect(0,0,cv.width,cv.height);
+  fpArr=fpArr.filter(p=>{
+    if(p.delay>0){p.delay-=16;return true;}
+    p.x+=p.vx;p.y+=p.vy;p.vy*=.99;p.alpha-=.013;
+    if(p.alpha<=0)return false;
+    cx.save();cx.globalAlpha=p.alpha;cx.fillStyle=p.color;
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();
+    cx.restore();return true;
+  });
+  requestAnimationFrame(animFx);
+}
+function fireworks(){spawnGold(25+Math.floor(Math.random()*15));requestAnimationFrame(animFx);}
+
+// ── STREAK ──
+function addStreak(){
+  streak++;if(streak>maxStreak)maxStreak=streak;
+  document.getElementById('streakNum').textContent=streak;
+  const b=document.getElementById('streakBadge');b.classList.add('show');
+  if(streak>=3){b.classList.add('fire');showCombo(streak);}else b.classList.remove('fire');
+}
+function resetStreak(){streak=0;document.getElementById('streakBadge').classList.remove('show','fire');}
+
+function showCombo(n){
+  const labels={3:'⚡ COMBO x3',4:'🔥 ĐỈNH CAO x4',5:'👑 ĐẾ VƯƠNG x5',6:'🌟 HUYỀN THOẠI x6'};
+  const bonus={3:10,4:16,5:22,6:30};
+  const lbl=labels[n]||('🌟 x'+n);
+  const bp=bonus[n]||30;
+  document.getElementById('comboLabel').textContent=lbl;
+  document.getElementById('comboPtsLabel').textContent='+'+bp+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bp;updateScore();showPtsPopup('+'+bp+' COMBO!');playCombo();
+  if(n>=4)fireworks();
+}
+
+// ── ADVISOR ──
+const advMsgs=[
+  "Chúa công, đất nước loạn — nhưng lòng dân vẫn chờ người giỏi nhất đứng ra!",
+  "Kiên nhẫn là vũ khí mạnh nhất — đừng đánh dàn trải, hãy đánh từng bước.",
+  "Thu phục lòng người khó hơn chiếm đất. Kẻ nào chiếm được nhân tâm — kẻ đó thắng.",
+  "Vạc dầu và cũi hổ không phải tàn ác — đó là ngôn ngữ duy nhất mà kẻ loạn hiểu được.",
+  "Đất nước không chỉ cần người đánh giỏi — cần người xây dựng giỏi hơn.",
+  "Từ cờ lau đến long kỳ — khoảng cách đó là ý chí của một con người.",
+];
+let advCount=0,advTimer=null;
+function showAdvisor(msg){
+  document.getElementById('advisorText').textContent=msg||advMsgs[Math.floor(Math.random()*advMsgs.length)];
+  const a=document.getElementById('advisorBox');a.classList.add('show');
+  if(advTimer)clearTimeout(advTimer);
+  advTimer=setTimeout(closeAdvisor,7000);
+}
+function closeAdvisor(){document.getElementById('advisorBox').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+function maybeAdvisor(){advCount++;if(advCount%3===0)setTimeout(()=>showAdvisor(),700);}
+
+// ── TIMELINE (single fixed block, updated by JS) ──
+const stages=[
+  {id:'s1',year:'~924',label:'Cờ Lau'},
+  {id:'s1x',year:'~944',label:'Bố Hải Khẩu'},
+  {id:'s1y',year:'~951',label:'Về Hoa Lư'},
+  {id:'s2',year:'944-965',label:'12 Sứ Quân'},
+  {id:'s3',year:'966',label:'Thống Nhất'},
+  {id:'s3b',year:'968',label:'Đại Cồ Việt'},
+  {id:'s4',year:'968-79',label:'Trị Quốc'},
+  {id:'s5',year:'979',label:'Bi Kịch'},
+  {id:'s5b',year:'Di Sản',label:'Di Sản'}
+];
+const sceneToStage={
+  cover:-1,s1:0,s1A:0,s1B:0,s1C:0,
+  s1x:1,s1xA:1,s1xB:1,
+  s1y:2,s1yA:2,s1yB:2,
+  s2:3,s2A:3,s2B:3,s2C:3,
+  s3:4,
+  s3b:5,s3A:5,s3B:5,s3C:5,
+  s4:6,s4A:6,s4B:6,s4C:6,
+  s5:7,
+  s5b:8,s5end_b:8,s5end_c:8,
+  final:8
+};
+function renderTimeline(){
+  const wrap=document.getElementById('tlWrap');
+  wrap.innerHTML=stages.map((s,i)=>{
+    return `<div class="tl-item"><div class="tl-dot todo" id="tld-${i}">${i+1}</div><div class="tl-year">${s.year}</div><div class="tl-event">${s.label}</div></div>`;
+  }).join('');
+}
+function updateTimeline(sceneId){
+  const cur=sceneToStage[sceneId];
+  if(cur===undefined)return;
+  stages.forEach((s,i)=>{
+    const dot=document.getElementById('tld-'+i);
+    if(!dot)return;
+    dot.className='tl-dot '+(i<cur?'done':i===cur?'current':'todo');
+  });
+}
+renderTimeline();
+updateTimeline('cover');
+
+// ── SCORE ──
+const sceneProgress={
+  cover:0,s1:5,s1A:10,s1B:7,s1C:8,
+  s1x:16,s1xA:20,s1xB:18,
+  s1y:26,s1yA:30,s1yB:28,
+  s2:36,s2A:44,s2B:40,s2C:41,
+  s3:50,
+  s3b:58,s3A:64,s3B:60,s3C:61,
+  s4:70,s4A:78,s4B:74,s4C:75,
+  s5:84,
+  s5b:90,s5end_b:92,s5end_c:92,
+  final:100
+};
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+
+function go(id,addPts){
+  if(addPts>0&&!sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPtsPopup('+'+addPts);
+    pts+=addPts;
+  }
+  updateScore();
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{el.querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));},100);}
+  document.getElementById('prog').style.width=(sceneProgress[id]||0)+'%';
+  updateTimeline(id);
+  if(id==='final')showFinal();
+  maybeAdvisor();
+  if(/^s[0-9]/.test(id)&&!id.includes('A')&&!id.includes('B')&&!id.includes('C'))playDrum();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+function showPtsPopup(txt){
+  const p=document.getElementById('ptsPopup');p.textContent=txt;p.className='pts-popup';void p.offsetWidth;p.className='pts-popup show';
+}
+function updateScore(){
+  const el=document.getElementById('scoreNum');el.textContent=pts;el.classList.add('bump');
+  setTimeout(()=>el.classList.remove('bump'),300);
+  document.getElementById('scoreRank').textContent=getRank(pts).label;
+  const pct=Math.min(100,Math.round(pts/2.6));
+  document.getElementById('powerFill').style.width=pct+'%';
+  document.getElementById('powerPct').textContent=pct+'%';
+}
+
+function getRank(p){
+  if(p>=200)return{label:'👑 Đinh Tiên Hoàng Đế',emoji:'👑',desc:'Tuyệt vời! Bạn có trí tuệ, bản lĩnh và sự kiên trì của Đinh Tiên Hoàng. Xứng đáng là người kế thừa tinh thần đế vương Hoa Lư!'};
+  if(p>=140)return{label:'⚔️ Thập Đạo Tướng Quân',emoji:'⚔️',desc:'Xuất sắc! Bạn có tài lãnh đạo và hiểu biết sâu sắc. Còn một bước nữa để trở thành Hoàng Đế!'};
+  if(p>=80)return{label:'🏹 Dũng Tướng Hoa Lư',emoji:'🏹',desc:'Tốt! Bạn đã hiểu nhiều về cuộc đời Đinh Bộ Lĩnh. Hãy thử lại để nắm trọn vẹn câu chuyện phi thường này!'};
+  return{label:'📜 Nghĩa Sĩ Đại Cồ Việt',emoji:'📜',desc:'Bạn đã bắt đầu hành trình! Hãy thử lại — câu chuyện Đinh Bộ Lĩnh còn nhiều điều thú vị chờ bạn khám phá!'};
+}
+
+// ── ACHIEVEMENTS ──
+const allAch=[
+  {id:'warrior',icon:'⚔️',name:'Chiến Tướng',cond:()=>pts>=60},
+  {id:'scholar',icon:'📜',name:'Sử Gia',cond:()=>totalCorrect>=6},
+  {id:'emperor',icon:'👑',name:'Đế Vương',cond:()=>pts>=150},
+  {id:'streak3',icon:'🔥',name:'Liên Hoàn',cond:()=>maxStreak>=3},
+  {id:'combo',icon:'⚡',name:'Hào Khí',cond:()=>maxStreak>=4},
+  {id:'perfect',icon:'⭐',name:'Hoàn Hảo',cond:()=>totalCorrect>=9&&totalKC>=7},
+];
+function buildAchievements(){
+  const w=document.getElementById('achievements');if(!w)return;w.innerHTML='';
+  allAch.forEach((a,i)=>{
+    const locked=!a.cond();
+    const d=document.createElement('div');d.className='ach-card'+(locked?' locked':'');
+    d.style.animationDelay=(i*.1)+'s';
+    d.innerHTML=`<span class="ach-icon">${a.icon}</span><div class="ach-name">${locked?'???':a.name}</div>`;
+    w.appendChild(d);
+  });
+}
+function showFinal(){
+  const rank=getRank(pts);
+  document.getElementById('finalSeal').textContent=rank.emoji;
+  const titles={
+    '👑 Đinh Tiên Hoàng Đế':'👑 Hoàng Đế Đại Cồ Việt!',
+    '⚔️ Thập Đạo Tướng Quân':'⚔️ Thập Đạo Tướng Quân Dũng Mãnh!',
+    '🏹 Dũng Tướng Hoa Lư':'🏹 Dũng Tướng Hoa Lư!',
+    '📜 Nghĩa Sĩ Đại Cồ Việt':'📜 Nghĩa Sĩ Đại Cồ Việt!'
+  };
+  document.getElementById('finalH').textContent=titles[rank.label]||'Hành Trình Hoàn Thành!';
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=rank.label;
+  document.getElementById('finalDesc').textContent=rank.desc;
+  buildAchievements();
+  if(pts>=140){setTimeout(fireworks,300);setTimeout(fireworks,700);}
+  setTimeout(()=>showAdvisor("Chúa công đã hoàn thành hành trình! Từ cờ lau đến long kỳ — đó là con đường của người không bao giờ chấp nhận số phận nhỏ bé."),1000);
+}
+
+// ── KC ──
+function ansKC(btn,correct,id){
+  if(kcAnswered[id])return;kcAnswered[id]=true;totalKC++;
+  const container=btn.parentElement;
+  container.querySelectorAll('.kc-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById(id+'-fb');
+  if(correct){
+    btn.classList.add('correct');pts+=6;totalCorrect++;updateScore();showPtsPopup('+6');
+    fb.textContent='✅ Chính xác! +6 điểm. '+getKCFb(id,true);fb.className='kc-fb show ok';
+    addStreak();playCorrect();
+  } else {
+    btn.classList.add('wrong');
+    container.querySelectorAll('.kc-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');});
+    fb.textContent='❌ Chưa đúng. '+getKCFb(id,false);fb.className='kc-fb show no';
+    resetStreak();playWrong();setTimeout(()=>showAdvisor(),500);
+    setTimeout(()=>{
+      kcAnswered[id]=false;
+      container.querySelectorAll('.kc-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+      fb.className='kc-fb';fb.textContent='';
+    },2500);
+  }
+}
+
+const kcFb={
+  kc1:{ok:'Nhà Đinh — triều đại phong kiến đầu tiên của Việt Nam, tồn tại 968–980, do Đinh Bộ Lĩnh sáng lập.',no:'Đáp án B — Nhà Đinh. Đinh Bộ Lĩnh thống nhất đất nước và lập ra triều đại này năm 968.'},
+  kc1x:{ok:'Trần Minh Công (Trần Lãm) ở Bố Hải Khẩu — nơi Đinh Bộ Lĩnh tích lũy lực lượng đầu tiên trước khi tự lập.',no:'Đáp án B — Trần Minh Công. Ông trọng dụng và trao binh quyền cho Đinh Bộ Lĩnh.'},
+  kc1y:{ok:'Nguyễn Bặc và Đinh Điền — hai công thần trung thành bậc nhất, gắn bó với Đinh Bộ Lĩnh từ những ngày đầu ở Hoa Lư.',no:'Đáp án B — Nguyễn Bặc và Đinh Điền. Hai người trở thành cánh tay phải đắc lực suốt sự nghiệp.'},
+  kc2:{ok:'Khoảng 15–20 năm kiên trì chinh chiến (944–966). Đây là minh chứng cho sự kiên nhẫn phi thường.',no:'Đáp án C — ~15–20 năm. Từ khi loạn bắt đầu (944) đến khi sứ quân cuối cùng quy phục (966).'},
+  kc3a:{ok:'Hơn 20 năm cát cứ (944–966) — một trong những giai đoạn loạn lạc dài nhất lịch sử Việt Nam trung đại.',no:'Đáp án B — hơn 20 năm, từ sau 944 đến 966.'},
+  kc3:{ok:'Hoa Lư được bao bọc bởi núi đá vôi và sông suối hiểm trở — phòng thủ tự nhiên hoàn hảo. Không có thành lũy nhân tạo nào tốt hơn.',no:'Đáp án B — địa thế phòng thủ. Hoa Lư được ví như "pháo đài tự nhiên" không kẻ địch nào dễ dàng phá vỡ.'},
+  kc4:{ok:'Lê Hoàn — Thập Đạo Tướng Quân — là tướng lĩnh quyền lực nhất. Sau này ông lên ngôi lập nhà Tiền Lê (980), đánh bại quân Tống năm 981.',no:'Đáp án C — Lê Hoàn. Ông là người giữ thực quyền quân sự sau khi Đinh Tiên Hoàng mất.'},
+  kc5pre:{ok:'Đinh Liễn — Nam Việt Vương, con trưởng từng vào sinh ra tử cùng cha — bị sát hại cùng vua trong đêm định mệnh năm 979.',no:'Đáp án B — Đinh Liễn. Đây là bi kịch lớn của nhà Đinh.'},
+};
+function getKCFb(id,ok){return kcFb[id]?kcFb[id][ok?'ok':'no']:'';}
+
+// ── MULTI-Q ──
+const mqFb={
+  2:{
+    0:{ok:'Đúng! Ngô Quyền mất năm 944 mà không có người kế nhiệm xứng đáng, dẫn đến cát cứ.',no:'Đáp án B — Ngô Quyền mất. Đây là nguyên nhân trực tiếp của loạn 12 sứ quân.'},
+    1:{ok:'Ngô Xương Xí (con Ngô Xương Ngập) cát cứ vùng Bình Kiều — sứ quân cuối cùng quy phục năm 966.',no:'Đáp án C — Ngô Xương Xí, sứ quân cuối cùng chịu quy phục, kết thúc 25 năm loạn lạc.'},
+    2:{ok:'Chiến lược "từng bước một" — kiên nhẫn và khôn ngoan — là bí quyết thành công của Đinh Bộ Lĩnh.',no:'Đáp án B — đánh tuần tự, vừa đánh vừa chiêu phục. Không bao giờ dàn trải hay liều lĩnh.'}
+  },
+  4:{
+    0:{ok:'Niên hiệu Thái Bình (968–979) — niên hiệu đầu tiên trong lịch sử nhà nước phong kiến độc lập Việt Nam.',no:'Đáp án B — Thái Bình là niên hiệu Đinh Tiên Hoàng dùng suốt triều đại của mình (968–979).'},
+    1:{ok:'Mô hình "thần phục danh nghĩa — độc lập thực tế" — Đinh Tiên Hoàng là người đầu tiên áp dụng thành công ở Việt Nam.',no:'Đáp án B — thần phục về danh nghĩa nhưng tự chủ hoàn toàn. Mô hình này các triều đại sau đều học theo.'},
+    2:{ok:'Vạc dầu và cũi hổ — hình phạt kinh hoàng nhưng hiệu quả. Sử chép không ai dám vi phạm.',no:'Đáp án A — vạc dầu và cũi hổ. Đây là biểu tượng của sự nghiêm khắc trong nền luật pháp đầu tiên của Việt Nam.'},
+    3:{ok:'"Đại Cồ Việt" tồn tại từ 968 đến 1054 — gần 90 năm, qua ba triều Đinh, Tiền Lê và đầu Lý.',no:'Đáp án C — 1054, khi Lý Thánh Tông đổi thành Đại Việt. Tên nước Đại Cồ Việt tồn tại gần một thế kỷ.'}
+  },
+  5:{
+    0:{ok:'Lê Hoàn nắm binh quyền, được Thái hậu Dương Vân Nga ủng hộ, lên ngôi năm 980, lập nhà Tiền Lê.',no:'Đáp án C — Lê Hoàn. Mặc dù Đinh Toàn lên ngôi nhưng thực quyền hoàn toàn trong tay Lê Hoàn.'},
+    1:{ok:'Mô hình nhà nước là di sản vĩ đại nhất — Lý, Trần, Lê đều xây trên nền tảng mà Đinh Tiên Hoàng đặt ra.',no:'Đáp án B — mô hình nhà nước tổng thể. Đây là di sản bền vững nhất, tồn tại qua nhiều triều đại.'},
+    2:{ok:'"Tiên" = "đầu tiên/trước hết" — "Tiên Hoàng" = "Hoàng Đế đầu tiên". Đây là thụy hiệu tôn vinh vị trí lịch sử của ngài.',no:'Đáp án B — "Tiên" có nghĩa là "đầu tiên". Đinh Tiên Hoàng = "Hoàng Đế đầu tiên" của nhà nước phong kiến độc lập Việt Nam.'},
+    3:{ok:'Lễ hội Cố đô Hoa Lư (Ninh Bình) diễn ra vào 10/3 âm lịch — là lễ hội lớn của tỉnh Ninh Bình, tưởng nhớ Đinh Tiên Hoàng và Lê Đại Hành.',no:'Đáp án B — tháng 3 âm lịch tại Hoa Lư, Ninh Bình. Đây là một trong những lễ hội lịch sử lớn của Việt Nam.'}
+  }
+};
+
+function ansMQ(btn,correct,chap,qIdx){
+  const answered=mqAnswered[chap];
+  if(answered[qIdx])return;answered[qIdx]=true;
+  const container=btn.parentElement;
+  container.querySelectorAll('.ch-opt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('mq'+chap+'fb-'+qIdx);
+  const maxQ=chap===2?3:4;
+  if(correct){
+    btn.classList.add('correct');
+    mqState[chap].correct++;
+    const pts_add=chap===5?12:10;
+    pts+=pts_add;totalCorrect++;updateScore();showPtsPopup('+'+pts_add);addStreak();playCorrect();
+    fb.textContent='✅ Chính xác! +'+pts_add+' điểm. '+mqFb[chap][qIdx].ok;fb.className='ch-fb show ok';
+    const dot=document.getElementById('mqd'+chap+'-'+qIdx);if(dot)dot.className='mq-dot done';
+    if(qIdx+1<maxQ){
+      const nextDot=document.getElementById('mqd'+chap+'-'+(qIdx+1));if(nextDot)nextDot.className='mq-dot current';
+      setTimeout(()=>{const next=document.getElementById('mq'+chap+'-'+(qIdx+1));if(next)next.style.display='block';},600);
+    }
+    if(mqState[chap].correct>=3){
+      setTimeout(()=>{const btn=document.getElementById('gate'+chap+'-unlock');if(btn)btn.classList.add('ready');},700);
+    }
+    if(mqState[chap].correct===maxQ)setTimeout(fireworks,300);
+  } else {
+    btn.classList.add('wrong');mqState[chap].errors++;
+    container.querySelectorAll('.ch-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct');});
+    const deduct=chap===5?5:3;
+    if(mqState[chap].errors>=2){pts=Math.max(0,pts-deduct);updateScore();showPtsPopup('-'+deduct);}
+    fb.textContent='❌ Chưa đúng. '+mqFb[chap][qIdx].no;fb.className='ch-fb show no';
+    resetStreak();playWrong();setTimeout(()=>showAdvisor(),500);
+    if(qIdx+1<maxQ){
+      const nextDot=document.getElementById('mqd'+chap+'-'+(qIdx+1));if(nextDot)nextDot.className='mq-dot current';
+      setTimeout(()=>{const next=document.getElementById('mq'+chap+'-'+(qIdx+1));if(next)next.style.display='block';},900);
+    }
+    if(mqState[chap].correct>=3){
+      const btn=document.getElementById('gate'+chap+'-unlock');if(btn)btn.classList.add('ready');
+    }
+    setTimeout(()=>{
+      answered[qIdx]=false;
+      container.querySelectorAll('.ch-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+      fb.className='ch-fb';fb.textContent='';
+    },2500);
+  }
+}
+
+// ── GATE UNLOCK ──
+function unlockGate(contentId,gateId){
+  if(sceneRewarded['gate_'+gateId])return;
+  sceneRewarded['gate_'+gateId]=true;
+  const content=document.getElementById(contentId);
+  if(content)content.classList.remove('gate-locked');
+  const gate=document.getElementById(gateId);
+  if(gate){gate.style.transition='all .4s';gate.style.opacity='0';gate.style.transform='scale(.96)';setTimeout(()=>gate.style.display='none',400);}
+  pts+=8;updateScore();showPtsPopup('+8 Mở Ải!');fireworks();playUnlock();
+  setTimeout(()=>{if(content)content.querySelectorAll('.reveal').forEach(r=>revealObs.observe(r));},300);
+}
+
+// ── ARRANGE ──
+let dragSrc=null;
+function setupDrag(){
+  document.querySelectorAll('.arr-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{dragSrc=item;item.classList.add('dragging');});
+    item.addEventListener('dragend',e=>{item.classList.remove('dragging');});
+    item.addEventListener('dragover',e=>e.preventDefault());
+    item.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragSrc&&dragSrc!==item){
+        const zone=item.parentElement;
+        const items=[...zone.children];
+        const si=items.indexOf(dragSrc),ti=items.indexOf(item);
+        if(si<ti)zone.insertBefore(dragSrc,item.nextSibling);
+        else zone.insertBefore(dragSrc,item);
+      }
+    });
+  });
+}
+setTimeout(setupDrag,600);
+
+function checkArrange(zoneId,fbId,gateId,contentId){
+  const zone=document.getElementById(zoneId);
+  const order=[...zone.children].map(el=>parseInt(el.dataset.val));
+  const correct=[1,2,3,4];
+  const isOk=order.every((v,i)=>v===correct[i]);
+  const fb=document.getElementById(fbId);
+  if(isOk){
+    fb.textContent='✅ Chính xác! Bạn sắp xếp đúng thứ tự chiến lược! +12 điểm';
+    fb.className='ch-fb show ok';
+    if(!arrangeDone){
+      arrangeDone=true;
+      pts+=12;updateScore();showPtsPopup('+12');addStreak();playCorrect();
+    }
+    setTimeout(()=>{const btn=document.getElementById(gateId+'-unlock');if(btn)btn.classList.add('ready');},400);
+  } else {
+    fb.textContent='❌ Chưa đúng! Thứ tự đúng: (1) Xây dựng căn cứ Hoa Lư → (2) Đánh sứ quân nhỏ → (3) Chiêu phục/cô lập sứ quân mạnh → (4) Ngô Xương Xí quy phục. Hãy thử lại!';
+    fb.className='ch-fb show no';
+    resetStreak();playWrong();
+  }
+}
+
+// ── FILL IN THE BLANK ──
+function checkFill(){
+  if(fillDone)return;
+  const year=document.getElementById('fill-year').value.trim();
+  const name=document.getElementById('fill-name').value.trim().toLowerCase();
+  const cap=document.getElementById('fill-capital').value.trim().toLowerCase();
+  const fb=document.getElementById('fill-fb');
+  const yearOk=year==='968'||year.includes('968');
+  const nameOk=name.includes('đại cồ việt')||name.includes('dai co viet')||name.includes('cồ việt')||name.includes('co viet');
+  const capOk=cap.includes('hoa lư')||cap.includes('hoa lu')||cap.includes('ninh bình')||cap.includes('ninh binh');
+  const correct=yearOk&&nameOk&&capOk;
+  const partialScore=(yearOk?1:0)+(nameOk?1:0)+(capOk?1:0);
+  if(correct){
+    fillDone=true;
+    document.getElementById('blank1').textContent='968';
+    document.getElementById('blank2').textContent='Đại Cồ Việt';
+    document.getElementById('blank3').textContent='Hoa Lư';
+    const bonus=Math.max(0,15-fillPartialAwarded);
+    fillPartialAwarded=15;
+    fb.textContent=`✅ Hoàn toàn chính xác! +${bonus} điểm! Đinh Bộ Lĩnh lên ngôi năm 968, đặt tên nước là Đại Cồ Việt, đóng đô tại Hoa Lư (Ninh Bình ngày nay).`;
+    fb.className='ch-fb show ok';
+    if(bonus>0){pts+=bonus;showPtsPopup('+'+bonus+' ĐẦY ĐỦ!');}
+    updateScore();addStreak();playCorrect();fireworks();
+  } else if(partialScore>=2){
+    fb.textContent='⭕ Gần đúng! (+'+partialScore+' trong 3 ô đúng).';
+    fb.className='ch-fb show no';
+    const newPts=partialScore*3;
+    const delta=Math.max(0,newPts-fillPartialAwarded);
+    if(delta>0){fillPartialAwarded=newPts;pts+=delta;updateScore();showPtsPopup('+'+delta);}
+  } else {
+    fb.textContent='❌ Chưa đúng. Gợi ý: năm 968, tên nước bắt đầu bằng "Đại", kinh đô ở Ninh Bình ngày nay.';
+    fb.className='ch-fb show no';
+    resetStreak();playWrong();
+  }
+}
+
+// ── MATCH PAIRS ──
+const matchAnswer={'ml-1':'mr-1','ml-2':'mr-2','ml-3':'mr-3','ml-4':'mr-4','ml-5':'mr-5'};
+let matchSel={left:null,right:null};
+let matchCorrect=0;
+
+function selectMatch(el,side){
+  if(el.classList.contains('matched'))return;
+  const col=side==='left'?document.getElementById('match-left'):document.getElementById('match-right');
+  col.querySelectorAll('.match-item:not(.matched)').forEach(i=>i.classList.remove('selected'));
+  el.classList.add('selected');
+  matchSel[side]=el;
+  if(matchSel.left&&matchSel.right){
+    const lid=matchSel.left.dataset.id;
+    const rid=matchSel.right.dataset.id;
+    if(matchAnswer[lid]===rid){
+      matchSel.left.classList.add('matched');matchSel.left.classList.remove('selected');
+      matchSel.right.classList.add('matched');matchSel.right.classList.remove('selected');
+      matchCorrect++;
+      pts+=4;updateScore();showPtsPopup('+4');addStreak();playCorrect();
+      if(matchCorrect>=4){
+        document.getElementById('match-fb').textContent='✅ Xuất sắc! Đã nối đúng '+matchCorrect+'/5 cặp! Mở cửa ải!';
+        document.getElementById('match-fb').className='ch-fb show ok';
+        setTimeout(()=>document.getElementById('gate3-unlock').classList.add('ready'),500);
+        if(matchCorrect===5){pts+=8;updateScore();showPtsPopup('+8 HOÀN HẢO!');}
+        fireworks();
+      }
+    } else {
+      matchSel.left.classList.add('wrong-match');matchSel.right.classList.add('wrong-match');
+      playWrong();resetStreak();
+      setTimeout(()=>{
+        matchSel.left.classList.remove('wrong-match','selected');
+        matchSel.right.classList.remove('wrong-match','selected');
+      },700);
+    }
+    matchSel={left:null,right:null};
+  }
+}
+
+function checkMatch(gateId,contentId){
+  if(matchCorrect>=4){
+    document.getElementById('gate3-unlock').classList.add('ready');
+    document.getElementById('match-fb').textContent='✅ Đã đủ điều kiện! Bấm "Mở Ngày Thống Nhất" để tiếp tục.';
+    document.getElementById('match-fb').className='ch-fb show ok';
+  } else {
+    document.getElementById('match-fb').textContent='⚔️ Cần nối đúng ít nhất 4/5 cặp. Hiện tại: '+matchCorrect+'/5. Tiếp tục nối!';
+    document.getElementById('match-fb').className='ch-fb show no';
+  }
+}
+
+// ── RESTART ──
+function restart(){
+  pts=0;streak=0;maxStreak=0;totalCorrect=0;totalKC=0;
+    sceneHistory=['cover'];historyIndex=0;sceneRewarded={};updateNavButtons();
+    
+  kcAnswered={};fillDone=false;arrangeDone=false;fillPartialAwarded=0;matchCorrect=0;
+  matchSel={left:null,right:null};
+  mqState={2:{current:0,correct:0,errors:0},4:{current:0,correct:0,errors:0},5:{current:0,correct:0,errors:0}};
+  mqAnswered={2:[false,false,false],4:[false,false,false,false],5:[false,false,false,false]};
+  ['s2-content','s2-content2','s3-content','s4-content','s5-content'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('gate-locked');});
+  ['gate2-unlock','gate2b-unlock','gate3-unlock','gate4-unlock','gate5-unlock'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('ready');});
+  ['gate2','gate2b','gate3','gate4','gate5'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='';el.style.opacity='';el.style.transform='';}});
+  ['mq2-1','mq2-2','mq4-1','mq4-2','mq4-3','mq5-1','mq5-2','mq5-3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  for(let i=0;i<3;i++){const d=document.getElementById('mqd2-'+i);if(d)d.className='mq-dot'+(i===0?' current':'');}
+  for(let i=0;i<4;i++){const d=document.getElementById('mqd4-'+i);if(d)d.className='mq-dot'+(i===0?' current':'');}
+  for(let i=0;i<4;i++){const d=document.getElementById('mqd5-'+i);if(d)d.className='mq-dot'+(i===0?' current':'');}
+  document.querySelectorAll('.ch-opt,.kc-opt').forEach(b=>{b.classList.remove('correct','wrong');b.disabled=false;});
+  document.querySelectorAll('.match-item').forEach(m=>{m.classList.remove('matched','selected','wrong-match');});
+  document.querySelectorAll('.ch-fb,.kc-fb').forEach(f=>{f.className=f.className.replace(' show','').replace('ok','').replace('no','');});
+  ['fill-year','fill-name','fill-capital'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const b1=document.getElementById('blank1'),b2=document.getElementById('blank2'),b3=document.getElementById('blank3');
+  if(b1)b1.textContent='___';if(b2)b2.textContent='___';if(b3)b3.textContent='___';
+  const zone=document.getElementById('arr-zone-2b');
+  if(zone){
+    const items=[...zone.children];
+    const shuffled=[items[2],items[0],items[3],items[1]];
+    shuffled.forEach(i=>zone.appendChild(i));
+  }
+  updateScore();
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('powerFill').style.width='0%';
+  document.getElementById('powerPct').textContent='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  updateTimeline('cover');
+  document.getElementById('streakBadge').classList.remove('show','fire');
+  window.scrollTo({top:0,behavior:'smooth'});
+  closeAdvisor();
+}
+
+// Init
+setTimeout(()=>showAdvisor("Hào kiệt thời loạn! Bước vào hành trình từ cậu bé chăn trâu đến Hoàng Đế đầu tiên của Việt Nam độc lập!"),2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hồ Quý Ly — Canh Bạc Cải Cách | Sử Việt Tương Tác</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* Bảng màu "đồng - đá - giấy" khác hẳn tông đỏ-vàng cách mạng của bản Hồ Chí Minh,
+     gợi cảm giác cải cách / hành chính / đá xây thành hơn là khởi nghĩa vũ trang */
+  --gold:#c17f2a;--gold-l:#e0a752;--gold-dim:#7a4f18;--gold-faint:rgba(193,127,42,0.14);
+  --red:#5a4636;--red-l:#8a7059;--red-dark:#332619;
+  --star:#efe4cf;--star-dim:rgba(239,228,207,0.72);--star-faint:rgba(239,228,207,0.38);
+  --bg:#0a0806;--surface:rgba(18,14,10,0.97);
+  --jade:#0d6e6e;--jade-l:#2bb3a8;
+  --ink:#050403;
+  --stone:#6b7280;--stone-l:#9aa1ab;
+}
+body{font-family:'Crimson Pro',Georgia,serif;background:var(--bg);color:var(--star);min-height:100vh;overflow-x:hidden;cursor:default;}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 55% 40% at 15% 20%,rgba(193,127,42,0.09) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 75%,rgba(13,110,110,0.08) 0%,transparent 55%);}
+.corner{position:fixed;width:48px;height:48px;z-index:2;pointer-events:none;border-color:rgba(193,127,42,0.35);border-style:solid;}
+.corner.tl{top:18px;left:18px;border-width:2px 0 0 2px;}.corner.tr{top:18px;right:18px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:18px;left:18px;border-width:0 0 2px 2px;}.corner.br{bottom:18px;right:18px;border-width:0 2px 2px 0;}
+.top-stripe{position:fixed;top:0;left:0;right:0;height:4px;z-index:400;background:linear-gradient(90deg,var(--stone) 0%,var(--stone) 45%,var(--gold) 45%,var(--gold-l) 100%);}
+nav{position:fixed;top:4px;left:0;right:0;z-index:300;height:54px;background:rgba(10,8,6,0.98);border-bottom:1px solid rgba(193,127,42,0.18);display:flex;align-items:center;justify-content:space-between;padding:0 36px;backdrop-filter:blur(16px);}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold-l);letter-spacing:4px;text-decoration:none;display:flex;align-items:center;gap:9px;}
+.nav-subtitle{font-size:11px;color:var(--star-faint);letter-spacing:2px;font-family:'Space Mono',monospace;}
+.prog-rail{position:fixed;top:58px;left:0;right:0;z-index:299;height:3px;background:rgba(255,255,255,0.04);}
+.prog-fill{height:100%;width:0%;transition:width 1s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--red-dark),var(--stone),var(--gold),var(--gold-l));}
+.hud{position:fixed;top:70px;right:20px;z-index:298;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.hud-card{background:rgba(10,8,6,0.94);border:1px solid rgba(193,127,42,0.28);border-radius:44px;padding:7px 18px;display:flex;align-items:center;gap:10px;backdrop-filter:blur(14px);}
+.hud-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);font-family:'Space Mono',monospace;}
+.hud-val{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold-l);font-weight:700;min-width:34px;text-align:center;transition:transform .25s;}
+.hud-val.bump{transform:scale(1.5);}
+.pts-pop{position:fixed;top:82px;right:100px;z-index:999;font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);font-weight:700;pointer-events:none;opacity:0;text-shadow:0 0 20px rgba(193,127,42,0.9);}
+.pts-pop.show{animation:popUp .85s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes popUp{0%{opacity:0;transform:translateY(0) scale(.8);}35%{opacity:1;transform:translateY(-22px) scale(1.25);}72%{opacity:1;transform:translateY(-38px) scale(1);}100%{opacity:0;transform:translateY(-52px) scale(.9);}}
+.chapter-map{display:flex;align-items:center;gap:0;margin:28px 0;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);}
+.chapter-map::-webkit-scrollbar{display:none;}
+.cm-item{flex:1;min-width:72px;display:flex;flex-direction:column;align-items:center;position:relative;}
+.cm-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(193,127,42,.28),rgba(193,127,42,.06));z-index:0;}
+.cm-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;z-index:1;position:relative;transition:all .4s;}
+.cm-dot.done{background:var(--gold-dim);border:2px solid var(--gold);color:var(--ink);}
+.cm-dot.now{background:var(--stone);border:2px solid var(--gold-l);color:#fff;animation:pulseNow 2s ease-in-out infinite;}
+@keyframes pulseNow{0%,100%{box-shadow:0 0 0 0 rgba(193,127,42,.5);}50%{box-shadow:0 0 0 8px rgba(193,127,42,0);}}
+.cm-dot.lock{background:rgba(239,228,207,.04);border:2px solid rgba(239,228,207,.1);color:var(--star-faint);}
+.cm-year{font-size:10px;color:var(--gold-l);margin-top:5px;text-align:center;font-family:'Space Mono',monospace;}
+.cm-evt{font-size:9px;color:var(--star-faint);margin-top:2px;text-align:center;line-height:1.35;}
+/* ── COVER MỞ ĐẦU ── */
+.cover-scene{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 10px;}
+.cover-emblem{width:112px;height:112px;border-radius:50%;background:radial-gradient(circle,rgba(107,114,128,.4),rgba(10,8,6,.9));border:2px solid rgba(193,127,42,.5);display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:26px;box-shadow:0 0 60px rgba(107,114,128,.35);animation:coverPulse 3.4s ease-in-out infinite;}
+@keyframes coverPulse{0%,100%{box-shadow:0 0 40px rgba(107,114,128,.25);transform:scale(1);}50%{box-shadow:0 0 90px rgba(193,127,42,.5),0 0 130px rgba(107,114,128,.2);transform:scale(1.04);}}
+.cover-eyebrow{font-size:12px;letter-spacing:5px;color:var(--gold-l);text-transform:uppercase;margin-bottom:14px;font-family:'Space Mono',monospace;opacity:0;animation:coverIn .8s ease forwards;animation-delay:.15s;}
+.cover-title{font-family:'Playfair Display',serif;font-size:clamp(34px,7vw,58px);color:#fff;line-height:1.15;margin-bottom:10px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.35s;text-shadow:0 0 40px rgba(107,114,128,.5);}
+.cover-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:19px;color:var(--gold-l);margin-bottom:22px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.55s;}
+@keyframes coverIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cover-desc{max-width:520px;font-size:15.5px;line-height:1.85;color:var(--star-dim);margin-bottom:30px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.75s;}
+.cover-chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;opacity:0;animation:coverIn .9s ease forwards;animation-delay:.9s;}
+.cover-start-btn{padding:15px 38px;background:linear-gradient(135deg,var(--red-l),var(--red));border:1px solid rgba(193,127,42,.5);border-radius:12px;color:#fff;font-family:'Crimson Pro',serif;font-size:17.5px;letter-spacing:.5px;cursor:pointer;transition:all .35s;opacity:0;animation:coverIn .9s ease forwards;animation-delay:1.05s;box-shadow:0 12px 40px rgba(107,114,128,.35);}
+.cover-start-btn:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 18px 55px rgba(107,114,128,.5),0 0 40px rgba(193,127,42,.25);}
+.cover-scroll-hint{margin-top:18px;font-size:11px;color:var(--star-faint);letter-spacing:2px;text-transform:uppercase;opacity:0;animation:coverIn .9s ease forwards,bobDown 2.2s ease-in-out infinite 1.3s;animation-delay:1.2s;}
+@keyframes bobDown{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+.wrap{max-width:820px;margin:0 auto;padding:82px 22px 80px;position:relative;z-index:2;}
+.scene{display:none;}
+.scene.active{display:block;animation:pageFlip .75s cubic-bezier(.22,1,.36,1);max-width:820px;margin:0 auto;padding:0 22px;}
+@keyframes pageFlip{0%{opacity:0;transform:translateY(26px) scale(.98);}100%{opacity:1;transform:translateY(0) scale(1);}}
+.gold-burst{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--gold-l);pointer-events:none;z-index:9999;box-shadow:0 0 8px rgba(193,127,42,.9);}
+.streak-badge{position:fixed;top:70px;left:20px;z-index:298;background:rgba(10,8,6,0.94);border:1px solid rgba(193,127,42,0.32);border-radius:40px;padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--star-dim);backdrop-filter:blur(12px);opacity:0;transform:translateX(-12px);transition:all .4s;}
+.streak-badge.show{opacity:1;transform:translateX(0);}
+.streak-badge.fire{border-color:rgba(43,179,168,.65);box-shadow:0 0 18px rgba(43,179,168,.28);}
+.streak-num{font-family:'Playfair Display',serif;font-size:19px;color:var(--jade-l);font-weight:700;}
+.combo-burst{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:998;pointer-events:none;text-align:center;opacity:0;}
+.combo-burst.pop{animation:comboPop .9s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes comboPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-4deg);}40%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);}70%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.08) rotate(0);}}
+.combo-inner{background:radial-gradient(ellipse at center,rgba(90,70,54,0.85),rgba(10,8,6,0.95));border:2px solid var(--gold-l);border-radius:20px;padding:18px 34px;box-shadow:0 0 60px rgba(193,127,42,.4),0 0 110px rgba(13,110,110,.2);}
+.combo-title{font-size:12px;color:var(--gold-l);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+.combo-label{font-size:30px;color:#fff;font-family:'Playfair Display',serif;}
+.combo-sub{font-size:13px;color:rgba(239,228,207,0.6);margin-top:4px;}
+.ripple-el{position:absolute;border-radius:50%;background:rgba(224,167,82,0.45);transform:scale(0);animation:rippleAnim .6s ease-out forwards;pointer-events:none;}
+@keyframes rippleAnim{to{transform:scale(2.6);opacity:0;}}
+.chap-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(193,127,42,0.1);border:1px solid rgba(193,127,42,0.32);border-radius:30px;padding:6px 20px;font-size:11px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;font-family:'Space Mono',monospace;}
+.hero-art{width:100%;max-width:760px;margin-left:auto;margin-right:auto;height:280px;border-radius:16px;margin-bottom:26px;border:1px solid rgba(193,127,42,0.2);overflow:hidden;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.8);}
+.hero-art img{width:100%;height:100%;object-fit:cover;opacity:0.7;position:absolute;top:0;left:0;}
+.hero-art .cap{position:relative;text-align:center;color:var(--gold-l);z-index:1;height:100%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px;}
+.edu-pill{float:right;width:210px;margin:0 0 18px 22px;background:rgba(193,127,42,0.07);border:1px solid rgba(193,127,42,0.22);border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.7;color:var(--star-dim);}
+.edu-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:block;font-family:'Space Mono',monospace;}
+.story{font-size:19px;line-height:1.95;color:rgba(239,228,207,.9);margin-bottom:14px;}
+.story em{color:var(--jade-l);font-style:italic;}
+.story strong{color:#fff;font-weight:600;}
+.story::after{content:'';display:block;clear:both;}
+.dlg{background:rgba(107,114,128,0.1);border-left:3px solid rgba(107,114,128,0.55);border-radius:0 12px 12px 0;padding:16px 22px;margin:20px 0;font-style:italic;font-size:18px;line-height:1.78;color:var(--star);}
+.dlg-who{font-size:10px;font-style:normal;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;font-family:'Space Mono',monospace;}
+.fact{background:rgba(193,127,42,0.08);border:1px solid rgba(193,127,42,0.28);border-radius:12px;padding:17px 20px;margin:20px 0;font-size:15px;line-height:1.82;color:var(--star-dim);}
+.fact-tag{font-size:10px;color:var(--gold-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;display:block;font-family:'Space Mono',monospace;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(193,127,42,0.12);border:1px solid rgba(193,127,42,0.22);border-radius:20px;padding:3px 11px;font-size:11px;color:var(--gold-l);margin:3px 3px 3px 0;}
+.quote-moment{text-align:center;padding:28px;background:rgba(193,127,42,0.07);border:1px solid rgba(193,127,42,0.22);border-radius:16px;margin:26px 0;font-family:'Playfair Display',serif;font-size:21px;color:var(--gold-l);line-height:1.72;font-style:italic;}
+.quote-src{font-size:13px;color:rgba(239,228,207,0.45);font-style:normal;font-family:'Crimson Pro',serif;margin-top:12px;display:block;}
+.reflect{background:rgba(13,110,110,0.06);border:1px dashed rgba(43,179,168,0.35);border-radius:14px;padding:18px 22px;margin:22px 0;}
+.reflect-tag{font-size:10px;color:var(--jade-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.reflect-q{font-size:16.5px;font-style:italic;color:var(--star);line-height:1.7;margin-bottom:8px;}
+.reflect-note{font-size:12px;color:var(--star-faint);}
+.counterf{margin-top:14px;}
+.counterf-btn{background:rgba(193,127,42,.08);border:1px solid rgba(193,127,42,.3);border-radius:10px;padding:10px 18px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:14.5px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px;}
+.counterf-btn:hover{background:rgba(193,127,42,.16);}
+.counterf-body{display:none;margin-top:12px;background:rgba(90,70,54,0.08);border-left:3px solid rgba(107,114,128,.5);border-radius:0 12px 12px 0;padding:15px 20px;font-size:14.5px;line-height:1.8;color:var(--star-dim);font-style:italic;}
+.counterf-body.show{display:block;animation:reflectIn .4s ease;}
+@keyframes reflectIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== Nguồn sử liệu ===== */
+.src-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace;padding:2px 9px;border-radius:10px;margin-left:8px;cursor:pointer;vertical-align:middle;transition:.2s;background:rgba(193,127,42,.14);color:var(--gold-l);border:1px solid rgba(193,127,42,.35);}
+.src-tag:hover{transform:scale(1.06);}
+.src-popup-overlay{position:fixed;inset:0;background:rgba(2,1,1,.72);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.src-popup-overlay.show{display:flex;}
+.src-popup{background:var(--surface);border:1px solid rgba(193,127,42,.4);border-radius:16px;padding:24px 26px;max-width:440px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes srcPopIn{from{opacity:0;transform:scale(.9) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.src-popup-badge{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:12px;font-family:'Space Mono',monospace;background:rgba(193,127,42,.18);color:var(--gold-l);border:1px solid rgba(193,127,42,.4);}
+.src-popup-title{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin:10px 0;line-height:1.4;}
+.src-popup-body{font-size:14.5px;line-height:1.75;color:var(--star-dim);margin-bottom:14px;}
+.src-popup-cite{background:rgba(239,228,207,.04);border-left:2px solid rgba(193,127,42,.4);padding:9px 13px;font-size:13px;color:var(--star-faint);font-family:'Crimson Pro',serif;font-style:italic;margin-bottom:14px;}
+.src-popup-close{background:rgba(193,127,42,.15);border:1px solid rgba(193,127,42,.35);color:var(--gold-l);padding:8px 20px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;transition:.2s;}
+.src-popup-close:hover{background:rgba(193,127,42,.28);}
+
+/* ===== BẢN ĐỒ HÀNH TRÌNH ===== */
+.map-overlay{position:fixed;inset:0;background:rgba(2,1,1,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.map-overlay.show{display:flex;}
+.map-modal{background:radial-gradient(ellipse at 12% 88%,rgba(193,127,42,.09),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(13,110,110,.09),transparent 55%),var(--surface);border:1px solid rgba(193,127,42,.4);border-radius:16px;padding:24px 26px;max-width:820px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);max-height:85vh;overflow-y:auto;}
+.map-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:14px;}
+.map-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);}
+.map-modal-close{background:rgba(193,127,42,.15);border:1px solid rgba(193,127,42,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.jmap-note{font-size:11.5px;color:var(--star-faint);margin-bottom:14px;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap-pt{fill:var(--gold-l);stroke:var(--ink);stroke-width:2;filter:drop-shadow(0 0 7px rgba(193,127,42,.75));transition:opacity .7s ease;}
+.jmap-lbl{fill:#efe4cf;font-size:12px;font-weight:600;font-family:'Crimson Pro',serif;}
+.jmap-yr{fill:var(--jade-l);font-size:10px;font-weight:700;font-family:'Space Mono',monospace;}
+.jmap-path{fill:none;stroke:rgba(193,127,42,0.5);stroke-width:2.5;stroke-dasharray:5 5;}
+.jmap-pt.locked{opacity:1;fill:rgba(239,228,207,.08);stroke:rgba(239,228,207,.35);stroke-dasharray:2 2;filter:none;}
+.jmap-lbl.locked,.jmap-yr.locked{opacity:0.4;fill:var(--star-faint);font-weight:400;}
+.nav-map-btn{background:transparent;border:1px solid rgba(193,127,42,.32);border-radius:50%;width:34px;height:34px;color:var(--gold-l);cursor:pointer;font-size:15px;margin-right:8px;}
+.ref-overlay{position:fixed;inset:0;background:rgba(2,1,1,.8);z-index:9985;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.ref-overlay.show{display:flex;}
+.ref-modal{background:var(--surface);border:1px solid rgba(193,127,42,.4);border-radius:16px;padding:26px 28px;max-width:640px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:srcPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+.ref-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:14px;}
+.ref-modal-title{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold-l);}
+.ref-modal-close{background:rgba(193,127,42,.15);border:1px solid rgba(193,127,42,.35);color:var(--gold-l);padding:6px 16px;border-radius:9px;font-family:'Crimson Pro',serif;font-size:14px;cursor:pointer;flex-shrink:0;}
+.nav-back{font-size:12px;color:var(--star-faint);letter-spacing:1px;text-decoration:none;padding:6px 14px;border:1px solid rgba(193,127,42,.32);border-radius:20px;transition:all .25s;white-space:nowrap;}
+.nav-back:hover{color:var(--gold-l);border-color:var(--gold-l);background:rgba(193,127,42,.12);}
+.nav-left{display:flex;align-items:center;gap:16px;}
+
+/* ===== KHỐI TƯƠNG TÁC — nhiều kiểu chơi khác nhau, không chỉ A/B/C ===== */
+.play-box{background:rgba(90,70,54,0.08);border:1px solid rgba(107,114,128,0.32);border-radius:14px;padding:19px 22px;margin:22px 0;}
+.play-tag{font-size:10px;color:var(--jade-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.play-q{font-size:16.5px;font-weight:600;color:#fff;margin-bottom:14px;line-height:1.5;}
+
+/* Kiểu 1: ĐÚNG / SAI chớp nhoáng */
+.tf-row{display:flex;gap:12px;}
+.tf-btn{flex:1;padding:16px;border-radius:12px;font-family:'Crimson Pro',serif;font-size:17px;font-weight:600;cursor:pointer;transition:.22s;text-align:center;border:1.5px solid rgba(239,228,207,.16);background:rgba(239,228,207,.03);color:var(--star);}
+.tf-btn.yes:hover:not(:disabled){border-color:var(--jade-l);background:rgba(43,179,168,.1);}
+.tf-btn.no:hover:not(:disabled){border-color:var(--gold-l);background:rgba(193,127,42,.1);}
+.tf-btn.correct{background:rgba(30,90,25,.28)!important;border-color:#4caf50!important;color:#a5d6a7!important;}
+.tf-btn.wrong{background:rgba(120,0,0,.28)!important;border-color:#e53935!important;color:#ef9a9a!important;}
+.tf-btn:disabled{cursor:default;opacity:.55;}
+
+/* Kiểu 2: GHÉP CẶP — click 1 thẻ trái rồi 1 thẻ phải */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.match-col-label{font-size:10px;color:var(--star-faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Space Mono',monospace;}
+.match-item{background:rgba(239,228,207,.03);border:1.5px solid rgba(239,228,207,.14);border-radius:10px;padding:11px 14px;font-size:14.5px;color:var(--star);cursor:pointer;margin-bottom:8px;transition:.2s;}
+.match-item:hover:not(.matched){border-color:var(--gold-l);background:rgba(193,127,42,.08);}
+.match-item.selected{border-color:var(--jade-l);background:rgba(43,179,168,.14);}
+.match-item.matched{border-color:#4caf50;background:rgba(30,90,25,.2);color:#a5d6a7;cursor:default;}
+.match-item.shake{animation:shakeX .4s;border-color:#e53935!important;}
+@keyframes shakeX{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.match-progress{font-size:12px;color:var(--star-faint);margin-top:10px;font-family:'Space Mono',monospace;}
+
+/* Kiểu 3: CHỌN NHIỀU (multi-select) rồi bấm xác nhận */
+.ms-opts{display:flex;flex-direction:column;gap:9px;}
+.ms-opt{display:flex;align-items:center;gap:12px;background:rgba(239,228,207,.03);border:1.5px solid rgba(239,228,207,.14);border-radius:10px;padding:12px 16px;font-size:15px;color:var(--star);cursor:pointer;transition:.2s;}
+.ms-opt:hover:not(.locked){border-color:var(--gold-l);}
+.ms-opt.picked{border-color:var(--jade-l);background:rgba(43,179,168,.1);}
+.ms-check{width:20px;height:20px;min-width:20px;border-radius:5px;border:1.5px solid rgba(239,228,207,.3);display:flex;align-items:center;justify-content:center;font-size:12px;transition:.2s;}
+.ms-opt.picked .ms-check{background:var(--jade-l);border-color:var(--jade-l);color:#04120f;}
+.ms-submit{margin-top:14px;padding:10px 22px;background:rgba(193,127,42,.18);border:1px solid rgba(193,127,42,.4);border-radius:10px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.25s;}
+.ms-submit:hover{background:rgba(193,127,42,.3);}
+.ms-submit:disabled{opacity:.4;cursor:default;}
+
+/* Kiểu 4: XẾP HẠNG / ưu tiên — bấm theo thứ tự bạn cho là đúng nhất */
+.rank-opts{display:flex;flex-direction:column;gap:10px;}
+.rank-opt{display:flex;align-items:center;gap:14px;background:rgba(239,228,207,.03);border:1.5px solid rgba(239,228,207,.14);border-radius:10px;padding:13px 16px;cursor:pointer;transition:.2s;}
+.rank-opt:hover:not(.ranked){border-color:var(--gold-l);transform:translateX(4px);}
+.rank-opt.ranked{border-color:var(--jade-l);background:rgba(43,179,168,.1);cursor:default;}
+.rank-num{width:26px;height:26px;min-width:26px;border-radius:50%;background:rgba(193,127,42,.14);border:1px solid rgba(193,127,42,.4);color:var(--gold-l);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;}
+.rank-opt.ranked .rank-num{background:var(--jade-l);color:#04120f;border-color:var(--jade-l);}
+
+/* Chọn kịch bản (thẻ dạng "quẻ bài" thay vì A/B/C) */
+.scroll-choices{display:flex;flex-direction:column;gap:11px;}
+.scroll-btn{background:rgba(239,228,207,.025);border:1px solid rgba(239,228,207,.12);border-radius:12px;padding:17px 21px;color:var(--star);font-family:'Crimson Pro',serif;font-size:17px;text-align:left;cursor:pointer;transition:all .28s;display:flex;align-items:flex-start;gap:13px;line-height:1.55;}
+.scroll-btn:hover{background:rgba(193,127,42,0.1);border-color:rgba(193,127,42,.48);transform:translateX(7px);box-shadow:0 4px 22px rgba(0,0,0,.3);}
+.scroll-tag{width:32px;height:32px;min-width:32px;border-radius:8px;background:rgba(107,114,128,.14);border:1px solid rgba(107,114,128,.4);color:var(--gold-l);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .28s;}
+.scroll-btn:hover .scroll-tag{background:rgba(193,127,42,.24);border-color:var(--gold-l);}
+.scroll-sub{font-size:12.5px;color:var(--star-faint);font-style:italic;margin-top:4px;}
+.play-fb{margin-top:14px;font-size:15px;line-height:1.72;display:none;padding:12px 16px;border-radius:10px;}
+.play-fb.show{display:block;animation:reflectIn .4s ease;}
+.play-fb.ok{background:rgba(30,90,25,.18);color:#a5d6a7;}
+.play-fb.no{background:rgba(120,0,0,.18);color:#ef9a9a;}
+
+/* ===== KẾT ===== */
+.final{text-align:center;padding:40px 0;}
+.final-seal{width:136px;height:136px;border-radius:50%;background:rgba(193,127,42,.09);border:2px solid rgba(193,127,42,.4);margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:54px;animation:sealGlow 3s ease-in-out infinite;}
+@keyframes sealGlow{0%,100%{box-shadow:0 0 40px rgba(193,127,42,.2);}50%{box-shadow:0 0 80px rgba(193,127,42,.55),0 0 110px rgba(13,110,110,.15);}}
+.final-h{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold-l);margin-bottom:11px;line-height:1.3;}
+.final-pts{font-size:56px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:11px 0;text-shadow:0 0 32px rgba(193,127,42,.5);}
+.final-rank-badge{display:inline-block;background:rgba(107,114,128,.12);border:1px solid rgba(107,114,128,.4);border-radius:30px;padding:7px 26px;font-size:14px;color:var(--star);margin-bottom:22px;letter-spacing:1px;}
+.final-desc{font-size:17px;color:var(--star-dim);line-height:1.92;max-width:540px;margin:0 auto 30px;}
+.final-achs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0 26px;}
+.ach{background:rgba(193,127,42,.07);border:1px solid rgba(193,127,42,.26);border-radius:12px;padding:11px 14px;text-align:center;min-width:94px;animation:achIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+.ach.locked{opacity:.25;filter:grayscale(1);}
+@keyframes achIn{from{opacity:0;transform:translateY(18px) scale(.8);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ach-icon{font-size:26px;display:block;margin-bottom:5px;}
+.ach-name{font-size:10px;color:var(--gold-l);letter-spacing:1px;font-family:'Space Mono',monospace;}
+.final-lesson{background:rgba(90,70,54,.08);border:1px solid rgba(107,114,128,.3);border-radius:14px;padding:22px 24px;text-align:left;margin:0 0 34px;font-size:16px;line-height:1.88;color:var(--star-dim);}
+.fl-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:block;font-family:'Space Mono',monospace;}
+.btn-row{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;}
+.btn-ghost{padding:12px 26px;background:transparent;border:1px solid rgba(193,127,42,.38);border-radius:10px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;}
+.btn-ghost:hover{background:rgba(193,127,42,.14);}
+.btn-solid{padding:12px 26px;background:rgba(107,114,128,.5);border:1px solid rgba(107,114,128,.38);border-radius:10px;color:var(--star);font-family:'Crimson Pro',serif;font-size:16px;cursor:pointer;transition:.3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-solid:hover{background:var(--stone);}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.journal{background:rgba(193,127,42,0.05);border:1px solid rgba(193,127,42,0.25);border-radius:16px;padding:24px 26px;margin:0 0 30px;text-align:left;}
+.journal-tag{font-size:10px;color:var(--gold-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:block;font-family:'Space Mono',monospace;}
+.journal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(239,228,207,.06);font-size:14.5px;color:var(--star-dim);gap:10px;}
+.journal-row:last-child{border-bottom:none;}
+.journal-status{font-size:11.5px;padding:2px 10px;border-radius:10px;font-family:'Space Mono',monospace;white-space:nowrap;}
+.journal-status.ok{background:rgba(30,90,25,.2);color:#a5d6a7;}
+.journal-status.no{background:rgba(120,0,0,.2);color:#ef9a9a;}
+.journal-copy{margin-top:16px;background:rgba(193,127,42,.14);border:1px solid rgba(193,127,42,.35);border-radius:10px;padding:10px 20px;color:var(--gold-l);font-family:'Crimson Pro',serif;font-size:15px;cursor:pointer;transition:.2s;}
+.journal-copy:hover{background:rgba(193,127,42,.24);}
+.jmap-box{background:radial-gradient(ellipse at 12% 88%,rgba(193,127,42,.1),transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(13,110,110,.1),transparent 55%),rgba(10,8,6,0.6);border:1px solid rgba(193,127,42,0.25);border-radius:16px;padding:24px;margin:26px 0;}
+
+.lb-modal{display:none;position:fixed;inset:0;background:rgba(4,3,2,0.75);z-index:9997;align-items:center;justify-content:center;}
+.lb-modal.show{display:flex;}
+.lb-box{background:#100c08;border:1px solid rgba(193,127,42,0.3);border-radius:16px;width:90%;max-width:420px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.lb-header{background:var(--red-dark);color:var(--star);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+.lb-header h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold-l);}
+.lb-close{cursor:pointer;font-size:18px;opacity:0.8;color:var(--star);}
+.lb-content{padding:16px 20px;overflow-y:auto;}
+.lb-loading,.lb-empty{text-align:center;color:var(--star-faint);padding:24px 0;font-size:14px;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(193,127,42,0.15);}
+.lb-rank{width:28px;text-align:center;font-weight:700;color:var(--gold-l);}
+.lb-name{flex:1;font-weight:600;color:var(--star);font-size:14px;}
+.lb-exp{font-size:13px;color:var(--gold-dim);font-weight:600;}
+.lb-myrank{margin-top:14px;padding:12px;background:rgba(193,127,42,0.08);border:1px solid var(--gold);border-radius:10px;text-align:center;font-size:14px;color:var(--star);}
+
+@media(max-width:640px){
+  nav{padding:0 14px;}
+  .wrap{padding:74px 12px 60px;}
+  .edu-pill{float:none;width:100%;margin:0 0 14px;}
+  .story{font-size:17px;}
+  .match-grid{grid-template-columns:1fr;}
+  .chapter-map{margin:20px -12px;padding:0 12px 10px;}
+  .cm-item{min-width:58px;}
+  .cm-dot{width:24px;height:24px;font-size:10px;}
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="ambient"></div>
+<div class="corner tl"></div><div class="corner tr"></div>
+<div class="corner bl"></div><div class="corner br"></div>
+<div class="pts-pop" id="ptsPop">+0</div>
+
+<button id="backBtn" onclick="goBack()" title="Quay lại trang trước"
+  style="display:none;position:fixed;left:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red-l),var(--red));
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(90,70,54,.45);
+  align-items:center;justify-content:center;">⬅</button>
+
+<button id="fwdBtn" onclick="goForward()" title="Tiến tới trang sau"
+  style="display:none;position:fixed;right:20px;bottom:26px;z-index:297;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red-l),var(--red));
+  border:2px solid var(--gold-l);color:#fff;font-size:24px;
+  cursor:pointer;box-shadow:0 8px 26px rgba(90,70,54,.45);
+  align-items:center;justify-content:center;">➡</button>
+
+<!-- BẢN ĐỒ HÀNH TRÌNH -->
+<div class="map-overlay" id="journeyMapOverlay" onclick="if(event.target===this)toggleJourneyMap()">
+  <div class="map-modal">
+    <div class="map-modal-head">
+      <span class="map-modal-title">🗺️ Hành Trình Thăng - Trầm Của Hồ Quý Ly</span>
+      <button class="map-modal-close" onclick="toggleJourneyMap()">Đóng</button>
+    </div>
+    <div class="jmap-note">Các điểm dừng chân mở khóa dần khi bạn đi qua từng chương. Sơ đồ cách điệu, không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,180 C120,140 160,90 210,100 S300,60 340,65 S430,110 470,105 S560,150 600,145 S690,190 740,185"/>
+      <circle class="jmap-pt pt-diencchau" cx="40" cy="180" r="6"/><text class="jmap-yr pt-diencchau" x="40" y="200" text-anchor="middle">~1370</text><text class="jmap-lbl pt-diencchau" x="40" y="212" text-anchor="middle">Diễn Châu</text>
+      <circle class="jmap-pt locked pt-thanglong" cx="210" cy="100" r="6"/><text class="jmap-yr locked pt-thanglong" x="210" y="85" text-anchor="middle">1395</text><text class="jmap-lbl locked pt-thanglong" x="210" y="75" text-anchor="middle">Thăng Long</text>
+      <circle class="jmap-pt locked pt-taydo" cx="340" cy="65" r="6"/><text class="jmap-yr locked pt-taydo" x="340" y="50" text-anchor="middle">1400</text><text class="jmap-lbl locked pt-taydo" x="340" y="40" text-anchor="middle">Tây Đô</text>
+      <circle class="jmap-pt locked pt-thanhda" cx="470" cy="105" r="6"/><text class="jmap-yr locked pt-thanhda" x="470" y="125" text-anchor="middle">1397</text><text class="jmap-lbl locked pt-thanhda" x="470" y="137" text-anchor="middle">Thành Nhà Hồ</text>
+      <circle class="jmap-pt locked pt-dabang" cx="600" cy="145" r="6"/><text class="jmap-yr locked pt-dabang" x="600" y="130" text-anchor="middle">1407</text><text class="jmap-lbl locked pt-dabang" x="600" y="120" text-anchor="middle">Đa Bang</text>
+      <circle class="jmap-pt locked pt-hatinh" cx="740" cy="185" r="7"/><text class="jmap-yr locked pt-hatinh" x="740" y="205" text-anchor="middle">1407</text><text class="jmap-lbl locked pt-hatinh" x="720" y="200" text-anchor="middle">Hà Tĩnh → TQ</text>
+    </svg>
+  </div>
+</div>
+
+<!-- NGUỒN SỬ LIỆU -->
+<div class="src-popup-overlay" id="srcOverlay" onclick="if(event.target===this)closeSrcPopup()">
+  <div class="src-popup">
+    <div class="src-popup-badge">📖 ĐÃ KIỂM CHỨNG</div>
+    <div class="src-popup-title" id="srcTitle">Tiêu đề</div>
+    <div class="src-popup-body" id="srcBody">Nội dung...</div>
+    <div class="src-popup-cite" id="srcCite">Trích nguồn</div>
+    <button class="src-popup-close" onclick="closeSrcPopup()">Đóng</button>
+  </div>
+</div>
+
+<div class="streak-badge" id="streakBadge">
+  <span>💠</span>
+  <div><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);">Liên tiếp</div><div class="streak-num" id="streakNum">0</div></div>
+</div>
+<div class="combo-burst" id="comboBurst">
+  <div class="combo-inner">
+    <div class="combo-title">Phán đoán liên tiếp chuẩn xác!</div>
+    <div class="combo-label" id="comboLabel">💠 COMBO x3</div>
+    <div class="combo-sub" id="comboSub">+10 điểm thưởng</div>
+  </div>
+</div>
+
+<div class="top-stripe"></div>
+<nav>
+  <div class="nav-left">
+    <a class="nav-back" href="cau-chuyen-detail.html?id=26">← Quay lại</a>
+    <a class="nav-brand" href="#"><span>📜</span> SỬ VIỆT</a>
+  </div>
+  <div class="nav-subtitle">HỒ QUÝ LY — CANH BẠC CẢI CÁCH (6 Chương)</div>
+  <div class="nav-right">
+    <button class="nav-map-btn" onclick="toggleRefPage()" title="Nguồn tham khảo">📚</button>
+    <button class="nav-map-btn" onclick="toggleJourneyMap()" title="Bản đồ hành trình">🗺️</button>
+    <button id="soundToggle" onclick="toggleSound()" style="background:transparent;border:1px solid rgba(193,127,42,.32);border-radius:50%;width:34px;height:34px;color:var(--gold-l);cursor:pointer;font-size:15px;">🔊</button>
+  </div>
+</nav>
+<div class="prog-rail"><div class="prog-fill" id="prog"></div></div>
+<div class="hud">
+  <div class="hud-card">
+    <div><div class="hud-label">Điểm</div><div class="hud-val" id="scoreEl">0</div></div>
+    <div><div class="hud-label">Vai Trò</div><div style="font-size:10px;color:var(--gold-l);" id="rankEl">—</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== COVER MỞ ĐẦU ===== -->
+<div class="scene active" id="cover">
+  <div class="cover-scene">
+    <div class="cover-emblem">📜</div>
+    <div class="cover-eyebrow">Sử Việt Tương Tác</div>
+    <div class="cover-title">HỒ QUÝ LY<br>Canh Bạc Cải Cách</div>
+    <div class="cover-sub">Năm ~1370 — 1407 · Nhà Cải Cách Đầy Tranh Cãi</div>
+    <div class="cover-desc">Ngươi là Hồ Quý Ly — quyền thần bước ra từ triều Trần suy vong, dám in tiền giấy, hạn điền, hạn nô, dựng thành đá kỳ vĩ và soán ngôi lập nước Đại Ngu. Nhưng cải cách táo bạo nhất có đủ để cứu một vương triều, khi lòng dân chưa kịp đồng thuận? Một hành trình 6 chương về tầm nhìn, tham vọng và bi kịch mất nước.</div>
+    <div class="cover-chips">
+      <span class="chip">📜 6 chương</span>
+      <span class="chip">🎓 Nhiều kiểu thử thách</span>
+      <span class="chip">📖 Có nguồn tham khảo</span>
+    </div>
+    <button class="cover-start-btn" onclick="go('s1',0)">📜 Bắt Đầu Hành Trình</button>
+    <div class="cover-scroll-hint">▾ hoặc cuộn xuống</div>
+  </div>
+</div>
+
+<!-- ===== CHƯƠNG I ===== -->
+<div class="scene" id="s1">
+<div class="chap-badge">⚖️ CHƯƠNG I · ~1370-1394 — QUYỀN THẦN GIỮA TRIỀU SUY VONG <span class="src-tag" onclick="openSrcPopup('s1')">📖 nguồn</span></div>
+<div class="hero-art" style="height:550px;">
+  <img src="images/hoquyly.jpg" alt="Hồ Quý Ly" style="object-fit:contain;object-position:center top;">
+  <div class="cap">⚖️ TRIỀU ĐÌNH NHÀ TRẦN CUỐI THẾ KỶ 14</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot now">1</div><div class="cm-year">~1390</div><div class="cm-evt">Quyền Thần</div></div>
+  <div class="cm-item"><div class="cm-dot lock">2</div><div class="cm-year">1395</div><div class="cm-evt">Cải Cách</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">1400</div><div class="cm-evt">Soán Ngôi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1397</div><div class="cm-evt">Thành Đá</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1406</div><div class="cm-evt">Giặc Minh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1407</div><div class="cm-evt">Mất Nước</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 BỐI CẢNH</span>
+    Cuối thế kỷ 14, nhà Trần đã suy yếu rõ rệt sau gần 175 năm trị vì. Vua nhỏ tuổi, quý tộc tranh giành ruộng đất, nạn đói và khởi nghĩa nông dân nổ ra khắp nơi. Đất nước cần một bàn tay đủ mạnh để xốc lại tất cả — hoặc sẽ tự sụp đổ.
+  </div>
+  Hồ Quý Ly bước vào cung, nhờ hai người cô từng là hoàng hậu mà có chỗ đứng. Nhưng ông không dừng ở đó: từng bước, từng bước, binh quyền dần lọt vào tay ông, trong khi các vương hầu họ Trần mải mê tranh chấp lẫn nhau.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">MỘT LÃO THẦN HỌ TRẦN — THÌ THẦM TRONG SÂN CHẦU</div>
+  "Ông ta không phải hoàng thân, sao lại nắm cả binh quyền lẫn tài chính quốc gia? Nhưng... nhìn triều đình rối ren thế này, có lẽ chỉ có ông ta mới đủ gan xoay chuyển."
+</div>
+
+<div class="play-box reveal">
+  <span class="play-tag">⚡ PHÁN ĐOÁN CHỚP NHOÁNG</span>
+  <div class="play-q">"Vào thời điểm này, nhà Trần vẫn còn hùng mạnh như thời Trần Hưng Đạo đánh Nguyên Mông." — Đúng hay Sai?</div>
+  <div class="tf-row" id="tf1">
+    <button class="tf-btn no" onclick="answerTF(this,false,'tf1',15,'✅ Chính xác — SAI. Nhà Trần cuối thế kỷ 14 đã suy yếu trầm trọng: vua nhỏ, quý tộc tranh quyền, nạn đói và khởi nghĩa nông dân liên miên.')">✘ SAI</button>
+    <button class="tf-btn yes" onclick="answerTF(this,true,'tf1',5,'❌ Không đúng — thực tế nhà Trần đã suy yếu rõ rệt, đó chính là lý do khiến một quyền thần như Hồ Quý Ly có cơ hội trỗi dậy.')">✔ ĐÚNG</button>
+  </div>
+  <div class="play-fb" id="tf1-fb"></div>
+</div>
+
+<div class="story reveal">
+  Đứng trước một triều đình mục ruỗng, có hai con đường: âm thầm củng cố quyền lực để rồi ra tay quyết liệt, hoặc trung thành phò tá đến cùng dù biết triều đại đang lụi tàn.
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Khi một thể chế đã mục ruỗng từ bên trong, người có tài — nhưng không có "danh chính ngôn thuận" — nên chọn cải cách từ trong hệ thống, hay chờ thời để thay thế hẳn hệ thống đó?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai, đây là câu hỏi để bạn tự suy ngẫm — chính câu hỏi này sẽ theo bạn suốt toàn bộ câu chuyện.</div>
+</div>
+
+<div class="scroll-choices" id="s1-choices">
+  <button class="scroll-btn" onclick="pickScroll('s1','s2',20,true)"><span class="scroll-tag">◆</span><div>Âm thầm tích lũy binh quyền và tài chính, chờ thời cơ ra tay cải cách triệt để.<div class="scroll-sub">⭐ ĐÚNG LỊCH SỬ — đây chính là con đường Hồ Quý Ly đã đi!</div></div></button>
+  <button class="scroll-btn" onclick="pickScroll('s1','s1B',5,false)"><span class="scroll-tag">◇</span><div>Trung thành tuyệt đối, không mưu cầu quyền lực riêng, để triều đình tự xoay xở.<div class="scroll-sub">An toàn hơn, nhưng đất nước có thể sụp đổ nhanh hơn dưới tay những kẻ bất tài.</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s1B">
+<div class="chap-badge">❌ LỰA CHỌN KHÁC — AN PHẬN GIỮA THỜI LOẠN</div>
+<div class="story reveal">Nếu chỉ khoanh tay đứng nhìn, rất có thể một quyền thần khác — kém tài và kém tầm nhìn hơn — sẽ nắm lấy triều đình, và những cải cách táo bạo về sau có lẽ sẽ không bao giờ xuất hiện.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s1B')">🔮 Nếu Hồ Quý Ly không nắm quyền, chuyện gì sẽ xảy ra?</button>
+  <div class="counterf-body" id="cf-s1B">Nhiều khả năng nhà Trần sẽ tiếp tục suy yếu dần trong tay các vương hầu tranh quyền, không ai đủ sức đưa ra những cải cách tài chính - ruộng đất táo bạo. Đất nước có thể rơi vào khủng hoảng kéo dài hơn trước khi có bất kỳ ai đứng ra thay đổi cục diện.</div>
+</div>
+<div class="scroll-choices"><button class="scroll-btn" onclick="go('s2',10)"><span class="scroll-tag">→</span><div>Xem tiếp diễn biến thực tế của lịch sử</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG II ===== -->
+<div class="scene" id="s2">
+<div class="chap-badge">📜 CHƯƠNG II · ~1395-1399 — CẢI CÁCH TÁO BẠO <span class="src-tag" onclick="openSrcPopup('s2')">📖 nguồn</span></div>
+<div class="hero-art">
+  <img src="images/caicach.jpg" alt="Cải cách Hồ Quý Ly">
+  <div class="cap">📜 TIỀN GIẤY — HẠN ĐIỀN — HẠN NÔ</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">~1390</div><div class="cm-evt">Quyền Thần</div></div>
+  <div class="cm-item"><div class="cm-dot now">2</div><div class="cm-year">1395</div><div class="cm-evt">Cải Cách</div></div>
+  <div class="cm-item"><div class="cm-dot lock">3</div><div class="cm-year">1400</div><div class="cm-evt">Soán Ngôi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1397</div><div class="cm-evt">Thành Đá</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1406</div><div class="cm-evt">Giặc Minh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1407</div><div class="cm-evt">Mất Nước</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">💡 TƯ DUY VƯỢT THỜI ĐẠI</span>
+    Trước Minh Trị Duy Tân của Nhật Bản gần 500 năm, Hồ Quý Ly đã dám in tiền giấy, giới hạn ruộng đất quý tộc, đưa toán học vào khoa cử, dịch sách ra chữ Nôm. Đây là những ý tưởng táo bạo bậc nhất lịch sử phong kiến Việt Nam.
+  </div>
+  Ba chính sách lớn được ban ra gần như liên tiếp: "hạn điền" giới hạn ruộng đất tư nhân, "hạn nô" giới hạn số nô tì mỗi nhà, và tiền giấy "Thông bảo hội sao" thay cho tiền đồng. Mỗi chính sách đều đánh thẳng vào đặc quyền của giới quý tộc nhà Trần.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">MỘT ĐẠI ĐIỀN CHỦ HỌ TRẦN</div>
+  "Ruộng đất tổ tiên để lại, sao có thể bị hạn định như một món hàng? Còn thứ giấy vẽ chữ kia, sao dám gọi là tiền để đổi lấy thóc gạo thật?"
+</div>
+
+<div class="play-box reveal">
+  <span class="play-tag">🔗 GHÉP CẶP — CHÍNH SÁCH & MỤC ĐÍCH</span>
+  <div class="play-q">Bấm vào một chính sách bên trái, rồi bấm đúng mục đích tương ứng bên phải.</div>
+  <div class="match-grid">
+    <div>
+      <div class="match-col-label">CHÍNH SÁCH</div>
+      <div id="matchLeft"></div>
+    </div>
+    <div>
+      <div class="match-col-label">MỤC ĐÍCH THỰC SỰ</div>
+      <div id="matchRight"></div>
+    </div>
+  </div>
+  <div class="match-progress" id="matchProgress">Đã ghép: 0/3</div>
+</div>
+
+<div class="story reveal" id="s2-continue" style="display:none;">
+  Các chính sách ra đời gần như dồn dập, chỉ trong vài năm — khác hẳn cách làm từ tốn, dò ý dân trước của nhiều cải cách khác trong lịch sử.
+</div>
+
+<div class="reflect reveal" id="s2-reflect" style="display:none;">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Một cải cách đúng đắn về lý thuyết nhưng ban hành quá nhanh, quá dồn dập — liệu có còn là cải cách "đúng" nếu nó khiến lòng người ly tán ngay từ đầu?</div>
+  <div class="reflect-note">Ghi nhớ câu hỏi này — nó sẽ quay lại vào phần kết của câu chuyện.</div>
+</div>
+
+<div class="scroll-choices reveal" id="s2-choices" style="display:none;">
+  <button class="scroll-btn" onclick="pickScroll('s2','s3',20,true)"><span class="scroll-tag">◆</span><div>Ban hành gần như đồng loạt, dồn toàn lực thực thi thật nhanh trước khi phe chống đối kịp phản ứng.<div class="scroll-sub">⭐ ĐÚNG LỊCH SỬ — đúng như Hồ Quý Ly đã làm!</div></div></button>
+  <button class="scroll-btn" onclick="pickScroll('s2','s2B',5,false)"><span class="scroll-tag">◇</span><div>Thí điểm từng chính sách một, dò phản ứng của dân và quý tộc trước khi mở rộng.<div class="scroll-sub">Chậm hơn nhưng có thể đã tránh được sự bất mãn dồn nén sau này...</div></div></button>
+</div>
+</div>
+
+<div class="scene" id="s2B">
+<div class="chap-badge">❌ LỰA CHỌN KHÁC — CẢI CÁCH TỪ TỐN</div>
+<div class="story reveal">Đây không phải điều đã xảy ra trong lịch sử. Hồ Quý Ly chọn tốc độ và quyết đoán — có lẽ vì ông hiểu rằng nếu chậm trễ, phe quý tộc bảo thủ sẽ kịp tập hợp lực lượng để bóp chết mọi cải cách ngay từ trứng nước.</div>
+<div class="counterf">
+  <button class="counterf-btn" onclick="toggleCounter('cf-s2B')">🔮 Nếu cải cách được làm từ tốn hơn thì sao?</button>
+  <div class="counterf-body" id="cf-s2B">Cải cách chậm rãi có thể giúp lòng dân đồng thuận hơn, giảm bớt phản kháng từ quý tộc. Nhưng cũng có nguy cơ bị trì hoãn vô thời hạn, hoặc bị chính những người có đặc quyền tìm cách vô hiệu hóa trước khi kịp phát huy tác dụng.</div>
+</div>
+<div class="scroll-choices"><button class="scroll-btn" onclick="go('s3',10)"><span class="scroll-tag">→</span><div>Xem tiếp diễn biến thực tế của lịch sử</div></button></div>
+</div>
+
+<!-- ===== CHƯƠNG III ===== -->
+<div class="scene" id="s3">
+<div class="chap-badge">👑 CHƯƠNG III · NĂM 1400 — SOÁN NGÔI, LẬP ĐẠI NGU <span class="src-tag" onclick="openSrcPopup('s3')">📖 nguồn</span></div>
+<div class="hero-art">
+  <img src="images/soanngoi.jpg" alt="Nhà Trần suy vong">
+  <div class="cap">👑 CHẤM DỨT 175 NĂM NHÀ TRẦN</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">~1390</div><div class="cm-evt">Quyền Thần</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1395</div><div class="cm-evt">Cải Cách</div></div>
+  <div class="cm-item"><div class="cm-dot now">3</div><div class="cm-year">1400</div><div class="cm-evt">Soán Ngôi</div></div>
+  <div class="cm-item"><div class="cm-dot lock">4</div><div class="cm-year">1397</div><div class="cm-evt">Thành Đá</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1406</div><div class="cm-evt">Giặc Minh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1407</div><div class="cm-evt">Mất Nước</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">⚔️ THỜI KHẮC QUYẾT ĐỊNH</span>
+    Sau nhiều năm nắm thực quyền dưới danh nghĩa Phụ chính đại thần, Hồ Quý Ly đứng trước lựa chọn cuối cùng: tiếp tục làm "người đứng sau ngai vàng", hay chính thức bước lên ngôi báu.
+  </div>
+  Năm 1400, Hồ Quý Ly phế truất vua Trần Thiếu Đế, tự lập làm vua, đổi quốc hiệu từ Đại Việt thành <strong>Đại Ngu</strong>, chính thức khai sinh nhà Hồ — chấm dứt 175 năm trị vì của nhà Trần.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">HỒ QUÝ LY — TRƯỚC GIỜ LÊN NGÔI</div>
+  "Ta không sợ mang tiếng vạn thế, chỉ sợ dân nghèo không được yên ổn. Ngai vàng chỉ là danh, cải cách mới là thực."
+</div>
+
+<div class="play-box reveal">
+  <span class="play-tag">☑ CHỌN NHIỀU — ĐIỀU GÌ THỰC SỰ XẢY RA NĂM 1400?</span>
+  <div class="play-q">Chọn TẤT CẢ các sự kiện có thật đã xảy ra khi Hồ Quý Ly lập nhà Hồ (có nhiều hơn 1 đáp án đúng):</div>
+  <div class="ms-opts" id="msOpts">
+    <div class="ms-opt" data-correct="true" onclick="toggleMS(this)"><span class="ms-check"></span><span>Đổi quốc hiệu từ Đại Việt thành Đại Ngu</span></div>
+    <div class="ms-opt" data-correct="false" onclick="toggleMS(this)"><span class="ms-check"></span><span>Giữ nguyên quốc hiệu Đại Việt như cũ</span></div>
+    <div class="ms-opt" data-correct="true" onclick="toggleMS(this)"><span class="ms-check"></span><span>Sau đó nhường ngôi cho con là Hồ Hán Thương nhưng vẫn nắm thực quyền</span></div>
+    <div class="ms-opt" data-correct="true" onclick="toggleMS(this)"><span class="ms-check"></span><span>Dời kinh đô từ Thăng Long vào Tây Đô, Thanh Hóa</span></div>
+    <div class="ms-opt" data-correct="false" onclick="toggleMS(this)"><span class="ms-check"></span><span>Xử tử toàn bộ hoàng tộc nhà Trần ngay lập tức</span></div>
+  </div>
+  <button class="ms-submit" id="msSubmit" onclick="submitMS()">✔ Xác nhận lựa chọn</button>
+  <div class="play-fb" id="ms-fb"></div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 CHI TIẾT ÍT NGƯỜI BIẾT</span>
+  Tên nước "Đại Ngu" mang nghĩa "sự yên vui, hòa bình" — hoàn toàn khác với cách hiểu tiêu cực của từ "ngu" trong tiếng Việt hiện đại. Đây là điều nhiều người dễ hiểu lầm khi lần đầu đọc sử.
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Việc soán ngôi khiến nhà Minh sau này có cớ "phù Trần diệt Hồ" để xâm lược. Nếu bạn là Hồ Quý Ly, biết trước hệ quả này, bạn có còn chọn lên ngôi không?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai — hãy giữ câu hỏi này trong đầu khi đọc tiếp.</div>
+</div>
+
+<div class="scroll-choices">
+  <button class="scroll-btn" onclick="go('s4',20)"><span class="scroll-tag">→</span><div>Chương IV: 1397 — Thành Nhà Hồ, kỳ quan đá giữa núi rừng Thanh Hóa</div></button>
+</div>
+</div>
+
+<!-- ===== CHƯƠNG IV ===== -->
+<div class="scene" id="s4">
+<div class="chap-badge">🏯 CHƯƠNG IV · NĂM 1397 — THÀNH NHÀ HỒ, KỲ QUAN ĐÁ <span class="src-tag" onclick="openSrcPopup('s4')">📖 nguồn</span></div>
+<div class="hero-art">
+  <img src="images/congda.jpg" alt="Thành Nhà Hồ">
+  <div class="cap">🏯 TÂY ĐÔ — VĨNH LỘC, THANH HÓA</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">~1390</div><div class="cm-evt">Quyền Thần</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1395</div><div class="cm-evt">Cải Cách</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1400</div><div class="cm-evt">Soán Ngôi</div></div>
+  <div class="cm-item"><div class="cm-dot now">4</div><div class="cm-year">1397</div><div class="cm-evt">Thành Đá</div></div>
+  <div class="cm-item"><div class="cm-dot lock">5</div><div class="cm-year">1406</div><div class="cm-evt">Giặc Minh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1407</div><div class="cm-evt">Mất Nước</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">🪨 KỸ THUẬT VƯỢT BẬC</span>
+    Để bảo vệ kinh đô mới, Hồ Quý Ly cho xây Thành Nhà Hồ bằng những phiến đá xanh khổng lồ — có phiến nặng tới 20 tấn — ghép khít với nhau không cần chất kết dính.
+  </div>
+  Hàng vạn nhân công được huy động, làm việc suốt ngày đêm giữa vùng núi Vĩnh Lộc. Không ai tin nổi một công trình đồ sộ như vậy có thể hoàn thành trong thời gian ngắn đến thế.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">MỘT ĐỐC CÔNG XÂY THÀNH</div>
+  "Đá nặng hai mươi tấn, không hồ vữa, chỉ ghép khít bằng tay nghề... nếu thành công, đây sẽ là bức tường không quân nào phá nổi."
+</div>
+
+<div class="play-box reveal">
+  <span class="play-tag">⚡ PHÁN ĐOÁN CHỚP NHOÁNG</span>
+  <div class="play-q">"Thành Nhà Hồ được xây dựng chỉ trong khoảng 3 tháng nhờ huy động hàng vạn nhân công." — Đúng hay Sai?</div>
+  <div class="tf-row" id="tf2">
+    <button class="tf-btn yes" onclick="answerTF(this,true,'tf2',15,'✅ Chính xác — ĐÚNG! Đây là một trong những kỳ tích xây dựng đá lớn nhanh nhất Đông Nam Á thời trung đại.')">✔ ĐÚNG</button>
+    <button class="tf-btn no" onclick="answerTF(this,false,'tf2',5,'❌ Không đúng — thực tế thành được xây thần tốc, chỉ trong khoảng 3 tháng, nhờ huy động số lượng nhân công khổng lồ.')">✘ SAI</button>
+  </div>
+  <div class="play-fb" id="tf2-fb"></div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 DI SẢN CÒN LẠI ĐẾN HÔM NAY</span>
+  Năm 2011, Thành Nhà Hồ được <strong>UNESCO công nhận là Di sản Văn hóa Thế giới</strong> — minh chứng sống động cho trình độ kiến trúc quân sự vượt bậc của người Việt đầu thế kỷ 15. Đây là một trong rất ít thành lũy bằng đá lớn còn tồn tại gần như nguyên vẹn ở Đông Nam Á.
+  <div style="margin-top:8px;"><span class="chip">🪨 Đá nặng tới 20 tấn/phiến</span><span class="chip">⏱️ Hoàn thành ~3 tháng</span><span class="chip">🏆 UNESCO 2011</span></div>
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM (không chấm điểm)</span>
+  <div class="reflect-q">Một bức thành kiên cố đến mức không quân nào phá nổi từ bên ngoài — vậy điều gì mới thực sự có thể khiến một quốc gia sụp đổ?</div>
+  <div class="reflect-note">Câu trả lời sẽ dần hé lộ ở những chương sau.</div>
+</div>
+
+<div class="scroll-choices">
+  <button class="scroll-btn" onclick="go('s5',20)"><span class="scroll-tag">→</span><div>Chương V: 1406 — Nhà Minh mượn cớ "phù Trần diệt Hồ" xâm lược</div></button>
+</div>
+</div>
+
+<!-- ===== CHƯƠNG V ===== -->
+<div class="scene" id="s5">
+<div class="chap-badge">⚔️ CHƯƠNG V · NĂM 1406 — GIẶC MINH MƯỢN CỚ XÂM LƯỢC <span class="src-tag" onclick="openSrcPopup('s5')">📖 nguồn</span></div>
+<div class="hero-art">
+  <img src="images/quan-minh.png" alt="Quân Minh xâm lược">
+  <div class="cap">⚔️ 20 VẠN QUÂN MINH TRÀN VÀO ĐẠI NGU</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">~1390</div><div class="cm-evt">Quyền Thần</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1395</div><div class="cm-evt">Cải Cách</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1400</div><div class="cm-evt">Soán Ngôi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1397</div><div class="cm-evt">Thành Đá</div></div>
+  <div class="cm-item"><div class="cm-dot now">5</div><div class="cm-year">1406</div><div class="cm-evt">Giặc Minh</div></div>
+  <div class="cm-item"><div class="cm-dot lock">6</div><div class="cm-year">1407</div><div class="cm-evt">Mất Nước</div></div>
+</div>
+
+<div class="story reveal">
+  <div class="edu-pill">
+    <span class="edu-tag">📚 CỚ XÂM LƯỢC</span>
+    Việc Hồ Quý Ly cướp ngôi nhà Trần đã tạo cớ hoàn hảo cho nhà Minh. Năm 1406, Minh Thành Tổ lấy danh nghĩa "phù Trần diệt Hồ" — khôi phục nhà Trần — đưa hơn 20 vạn quân tràn vào xâm lược.
+  </div>
+  Đáng lo hơn cả sức mạnh quân sự của giặc: nhiều chính sách cải cách gấp gáp trước đó đã khiến không ít quý tộc cũ và cả một bộ phận dân chúng chưa thật sự đồng lòng với triều đình mới.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">HỒ NGUYÊN TRỪNG — CON TRAI HỒ QUÝ LY, TÂU VUA CHA</div>
+  "Thần không sợ đánh, chỉ sợ lòng dân không theo. Thành lũy có kiên cố đến đâu, nếu bên trong không đồng lòng thì cũng khó giữ nổi."
+</div>
+
+<div class="play-box reveal">
+  <span class="play-tag">🎯 CHỌN CHIẾN LƯỢC</span>
+  <div class="play-q">Là Hồ Quý Ly, đứng trước 20 vạn quân Minh, bạn chọn chiến lược nào?</div>
+  <div class="scroll-choices" id="s5-choices">
+    <button class="scroll-btn" onclick="ansScenario(this,true,'s5',20,'⭐ ĐÚNG LỊCH SỬ! Hồ Quý Ly cho xây phòng tuyến dọc sông Hồng và chế súng thần cơ — vũ khí do chính Hồ Nguyên Trừng phát minh — để dốc sức chống trả.')"><span class="scroll-tag">◆</span><div>Dốc toàn lực xây phòng tuyến dọc sông Hồng, chế tạo súng thần cơ để nghênh chiến.</div></button>
+    <button class="scroll-btn" onclick="ansScenario(this,false,'s5',5,'Đây không phải điều đã xảy ra. Hồ Quý Ly không đầu hàng — dù thế trận rất bất lợi, ông vẫn quyết chống cự đến cùng.')"><span class="scroll-tag">◇</span><div>Đầu hàng ngay để tránh đổ máu, thương lượng phục hồi nhà Trần.</div></button>
+  </div>
+  <div class="play-fb" id="s5-fb"></div>
+</div>
+
+<div class="fact reveal">
+  <span class="fact-tag">📖 VŨ KHÍ MỚI CỦA THỜI ĐẠI</span>
+  Hồ Nguyên Trừng — con trai cả của Hồ Quý Ly — đã phát minh ra <strong>súng thần cơ</strong>, một trong những loại hỏa khí tiên tiến nhất Đông Nam Á lúc bấy giờ. Nhưng vũ khí hiện đại vẫn không đủ bù đắp cho sự thiếu đồng lòng trong nội bộ.
+</div>
+
+<div class="scroll-choices">
+  <button class="scroll-btn" onclick="go('s6',20)"><span class="scroll-tag">→</span><div>Chương VI: 1407 — Thất thủ và bi kịch lưu đày</div></button>
+</div>
+</div>
+
+<!-- ===== CHƯƠNG VI ===== -->
+<div class="scene" id="s6">
+<div class="chap-badge">💔 CHƯƠNG VI · NĂM 1407 — THẤT THỦ VÀ LƯU ĐÀY <span class="src-tag" onclick="openSrcPopup('s6')">📖 nguồn</span></div>
+<div class="hero-art">
+  <img src="images/REPLACE-hoquyly-thatthu.jpg" alt="Nhà Hồ sụp đổ">
+  <div class="cap">💔 ĐA BANG — ĐÔNG ĐÔ — HÀ TĨNH</div>
+</div>
+<div class="chapter-map">
+  <div class="cm-item"><div class="cm-dot done">1</div><div class="cm-year">~1390</div><div class="cm-evt">Quyền Thần</div></div>
+  <div class="cm-item"><div class="cm-dot done">2</div><div class="cm-year">1395</div><div class="cm-evt">Cải Cách</div></div>
+  <div class="cm-item"><div class="cm-dot done">3</div><div class="cm-year">1400</div><div class="cm-evt">Soán Ngôi</div></div>
+  <div class="cm-item"><div class="cm-dot done">4</div><div class="cm-year">1397</div><div class="cm-evt">Thành Đá</div></div>
+  <div class="cm-item"><div class="cm-dot done">5</div><div class="cm-year">1406</div><div class="cm-evt">Giặc Minh</div></div>
+  <div class="cm-item"><div class="cm-dot now">6</div><div class="cm-year">1407</div><div class="cm-evt">Mất Nước</div></div>
+</div>
+
+<div class="story reveal">
+  Dù có súng thần cơ và thành lũy kiên cố, quân nhà Hồ vẫn liên tiếp thất thủ trước sức tấn công mạnh mẽ của quân Minh. Đầu năm 1407, thành Đa Bang rồi Đông Đô (Thăng Long) lần lượt rơi vào tay giặc.
+</div>
+
+<div class="dlg reveal">
+  <div class="dlg-who">MỘT TÌ TƯỚNG THEO HẦU TRÊN ĐƯỜNG CHẠY</div>
+  "Thưa Thái thượng hoàng, thành đã vỡ, quân đã tan. Chúng ta còn đường nào để lui nữa không?"
+</div>
+
+<div class="story reveal">
+  Hồ Quý Ly cùng các con chạy vào Thanh Hóa rồi Hà Tĩnh, nhưng đều bị quân Minh truy đuổi bắt được. Cha con ông bị áp giải về Trung Quốc. Nhà Hồ sụp đổ chỉ sau vỏn vẹn 7 năm tồn tại.
+</div>
+
+<div class="play-box reveal">
+  <span class="play-tag">🏆 XẾP HẠNG — ĐÂU LÀ NGUYÊN NHÂN LỚN NHẤT?</span>
+  <div class="play-q">Theo bạn, đâu là nguyên nhân quan trọng nhất khiến nhà Hồ sụp đổ nhanh chóng? (bấm vào lựa chọn bạn cho là đúng nhất)</div>
+  <div class="rank-opts" id="rankOpts">
+    <div class="rank-opt" data-val="a" onclick="pickRank(this,'a')"><span class="rank-num">1</span><span>Cải cách quá nhanh, quá gấp khiến lòng dân và quý tộc chưa kịp đồng thuận</span></div>
+    <div class="rank-opt" data-val="b" onclick="pickRank(this,'b')"><span class="rank-num">2</span><span>Quân Minh có vũ khí và số lượng vượt trội hoàn toàn</span></div>
+    <div class="rank-opt" data-val="c" onclick="pickRank(this,'c')"><span class="rank-num">3</span><span>Thành lũy phòng thủ chưa đủ kiên cố</span></div>
+  </div>
+  <div class="play-fb" id="rank-fb"></div>
+</div>
+
+<div class="quote-moment reveal">
+  <span style="font-size:44px;display:block;margin-bottom:10px;">📜</span>
+  "Ta không sợ mất tiếng vạn thế, chỉ sợ dân nghèo không được yên ổn." Lời nói năm nào giờ vang lên như một câu hỏi còn bỏ ngỏ: liệu ý định tốt đẹp có đủ, nếu cách thực hiện đã đánh mất chính điều nó muốn bảo vệ — lòng dân?
+  <span class="quote-src">— Suy ngẫm cuối câu chuyện Hồ Quý Ly</span>
+</div>
+
+<div class="reflect reveal">
+  <span class="reflect-tag">💭 SUY NGẪM CUỐI CÙNG (không chấm điểm)</span>
+  <div class="reflect-q">Nhớ lại câu hỏi ở Chương I: cải cách từ trong hệ thống hay chờ thay thế hệ thống? Sau khi biết toàn bộ câu chuyện, câu trả lời của bạn có thay đổi không?</div>
+  <div class="reflect-note">Không có đáp án đúng/sai — đây là câu hỏi bạn mang theo sau khi đọc xong.</div>
+</div>
+
+<div class="scroll-choices">
+  <button class="scroll-btn" onclick="go('final',20)"><span class="scroll-tag">✓</span><div>🎉 <strong>KẾT THÚC HÀNH TRÌNH CẢI CÁCH VÀ BI KỊCH CỦA HỒ QUÝ LY</strong></div></button>
+</div>
+</div>
+
+<!-- ===== FINAL ===== -->
+<div class="scene" id="final">
+<div class="final">
+  <div class="final-seal" id="finalSeal">📜</div>
+  <div class="final-h" id="finalH">HÀNH TRÌNH HOÀN THÀNH!</div>
+  <div class="final-pts" id="finalPts">0 điểm</div>
+  <div class="final-rank-badge" id="finalRank">—</div>
+  <div class="final-desc" id="finalDesc">Bạn đã cùng Hồ Quý Ly trải qua từ đỉnh cao quyền lực đến bi kịch mất nước.</div>
+
+  <div class="final-achs" id="finalAchs"></div>
+
+  <div class="jmap-box reveal">
+    <span class="fact-tag">🗺️ HÀNH TRÌNH THĂNG - TRẦM</span>
+    <div class="jmap-note">Sơ đồ cách điệu các điểm dừng chân quan trọng — không theo tỷ lệ địa lý thật.</div>
+    <svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+      <path class="jmap-path" d="M40,180 C120,140 160,90 210,100 S300,60 340,65 S430,110 470,105 S560,150 600,145 S690,190 740,185"/>
+      <circle class="jmap-pt" cx="40" cy="180" r="6"/><text class="jmap-yr" x="40" y="200" text-anchor="middle">~1370</text><text class="jmap-lbl" x="40" y="212" text-anchor="middle">Diễn Châu</text>
+      <circle class="jmap-pt" cx="210" cy="100" r="6"/><text class="jmap-yr" x="210" y="85" text-anchor="middle">1395</text><text class="jmap-lbl" x="210" y="75" text-anchor="middle">Thăng Long</text>
+      <circle class="jmap-pt" cx="340" cy="65" r="6"/><text class="jmap-yr" x="340" y="50" text-anchor="middle">1400</text><text class="jmap-lbl" x="340" y="40" text-anchor="middle">Tây Đô</text>
+      <circle class="jmap-pt" cx="470" cy="105" r="6"/><text class="jmap-yr" x="470" y="125" text-anchor="middle">1397</text><text class="jmap-lbl" x="470" y="137" text-anchor="middle">Thành Nhà Hồ</text>
+      <circle class="jmap-pt" cx="600" cy="145" r="6"/><text class="jmap-yr" x="600" y="130" text-anchor="middle">1407</text><text class="jmap-lbl" x="600" y="120" text-anchor="middle">Đa Bang</text>
+      <circle class="jmap-pt" cx="740" cy="185" r="7"/><text class="jmap-yr" x="740" y="205" text-anchor="middle">1407</text><text class="jmap-lbl" x="720" y="200" text-anchor="middle">Hà Tĩnh → TQ</text>
+    </svg>
+  </div>
+
+  <div class="journal reveal" id="journalBox">
+    <span class="journal-tag">📔 NHẬT KÝ HÀNH TRÌNH CỦA BẠN</span>
+    <div id="journalList"></div>
+    <button class="journal-copy" onclick="copyJournal()">📋 Sao chép nhật ký để chia sẻ</button>
+  </div>
+
+  <div class="final-lesson">
+    <span class="fl-tag">📚 BA BÀI HỌC CÒN TRANH CÃI ĐẾN NGÀY NAY</span>
+
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">1. TẦM NHÌN ĐI TRƯỚC THỜI ĐẠI KHÔNG TỰ NHIÊN THÀNH CÔNG</strong>
+    Tiền giấy, hạn điền, hạn nô, cải cách khoa cử — nhiều ý tưởng của Hồ Quý Ly đi trước thời đại hàng thế kỷ. Nhưng ý tưởng đúng chưa chắc đã đủ để tồn tại.
+
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">2. TỐC ĐỘ CẢI CÁCH CẦN ĐI CÙNG SỰ ĐỒNG THUẬN</strong>
+    Thực hiện quá nhanh, quá gấp khiến lòng người chưa kịp thích nghi — và khi ngoại xâm ập đến, sự đồng lòng ấy lại chính là thứ vũ khí còn thiếu nhất.
+
+    <strong style="display:block;margin-top:15px;color:var(--gold-l);">3. THÀNH QUÁCH KIÊN CỐ NHẤT VẪN LÀ LÒNG DÂN</strong>
+    Thành Nhà Hồ — với những phiến đá 20 tấn — vẫn đứng vững đến ngày nay. Nhưng chính "thành lũy" vô hình là lòng dân mới là thứ quyết định vận mệnh một triều đại.
+
+    <strong style="display:block;margin-top:15px;color:var(--jade-l);font-size:18px;">Hồ Quý Ly vì vậy không dễ gọi tên: nhà cải cách có tầm nhìn, hay kẻ soán ngôi đánh mất giang sơn? Có lẽ ông là cả hai — và chính điều đó khiến câu chuyện của ông còn được tranh luận suốt hơn 600 năm.</strong>
+  </div>
+
+  <div class="btn-row" style="margin-top:30px;">
+    <button class="btn-ghost" onclick="restart()">🔄 CHƠI LẠI</button>
+    <button class="btn-ghost" onclick="openLeaderboard()">🏆 BẢNG XẾP HẠNG</button>
+    <a href="cau-chuyen-detail.html?id=26" class="btn-solid">📖 ĐỌC LẠI CÂU CHUYỆN ĐẦY ĐỦ</a>
+  </div>
+</div>
+</div>
+
+<div class="ref-overlay" id="refOverlay" onclick="if(event.target===this)toggleRefPage()">
+  <div class="ref-modal">
+    <div class="ref-modal-head">
+      <span class="ref-modal-title">📚 Nguồn Tham Khảo</span>
+      <button class="ref-modal-close" onclick="toggleRefPage()">Đóng</button>
+    </div>
+    <div class="fact" style="margin:0;">
+      Đại Việt sử ký toàn thư; Khâm định Việt sử thông giám cương mục; hồ sơ Di sản Thế giới UNESCO về Thành Nhà Hồ (2011). Các đoạn hội thoại trong bài là dựng lại minh họa dựa trên tinh thần lịch sử, không phải nguyên văn ghi chép.
+    </div>
+  </div>
+</div>
+
+</div><!-- .wrap -->
+
+<script>
+// ===== NỀN SAO LẤP LÁNH (nhẹ, không dùng canvas ember để giữ trang gọn) =====
+const bgC=document.getElementById('bgCanvas');
+const bgCtx=bgC.getContext('2d');
+function resizeBG(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
+resizeBG();window.addEventListener('resize',resizeBG);
+const stars2=[];
+for(let i=0;i<80;i++)stars2.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.3,a:Math.random(),da:(Math.random()-.5)*.008});
+function drawBG(){
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  stars2.forEach(s=>{
+    s.a=Math.max(.05,Math.min(.8,s.a+s.da));
+    if(s.a<=.06||s.a>=.79)s.da*=-1;
+    bgCtx.beginPath();bgCtx.arc(s.x*bgC.width,s.y*bgC.height,s.r,0,Math.PI*2);
+    bgCtx.fillStyle=`rgba(255,255,255,${s.a})`;bgCtx.fill();
+  });
+  requestAnimationFrame(drawBG);
+}drawBG();
+
+// ===== STATE =====
+let pts=0,totalKC=0,kcCorrectCount=0,kcTotalCount=0;
+let answered={};
+let choiceCorrect={s1:false,s2:false,s3:false,s5:false};
+
+// ===== ÂM THANH =====
+let soundOn=true,actx=null;
+function getActx(){if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();return actx;}
+function toggleSound(){soundOn=!soundOn;document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇';}
+function playTone(freq,dur,type='sine',vol=.12){
+  if(!soundOn)return;
+  try{
+    const ctx=getActx();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=freq;g.gain.value=vol;
+    o.connect(g);g.connect(ctx.destination);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function soundCorrect(){playTone(660,.14,'sine',.13);setTimeout(()=>playTone(880,.18,'sine',.11),90);}
+function soundWrong(){playTone(160,.28,'sawtooth',.10);}
+function soundCombo(){playTone(440,.1,'sine',.1);setTimeout(()=>playTone(550,.1,'sine',.11),80);setTimeout(()=>playTone(660,.2,'sine',.13),160);}
+
+// ===== STREAK & COMBO =====
+let streakN=0,maxStreak=0;
+function addStreak(){
+  streakN++;if(streakN>maxStreak)maxStreak=streakN;
+  const b=document.getElementById('streakBadge');
+  document.getElementById('streakNum').textContent=streakN;
+  b.classList.add('show');
+  if(streakN>=3){b.classList.add('fire');showCombo(streakN);}
+  else b.classList.remove('fire');
+}
+function resetStreak(){streakN=0;const b=document.getElementById('streakBadge');if(b)b.classList.remove('show','fire');}
+function showCombo(n){
+  const labels={3:'💠 COMBO x3',4:'⚡ SẮC SẢO x4',5:'📜 UYÊN BÁC x5'};
+  const bonus={3:10,4:15,5:20}[n]||25;
+  document.getElementById('comboLabel').textContent=labels[n]||('💠 KIỆT XUẤT x'+n);
+  document.getElementById('comboSub').textContent='+'+bonus+' điểm thưởng!';
+  const el=document.getElementById('comboBurst');
+  el.className='combo-burst';void el.offsetWidth;el.className='combo-burst pop';
+  pts+=bonus;updateScore();showPts('+'+bonus+' COMBO!');
+  soundCombo();
+}
+
+// ===== REVEAL OBSERVER =====
+const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1});
+function initReveal(){document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));}
+initReveal();
+
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.scroll-btn,.tf-btn,.ms-submit,.btn-solid,.btn-ghost,.rank-opt');
+  if(!btn||btn.disabled)return;
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);
+  const rip=document.createElement('span');
+  rip.className='ripple-el';
+  rip.style.width=rip.style.height=size+'px';
+  rip.style.left=(e.clientX-rect.left-size/2)+'px';
+  rip.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(rip);
+  setTimeout(()=>rip.remove(),650);
+});
+
+// ===== ĐIỂM & UI =====
+function updateScore(){
+  document.getElementById('scoreEl').textContent=pts;
+  document.getElementById('rankEl').textContent=pts>=140?'📜 Nhà Cải Cách':pts>=90?'⚖️ Nhà Phân Tích':pts>=50?'🔍 Người Tìm Hiểu':'🌱 Mới Bắt Đầu';
+}
+function showPts(txt){const p=document.getElementById('ptsPop');p.textContent=txt;p.className='pts-pop';void p.offsetWidth;p.className='pts-pop show';}
+
+let sceneHistory=['cover'];
+let historyIndex=0;
+let sceneRewarded={};
+const progMap={cover:0,s1:12,s2:28,s2B:28,s3:44,s4:60,s5:76,s6:90,final:100};
+
+function go(id,add){
+  if(add>0 && !sceneRewarded[id]){
+    sceneRewarded[id]=true;
+    showPts('+'+add);pts+=add;
+  }
+  updateScore();
+  sceneHistory=sceneHistory.slice(0,historyIndex+1);
+  sceneHistory.push(id);
+  historyIndex++;
+  showScene(id);
+}
+
+function goBack(){
+  if(historyIndex<=0)return;
+  historyIndex--;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function goForward(){
+  if(historyIndex>=sceneHistory.length-1)return;
+  historyIndex++;
+  showScene(sceneHistory[historyIndex]);
+}
+
+function showScene(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){
+    el.classList.add('active');
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const navOffset=62;
+        const y=el.getBoundingClientRect().top+window.scrollY-navOffset;
+        window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+        el.querySelectorAll('.reveal').forEach(r=>revObs.observe(r));
+      });
+    });
+  }
+  document.getElementById('prog').style.width=(progMap[id]||100)+'%';
+  updateJourneyMap(id);
+  if(id==='final')showFinal();
+  updateNavButtons();
+}
+
+function updateNavButtons(){
+  const b=document.getElementById('backBtn');
+  const f=document.getElementById('fwdBtn');
+  if(b)b.style.display=historyIndex>0?'flex':'none';
+  if(f)f.style.display=historyIndex<sceneHistory.length-1?'flex':'none';
+}
+
+function markCorrect(id){choiceCorrect[id]=true;}
+let scrollAnswered={};
+function pickScroll(originId,target,points,correct){
+  if(scrollAnswered[originId])return;
+  scrollAnswered[originId]=true;
+  const cont=document.getElementById(originId+'-choices');
+  if(cont)cont.querySelectorAll('.scroll-btn').forEach(b=>b.disabled=true);
+  if(correct)markCorrect(originId);
+  go(target,points);
+}
+
+// ===== KIỂU 1: ĐÚNG/SAI =====
+function answerTF(btn,val,groupId,points,text){
+  if(answered[groupId])return;answered[groupId]=true;
+  const group=document.getElementById(groupId);
+  const isYesBtn=btn.classList.contains('yes');
+  const correct=(isYesBtn===val);
+  correct?soundCorrect():soundWrong();
+  correct?addStreak():resetStreak();
+  group.querySelectorAll('.tf-btn').forEach(b=>b.disabled=true);
+  btn.classList.add(correct?'correct':'wrong');
+  pts+=points;updateScore();showPts('+'+points);
+  const fb=document.getElementById(groupId+'-fb');
+  fb.innerHTML=text;
+  fb.className='play-fb show '+(correct?'ok':'no');
+  kcTotalCount++; if(correct)kcCorrectCount++;
+}
+
+// ===== KIỂU 2: GHÉP CẶP =====
+const matchPairs=[
+  {id:'hd',left:'Hạn điền',right:'Giới hạn ruộng đất tư nhân, giảm thế lực quý tộc'},
+  {id:'hn',left:'Hạn nô',right:'Giới hạn số nô tì mỗi nhà, tăng dân tự do & quân số'},
+  {id:'tg',left:'Tiền giấy "Thông bảo hội sao"',right:'Tập trung tài chính vào tay triều đình'}
+];
+let matchSelectedLeft=null,matchDoneCount=0;
+function initMatchGame(){
+  const leftShuffled=[...matchPairs];
+  const rightShuffled=[...matchPairs].sort(()=>Math.random()-0.5);
+  const leftEl=document.getElementById('matchLeft');
+  const rightEl=document.getElementById('matchRight');
+  leftEl.innerHTML=leftShuffled.map(p=>`<div class="match-item" data-id="${p.id}" data-side="left" onclick="matchClick(this)">${p.left}</div>`).join('');
+  rightEl.innerHTML=rightShuffled.map(p=>`<div class="match-item" data-id="${p.id}" data-side="right" onclick="matchClick(this)">${p.right}</div>`).join('');
+}
+function matchClick(el){
+  if(el.classList.contains('matched'))return;
+  if(el.dataset.side==='left'){
+    document.querySelectorAll('.match-item[data-side="left"]').forEach(x=>x.classList.remove('selected'));
+    el.classList.add('selected');
+    matchSelectedLeft=el;
+  } else {
+    if(!matchSelectedLeft)return;
+    if(matchSelectedLeft.dataset.id===el.dataset.id){
+      matchSelectedLeft.classList.remove('selected');
+      matchSelectedLeft.classList.add('matched');
+      el.classList.add('matched');
+      soundCorrect();addStreak();
+      matchDoneCount++;
+      pts+=10;updateScore();showPts('+10');
+      document.getElementById('matchProgress').textContent='Đã ghép: '+matchDoneCount+'/3';
+      matchSelectedLeft=null;
+      if(matchDoneCount>=3){
+        pts+=15;updateScore();showPts('+15 HOÀN THÀNH!');
+        document.getElementById('s2-continue').style.display='block';
+        document.getElementById('s2-reflect').style.display='block';
+        document.getElementById('s2-choices').style.display='flex';
+        ['s2-continue','s2-reflect','s2-choices'].forEach(id=>{
+          const e=document.getElementById(id);e.classList.add('reveal');revObs.observe(e);
+        });
+      }
+    } else {
+      soundWrong();resetStreak();
+      el.classList.add('shake');matchSelectedLeft.classList.add('shake');
+      setTimeout(()=>{el.classList.remove('shake');matchSelectedLeft.classList.remove('shake');matchSelectedLeft.classList.remove('selected');matchSelectedLeft=null;},420);
+    }
+  }
+}
+
+// ===== KIỂU 3: CHỌN NHIỀU =====
+function toggleMS(el){
+  if(el.classList.contains('locked'))return;
+  el.classList.toggle('picked');
+}
+function submitMS(){
+  if(answered['ms1'])return;answered['ms1']=true;
+  const opts=document.querySelectorAll('.ms-opt');
+  let correctCount=0,total=0;
+  opts.forEach(o=>{
+    const isCorrect=o.dataset.correct==='true';
+    const isPicked=o.classList.contains('picked');
+    if(isCorrect)total++;
+    if(isCorrect&&isPicked)correctCount++;
+    o.classList.add('locked');
+    o.onclick=null;
+    if(isCorrect){o.style.borderColor='#4caf50';o.style.background='rgba(30,90,25,.18)';}
+    else if(isPicked){o.style.borderColor='#e53935';o.style.background='rgba(120,0,0,.18)';}
+  });
+  document.getElementById('msSubmit').disabled=true;
+  const ok=(correctCount===total);
+    if(ok)choiceCorrect.s3=true;
+  ok?soundCorrect():soundWrong();
+  ok?addStreak():resetStreak();
+  const gained=ok?20:8;
+  pts+=gained;updateScore();showPts('+'+gained);
+  const fb=document.getElementById('ms-fb');
+  fb.innerHTML=ok
+    ?'✅ Chuẩn xác! Bạn đã chọn đúng cả 3 sự kiện có thật — đổi quốc hiệu Đại Ngu, nhường ngôi cho Hồ Hán Thương nhưng giữ thực quyền, và dời đô vào Tây Đô.'
+    :'⚠️ Bạn chọn đúng '+correctCount+'/'+total+' sự kiện thật. Các ô viền xanh là đáp án đúng, ô viền đỏ là bạn đã chọn nhầm.';
+  fb.className='play-fb show '+(ok?'ok':'no');
+}
+
+// ===== KIỂU 4: XẾP HẠNG / ƯU TIÊN =====
+function pickRank(el,val){
+  if(answered['rank1'])return;answered['rank1']=true;
+  document.querySelectorAll('.rank-opt').forEach(o=>{o.classList.add('ranked');o.onclick=null;});
+  el.style.borderColor='var(--gold-l)';
+  soundCorrect();addStreak();
+  pts+=20;updateScore();showPts('+20');
+  const fb=document.getElementById('rank-fb');
+  const texts={
+    a:'💭 Nhiều sử gia hiện đại nghiêng về góc nhìn này: cải cách đúng hướng nhưng thực hiện quá nhanh khiến lòng dân chưa kịp đồng thuận — khi giặc đến, "thành lũy" quan trọng nhất là sự đoàn kết đã không còn vững.',
+    b:'💭 Đây cũng là một góc nhìn hợp lý — quân Minh thực sự đông và mạnh hơn nhiều. Nhưng các cuộc kháng chiến khác trong sử Việt (như chống Nguyên Mông) cho thấy chênh lệch lực lượng không phải yếu tố quyết định duy nhất.',
+    c:'💭 Thực tế Thành Nhà Hồ được xây rất kiên cố — vẫn đứng vững đến ngày nay và được UNESCO công nhận. Vấn đề nằm ở chỗ khác: sự đồng lòng bên trong, không phải độ chắc của tường thành.'
+  };
+  fb.innerHTML=texts[val]||'';
+  fb.className='play-fb show ok';
+}
+
+// ===== KỊCH BẢN =====
+function ansScenario(btn,ok,id,points,text){
+  if(answered[id])return;answered[id]=true;
+  ok?soundCorrect():soundWrong();
+  ok?addStreak():resetStreak();
+  if(ok)choiceCorrect[id]=true;
+  const cont=btn.closest('.scroll-choices');
+  cont.querySelectorAll('.scroll-btn').forEach(b=>b.disabled=true);
+  pts+=points;updateScore();showPts('+'+points);
+  const fb=document.getElementById(id+'-fb');
+  fb.innerHTML=(ok?'✅ ':'❌ ')+text;
+  fb.className='play-fb show '+(ok?'ok':'no');
+}
+
+// ===== "NẾU NHƯ..." =====
+function toggleCounter(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('show');
+}
+
+// ===== NGUỒN SỬ LIỆU =====
+const sourceDB={
+  s1:{title:'Hồ Quý Ly trước khi lên ngôi',body:'Cuối thế kỷ 14, Hồ Quý Ly từng bước nắm binh quyền và tài chính triều đình nhà Trần đang suy yếu, giữ chức Phụ chính đại thần.',cite:'Đại Việt sử ký toàn thư'},
+  s2:{title:'Cải cách hạn điền, hạn nô, tiền giấy',body:'Hồ Quý Ly ban hành phép hạn điền, hạn nô và phát hành tiền giấy "Thông bảo hội sao" — những cải cách chưa từng có trong lịch sử phong kiến Việt Nam.',cite:'Đại Việt sử ký toàn thư; Khâm định Việt sử thông giám cương mục'},
+  s3:{title:'Lập nhà Hồ, đổi quốc hiệu Đại Ngu (1400)',body:'Hồ Quý Ly phế truất vua Trần Thiếu Đế, lên ngôi, đổi quốc hiệu Đại Việt thành Đại Ngu, chấm dứt 175 năm nhà Trần.',cite:'Đại Việt sử ký toàn thư'},
+  s4:{title:'Thành Nhà Hồ — Di sản Thế giới',body:'Thành được xây bằng đá xanh khổng lồ, hoàn thành trong thời gian ngắn kỷ lục. UNESCO công nhận là Di sản Văn hóa Thế giới năm 2011.',cite:'Hồ sơ Di sản Thế giới UNESCO, 2011'},
+  s5:{title:'Quân Minh xâm lược năm 1406',body:'Minh Thành Tổ lấy cớ "phù Trần diệt Hồ" đưa hơn 20 vạn quân xâm lược Đại Ngu.',cite:'Đại Việt sử ký toàn thư'},
+  s6:{title:'Nhà Hồ sụp đổ năm 1407',body:'Thành Đa Bang, Đông Đô lần lượt thất thủ. Cha con Hồ Quý Ly bị bắt tại Hà Tĩnh, áp giải về Trung Quốc.',cite:'Đại Việt sử ký toàn thư; Khâm định Việt sử thông giám cương mục'}
+};
+function openSrcPopup(key){
+  const d=sourceDB[key];if(!d)return;
+  document.getElementById('srcTitle').textContent=d.title;
+  document.getElementById('srcBody').textContent=d.body;
+  document.getElementById('srcCite').textContent='📎 '+d.cite;
+  document.getElementById('srcOverlay').classList.add('show');
+  playTone(700,.08,'sine',.08);
+}
+function closeSrcPopup(){document.getElementById('srcOverlay').classList.remove('show');}
+function toggleRefPage(){document.getElementById('refOverlay').classList.toggle('show');}
+
+// ===== BẢN ĐỒ HÀNH TRÌNH =====
+function toggleJourneyMap(){document.getElementById('journeyMapOverlay').classList.toggle('show');}
+const mapUnlockStages={
+  s2:['pt-thanglong'],
+  s3:['pt-taydo'],
+  s4:['pt-thanhda'],
+  s5:['pt-dabang'],
+  s6:['pt-hatinh']
+};
+function updateJourneyMap(id){
+  const keys=mapUnlockStages[id];if(!keys)return;
+  let unlocked=false;
+  keys.forEach(k=>{
+    document.querySelectorAll('.'+k).forEach(el=>{
+      if(el.classList.contains('locked')){el.classList.remove('locked');unlocked=true;}
+    });
+  });
+  if(unlocked)showPts('🗺️ Mở khóa địa điểm mới!');
+}
+
+// ===== NHẬT KÝ & KẾT THÚC =====
+const chapterNames={s1:'I. Quyền thần giữa triều suy vong',s2:'II. Cải cách táo bạo',s3:'III. Soán ngôi, lập Đại Ngu',s5:'V. Đối đầu quân Minh'};
+function renderJournal(){
+  let jHtml='';
+  for(const key in chapterNames){
+    const ok=choiceCorrect[key];
+    jHtml+=`<div class="journal-row"><span>${chapterNames[key]}</span><span class="journal-status ${ok?'ok':'no'}">${ok?'✅ Theo đúng sử liệu':'○ Khác diễn biến thật'}</span></div>`;
+  }
+  const el=document.getElementById('journalList');
+  if(el)el.innerHTML=jHtml;
+}
+function copyJournal(){
+  let txt='📔 NHẬT KÝ HÀNH TRÌNH — HỒ QUÝ LY: CANH BẠC CẢI CÁCH\n\n';
+  for(const key in chapterNames){
+    txt+=(choiceCorrect[key]?'✅ ':'○ ')+chapterNames[key]+'\n';
+  }
+  txt+=`\nTổng điểm: ${pts} — ${document.getElementById('rankEl').textContent}\n`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.journal-copy');
+    if(btn){const old=btn.textContent;btn.textContent='✅ Đã sao chép!';setTimeout(()=>btn.textContent=old,1800);}
+  }).catch(()=>{});
+}
+
+function showFinal(){
+  awardExp(pts, document.title);
+  const h=pts>=140?'📜 NHÀ CẢI CÁCH THẤU ĐÁO!':pts>=90?'⚖️ NHÀ PHÂN TÍCH SẮC SẢO!':pts>=50?'🔍 NGƯỜI TÌM HIỂU CHĂM CHỈ!':'🌱 HÀNH TRÌNH KHỞI ĐẦU!';
+  document.getElementById('finalH').textContent=h;
+  document.getElementById('finalPts').textContent=pts+' điểm';
+  document.getElementById('finalRank').textContent=document.getElementById('rankEl').textContent;
+  renderJournal();
+
+  const descEl=document.getElementById('finalDesc');
+  if(pts>=140){
+    descEl.textContent='Bạn đã đi trọn hành trình cùng Hồ Quý Ly với sự thấu hiểu sâu sắc — nắm vững cả những cải cách táo bạo lẫn nguyên nhân dẫn đến bi kịch mất nước.';
+  } else if(pts>=90){
+    descEl.textContent='Bạn đã hoàn thành hành trình với nền tảng kiến thức khá vững — nắm được những cột mốc quan trọng nhất trong sự nghiệp gây tranh cãi của Hồ Quý Ly.';
+  } else if(pts>=50){
+    descEl.textContent='Bạn đã đi qua hành trình và nắm được những nét chính. Còn nhiều chi tiết thú vị đang chờ khám phá thêm nếu chơi lại!';
+  } else {
+    descEl.textContent='Bạn vừa mới làm quen với câu chuyện đầy tranh cãi của Hồ Quý Ly. Hãy thử chơi lại để hiểu sâu hơn về nhà cải cách đặc biệt này!';
+  }
+
+  const achs=[
+    {icon:'🔗',name:'Nhà Phân Tích',ok:matchDoneCount>=3},
+    {icon:'☑',name:'Sử Gia Tỉ Mỉ',ok:kcTotalCount>0&&(kcCorrectCount/kcTotalCount)>=0.5},
+    {icon:'🏯',name:'Kiến Trúc Sư',ok:true},
+    {icon:'⚖️',name:'Người Cân Nhắc',ok:!!answered['rank1']},
+    {icon:'📜',name:'Nhà Cải Cách',ok:choiceCorrect.s2&&choiceCorrect.s3},
+    {icon:'💠',name:'Chuỗi Liên Tiếp',ok:maxStreak>=3}
+  ];
+  document.getElementById('finalAchs').innerHTML=achs.map(a=>
+    `<div class="ach ${a.ok?'':'locked'}"><span class="ach-icon">${a.icon}</span><span class="ach-name">${a.name}</span></div>`
+  ).join('');
+}
+
+// ===== KẾT NỐI BACKEND (giống các trang khác trong dự án) =====
+const API = 'http://localhost:3000/api';
+async function awardExp(amount, storyTitle) {
+  const token = localStorage.getItem('token');
+  if (!token || !amount) return;
+  try {
+    await fetch(`${API}/exp/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ amount: amount, source_type: 'GAME', note: storyTitle || '' })
+    });
+  } catch (err) { console.warn('Không thể cộng EXP:', err.message); }
+}
+async function openLeaderboard() {
+  let modal = document.getElementById('leaderboard-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'leaderboard-modal';
+    modal.className = 'lb-modal';
+    modal.innerHTML = `
+      <div class="lb-box">
+        <div class="lb-header">
+          <h3>🏆 Bảng Xếp Hạng</h3>
+          <span class="lb-close" onclick="document.getElementById('leaderboard-modal').classList.remove('show')">✕</span>
+        </div>
+        <div id="lb-content" class="lb-content"><div class="lb-loading">Đang tải...</div></div>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.classList.add('show');
+  const content = document.getElementById('lb-content');
+  content.innerHTML = '<div class="lb-loading">Đang tải...</div>';
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API}/leaderboard`, { headers: token ? { 'Authorization': 'Bearer ' + token } : {} });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Lỗi tải bảng xếp hạng');
+    const rows = data.data || [];
+    let html = '<div class="lb-list">';
+    if (rows.length === 0) {
+      html += '<div class="lb-empty">Chưa có dữ liệu xếp hạng.</div>';
+    } else {
+      rows.forEach((r, i) => {
+        const name = r.fullname || r.username || r.name || 'Ẩn danh';
+        const exp = r.exp ?? r.points ?? 0;
+        const level = r.level ?? '';
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+        html += `<div class="lb-row"><div class="lb-rank">${medal}</div><div class="lb-name">${name}</div><div class="lb-exp">${exp} EXP${level ? ' · Lv.' + level : ''}</div></div>`;
+      });
+    }
+    html += '</div>';
+    if (data.myRank) {
+      const m = data.myRank;
+      html += `<div class="lb-myrank"><strong>Hạng của bạn:</strong> #${m.rank_pos ?? '-'} — ${m.exp ?? m.points ?? 0} EXP</div>`;
+    }
+    content.innerHTML = html;
+  } catch (err) {
+    content.innerHTML = `<div class="lb-empty">Không tải được bảng xếp hạng. (${err.message})</div>`;
+  }
+}
+
+// ===== KHỞI TẠO & CHƠI LẠI =====
+function restart(){
+  pts=0;answered={};scrollAnswered={};totalKC=0;kcCorrectCount=0;kcTotalCount=0;
+  streakN=0;maxStreak=0;matchSelectedLeft=null;matchDoneCount=0;
+  sceneHistory=['cover'];historyIndex=0;sceneRewarded={};
+  const sb=document.getElementById('streakBadge');if(sb)sb.classList.remove('show','fire');
+  choiceCorrect={s1:false,s2:false,s3:false,s5:false};
+
+  document.getElementById('matchProgress').textContent='Đã ghép: 0/3';
+  initMatchGame();
+  document.getElementById('s2-continue').style.display='none';
+  document.getElementById('s2-reflect').style.display='none';
+  document.getElementById('s2-choices').style.display='none';
+
+  document.querySelectorAll('.tf-btn').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+  document.querySelectorAll('[id$="-fb"]').forEach(f=>{f.className='play-fb';f.innerHTML='';});
+  document.querySelectorAll('.scroll-btn').forEach(b=>b.disabled=false);
+  document.querySelectorAll('.ms-opt').forEach(o=>{
+    o.classList.remove('picked','locked');o.style.borderColor='';o.style.background='';
+    o.onclick=function(){toggleMS(this);};
+  });
+  document.getElementById('msSubmit').disabled=false;
+  document.querySelectorAll('.rank-opt').forEach(o=>{
+    o.classList.remove('ranked');o.style.borderColor='';
+    o.onclick=function(){pickRank(this,this.dataset.val);};
+  });
+  document.querySelectorAll('.counterf-body').forEach(el=>el.classList.remove('show'));
+
+  updateScore();document.getElementById('prog').style.width='0%';
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.getElementById('cover').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateNavButtons();
+}
+
+initMatchGame();
+updateScore();
+</script>
+</body>
+</html>

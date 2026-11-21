@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Sử Việt — Thử Thách Tri Thức</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#D4A84B;
+  --gold-light:#FFD700;
+  --gold-dim:rgba(212,168,75,0.15);
+  --gold-border:rgba(212,168,75,0.25);
+  --red:#C0392B;
+  --red-dark:#8B1A1A;
+  --bg:#0D0500;
+  --bg2:#160800;
+  --bg3:#1f0d04;
+  --text:#EDE0C4;
+  --text-dim:rgba(237,224,196,0.55);
+  --text-faint:rgba(237,224,196,0.25);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  font-family:'Be Vietnam Pro',sans-serif;
+  color:var(--text);
+  overflow-x:hidden;min-height:100vh;
+}
+
+/* ══════════════ PARTICLES CANVAS ══════════════ */
+#particleCanvas{
+  position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.7;
+}
+
+/* ══════════════ NAV ══════════════ */
+nav{
+  position:fixed;inset:0 0 auto;z-index:200;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+  background:rgba(13,5,0,0.92);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--gold-border);
+}
+.nav-brand{
+  font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;
+  color:var(--gold);letter-spacing:4px;display:flex;align-items:center;gap:12px;
+  text-decoration:none;
+}
+.nav-brand-logo{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--gold-dim);border:1px solid var(--gold-border);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  animation:logo-spin 8s linear infinite;
+}
+@keyframes logo-spin{
+  0%,100%{box-shadow:0 0 0 0 rgba(212,168,75,0)}
+  50%{box-shadow:0 0 16px 4px rgba(212,168,75,.2)}
+}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{
+  color:var(--text-dim);text-decoration:none;font-size:13px;font-weight:500;
+  letter-spacing:.5px;transition:color .2s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .3s;
+}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-links a:hover,.nav-links a.active{color:var(--gold)}
+.nav-cta{
+  background:var(--gold);color:#0D0500;font-size:12px;font-weight:700;
+  letter-spacing:1.5px;padding:8px 24px;border-radius:4px;text-decoration:none;
+  transition:all .2s;text-transform:uppercase;
+  box-shadow:0 0 20px rgba(212,168,75,.3);
+}
+.nav-cta:hover{background:var(--gold-light);box-shadow:0 0 30px rgba(212,168,75,.5);transform:translateY(-1px)}
+
+/* ══════════════ PAGE HERO ══════════════ */
+.page-hero{
+  position:relative;z-index:2;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:80px 24px 48px;
+  text-align:center;
+  overflow:hidden;
+}
+/* ambient radial glow */
+.page-hero::before{
+  content:'';position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,168,75,.07) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-60%);
+  animation:ambient-pulse 4s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes ambient-pulse{
+  from{transform:translate(-50%,-60%) scale(1);opacity:.7}
+  to{transform:translate(-50%,-55%) scale(1.15);opacity:1}
+}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:10px;letter-spacing:5px;font-weight:700;
+  color:var(--gold);text-transform:uppercase;margin-bottom:24px;
+  animation:fade-down .8s ease forwards;opacity:0;
+}
+.hero-eyebrow .dot{
+  width:4px;height:4px;border-radius:50%;background:var(--gold);
+  animation:dot-blink 1.5s ease-in-out infinite;
+}
+@keyframes dot-blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes fade-down{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(56px,9vw,100px);
+  font-weight:700;line-height:1;
+  margin-bottom:12px;
+  animation:fade-up .9s ease .15s forwards;opacity:0;
+}
+.hero-title .line1{display:block;color:var(--text)}
+.hero-title .line2{
+  display:block;
+  background:linear-gradient(135deg,#FFD700 0%,#D4A84B 40%,#FFD700 70%,#B8892F 100%);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gold-flow 4s ease-in-out infinite, fade-up .9s ease .15s forwards;
+}
+@keyframes gold-flow{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@keyframes fade-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+.hero-tagline{
+  font-size:12px;letter-spacing:6px;color:var(--text-faint);
+  text-transform:uppercase;font-weight:300;
+  margin-bottom:40px;
+  animation:fade-up .9s ease .3s forwards;opacity:0;
+}
+
+/* ══════════════ PERIOD CAROUSEL ══════════════ */
+.carousel-wrap{
+  width:100%;max-width:860px;
+  animation:fade-up 1s ease .4s forwards;opacity:0;
+}
+.carousel-track{
+  display:flex;gap:10px;justify-content:center;
+  flex-wrap:wrap;margin-bottom:32px;
+}
+.c-pill{
+  display:flex;align-items:center;gap:8px;
+  border:1px solid rgba(212,168,75,.2);
+  border-radius:40px;padding:10px 20px;
+  cursor:pointer;
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  background:rgba(212,168,75,.05);
+  position:relative;overflow:hidden;
+}
+.c-pill::before{
+  content:'';position:absolute;inset:0;border-radius:40px;
+  background:linear-gradient(135deg,rgba(212,168,75,.15),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.c-pill:hover::before,.c-pill.active::before{opacity:1}
+.c-pill:hover{
+  border-color:rgba(212,168,75,.55);
+  transform:translateY(-4px) scale(1.04);
+  box-shadow:0 12px 32px rgba(212,168,75,.18);
+}
+.c-pill.active{
+  background:rgba(212,168,75,.18);
+  border-color:var(--gold);
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(212,168,75,.25), inset 0 0 0 1px rgba(212,168,75,.1);
+}
+.c-pill-n{
+  font-size:9px;font-weight:700;color:rgba(212,168,75,.45);letter-spacing:1.5px;
+}
+.c-pill.active .c-pill-n{color:var(--gold)}
+.c-pill-name{font-size:12px;font-weight:600;color:var(--text-dim);white-space:nowrap}
+.c-pill.active .c-pill-name{color:var(--text)}
+.c-pill-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(212,168,75,.25);transition:all .3s;flex-shrink:0;
+}
+.c-pill:hover .c-pill-dot,.c-pill.active .c-pill-dot{
+  background:var(--gold);box-shadow:0 0 6px rgba(212,168,75,.6);
+}
+
+/* ══════════════ MAIN CARD ══════════════ */
+.quiz-card{
+  position:relative;width:100%;max-width:680px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(212,168,75,.22);
+  border-radius:20px;overflow:hidden;
+  transition:all .45s cubic-bezier(.22,1,.36,1);
+}
+.quiz-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,168,75,.3) 20%,
+    var(--gold) 50%,
+    rgba(212,168,75,.3) 80%,
+    transparent 100%
+  );
+  background-size:200% 100%;
+  animation:card-line 3s linear infinite;
+}
+@keyframes card-line{
+  from{background-position:200% center}
+  to{background-position:-200% center}
+}
+.quiz-card::after{
+  content:'';position:absolute;inset:0;border-radius:20px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(212,168,75,.07),transparent 60%);
+  pointer-events:none;
+}
+
+.card-content{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  padding:40px 40px 32px;
+}
+.card-emblem{
+  width:96px;height:96px;
+  background:rgba(212,168,75,.1);
+  border:1px solid rgba(212,168,75,.3);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:42px;margin-bottom:20px;
+  animation:emblem-glow 2.5s ease-in-out infinite alternate;
+  transition:transform .35s ease;
+}
+@keyframes emblem-glow{
+  from{box-shadow:0 0 0 0 rgba(212,168,75,0),0 0 20px rgba(212,168,75,.1)}
+  to{box-shadow:0 0 0 10px rgba(212,168,75,.06),0 0 40px rgba(212,168,75,.18)}
+}
+.quiz-card:hover .card-emblem{transform:scale(1.08) rotate(4deg)}
+
+.card-period{
+  font-size:10px;letter-spacing:4px;color:var(--gold);
+  text-transform:uppercase;font-weight:700;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-period::before,.card-period::after{
+  content:'';width:20px;height:1px;background:rgba(212,168,75,.4);
+}
+.card-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:34px;font-weight:700;
+  color:var(--text);text-align:center;
+  line-height:1.1;margin-bottom:12px;
+}
+.card-desc{
+  font-size:13px;color:var(--text-dim);line-height:1.85;
+  text-align:center;max-width:480px;margin-bottom:28px;
+}
+
+.card-stats-row{
+  display:flex;width:100%;border-top:1px solid rgba(212,168,75,.12);
+  border-bottom:1px solid rgba(212,168,75,.12);
+  margin-bottom:28px;
+}
+.cs{
+  flex:1;padding:18px 12px;text-align:center;
+  border-right:1px solid rgba(212,168,75,.1);
+  transition:background .3s;
+}
+.cs:last-child{border-right:none}
+.cs:hover{background:rgba(212,168,75,.06)}
+.cs-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:700;color:var(--gold);
+  line-height:1;display:block;margin-bottom:4px;
+}
+.cs-l{font-size:10px;color:var(--text-faint);letter-spacing:2px;text-transform:uppercase}
+
+/* ══════════════ CTA BUTTON ══════════════ */
+.btn-cta{
+  display:inline-flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,#D4A84B,#B8892F);
+  color:#0D0500;font-weight:700;font-size:15px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:18px 52px;border-radius:8px;
+  border:none;cursor:pointer;position:relative;overflow:hidden;
+  transition:all .3s;
+  box-shadow:0 8px 32px rgba(212,168,75,.3);
+}
+.btn-cta::before{
+  content:'';position:absolute;
+  top:-50%;left:-80%;width:50%;height:200%;
+  background:rgba(255,255,255,.3);
+  transform:skewX(-20deg);
+  animation:btn-shine 2.5s ease-in-out infinite;
+}
+@keyframes btn-shine{
+  0%{left:-80%}60%,100%{left:140%}
+}
+.btn-cta:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 16px 48px rgba(212,168,75,.45);
+  background:linear-gradient(135deg,#FFD700,#D4A84B);
+}
+.btn-cta:active{transform:translateY(-1px) scale(1.01)}
+.btn-arrow{
+  display:inline-block;
+  animation:arrow-bounce .7s ease-in-out infinite alternate;
+}
+@keyframes arrow-bounce{from{transform:translateX(0)}to{transform:translateX(6px)}}
+
+/* ══════════════ MINI STATS BELOW HERO ══════════════ */
+.mini-stats-bar{
+  display:flex;gap:48px;justify-content:center;
+  margin-top:40px;
+  animation:fade-up 1s ease .6s forwards;opacity:0;
+}
+.ms{text-align:center}
+.ms-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:700;color:var(--gold);
+  display:block;line-height:1;margin-bottom:4px;
+}
+.ms-l{font-size:10px;color:var(--text-faint);letter-spacing:3px;text-transform:uppercase}
+
+/* ══════════════ PERIODS GRID SECTION ══════════════ */
+.section{
+  position:relative;z-index:2;
+  padding:80px 40px;max-width:1100px;margin:0 auto;
+}
+.section-eyebrow{
+  display:flex;align-items:center;gap:12px;
+  font-size:10px;letter-spacing:5px;font-weight:700;
+  color:var(--gold);text-transform:uppercase;margin-bottom:16px;
+}
+.section-eyebrow::after{
+  content:'';flex:1;max-width:60px;height:1px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+}
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,4vw,52px);font-weight:700;
+  line-height:1.1;margin-bottom:48px;
+}
+
+/* ══════════════ PERIOD CARDS GRID ══════════════ */
+.periods-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:16px;
+}
+.period-card{
+  position:relative;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(212,168,75,.28);
+  border-radius:14px;padding:28px;
+  cursor:pointer;text-decoration:none;color:inherit;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+  transition:all .4s cubic-bezier(.22,1,.36,1);
+  display:block;
+}
+.period-card::before{
+  content:'';position:absolute;inset:0;border-radius:14px;
+  background:radial-gradient(ellipse at 30% 0%,rgba(212,168,75,.1),transparent 60%);
+  opacity:0;transition:opacity .4s;
+}
+.period-card:hover::before{opacity:1}
+.period-card::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--gold),#B8892F);
+  transform:scaleY(0);transition:transform .35s cubic-bezier(.22,1,.36,1);
+  transform-origin:bottom;border-radius:0 0 0 14px;
+}
+.period-card:hover::after{transform:scaleY(1)}
+.period-card:hover{
+  border-color:rgba(212,168,75,.45);
+  transform:translateY(-6px) translateX(3px);
+  box-shadow:0 20px 48px rgba(0,0,0,.4),0 0 0 1px rgba(212,168,75,.08),0 8px 24px rgba(212,168,75,.1);
+}
+.pc-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px}
+.pc-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:48px;font-weight:700;
+  color:rgba(212,168,75,.32);line-height:1;
+  transition:color .3s;flex-shrink:0;
+}
+.period-card:hover .pc-num{color:rgba(212,168,75,.55)}
+.pc-meta{flex:1}
+.pc-period{
+  font-size:9px;letter-spacing:3px;color:var(--gold);
+  text-transform:uppercase;font-weight:700;margin-bottom:6px;
+}
+.pc-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:700;line-height:1.2;color:var(--text);
+  transition:color .3s;
+}
+.period-card:hover .pc-name{color:var(--gold-light)}
+.pc-desc{font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:20px;transition:color .3s}
+.period-card:hover .pc-desc{color:var(--text-dim)}
+.pc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pc-tag{
+  font-size:10px;letter-spacing:1.5px;font-weight:700;
+  color:rgba(212,168,75,.6);border:1px solid rgba(212,168,75,.2);
+  padding:4px 12px;border-radius:20px;text-transform:uppercase;
+  transition:all .3s;
+}
+.period-card:hover .pc-tag{color:var(--gold);border-color:rgba(212,168,75,.4)}
+.pc-arrow{
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid rgba(212,168,75,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:rgba(212,168,75,.5);
+  transition:all .3s;
+}
+.period-card:hover .pc-arrow{
+  background:var(--gold);color:#0D0500;
+  border-color:var(--gold);transform:translateX(4px);
+}
+
+/* ══════════════ HOW TO PLAY ══════════════ */
+.how-section{
+  position:relative;z-index:2;
+  border-top:1px solid rgba(212,168,75,.1);
+  border-bottom:1px solid rgba(212,168,75,.1);
+  background:rgba(255,255,255,.015);
+  padding:72px 40px;
+}
+.how-inner{max-width:900px;margin:0 auto;text-align:center}
+.how-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;margin-top:48px;
+  background:rgba(212,168,75,.1);border-radius:12px;overflow:hidden;
+}
+.how-step{
+  background:rgba(13,5,0,1);
+  padding:36px 28px;text-align:left;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.how-step:hover{background:rgba(255,255,255,.025)}
+.how-step::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 100%,rgba(212,168,75,.06),transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.how-step:hover::before{opacity:1}
+.step-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:72px;font-weight:700;
+  color:rgba(212,168,75,.08);line-height:1;
+  margin-bottom:20px;display:block;
+  transition:color .3s;
+}
+.how-step:hover .step-num{color:rgba(212,168,75,.18)}
+.step-icon{font-size:24px;margin-bottom:12px;display:block}
+.step-title{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.step-desc{font-size:12px;color:var(--text-faint);line-height:1.85}
+
+/* ══════════════ CTA BOTTOM ══════════════ */
+.cta-bottom{
+  position:relative;z-index:2;
+  padding:80px 40px;text-align:center;
+  overflow:hidden;
+}
+.cta-bottom::before{
+  content:'';position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(155,32,32,.08),transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.cta-h{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(32px,5vw,56px);font-weight:700;
+  line-height:1.1;margin-bottom:16px;
+}
+.cta-h em{
+  font-style:italic;
+  background:linear-gradient(135deg,#FFD700,#D4A84B);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cta-p{font-size:14px;color:var(--text-dim);line-height:1.9;margin-bottom:36px;max-width:480px;margin-left:auto;margin-right:auto}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(212,168,75,.3);color:var(--text-dim);
+  font-size:14px;font-weight:500;letter-spacing:.5px;
+  padding:16px 32px;border-radius:8px;text-decoration:none;
+  transition:all .3s;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,168,75,.06)}
+
+/* ══════════════ FOOTER ══════════════ */
+footer{
+  position:relative;z-index:2;
+  background:rgba(0,0,0,.5);
+  padding:48px 40px 24px;
+  border-top:1px solid rgba(212,168,75,.1);
+}
+.footer-grid{
+  display:grid;grid-template-columns:1.4fr 1fr 1fr;
+  gap:48px;max-width:1100px;margin:0 auto 40px;
+}
+.footer-brand-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:700;color:var(--gold);
+  letter-spacing:4px;margin-bottom:10px;
+}
+.footer-brand p{font-size:13px;color:var(--text-faint);line-height:1.9;max-width:220px}
+.footer-col h5{font-size:10px;letter-spacing:4px;color:var(--gold);margin-bottom:16px;text-transform:uppercase}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col a{color:var(--text-faint);text-decoration:none;font-size:13px;transition:color .2s}
+.footer-col a:hover{color:var(--gold)}
+.footer-col li{font-size:13px;color:var(--text-faint)}
+.footer-bottom{
+  max-width:1100px;margin:0 auto;
+  border-top:1px solid rgba(212,168,75,.08);padding-top:20px;
+  display:flex;justify-content:space-between;
+  font-size:12px;color:rgba(237,224,196,.15);
+}
+
+/* ══════════════ SPARKLE PARTICLES ══════════════ */
+.sparkle-particle{
+  position:fixed;pointer-events:none;z-index:100;
+  border-radius:50%;background:radial-gradient(circle,#FFD700,rgba(212,168,75,.3));
+  animation:sparkle-rise ease-out forwards;
+}
+@keyframes sparkle-rise{
+  0%{opacity:0;transform:scale(0) translateY(0)}
+  20%{opacity:1;transform:scale(1) translateY(-15px)}
+  100%{opacity:0;transform:scale(.3) translateY(-80px)}
+}
+
+/* ══════════════ SCROLL REVEAL ══════════════ */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ══════════════ TRANSITION OVERLAY ══════════════ */
+#transitionOverlay{
+  position:fixed;inset:0;z-index:1000;
+  background:radial-gradient(circle at center,rgba(212,168,75,.15),#0D0500);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+#transitionOverlay.show{opacity:1;pointer-events:all}
+
+/* ══════════════ RESPONSIVE ══════════════ */
+@media(max-width:800px){
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  .nav-cta{display:none}
+  .page-hero{padding:80px 16px 40px}
+  .hero-title{font-size:clamp(42px,12vw,64px)}
+  .carousel-track{gap:8px}
+  .c-pill{padding:8px 14px}
+  .c-pill-name{font-size:11px}
+  .card-content{padding:28px 20px 24px}
+  .section{padding:60px 20px}
+  .periods-grid{grid-template-columns:1fr}
+  .how-grid{grid-template-columns:1fr}
+  .how-section{padding:56px 20px}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center}
+  .mini-stats-bar{gap:28px}
+  .cta-bottom{padding:56px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+.navbar-sv{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;align-items:center;gap:28px;padding:14px 28px;background:linear-gradient(#2c1b12,#241610);border-top:3px solid #c8a96e;border-bottom:3px solid #c8a96e;}
+.corner{position:absolute;width:22px;height:22px;border:2px solid #c8a96e;opacity:.8;}
+.corner-tl{top:2px;left:2px;border-right:none;border-bottom:none;}
+.corner-tr{top:2px;right:2px;border-left:none;border-bottom:none;}
+.corner-bl{bottom:2px;left:2px;border-right:none;border-top:none;}
+.corner-br{bottom:2px;right:2px;border-left:none;border-top:none;}
+.navbar-sv .logo{display:flex;align-items:center;gap:12px;color:#c8a96e;font-size:28px;font-weight:700;font-family:'Libre Baskerville',serif;letter-spacing:1px;text-decoration:none;flex-shrink:0;}
+.navbar-sv .logo img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #c8a96e;}
+.nav-menu-sv{display:flex;align-items:center;justify-content:space-evenly;gap:0;list-style:none;margin:0 0 0 40px;padding:0 20px;flex:1;}
+.nav-menu-sv>li{position:relative;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:rgba(255,255,255,.85);font-size:14px;font-weight:700;padding:8px 18px;border-radius:10px;transition:.2s;position:relative;min-width:96px;justify-content:center;}
+.nav-ic{font-size:18px;line-height:1;}
+.nav-item:hover{background:rgba(200,169,110,.12);color:#f4c542;}
+.nav-item.active{background:rgba(200,169,110,.18);color:#f4c542;}
+.nav-item.active::after{content:'';position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid #f4c542;}
+.caret{font-size:10px;opacity:.8;}
+.has-dropdown .dropdown-menu{position:absolute;top:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(-8px);background:#2c1b12;border:1px solid rgba(200,169,110,.3);border-radius:12px;min-width:210px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:.25s;z-index:999;}
+.has-dropdown:hover .dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+.dropdown-menu a{display:block;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}
+.dropdown-menu a:hover{background:rgba(200,169,110,.15);color:#f4c542;}
+.dropdown-viewall{margin-top:4px;border-top:1px solid rgba(200,169,110,.2);padding-top:9px!important;color:#f4c542!important;}
+.nav-right-sv{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.nav-search-sv{display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 16px;}
+.nav-search-sv input{background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;width:140px;}
+.nav-search-sv input::placeholder{color:#999;}
+.nav-search-sv button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;}
+.nav-user-item{position:relative;}
+.nav-user-trigger{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:30px;transition:background .25s;}
+.nav-user-trigger:hover{background:rgba(200,169,110,.15);}
+.nav-user-avatar{width:34px;height:34px;border-radius:50%;background:#c8a96e;color:#2c1b12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;border:2px solid #c8a96e;overflow:hidden;}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover;}
+.nav-user-email-text{color:#c8a96e;font-size:13px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nav-user-dropdown{display:none;position:absolute;top:calc(100% + 14px);right:0;background:#fff;border:1.5px solid rgba(200,169,110,.4);border-radius:14px;padding:14px;min-width:220px;box-shadow:0 10px 40px rgba(44,27,18,.18);z-index:2000;}
+.nav-user-dropdown.open{display:block;}
+.nav-dropdown-info{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.nav-dropdown-avatar{width:40px;height:40px;border-radius:50%;background:#c8a96e;color:#2c1b12;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.nav-dropdown-divider{height:1px;background:rgba(200,169,110,.3);margin:10px 0;}
+.nav-dropdown-logout{display:flex;align-items:center;gap:8px;color:#c0392b;font-size:13px;font-weight:700;text-decoration:none;padding:6px 4px;border-radius:8px;cursor:pointer;}
+.nav-dropdown-logout:hover{background:rgba(192,57,43,.08);}
+.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:0;}
+.nav-toggle span{display:block;width:26px;height:3px;background:#c8a96e;border-radius:3px;transition:0.3s;}
+.nav-toggle.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+.nav-toggle.open span:nth-child(2){opacity:0;}
+.nav-toggle.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+@media(max-width:1000px){
+  .nav-menu-sv{display:none !important;}
+  .nav-menu-sv.open{
+    display:flex !important;
+    flex-direction:column;
+    position:fixed;top:78px;left:0;right:0;
+    margin:0;padding:16px;
+    background:#2c1b12;
+    border-bottom:3px solid #c8a96e;
+    z-index:998;
+    gap:6px;
+  }
+  .nav-menu-sv.open .nav-item{
+    min-width:0;width:100%;
+    flex-direction:row;
+    justify-content:flex-start;
+    gap:10px;
+    padding:12px 14px;
+  }
+  .nav-menu-sv.open .has-dropdown .dropdown-menu{
+    position:static;
+    transform:none;
+    opacity:1;visibility:visible;
+    display:none;
+    box-shadow:none;
+    margin-top:4px;
+  }
+  .nav-menu-sv.open .has-dropdown.dd-open .dropdown-menu{display:block;}
+  .nav-search-sv{display:none !important;}
+      .mobile-search-item{display:block !important;margin-bottom:10px;padding:0 14px;}
+      .nav-search-mobile{background:#fff;border-radius:24px;padding:4px 4px 4px 16px;display:flex;align-items:center;width:100%;}
+      .nav-search-mobile input{flex:1;background:transparent;border:none;outline:none;color:#2c1b12;font-size:14px;}
+      .nav-search-mobile button{background:#8B0000;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .nav-user-email-text{display:none !important;}
+  .navbar-sv{padding:12px 14px;gap:10px;flex-wrap:nowrap;justify-content:space-between;}
+  .navbar-sv .logo{font-size:20px;gap:8px;}
+  .navbar-sv .logo img{width:38px;height:38px;}
+  .nav-right-sv{gap:8px;flex-shrink:0;}
+  .nav-toggle{display:flex !important;flex-shrink:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ CANVAS PARTICLES ════ -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- ════ TRANSITION OVERLAY ════ -->
+<div id="transitionOverlay"></div>
+
+<!-- ════ NAV ════ -->
+<header>
+  <nav class="navbar-sv" aria-label="Điều hướng chính">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+
+    <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="Logo Sử Việt">
+        SỬ VIỆT
+    </a>
+
+    <ul class="nav-menu-sv">
+          <li class="mobile-search-item" style="display:none;">
+            <div class="nav-search-mobile">
+              <input type="text" id="navSearchInputMobile" placeholder="Tìm kiếm" autocomplete="off">
+              <button onclick="doNavSearchMobile()" aria-label="Tìm kiếm">🔍</button>
+            </div>
+          </li>
+      <li><a href="index.html" class="nav-item"><span class="nav-ic">🏠</span><span>Trang chủ</span></a></li>
+      <li><a href="index.html#timeline" class="nav-item"><span class="nav-ic">📅</span><span>Hành trình lịch sử</span></a></li>
+      <li class="has-dropdown"><a href="cau-chuyen.html" class="nav-item"><span class="nav-ic">📖</span><span>Câu chuyện <span class="caret">▾</span></span></a>
+        <div class="dropdown-menu">
+          <a href="cau-chuyen-detail.html?id=1">Ngô Quyền</a>
+          <a href="cau-chuyen-detail.html?id=2">Hưng Đạo Vương</a>
+          <a href="cau-chuyen-detail.html?id=3">Quang Trung</a>
+          <a href="cau-chuyen-detail.html?id=7">Hồ Chí Minh</a>
+          <a href="cau-chuyen-detail.html?id=27">Chiến Dịch HCM</a>
+          <a href="cau-chuyen.html" class="dropdown-viewall">Xem tất cả →</a>
+        </div>
+      </li>
+      <li><a href="quiz.html" class="nav-item active"><span class="nav-ic">❓</span><span>Quiz</span></a></li>
+      <li><a href="index.html#nhanvat" class="nav-item"><span class="nav-ic">👤</span><span>Nhân vật</span></a></li>
+    </ul>
+
+    <div class="nav-right-sv">
+      <div class="nav-search-sv">
+        <input type="text" id="navSearchInput" placeholder="Tìm kiếm">
+        <button onclick="doNavSearch()" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <div class="nav-user-item">
+        <div class="nav-user-trigger" onclick="toggleUserMenu(this)" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+            <div class="nav-user-avatar" id="navAvatarCircle">U</div>
+            <span class="nav-user-email-text" id="navEmailText">user@gmail.com</span>
+            <span style="color:#c8a96e; font-size:10px;">▾</span>
+        </div>
+        <div class="nav-user-dropdown" id="navUserDropdown">
+            <div class="nav-dropdown-info">
+                <div class="nav-dropdown-avatar" id="navDropAvatar">U</div>
+                <div>
+                    <div style="font-weight:700; color:#2c1b12; font-size:13px;" id="navDropName">Người dùng</div>
+                    <div style="font-size:11px; color:#7a5c3a;" id="navDropEmail">user@gmail.com</div>
+                </div>
+            </div>
+            <div class="nav-dropdown-divider"></div>
+            <a href="login-signup.html" class="nav-dropdown-logout" onclick="doLogout()">🚪 Đăng xuất</a>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<!-- ════ PAGE HERO ════ -->
+<section class="page-hero" id="start-quiz">
+  <div class="hero-eyebrow">
+    <span class="dot"></span>
+    Thử Thách Tri Thức Lịch Sử
+    <span class="dot"></span>
+  </div>
+
+  <h1 class="hero-title">
+    <span class="line1">Quiz</span>
+    <span class="line2">Sử Việt</span>
+  </h1>
+  <p class="hero-tagline">Ngàn Năm Văn Hiến · 9 Thời Kỳ · 450 Câu Hỏi</p>
+
+  <!-- CAROUSEL CHỌN GIAI ĐOẠN -->
+  <div class="carousel-wrap">
+    <div class="carousel-track" id="carouselTrack">
+      <div class="c-pill active" data-idx="0" onclick="selectPeriod(0,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">01</span>
+        <span class="c-pill-name">Văn Lang</span>
+      </div>
+      <div class="c-pill" data-idx="1" onclick="selectPeriod(1,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">02</span>
+        <span class="c-pill-name">Bắc Thuộc</span>
+      </div>
+      <div class="c-pill" data-idx="2" onclick="selectPeriod(2,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">03</span>
+        <span class="c-pill-name">Lý – Trần</span>
+      </div>
+      <div class="c-pill" data-idx="3" onclick="selectPeriod(3,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">04</span>
+        <span class="c-pill-name">Lê – Nguyễn</span>
+      </div>
+      <div class="c-pill" data-idx="4" onclick="selectPeriod(4,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">05</span>
+        <span class="c-pill-name">Chống Pháp</span>
+      </div>
+      <div class="c-pill" data-idx="5" onclick="selectPeriod(5,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">06</span>
+        <span class="c-pill-name">Chống Mỹ</span>
+      </div>
+      <div class="c-pill" data-idx="6" onclick="selectPeriod(6,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">07</span>
+        <span class="c-pill-name">Ngô-Đinh-Tiền Lê</span>
+      </div>
+      <div class="c-pill" data-idx="7" onclick="selectPeriod(7,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">08</span>
+        <span class="c-pill-name">Nhà Hồ - Thuộc Minh</span>
+      </div>
+      <div class="c-pill" data-idx="8" onclick="selectPeriod(8,event)">
+        <span class="c-pill-dot"></span>
+        <span class="c-pill-n">09</span>
+        <span class="c-pill-name">Tổng Ôn</span>
+      </div>
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="quiz-card" id="quizCard">
+      <div class="card-content">
+        <div class="card-emblem" id="cardEmoji">🥁</div>
+        <div class="card-period" id="cardPeriodLabel">2879 – 258 TCN</div>
+        <h2 class="card-name" id="cardName">Văn Lang &amp; Âu Lạc</h2>
+        <p class="card-desc" id="cardDesc">
+          Thời dựng nước — 18 đời vua Hùng, nền văn minh lúa nước đặc sắc, và những truyền thuyết dựng nước bất hủ còn vang vọng đến muôn đời sau.
+        </p>
+        <div class="card-stats-row">
+          <div class="cs">
+            <span class="cs-n" id="csQ">30</span>
+            <span class="cs-l">Câu hỏi</span>
+          </div>
+          <div class="cs">
+            <span class="cs-n">15s</span>
+            <span class="cs-l">Mỗi câu</span>
+          </div>
+          <div class="cs">
+            <span class="cs-n">10đ</span>
+            <span class="cs-l">Câu đúng</span>
+          </div>
+          <div class="cs">
+            <span class="cs-n" id="csMax">300</span>
+            <span class="cs-l">Tối đa</span>
+          </div>
+        </div>
+          <button class="btn-cta" onclick="handleStart(event)">
+  Bắt đầu thử thách
+  <span class="btn-arrow">→</span>
+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINI STATS -->
+  <div class="mini-stats-bar">
+    <div class="ms"><span class="ms-n" id="msTotal">0</span><span class="ms-l">Tổng câu hỏi</span></div>
+    <div class="ms"><span class="ms-n" id="msPeriods">0</span><span class="ms-l">Giai đoạn</span></div>
+    <div class="ms"><span class="ms-n" id="msMax">0</span><span class="ms-l">Điểm tối đa</span></div>
+  </div>
+</section>
+
+<!-- ════ 6 GIAI ĐOẠN ════ -->
+<div class="section reveal" id="giai-doan">
+  <div class="section-eyebrow">9 Thời Kỳ</div>
+  <h2 class="section-title">Hành Trình Lịch Sử</h2>
+  <div class="periods-grid" id="periodsGrid">
+    <!-- Filled by JS -->
+  </div>
+</div>
+
+<!-- ════ CÁCH CHƠI ════ -->
+<div class="how-section">
+  <div class="how-inner reveal">
+    <div class="section-eyebrow" style="justify-content:center">Cách Chơi</div>
+    <h2 class="section-title" style="text-align:center">Luật Chơi Đơn Giản</h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <span class="step-num">1</span>
+        <span class="step-icon">🗺️</span>
+        <div class="step-title">Chọn giai đoạn</div>
+        <div class="step-desc">Chọn thời kỳ lịch sử bạn muốn chinh phục — từ Văn Lang đến kháng chiến Mỹ.</div>
+      </div>
+      <div class="how-step">
+        <span class="step-num">2</span>
+        <span class="step-icon">⏱️</span>
+        <div class="step-title">Trả lời 30 câu</div>
+        <div class="step-desc">Mỗi câu có 15 giây. Trả lời nhanh nhận thêm điểm thưởng tốc độ.</div>
+      </div>
+      <div class="how-step">
+        <span class="step-num">3</span>
+        <span class="step-icon">🏆</span>
+        <div class="step-title">Lên bảng xếp hạng</div>
+        <div class="step-desc">Xem điểm, tỉ lệ đúng và ghi danh vào bảng vinh danh toàn quốc.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CTA BOTTOM ════ -->
+<div class="cta-bottom reveal">
+  <h2 class="cta-h">Bạn có thực sự<br><em>yêu Sử Việt?</em></h2>
+  <p class="cta-p">Hàng nghìn học sinh đã thử thách — điểm cao nhất 300/300. Bạn có thể phá kỷ lục không?</p>
+  <div class="cta-actions">
+    <button class="btn-cta" onclick="handleStart(event)">
+      Bắt Đầu Ngay
+      <span class="btn-arrow">→</span>
+    </button>
+    <a href="cau-chuyen.html" class="btn-outline">Ôn Lại Câu Chuyện</a>
+  </div>
+</div>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-brand-n">SỬ VIỆT</div>
+      <p>Website học lịch sử Việt Nam tương tác — khám phá hàng nghìn năm văn hiến dân tộc.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Khám Phá</h5>
+      <ul>
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="cau-chuyen.html">Câu chuyện</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="game.html">Trò chơi</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Thông Tin</h5>
+      <ul>
+        <li>🏫 ĐH CNTT & TT Việt Hàn</li>
+        <li>👥 Nhóm CMW</li>
+        <li>🏆 Best Web Design 2026</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>📖 Hiểu sử — Yêu nước — Tự hào dân tộc</span>
+    <span>© 2026 Sử Việt</span>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════
+   DATA
+══════════════════════════════════ */
+const PERIODS = [
+  {
+    emoji:'🥁', num:'01',
+    label:'2879 – 258 TCN',
+    name:'Văn Lang & Âu Lạc',
+    desc:'Thời dựng nước — 18 đời vua Hùng, nền văn minh lúa nước đặc sắc, và những truyền thuyết dựng nước bất hủ còn vang vọng đến muôn đời sau.',
+    tag:'Khởi nguyên', q:30,
+    url:'quiz.html?topic=van-lang'
+  },
+  {
+    emoji:'⚔️', num:'02',
+    label:'179 TCN – 938',
+    name:'Bắc Thuộc & Giành Độc Lập',
+    desc:'Nghìn năm đô hộ — Hai Bà Trưng, Bà Triệu và Ngô Quyền đại phá quân Nam Hán trên sông Bạch Đằng lịch sử.',
+    tag:'Kháng chiến', q:30,
+    url:'quiz.html?topic=bac-thuoc'
+  },
+  {
+    emoji:'🏯', num:'03',
+    label:'939 – 1400',
+    name:'Triều Lý – Trần',
+    desc:'Thời kỳ vàng son — ba lần đánh tan đội quân Nguyên Mông bất khả chiến bại của thế giới, lập kỳ tích muôn đời.',
+    tag:'Hào hùng', q:30,
+    url:'quiz.html?topic=ly-tran'
+  },
+  {
+    emoji:'🌺', num:'04',
+    label:'1428 – 1884',
+    name:'Triều Lê – Nguyễn',
+    desc:'Từ khởi nghĩa Lam Sơn đến triều Nguyễn — bước ngoặt phong kiến cuối cùng trước khi Pháp xâm lược.',
+    tag:'Phong kiến', q:30,
+    url:'quiz.html?topic=le-nguyen'
+  },
+  {
+    emoji:'🌟', num:'05',
+    label:'1858 – 1954',
+    name:'Chống Thực Dân Pháp',
+    desc:'Cuộc kháng chiến 9 năm trường kỳ — đỉnh cao là chiến thắng Điện Biên Phủ ngày 7/5/1954 chấn động địa cầu.',
+    tag:'Kháng Pháp', q:30,
+    url:'quiz.html?topic=khang-chien-phap'
+  },
+  {
+    emoji:'🕊️', num:'06',
+    label:'1954 – 1975',
+    name:'Chống Đế Quốc Mỹ',
+    desc:'Cuộc kháng chiến vĩ đại — đại thắng mùa xuân 30/4/1975, non sông thống nhất về một mối trọn vẹn.',
+    tag:'Thống nhất', q:30,
+    url:'quiz.html?topic=khang-chien-my'
+  },
+  {
+    emoji:'🏰', num:'07',
+    label:'939 – 1009',
+    name:'Ngô – Đinh – Tiền Lê',
+    desc:'Buổi đầu xây dựng nền độc lập tự chủ — Ngô Quyền lập quốc, Đinh Bộ Lĩnh dẹp loạn 12 sứ quân, Lê Hoàn phá Tống.',
+    tag:'Tự chủ', q:30,
+    url:'quiz.html?topic=ngo-dinh-tienle'
+  },
+  {
+    emoji:'⚔️', num:'08',
+    label:'1400 – 1428',
+    name:'Nhà Hồ & Thuộc Minh',
+    desc:'Cải cách dang dở của Hồ Quý Ly và 20 năm kháng chiến gian khổ chống ách đô hộ nhà Minh.',
+    tag:'Kháng Minh', q:30,
+    url:'quiz.html?topic=ho-thuoc-minh'
+  },
+{
+    emoji:'🔥', num:'09',
+    label:'Tổng hợp',
+    name:'Tổng Ôn Toàn Bộ',
+    desc:'Ôn tập ngẫu nhiên toàn bộ kiến thức lịch sử qua các thời kỳ — thử thách cuối cùng dành cho bạn.',
+    tag:'Tổng ôn', q:30,
+    url:'quiz.html?topic=tong-on'
+  },
+];
+
+let currentIdx = 0;
+
+/* ══════════════════════════════════
+   BUILD PERIODS GRID
+══════════════════════════════════ */
+function buildGrid(){
+  const grid = document.getElementById('periodsGrid');
+  grid.innerHTML = PERIODS.map((p,i) => `
+    <a href="${p.url}" class="period-card reveal" onclick="goTo(event,'${p.url}')">
+      <div class="pc-header">
+        <div class="pc-num">${p.num}</div>
+        <div class="pc-meta">
+          <div class="pc-period">${p.label}</div>
+          <div class="pc-name">${p.name}</div>
+        </div>
+      </div>
+      <div class="pc-desc">${p.desc}</div>
+      <div class="pc-footer">
+        <span class="pc-tag">${p.tag}</span>
+        <div class="pc-arrow">→</div>
+      </div>
+    </a>
+  `).join('');
+  // Re-observe new cards
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+/* ══════════════════════════════════
+   SELECT PERIOD
+══════════════════════════════════ */
+function selectPeriod(idx, e){
+  if(e){ spawnSparkleBurst(e.clientX, e.clientY, 10); }
+  currentIdx = idx;
+  const p = PERIODS[idx];
+
+  document.querySelectorAll('.c-pill').forEach((el,i) => el.classList.toggle('active', i===idx));
+
+  const card = document.getElementById('quizCard');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(12px) scale(.98)';
+
+  setTimeout(()=>{
+    document.getElementById('cardEmoji').textContent = p.emoji;
+    document.getElementById('cardPeriodLabel').textContent = p.label;
+    document.getElementById('cardName').textContent = p.name;
+    document.getElementById('cardDesc').textContent = p.desc;
+    document.getElementById('csQ').textContent = p.q;
+    document.getElementById('csMax').textContent = p.q * 10;
+    card.style.transition = 'all .45s cubic-bezier(.22,1,.36,1)';
+    card.style.opacity = '1';
+    card.style.transform = 'none';
+    spawnSparkleBurst(window.innerWidth/2, window.innerHeight*0.65, 14);
+  }, 200);
+}
+
+/* ══════════════════════════════════
+   START QUIZ
+══════════════════════════════════ */
+function handleStart(e){
+  spawnSparkleBurst(e.clientX, e.clientY, 20);
+  const overlay = document.getElementById('transitionOverlay');
+  overlay.classList.add('show');
+  setTimeout(()=>{
+    window.location.href = PERIODS[currentIdx].url;
+  }, 500);
+}
+
+function goTo(e, url){
+  e.preventDefault();
+  const idx = PERIODS.findIndex(p => p.url === url);
+  if (idx !== -1) currentIdx = idx;
+  const overlay = document.getElementById('transitionOverlay');
+  overlay.classList.add('show');
+  setTimeout(()=>{ window.location.href = url; }, 450);
+}
+
+/* ══════════════════════════════════
+   SPARKLE BURST
+══════════════════════════════════ */
+function spawnSparkleBurst(cx, cy, count){
+  for(let i=0; i<count; i++){
+    const s = document.createElement('div');
+    s.className = 'sparkle-particle';
+    const sz = 3 + Math.random()*7;
+    const angle = (Math.PI*2/count)*i + Math.random()*0.5;
+    const dist = 30 + Math.random()*60;
+    const tx = Math.cos(angle)*dist;
+    const ty = Math.sin(angle)*dist - 40;
+    const dur = 0.6 + Math.random()*0.6;
+    s.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      left:${cx - sz/2}px;top:${cy - sz/2}px;
+      animation-duration:${dur}s;
+      animation-delay:${Math.random()*0.15}s;
+      transform:translate(${tx}px,${ty}px);
+    `;
+    s.style.setProperty('--tx', tx+'px');
+    s.style.setProperty('--ty', ty+'px');
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), (dur+0.3)*1000);
+  }
+}
+
+/* Override sparkle animation to use random direction */
+const style = document.createElement('style');
+style.textContent = `
+  .sparkle-particle{
+    animation-name: sparkle-burst !important;
+  }
+  @keyframes sparkle-burst{
+    0%{opacity:0;transform:translate(0,0) scale(0)}
+    25%{opacity:1;transform:translate(calc(var(--tx)*.3),calc(var(--ty)*.3)) scale(1.2)}
+    100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.2)}
+  }
+`;
+document.head.appendChild(style);
+
+/* ══════════════════════════════════
+   CANVAS PARTICLE BACKGROUND
+══════════════════════════════════ */
+(function initCanvas(){
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Create dust particles
+  for(let i=0; i<60; i++){
+    particles.push({
+      x: Math.random()*1000,
+      y: Math.random()*800,
+      r: .4 + Math.random()*1.2,
+      vx: (Math.random()-.5)*.15,
+      vy: -.05 - Math.random()*.12,
+      a: Math.random(),
+      da: .003 + Math.random()*.005
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a += p.da;
+      if(p.a > 1){ p.da = -Math.abs(p.da); }
+      if(p.a < 0){ p.da = Math.abs(p.da); p.x = Math.random()*W; p.y = H; }
+      if(p.y < -10){ p.y = H; p.x = Math.random()*W; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(212,168,75,${p.a * .4})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+function toggleUserMenu(trigger){
+  const dropdown = document.getElementById('navUserDropdown');
+  dropdown.classList.toggle('open');
+  trigger.setAttribute('aria-expanded', dropdown.classList.contains('open') ? 'true' : 'false');
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.nav-user-item')) document.getElementById('navUserDropdown')?.classList.remove('open');
+});
+function doLogout(){ localStorage.removeItem('suVietUser'); }
+(function(){
+  const raw = localStorage.getItem('suVietUser');
+  if(!raw) return;
+  const u = JSON.parse(raw);
+  const email = u.email || '';
+  const name = u.name || email.split('@')[0] || 'Người dùng';
+  const initial = name[0]?.toUpperCase() || 'U';
+  document.getElementById('navEmailText').textContent = email;
+  document.getElementById('navDropEmail').textContent = email;
+  document.getElementById('navDropName').textContent = name;
+  document.getElementById('navAvatarCircle').textContent = initial;
+  document.getElementById('navDropAvatar').textContent = initial;
+})();
+/* ══════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if(e.isIntersecting){
+      setTimeout(() => {
+        e.target.classList.add('in');
+      }, (i % 4) * 80);
+      revealObserver.unobserve(e.target);
+    }
+  });
+}, { threshold:.07, rootMargin:'0px 0px -24px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ══════════════════════════════════
+   COUNT-UP ANIMATION
+══════════════════════════════════ */
+function countUp(id, target, duration, suffix){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const start = performance.now();
+  function update(now){
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(ease * target) + (suffix||'');
+    if(progress < 1) requestAnimationFrame(update);
+    else el.textContent = target + (suffix||'');
+  }
+  requestAnimationFrame(update);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(()=>{
+    countUp('msTotal', 450, 1400);
+countUp('msPeriods', 9, 700);
+countUp('msMax', 2700, 1600);
+    spawnSparkleBurst(window.innerWidth/2, window.innerHeight*0.5, 16);
+  }, 600);
+});
+function toggleMobileNav() {
+  const menu = document.querySelector('.nav-menu-sv');
+  const btn = document.getElementById('navToggle');
+  if (!menu || !btn) return;
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false');
+}
+/* ══════════════════════════════════
+   MOUSE TRAIL (subtle)
+══════════════════════════════════ */
+let mouseTimer;
+document.addEventListener('mousemove', (e) => {
+  clearTimeout(mouseTimer);
+  mouseTimer = setTimeout(()=>{
+    if(Math.random() < .25){
+      const s = document.createElement('div');
+      s.className = 'sparkle-particle';
+      const sz = 2 + Math.random()*3;
+      s.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX}px;top:${e.clientY}px;
+        animation-duration:.8s;`;
+      s.style.setProperty('--tx', (Math.random()*20-10)+'px');
+      s.style.setProperty('--ty', (-20-Math.random()*20)+'px');
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(), 900);
+    }
+  }, 16);
+});
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+buildGrid();
+</script>
+<script src="search-data.js"></script>
+<script src="search-engine.js"></script>
+<script>
+(function(){
+  window.SuVietSearch = window.SuVietSearch || {};
+  window.SuVietSearch.resolveLocal = function(item){
+    if (item.type !== "quiz") return null;
+    const cards = document.querySelectorAll("#periodsGrid .period-card");
+    for (const card of cards){
+      if (card.getAttribute("href") === item.url){
+        return card;
+      }
+    }
+    return null;
+  };
+})();
+</script>
+<script>
+function doNavSearchMobile() {
+    const mobileInput = document.getElementById('navSearchInputMobile');
+    const desktopInput = document.getElementById('navSearchInput');
+    if (mobileInput && desktopInput) desktopInput.value = mobileInput.value;
+    if (typeof doNavSearch === 'function') doNavSearch();
+}
+document.getElementById('navSearchInputMobile')?.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doNavSearchMobile();
+});
+</script>
+</body>
+</html>
